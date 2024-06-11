@@ -43,3 +43,6 @@ pub trait StringTranslatorHandler: Debug {
         mapping: &str,
     ) -> Result<Plan<Init>, PlanError>;
 }
+
+pub trait TranslatorHandler: FileTranslatorHandler + StringTranslatorHandler {}
+impl<T> TranslatorHandler for T where T: FileTranslatorHandler + StringTranslatorHandler {}
