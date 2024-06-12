@@ -49,6 +49,7 @@ log4rs.workspace = true
 log.workspace = true
 jni = "0.21.1"
 neon = "1.0.0"
+pyo3 = { version = "0.21.2", features = ["extension-module"] }
 
 [lib]
 name = "ltranslator"

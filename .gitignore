@@ -8,3 +8,7 @@ output/
 *.json
 
 test_resources/
+
+node_modules/
+package-lock.json
+src/python/ltranslator.so
