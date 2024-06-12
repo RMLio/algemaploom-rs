@@ -4,9 +4,9 @@ use std::io;
 use std::io::BufRead;
 use std::path::PathBuf;
 
-use meamer_rs::api::{process_one_file, process_one_str};
+use libtranslator::api::{process_one_file, process_one_str};
 use log::debug;
-use meamer_rs::logger::init_logger;
+use libtranslator::logger::init_logger;
 use plangenerator::error::PlanError;
 
 use walkdir::WalkDir;

@@ -48,3 +48,11 @@ colored = "2.0.4"
 log4rs.workspace = true
 log.workspace = true
 
+[lib]
+name = "libtranslator"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "translator"
+path = "src/bin/translator/main.rs"
