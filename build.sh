@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # Rust build
 echo "==> Rust building and bindings"

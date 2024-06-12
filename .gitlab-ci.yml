@@ -8,5 +8,7 @@ build:
   image: rustdocker/rust:stable
   stage: build
   script:
+    - apt update
+    - apt install -y openjdk-17-jdk nodejs npm
     - ./build.sh
 
