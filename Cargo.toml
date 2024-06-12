@@ -48,6 +48,7 @@ colored = "2.0.4"
 log4rs.workspace = true
 log.workspace = true
 jni = "0.21.1"
+neon = "1.0.0"
 
 [lib]
 name = "ltranslator"
