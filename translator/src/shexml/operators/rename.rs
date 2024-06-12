@@ -3,9 +3,8 @@ use std::collections::{HashMap, HashSet};
 use log::{debug, trace};
 use shexml_interpreter::{
     ExpressionReferenceIdent, ExpressionStmt, ExpressionStmtEnum, FieldType,
-    Iterator, ShapeReference,
+    Iterator,
 };
-use sophia_api::dataset::MutableDataset;
 
 fn update_rename_map_iterator(
     parent: &str,

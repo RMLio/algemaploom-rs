@@ -2,7 +2,7 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-use log::{debug, error, trace};
+use log::{debug, trace};
 use operator::{Extend, Function, Rename, Serializer, Target};
 use plangenerator::error::PlanError;
 use plangenerator::plan::{Plan, Processed, RcRefCellPlan, Serialized, Sunk};
