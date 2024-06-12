@@ -1,13 +1,15 @@
 use std::path::PathBuf;
 use log::error;
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
-use crate::serialize_and_log_msg;
+use crate::util::serialize_and_log_msg;
+use crate::rml::{RMLFileHandler, RMLStringHandler};
+use crate::shexml::{ShExMLFileHandler, ShExMLStringHandler};
 
 pub fn process_one_file(
-    handlers: &[Box<dyn FileTranslatorHandler>],
     file_path: PathBuf,
     output_prefix: Option<String>,
 ) {
+    let handlers: Vec<Box<dyn FileTranslatorHandler>> = vec![Box::new(RMLFileHandler), Box::new(ShExMLFileHandler)];
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
         .iter()
         .map(|handler| handler.handle_file(&file_path.to_string_lossy()))
@@ -45,9 +47,8 @@ pub fn process_one_file(
     };
 }
 
-pub fn process_one_str(
-    handlers: &[Box<dyn StringTranslatorHandler>],
-    mapping: &str) -> String {
+pub fn process_one_str(mapping: &str) -> String {
+    let handlers: Vec<Box<dyn StringTranslatorHandler>> = vec![Box::new(RMLStringHandler), Box::new(ShExMLStringHandler)];
 
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
         .iter()
