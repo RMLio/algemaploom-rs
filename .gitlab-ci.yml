@@ -1,5 +1,12 @@
-stable:cargo:
+test:
   image: rustdocker/rust:stable
   stage: test
   script:
     - cargo test --verbose --jobs 1
+
+build:
+  image: rustdocker/rust:stable
+  stage: build
+  script:
+    - ./build.sh
+
