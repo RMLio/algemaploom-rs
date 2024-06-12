@@ -4,3 +4,6 @@ pub mod shexml;
 pub mod logger;
 pub mod api;
 pub mod util;
+mod java;
+
+pub use java::*;

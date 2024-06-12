@@ -47,9 +47,10 @@ walkdir = "2.4.0"
 colored = "2.0.4"
 log4rs.workspace = true
 log.workspace = true
+jni = "0.21.1"
 
 [lib]
-name = "libtranslator"
+name = "ltranslator"
 path = "src/lib.rs"
 crate-type = ["cdylib", "rlib"]
 

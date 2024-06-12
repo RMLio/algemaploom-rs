@@ -48,7 +48,9 @@ pub fn process_one_file(
 }
 
 pub fn process_one_str(mapping: &str) -> String {
+    // TODO: fix segfault in parsing ShExML documents to re-enable ShExML.
     let handlers: Vec<Box<dyn StringTranslatorHandler>> = vec![Box::new(RMLStringHandler), Box::new(ShExMLStringHandler)];
+    //let handlers: Vec<Box<dyn StringTranslatorHandler>> = vec![Box::new(RMLStringHandler)]
 
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
         .iter()

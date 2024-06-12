@@ -4,9 +4,9 @@ use std::io;
 use std::io::BufRead;
 use std::path::PathBuf;
 
-use libtranslator::api::{process_one_file, process_one_str};
+use ltranslator::api::{process_one_file, process_one_str};
 use log::debug;
-use libtranslator::logger::init_logger;
+use ltranslator::logger::init_logger;
 use plangenerator::error::PlanError;
 
 use walkdir::WalkDir;
