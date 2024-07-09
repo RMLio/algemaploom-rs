@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use either::Either;
-use log::{trace, warn};
+use log::trace;
 use operator::Function;
 use shexml_interpreter::{ExpressionReferenceIdent, Iterator};
 

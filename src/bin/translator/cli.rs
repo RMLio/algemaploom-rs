@@ -24,6 +24,8 @@ impl Cli {
                          .about("translate all mapping documents under the given folder")
                          .arg(arg!(<FOLDER> "the folder containing several mapping documents"))
                          .arg_required_else_help(true))
+            .subcommand(Command::new("stdin")
+                         .about("translate all input from stdin"))
             .arg(arg!(-d --debug ...  "Turns on debugging and logging to file"))
             .arg(arg!(-o --outputFolderSuffix <OUTPUT_FOLDER_SUFFIX> "The output folder suffix"));
 
