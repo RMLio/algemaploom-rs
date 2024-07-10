@@ -47,4 +47,15 @@ walkdir = "2.4.0"
 colored = "2.0.4"
 log4rs.workspace = true
 log.workspace = true
+jni = "0.21.1"
+neon = "1.0.0"
+pyo3 = { version = "0.21.2", features = ["extension-module"] }
 
+[lib]
+name = "ltranslator"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "translator"
+path = "src/bin/translator/main.rs"

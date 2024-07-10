@@ -36,3 +36,13 @@ pub trait FileTranslatorHandler: Debug {
         self.translate(file_path)
     }
 }
+
+pub trait StringTranslatorHandler: Debug {
+    fn translate(
+        &self,
+        mapping: &str,
+    ) -> Result<Plan<Init>, PlanError>;
+}
+
+pub trait TranslatorHandler: FileTranslatorHandler + StringTranslatorHandler {}
+impl<T> TranslatorHandler for T where T: FileTranslatorHandler + StringTranslatorHandler {}

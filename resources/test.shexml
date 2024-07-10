@@ -1,0 +1,31 @@
+PREFIX : <http://example.com/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SOURCE films_csv_file <./film.csv>
+SOURCE films_second_csv_file <./film2.csv>
+
+ITERATOR film_csv <csvperrow> {
+    FIELD id <@id>
+    FIELD name <name>
+    FIELD year <year>
+    FIELD country <country>
+    FIELD directors <director>
+}
+ITERATOR film_second_csv <csvperrow> {
+    FIELD country <country>
+    FIELD directors <director>
+    FIELD comment <comment>
+}
+EXPRESSION films <films_csv_file.film_csv >
+EXPRESSION films_name_csv <films_csv_file.film_csv.name> 
+EXPRESSION films_name_year <films_csv_file.film_csv.name + "_" + films_csv_file.film_csv.year>
+
+:Films :[films.id] {
+    :type :Film ;
+    :name [films_name_csv] @en ;
+    :year [films.year]  xsd:gYear ;
+    :concate [films_name_year] xsd:gYear ;
+    :country [films.country] ;
+    :director [films.directors] ;
+    :comment  [films.comment]; 
+}
+
