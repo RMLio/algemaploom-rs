@@ -333,7 +333,7 @@ fn add_serializer_op_from_quads(
             };
 
             let single_bgp = format!(
-                "?{} <{}{}> ?{} {}.",
+                "?{} <{}{}> ?{} {} .",
                 subj_variable,
                 pred_prefix_uri,
                 pred.local,

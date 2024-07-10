@@ -27,7 +27,7 @@ impl<'a> OperatorTranslator<ShExMLSourceTranslatorOutput>
             .values()
             .map(|source| {
                 let mut config = HashMap::new();
-                config.insert("url".to_string(), source.uri.clone());
+                config.insert("path".to_string(), source.uri.clone());
                 let source_type_res = match &source.source_type {
                     shexml_interpreter::SourceType::File => Ok(IOType::File),
                     unsupported_type => {
