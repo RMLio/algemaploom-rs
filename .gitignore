@@ -11,3 +11,4 @@ test_resources/
 
 node_modules/
 src/python/ltranslator.so
+.idea/
