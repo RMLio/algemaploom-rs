@@ -74,7 +74,7 @@ pub fn process_one_str(mapping: &str) -> String {
     } else {
         for plan in generated_plans.into_iter().flat_map(|p_res| p_res.ok())
         {
-            return plan.to_string().unwrap()
+            return plan.to_json_string().unwrap()
         }
     };
 
