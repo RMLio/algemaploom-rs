@@ -1,10 +1,24 @@
-test:
+# Unittests
+test-rust:
   image: rustdocker/rust:stable
   stage: test
   script:
     - cargo test --verbose --jobs 1
 
-build-no-bindings:
+test-java:
+  image: rustdocker/rust:stable
+  stage: test
+  script:
+    - sudo apt update
+    - sudo apt install -y openjdk-17-jdk curl maven gcc-mingw-w64
+    - rustup target add x86_64-unknown-linux-gnu
+    - rustup target add x86_64-pc-windows-gnu
+    - rustup target add x86_64-apple-darwin
+    - rustup target add aarch64-apple-darwin
+    - ./test_java.sh
+
+# Builds
+build-rust:
   image: rustdocker/rust:stable
   stage: build
   script:
@@ -15,7 +29,11 @@ build-java:
   stage: build
   script:
     - apt update
-    - apt install -y openjdk-17-jdk curl
+    - apt install -y openjdk-17-jdk curl maven gcc-mingw-w64
+    - rustup target add x86_64-unknown-linux-gnu
+    - rustup target add x86_64-pc-windows-gnu
+    - rustup target add x86_64-apple-darwin
+    - rustup target add aarch64-apple-darwin
     - ./build_java.sh
 
 build-python:

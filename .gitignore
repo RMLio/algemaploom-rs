@@ -12,3 +12,10 @@ test_resources/
 node_modules/
 src/python/ltranslator.so
 .idea/
+
+*.jar
+*.class
+src/java/algemaploom/target/
+*.so
+*.dll
+*.dylib
