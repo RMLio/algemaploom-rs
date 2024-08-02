@@ -7,7 +7,8 @@ pub mod term_map;
 
 #[derive(Debug, Clone)]
 pub struct Document {
-    pub triples_maps: Vec<TriplesMap>,
+    pub default_base_iri: Option<String>,
+    pub triples_maps:     Vec<TriplesMap>,
 }
 
 #[derive(Debug, Clone)]
