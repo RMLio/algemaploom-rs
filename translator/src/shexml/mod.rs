@@ -237,6 +237,7 @@ fn add_rename_extend_op_from_quads(
                     }
                 } else {
                     Function::Iri {
+                        base_iri: None, 
                         inner_function: subj_term_func.into(),
                     }
                 };

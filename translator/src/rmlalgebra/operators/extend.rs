@@ -16,6 +16,7 @@ use crate::OperatorTranslator;
 pub struct ExtendTranslator<'a> {
     pub tms:          Vec<&'a TermMapInfo>,
     pub variable_map: &'a HashMap<String, String>,
+    pub base_iri:     Option<String>,
 }
 
 impl<'a> OperatorTranslator<Operator> for ExtendTranslator<'a> {
@@ -26,6 +27,7 @@ impl<'a> OperatorTranslator<Operator> for ExtendTranslator<'a> {
                 extract_extend_function_from_term_map_info(
                     self.variable_map,
                     tm_info,
+                    &self.base_iri,
                 );
             extend_pairs.insert(variable, function);
         }
@@ -39,8 +41,9 @@ impl<'a> OperatorTranslator<Operator> for ExtendTranslator<'a> {
 pub fn extract_extend_function_from_term_map_info(
     variable_map: &HashMap<String, String>,
     tm_info: &TermMapInfo,
+    base_iri: &Option<String>,
 ) -> (String, Function) {
-    let func = extract_function(tm_info);
+    let func = extract_function(tm_info, base_iri);
 
     (
         variable_map.get(&tm_info.identifier).unwrap().to_string(),
@@ -48,7 +51,10 @@ pub fn extract_extend_function_from_term_map_info(
     )
 }
 
-fn extract_function(tm_info: &TermMapInfo) -> Function {
+fn extract_function(
+    tm_info: &TermMapInfo,
+    base_iri: &Option<String>,
+) -> Function {
     let term_value = tm_info.term_value.value().to_string();
     let value_function: RcExtendFunction = match tm_info.term_map_type {
         TermMapType::Constant => {
@@ -73,7 +79,10 @@ fn extract_function(tm_info: &TermMapInfo) -> Function {
                 .param_om_pairs
                 .iter()
                 .map(|(param, om)| {
-                    (param.to_string(), extract_function(&om.tm_info).into())
+                    (
+                        param.to_string(),
+                        extract_function(&om.tm_info, base_iri).into(),
+                    )
                 })
                 .collect();
 
@@ -88,6 +97,7 @@ fn extract_function(tm_info: &TermMapInfo) -> Function {
     match tm_info.term_type.unwrap() {
         sophia_api::term::TermKind::Iri => {
             Function::Iri {
+                base_iri: base_iri.clone(),
                 inner_function: Function::UriEncode {
                     inner_function: value_function,
                 }
@@ -114,6 +124,7 @@ pub fn translate_extend_pairs(
     variable_map: &HashMap<String, String>,
     sm: &SubjectMap,
     poms: &[PredicateObjectMap],
+    base_iri: &Option<String>
 ) -> HashMap<String, Function> {
     let mut tm_infos = extract_tm_infos_from_poms(poms);
     tm_infos.push(&sm.tm_info);
@@ -122,7 +133,7 @@ pub fn translate_extend_pairs(
     tm_infos
         .into_iter()
         .map(|tm_info| {
-            extract_extend_function_from_term_map_info(variable_map, tm_info)
+            extract_extend_function_from_term_map_info(variable_map, tm_info, base_iri)
         })
         .collect()
 }

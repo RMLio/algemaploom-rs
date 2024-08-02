@@ -21,6 +21,7 @@ pub fn obj_lang_datatype_function(
             })
         } else {
             Some(Function::Iri {
+                base_iri:None,
                 inner_function: obj_inner_function.into(),
             })
         }

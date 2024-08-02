@@ -307,6 +307,7 @@ pub enum Function {
         inner_function: RcExtendFunction,
     },
     Iri {
+        base_iri: Option<String>, 
         inner_function: RcExtendFunction,
     },
     Literal {
