@@ -12,7 +12,7 @@ use super::ExtractorResult;
 use crate::rml_model::Document;
 
 fn extract_base_iri(input: &str) -> Option<String> {
-    input.strip_prefix("@base").map(|e| e.to_string())
+    input.strip_prefix("@base").map(|e| e[0..e.len()-1].replace(['<', '>'], "").trim().to_string())
 }
 
 pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
@@ -65,7 +65,7 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
         let mut buf_read = BufReader::new(File::open(path)?);
         let mut input_string = String::default();
         buf_read.read_to_string(&mut input_string)?;
-        let base_iri = extract_base_iri(&input_string);
+        let base_iri = input_string.split('\n').filter_map(extract_base_iri).next();
 
         return Ok(Document {
             triples_maps,
