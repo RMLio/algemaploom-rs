@@ -44,7 +44,10 @@ fn extract_term_map_type_value(
                     ));
     }
 
-    let trip = results_query.pop().ok_or(ParseError::GenericError("Term map doesn't have rr:constant, rr:template, rr:reference, fnml:functionValue nor rr:column.".to_string()))?;
+    let trip = results_query
+        .pop()
+        .ok_or(ParseError::GenericError("Term map doesn't have rr:constant, rr:template, rr:reference, fnml:functionValue nor rr:column.".to_string()))?;
+
     let fetched_pred = trip.p();
 
     let term_map_type_res = match fetched_pred {
@@ -79,6 +82,7 @@ impl Extractor<TermMapInfo> for TermMapInfo {
 
         let mut term_type = None;
 
+        //Explicit term type casting trough rr:termtype predicate
         if let Ok(term_type_soph) =
             get_object(graph_ref, subj_ref, &term_type_pred)
         {
@@ -97,6 +101,16 @@ impl Extractor<TermMapInfo> for TermMapInfo {
                     Some(TermKind::Literal)
                 }
                 _ => None,
+            };
+        }
+
+        //Implicit term type derivation for constant-valued term maps
+        if term_map_type == TermMapType::Constant {
+            term_type = match term_value {
+                sophia_term::Term::Iri(_) => Some(TermKind::Iri),
+                sophia_term::Term::BNode(_) => Some(TermKind::BlankNode),
+                sophia_term::Term::Literal(_) => Some(TermKind::Literal),
+                sophia_term::Term::Variable(_) => None,
             };
         }
 
