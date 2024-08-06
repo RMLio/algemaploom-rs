@@ -1,11 +1,13 @@
 use std::collections::HashMap;
 
+use lazy_static::lazy_static;
 use operator::{Extend, Function, Operator, RcExtendFunction};
+use regex::Regex;
 use rml_interpreter::rml_model::term_map::{
     SubjectMap, TermMapInfo, TermMapType,
 };
 use rml_interpreter::rml_model::PredicateObjectMap;
-use sophia_api::term::TTerm;
+use sophia_api::term::{TTerm, TermKind};
 
 use crate::rmlalgebra::util::{
     extract_gm_tm_infos, extract_tm_infos_from_poms,
@@ -16,6 +18,7 @@ use crate::OperatorTranslator;
 pub struct ExtendTranslator<'a> {
     pub tms:          Vec<&'a TermMapInfo>,
     pub variable_map: &'a HashMap<String, String>,
+    pub base_iri:     Option<String>,
 }
 
 impl<'a> OperatorTranslator<Operator> for ExtendTranslator<'a> {
@@ -26,6 +29,7 @@ impl<'a> OperatorTranslator<Operator> for ExtendTranslator<'a> {
                 extract_extend_function_from_term_map_info(
                     self.variable_map,
                     tm_info,
+                    &self.base_iri,
                 );
             extend_pairs.insert(variable, function);
         }
@@ -39,8 +43,9 @@ impl<'a> OperatorTranslator<Operator> for ExtendTranslator<'a> {
 pub fn extract_extend_function_from_term_map_info(
     variable_map: &HashMap<String, String>,
     tm_info: &TermMapInfo,
+    base_iri: &Option<String>,
 ) -> (String, Function) {
-    let func = extract_function(tm_info);
+    let func = extract_function(tm_info, base_iri);
 
     (
         variable_map.get(&tm_info.identifier).unwrap().to_string(),
@@ -48,7 +53,58 @@ pub fn extract_extend_function_from_term_map_info(
     )
 }
 
-fn extract_function(tm_info: &TermMapInfo) -> Function {
+lazy_static! {
+    static ref TEMPLATE_REGEX: Regex = Regex::new(r"\{([^\\{\\}]*)\}").unwrap();
+}
+
+fn extract_template_function(
+    term_value: String,
+    term_type: &Option<TermKind>,
+) -> Function {
+    let found_variables = TEMPLATE_REGEX
+        .captures_iter(&term_value)
+        .map(|c| c.extract())
+        .map(|(_, [var])| var);
+
+    let variable_function_pairs = if *term_type == Some(TermKind::Iri) {
+        found_variables
+            .map(|var| {
+                (
+                    var.to_string(),
+                    Function::UriEncode {
+                        inner_function: Function::Reference {
+                            value: var.to_string(),
+                        }
+                        .into(),
+                    }
+                    .into(),
+                )
+            })
+            .collect()
+    } else {
+        found_variables
+            .map(|var| {
+                (
+                    var.to_string(),
+                    Function::Reference {
+                        value: var.to_string(),
+                    }
+                    .into(),
+                )
+            })
+            .collect()
+    };
+
+    Function::TemplateFunctionValue {
+        template: term_value,
+        variable_function_pairs,
+    }
+}
+
+fn extract_function(
+    tm_info: &TermMapInfo,
+    base_iri: &Option<String>,
+) -> Function {
     let term_value = tm_info.term_value.value().to_string();
     let value_function: RcExtendFunction = match tm_info.term_map_type {
         TermMapType::Constant => {
@@ -62,9 +118,7 @@ fn extract_function(tm_info: &TermMapInfo) -> Function {
             }
         }
         TermMapType::Template => {
-            Function::TemplateString {
-                value: term_value.clone(),
-            }
+            extract_template_function(term_value, &tm_info.term_type)
         }
         TermMapType::Function => {
             let fn_map = tm_info.fun_map_opt.as_ref().unwrap();
@@ -73,7 +127,10 @@ fn extract_function(tm_info: &TermMapInfo) -> Function {
                 .param_om_pairs
                 .iter()
                 .map(|(param, om)| {
-                    (param.to_string(), extract_function(&om.tm_info).into())
+                    (
+                        param.to_string(),
+                        extract_function(&om.tm_info, base_iri).into(),
+                    )
                 })
                 .collect();
 
@@ -88,10 +145,8 @@ fn extract_function(tm_info: &TermMapInfo) -> Function {
     match tm_info.term_type.unwrap() {
         sophia_api::term::TermKind::Iri => {
             Function::Iri {
-                inner_function: Function::UriEncode {
-                    inner_function: value_function,
-                }
-                .into(),
+                base_iri:       base_iri.clone(),
+                inner_function: value_function,
             }
         }
         sophia_api::term::TermKind::Literal => {
@@ -114,6 +169,7 @@ pub fn translate_extend_pairs(
     variable_map: &HashMap<String, String>,
     sm: &SubjectMap,
     poms: &[PredicateObjectMap],
+    base_iri: &Option<String>,
 ) -> HashMap<String, Function> {
     let mut tm_infos = extract_tm_infos_from_poms(poms);
     tm_infos.push(&sm.tm_info);
@@ -122,7 +178,11 @@ pub fn translate_extend_pairs(
     tm_infos
         .into_iter()
         .map(|tm_info| {
-            extract_extend_function_from_term_map_info(variable_map, tm_info)
+            extract_extend_function_from_term_map_info(
+                variable_map,
+                tm_info,
+                base_iri,
+            )
         })
         .collect()
 }

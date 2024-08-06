@@ -4,13 +4,31 @@ test:
   script:
     - cargo test --verbose --jobs 1
 
-build:
+build-no-bindings:
+  image: rustdocker/rust:stable
+  stage: build
+  script:
+    - cargo build
+
+build-java:
   image: rustdocker/rust:stable
   stage: build
   script:
     - apt update
     - apt install -y openjdk-17-jdk curl
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash - 
-    - sudo apt-get install -y nodejs
-    - ./build.sh
+    - ./build_java.sh
 
+build-python:
+  image: rustdocker/rust:stable
+  stage: build
+  script:
+    - ./build_python.sh
+
+build-nodejs:
+  image: rustdocker/rust:stable
+  stage: build
+  script:
+    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+    - apt update
+    - sudo apt-get install -y nodejs
+    - ./build_nodejs.sh

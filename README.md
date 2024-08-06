@@ -96,6 +96,14 @@ The following features are not supported in translation yet:
 4) Functions 
 5) Conditionals
 
+## Bindings
+AlgeMapLoom provides bindings for Java, Python and Node.js.
+These can be enabled with the features `jni`, `pyo3` and `neon` respectively.
+
+If you build from source, you can run the `build_java.sh`, `build_python.sh` and `build_nodejs.sh`
+scripts respectively.
+
+For usage, check out the [src/java](src/java), [src/python](src/python), and [src/nodejs](src/nodejs) folders.
 
 
 ## Acknowledgement

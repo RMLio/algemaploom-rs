@@ -33,6 +33,7 @@ pub struct OptimizedRMLDocumentTranslator;
 
 impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
     fn translate_to_plan(doc: Document) -> crate::LanguageTranslateResult {
+        let base_iri = doc.default_base_iri.clone(); 
         let mut plan = Plan::<()>::new();
 
         let tm_projected_pairs_res: Result<Vec<_>, PlanError> = doc
@@ -92,6 +93,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                     sm_ref,
                     &search_map,
                     plan,
+                    &base_iri
                 )?;
             }
 
@@ -101,6 +103,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                     sm_ref,
                     &search_map,
                     plan,
+                    &base_iri
                 )?;
             }
             Ok::<(), PlanError>(())
@@ -110,7 +113,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
             let sm_ref = &tm.subject_map;
             let poms = tm.po_maps.clone();
 
-            add_non_join_related_ops(&poms, sm_ref, &search_map, plan)?;
+            add_non_join_related_ops(&poms, sm_ref, &search_map, plan, &base_iri)?;
 
             Ok::<(), PlanError>(())
         })?;
@@ -151,6 +154,7 @@ fn add_non_join_related_ops(
     sm: &SubjectMap,
     search_map: &SearchMap,
     plan: &RcRefCellPlan<Processed>,
+    base_iri: &Option<String>, 
 ) -> Result<(), PlanError> {
     if no_join_poms.is_empty() & sm.classes.is_empty() {
         return Ok(());
@@ -164,7 +168,7 @@ fn add_non_join_related_ops(
     tms.push(&sm.tm_info);
     tms.extend(extract_gm_tm_infos(sm, no_join_poms));
 
-    let extend_translator = ExtendTranslator { tms, variable_map };
+    let extend_translator = ExtendTranslator { tms, variable_map, base_iri: base_iri.clone() };
     let extend_op = extend_translator.translate();
     let extended_plan = plan.apply(&extend_op, "ExtendOp")?;
     let mut next_plan = extended_plan;
@@ -206,6 +210,7 @@ fn add_join_related_ops(
     sm: &SubjectMap,
     search_map: &SearchMap,
     plan: &RcRefCellPlan<Processed>,
+    base_iri: &Option<String>
 ) -> Result<(), PlanError> {
     // HashMap pairing the attribute with the function generated from
     // PTM's subject map
@@ -270,6 +275,7 @@ fn add_join_related_ops(
                 extract_extend_function_from_term_map_info(
                     variable_map,
                     &ptm_sm_info,
+                    base_iri
                 );
             let om_extend_attr =
                 variable_map.get(&om.tm_info.identifier).unwrap().clone();
@@ -281,7 +287,7 @@ fn add_join_related_ops(
             }];
 
             let mut extend_pairs =
-                translate_extend_pairs(variable_map, sm, &pom_with_joined_ptm);
+                translate_extend_pairs(variable_map, sm, &pom_with_joined_ptm, base_iri);
 
             extend_pairs.insert(om_extend_attr, ptm_sub_function);
 
@@ -521,12 +527,13 @@ mod tests {
 
         let variable_map = &generate_variable_map(&Document {
             triples_maps: triples_map_vec,
+            default_base_iri: None, 
         });
         let mut tms = vec![&triples_map.subject_map.tm_info];
         let tms_poms = extract_tm_infos_from_poms(&triples_map.po_maps);
         tms.extend(tms_poms);
 
-        let extend_translator = ExtendTranslator { tms, variable_map };
+        let extend_translator = ExtendTranslator { tms, variable_map, base_iri: None };
         let extend_op = extend_translator.translate();
         println!("{:#?}", extend_op);
         Ok(())
