@@ -205,9 +205,9 @@ impl<T> Plan<T> {
 
     pub fn to_string(&self) -> Result<String> {
         let graph = &*self.graph.borrow();
-        let dot_string = format!("{:?}", Dot::with_config(graph, &[]));
+        let json_string = serde_json::to_string(&graph).unwrap();
 
-        Ok(dot_string)
+        Ok(json_string)
     }
 }
 
