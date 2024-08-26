@@ -8,6 +8,7 @@ use crate::shexml::{ShExMLFileHandler, ShExMLStringHandler};
 pub fn process_one_file(
     file_path: PathBuf,
     output_prefix: Option<String>,
+    json_only_flag: bool, 
 ) {
     let handlers: Vec<Box<dyn FileTranslatorHandler>> = vec![Box::new(RMLFileHandler), Box::new(ShExMLFileHandler)];
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
@@ -36,6 +37,7 @@ pub fn process_one_file(
                 output_prefix.clone().unwrap(),
                 &mut plan,
                 file_path.to_string_lossy(),
+                json_only_flag
             ) {
                 error!(
                     "Errored while serializing mapping plan for: {}",

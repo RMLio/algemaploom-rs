@@ -27,6 +27,7 @@ impl Cli {
             .subcommand(Command::new("stdin")
                          .about("translate all input from stdin"))
             .arg(arg!(-d --debug ...  "Turns on debugging and logging to file"))
+            .arg(arg!(-j --json ... "Only generate dot files in JSON format"))
             .arg(arg!(-o --outputFolderSuffix <OUTPUT_FOLDER_SUFFIX> "The output folder suffix"));
 
         Self { cmd }
