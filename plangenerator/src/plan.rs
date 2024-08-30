@@ -196,7 +196,7 @@ impl<T> Plan<T> {
         self.write_fmt(path, &|dot| format!("{:?}", dot))?;
         Ok(())
     }
-    
+
     pub fn write_json(&self, path: PathBuf) -> Result<()> {
         let graph = &*self.graph.borrow();
         let json_string = serde_json::to_string(&graph).unwrap();
@@ -272,6 +272,7 @@ impl Plan<Processed> {
 
         let plan_edge = PlanEdge {
             fragment: fragment_str.to_string(),
+            ..Default::default()
         };
 
         let new_node_idx = self.add_node_with_edge(plan_node, plan_edge);
@@ -311,6 +312,7 @@ impl Plan<Processed> {
 
         let edge = PlanEdge {
             fragment: fragmenter.from.clone(),
+            ..Default::default()
         };
         let node_idx = self.add_node_with_edge(fragment_node, edge);
 
@@ -340,6 +342,7 @@ impl Plan<Processed> {
 
         let plan_edge = PlanEdge {
             fragment: fragment_str.to_string(),
+            ..Default::default()
         };
 
         let node_idx = self.add_node_with_edge(plan_node, plan_edge);
@@ -432,7 +435,8 @@ impl AliasedJoinedPlan<Processed> {
 
             let left_node = left_plan.last_node_idx.unwrap();
             let left_edge = PlanEdge {
-                fragment: fragment_str.to_string(),
+                fragment:  fragment_str.to_string(),
+                direction: EdgeDirection::Left,
             };
 
             graph.add_edge(left_node, node_idx, left_edge);
@@ -445,14 +449,16 @@ impl AliasedJoinedPlan<Processed> {
             if let Ok(plan) = self.right_plan.try_borrow_mut() {
                 let right_node = plan.last_node_idx.unwrap();
                 let right_edge = PlanEdge {
-                    fragment: fragment_str.to_string(),
+                    fragment:  fragment_str.to_string(),
+                    direction: EdgeDirection::Right,
                 };
 
                 graph.add_edge(right_node, node_idx, right_edge);
             } else {
                 let right_node = left_plan.last_node_idx.unwrap();
                 let right_edge = PlanEdge {
-                    fragment: fragment_str.to_string(),
+                    fragment:  fragment_str.to_string(),
+                    direction: EdgeDirection::Right,
                 };
 
                 graph.add_edge(right_node, node_idx, right_edge);
@@ -528,7 +534,7 @@ impl WhereByPlan<Processed> {
         let left_right_attr_pairs: Vec<(String, String)> = left_attributes
             .clone()
             .into_iter()
-            .zip(right_attributes.clone().into_iter())
+            .zip(right_attributes.clone())
             .collect();
 
         // TODO: Enable specification of join type and predicate type  <12-03-24, yourname> //
@@ -564,6 +570,7 @@ impl Plan<Serialized> {
 
         let plan_edge = PlanEdge {
             fragment: self.get_fragment_str().to_string(),
+            ..Default::default()
         };
         graph.add_edge(prev_node_idx, node_idx, plan_edge);
 
@@ -573,13 +580,22 @@ impl Plan<Serialized> {
 
 #[derive(Clone, Serialize)]
 pub struct PlanEdge {
-    pub fragment: String,
+    pub fragment:  String,
+    pub direction: EdgeDirection,
+}
+
+#[derive(Debug, Clone, Serialize)]
+pub enum EdgeDirection {
+    Left,
+    Right,
+    Center,
 }
 
 impl Default for PlanEdge {
     fn default() -> Self {
         Self {
-            fragment: DEFAULT_FRAGMENT.to_string(),
+            fragment:  DEFAULT_FRAGMENT.to_string(),
+            direction: EdgeDirection::Center,
         }
     }
 }
