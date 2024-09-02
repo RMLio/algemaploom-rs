@@ -455,6 +455,8 @@ impl AliasedJoinedPlan<Processed> {
 
                 graph.add_edge(right_node, node_idx, right_edge);
             } else {
+                // This case happens when left_plan and right_plan are the same 
+                // (self-join situation)
                 let right_node = left_plan.last_node_idx.unwrap();
                 let right_edge = PlanEdge {
                     fragment:  fragment_str.to_string(),
