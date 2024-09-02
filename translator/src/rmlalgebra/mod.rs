@@ -36,6 +36,8 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
         let base_iri = doc.default_base_iri.clone(); 
         let mut plan = Plan::<()>::new();
 
+        //For each triples maps, create a plan with source and projection operator
+        //applied 
         let tm_projected_pairs_res: Result<Vec<_>, PlanError> = doc
             .triples_maps
             .iter()
@@ -74,15 +76,23 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
         };
         // Finish search dictionaries instantiations
 
+
+        //Partition the previously generated plans, with triples maps, 
+        //to those with parent triples map 
+        //and those without (for handling joins)
         let (ptm_tm_plan_pairs, noptm_tm_plan_pairs): (Vec<_>, Vec<_>) =
             tm_projected_pairs
                 .into_iter()
                 .partition(|(tm, _)| tm.contains_ptm());
 
+
+        // Handle triples map with joins
         ptm_tm_plan_pairs.iter().try_for_each(|(tm, plan)| {
             let sm_ref = &tm.subject_map;
             let poms = tm.po_maps.clone();
 
+
+            //Further separate POMs involved in joins and those uninvolved in joins
             let (joined_poms, no_join_poms): (Vec<_>, Vec<_>) =
                 partition_pom_join_nonjoin(poms);
 
@@ -109,6 +119,8 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
             Ok::<(), PlanError>(())
         })?;
 
+
+        // Simple case of triples maps without parent triples maps
         noptm_tm_plan_pairs.iter().try_for_each(|(tm, plan)| {
             let sm_ref = &tm.subject_map;
             let poms = tm.po_maps.clone();
