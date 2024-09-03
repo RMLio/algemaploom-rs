@@ -185,10 +185,15 @@ fn add_non_join_related_ops(
     let extended_plan = plan.apply(&extend_op, "ExtendOp")?;
     let mut next_plan = extended_plan;
 
+    // Generate quad patterns and group them by the logical targets using the 
+    // informations from the different term maps (subject, predicate, object)
     let lt_quads_map = &generate_lt_quads_from_spo(sm, no_join_poms);
     let fragment_translator = FragmentTranslator { lt_quads_map };
     let fragmenter = fragment_translator.translate();
 
+    // Add the fragmenter operator which fragments/broadcast the incoming 
+    // stream of mapping tuples to N streams of targets/serializer based 
+    // on N logical targets
     let mut lt_id_vec = vec![lt_quads_map.keys().next().unwrap().clone()];
     if let Some(fragmenter) = fragmenter {
         next_plan = next_plan.fragment(fragmenter.clone())?;
