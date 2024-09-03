@@ -33,11 +33,11 @@ pub struct OptimizedRMLDocumentTranslator;
 
 impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
     fn translate_to_plan(doc: Document) -> crate::LanguageTranslateResult {
-        let base_iri = doc.default_base_iri.clone(); 
+        let base_iri = doc.default_base_iri.clone();
         let mut plan = Plan::<()>::new();
 
         //For each triples maps, create a plan with source and projection operator
-        //applied 
+        //applied
         let tm_projected_pairs_res: Result<Vec<_>, PlanError> = doc
             .triples_maps
             .iter()
@@ -76,21 +76,18 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
         };
         // Finish search dictionaries instantiations
 
-
-        //Partition the previously generated plans, with triples maps, 
-        //to those with parent triples map 
+        //Partition the previously generated plans, with triples maps,
+        //to those with parent triples map
         //and those without (for handling joins)
         let (ptm_tm_plan_pairs, noptm_tm_plan_pairs): (Vec<_>, Vec<_>) =
             tm_projected_pairs
                 .into_iter()
                 .partition(|(tm, _)| tm.contains_ptm());
 
-
         // Handle triples map with joins
         ptm_tm_plan_pairs.iter().try_for_each(|(tm, plan)| {
             let sm_ref = &tm.subject_map;
             let poms = tm.po_maps.clone();
-
 
             //Further separate POMs involved in joins and those uninvolved in joins
             let (joined_poms, no_join_poms): (Vec<_>, Vec<_>) =
@@ -103,7 +100,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                     sm_ref,
                     &search_map,
                     plan,
-                    &base_iri
+                    &base_iri,
                 )?;
             }
 
@@ -113,19 +110,24 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                     sm_ref,
                     &search_map,
                     plan,
-                    &base_iri
+                    &base_iri,
                 )?;
             }
             Ok::<(), PlanError>(())
         })?;
-
 
         // Simple case of triples maps without parent triples maps
         noptm_tm_plan_pairs.iter().try_for_each(|(tm, plan)| {
             let sm_ref = &tm.subject_map;
             let poms = tm.po_maps.clone();
 
-            add_non_join_related_ops(&poms, sm_ref, &search_map, plan, &base_iri)?;
+            add_non_join_related_ops(
+                &poms,
+                sm_ref,
+                &search_map,
+                plan,
+                &base_iri,
+            )?;
 
             Ok::<(), PlanError>(())
         })?;
@@ -166,7 +168,7 @@ fn add_non_join_related_ops(
     sm: &SubjectMap,
     search_map: &SearchMap,
     plan: &RcRefCellPlan<Processed>,
-    base_iri: &Option<String>, 
+    base_iri: &Option<String>,
 ) -> Result<(), PlanError> {
     if no_join_poms.is_empty() & sm.classes.is_empty() {
         return Ok(());
@@ -180,19 +182,23 @@ fn add_non_join_related_ops(
     tms.push(&sm.tm_info);
     tms.extend(extract_gm_tm_infos(sm, no_join_poms));
 
-    let extend_translator = ExtendTranslator { tms, variable_map, base_iri: base_iri.clone() };
+    let extend_translator = ExtendTranslator {
+        tms,
+        variable_map,
+        base_iri: base_iri.clone(),
+    };
     let extend_op = extend_translator.translate();
     let extended_plan = plan.apply(&extend_op, "ExtendOp")?;
     let mut next_plan = extended_plan;
 
-    // Generate quad patterns and group them by the logical targets using the 
+    // Generate quad patterns and group them by the logical targets using the
     // informations from the different term maps (subject, predicate, object)
     let lt_quads_map = &generate_lt_quads_from_spo(sm, no_join_poms);
     let fragment_translator = FragmentTranslator { lt_quads_map };
     let fragmenter = fragment_translator.translate();
 
-    // Add the fragmenter operator which fragments/broadcast the incoming 
-    // stream of mapping tuples to N streams of targets/serializer based 
+    // Add the fragmenter operator which fragments/broadcast the incoming
+    // stream of mapping tuples to N streams of targets/serializer based
     // on N logical targets
     let mut lt_id_vec = vec![lt_quads_map.keys().next().unwrap().clone()];
     if let Some(fragmenter) = fragmenter {
@@ -227,7 +233,7 @@ fn add_join_related_ops(
     sm: &SubjectMap,
     search_map: &SearchMap,
     plan: &RcRefCellPlan<Processed>,
-    base_iri: &Option<String>
+    base_iri: &Option<String>,
 ) -> Result<(), PlanError> {
     // HashMap pairing the attribute with the function generated from
     // PTM's subject map
@@ -240,7 +246,7 @@ fn add_join_related_ops(
         let pms = &pom.predicate_maps;
         let oms = &pom.object_maps;
 
-        for (_om_idx, om) in oms.iter().enumerate() {
+        for om in oms.iter() {
             let ptm_iri = om
                 .parent_tm
                 .as_ref()
@@ -250,6 +256,7 @@ fn add_join_related_ops(
                 )))?
                 .to_string();
 
+            //Search for the plan associated with the parent triples map's IRI
             let (ptm, other_plan) = search_tm_plan_map.get(&ptm_iri).ok_or(
                 PlanError::GenericError(format!(
                     "Parent triples map IRI is wrong: {}",
@@ -257,7 +264,7 @@ fn add_join_related_ops(
                 )),
             )?;
 
-            //Preparing plan for add join operator
+            //Preparing plan for adding the join operator
             let ptm_variable = variable_map.get(&ptm.identifier).unwrap();
             let ptm_alias =
                 format!("join_{}", &ptm_variable[ptm_variable.len() - 1..]);
@@ -292,7 +299,7 @@ fn add_join_related_ops(
                 extract_extend_function_from_term_map_info(
                     variable_map,
                     &ptm_sm_info,
-                    base_iri
+                    base_iri,
                 );
             let om_extend_attr =
                 variable_map.get(&om.tm_info.identifier).unwrap().clone();
@@ -303,8 +310,12 @@ fn add_join_related_ops(
                 graph_maps:     pom.graph_maps.clone(),
             }];
 
-            let mut extend_pairs =
-                translate_extend_pairs(variable_map, sm, &pom_with_joined_ptm, base_iri);
+            let mut extend_pairs = translate_extend_pairs(
+                variable_map,
+                sm,
+                &pom_with_joined_ptm,
+                base_iri,
+            );
 
             extend_pairs.insert(om_extend_attr, ptm_sub_function);
 
@@ -334,6 +345,7 @@ fn add_join_related_ops(
 
     Ok(())
 }
+
 fn translate_source_op(tm: &TriplesMap) -> Source {
     let reference_formulation =
         match tm.logical_source.reference_formulation.value().to_string() {
@@ -364,7 +376,7 @@ fn translate_source_op(tm: &TriplesMap) -> Source {
         reference: tm.logical_source.iterator.clone(),
         reference_formulation,
         fields,
-        alias: None, 
+        alias: None,
     };
 
     let config = tm.logical_source.source.config.clone();
@@ -543,14 +555,18 @@ mod tests {
         );
 
         let variable_map = &generate_variable_map(&Document {
-            triples_maps: triples_map_vec,
-            default_base_iri: None, 
+            triples_maps:     triples_map_vec,
+            default_base_iri: None,
         });
         let mut tms = vec![&triples_map.subject_map.tm_info];
         let tms_poms = extract_tm_infos_from_poms(&triples_map.po_maps);
         tms.extend(tms_poms);
 
-        let extend_translator = ExtendTranslator { tms, variable_map, base_iri: None };
+        let extend_translator = ExtendTranslator {
+            tms,
+            variable_map,
+            base_iri: None,
+        };
         let extend_op = extend_translator.translate();
         println!("{:#?}", extend_op);
         Ok(())
