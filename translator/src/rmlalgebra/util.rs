@@ -61,21 +61,21 @@ pub fn extract_references_in_tm(tm: &TriplesMap) -> HashSet<String> {
     extract_attributes_in_sm_poms(&tm.subject_map, &tm.po_maps)
 }
 
-pub fn extract_gm_tm_infos<'a>(
+pub fn extract_tm_infos_from_tm(tm: &TriplesMap) -> Vec<&TermMapInfo> {
+    extract_tm_infos_from_sm_poms(&tm.subject_map, &tm.po_maps)
+}
+
+pub fn extract_tm_infos_from_sm_poms<'a>(
     sm: &'a SubjectMap,
     poms: &'a [PredicateObjectMap],
 ) -> Vec<&'a TermMapInfo> {
-    let mut result = vec![];
-
-    result.extend(sm.graph_maps.iter().map(|gm| &gm.tm_info));
-
-    poms.iter().for_each(|pom| {
-        result.extend(pom.predicate_maps.iter().map(|pm| &pm.tm_info));
-        result.extend(pom.object_maps.iter().map(|om| &om.tm_info));
-    });
-
-    result
+    let mut pom_tm_infos = extract_tm_infos_from_poms(poms); 
+    let sm_gm_infos = sm.graph_maps.iter().map(|gm| &gm.tm_info); 
+    pom_tm_infos.extend(sm_gm_infos); 
+    pom_tm_infos.push(&sm.tm_info); 
+    pom_tm_infos
 }
+
 
 pub fn extract_tm_infos_from_poms(
     poms: &[PredicateObjectMap],
@@ -85,10 +85,24 @@ pub fn extract_tm_infos_from_poms(
             let mut tm_infos: Vec<_> =
                 pom.predicate_maps.iter().map(|pm| &pm.tm_info).collect();
             let om_infos = pom.object_maps.iter().map(|om| &om.tm_info);
+            tm_infos.extend(om_infos);
 
             let gm_infos = pom.graph_maps.iter().map(|gm| &gm.tm_info);
-            tm_infos.extend(om_infos);
-            tm_infos.extend(gm_infos);
+            let chained_gm_infos = gm_infos.chain(
+                pom.object_maps
+                    .iter()
+                    .flat_map(|om| om.graph_maps.iter())
+                    .map(|gm| &gm.tm_info),
+            );
+
+            let chained_gm_infos = chained_gm_infos.chain(
+                pom.predicate_maps
+                    .iter()
+                    .flat_map(|pm| pm.graph_maps.iter())
+                    .map(|gm| &gm.tm_info),
+            );
+
+            tm_infos.extend(chained_gm_infos);
             tm_infos
         })
         .collect()

@@ -13,12 +13,15 @@ use plangenerator::error::PlanError;
 use plangenerator::plan::{join, Plan, Processed, RcRefCellPlan};
 use rml_interpreter::rml_model::term_map::SubjectMap;
 use rml_interpreter::rml_model::{Document, PredicateObjectMap, TriplesMap};
+use sophia_api::term::TTerm;
+use util::extract_tm_infos_from_sm_poms;
+use vocab::ToString;
 
 use self::operators::extend::*;
 use self::operators::fragment::FragmentTranslator;
 use self::operators::serializer::{self, translate_serializer_op};
 use self::util::{
-    extract_gm_tm_infos, extract_tm_infos_from_poms, generate_lt_quads_from_spo,
+    extract_ptm_conditions_attributes, generate_lt_quads_from_spo,
 };
 use crate::rmlalgebra::types::SearchMap;
 use crate::rmlalgebra::util::{
@@ -186,9 +189,7 @@ fn add_non_join_related_ops(
     .translate();
     let mut next_plan = plan.apply(&projection, "ProjectionOp")?;
 
-    let mut tms = extract_tm_infos_from_poms(no_join_poms);
-    tms.push(&sm.tm_info);
-    tms.extend(extract_gm_tm_infos(sm, no_join_poms));
+    let tms = extract_tm_infos_from_sm_poms(sm, no_join_poms);
 
     let extend_translator = ExtendTranslator {
         tms,

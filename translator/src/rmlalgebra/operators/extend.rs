@@ -9,9 +9,7 @@ use rml_interpreter::rml_model::term_map::{
 use rml_interpreter::rml_model::PredicateObjectMap;
 use sophia_api::term::{TTerm, TermKind};
 
-use crate::rmlalgebra::util::{
-    extract_gm_tm_infos, extract_tm_infos_from_poms,
-};
+use crate::rmlalgebra::util::extract_tm_infos_from_sm_poms;
 use crate::OperatorTranslator;
 
 #[derive(Debug, Clone)]
@@ -171,9 +169,8 @@ pub fn translate_extend_pairs(
     poms: &[PredicateObjectMap],
     base_iri: &Option<String>,
 ) -> HashMap<String, Function> {
-    let mut tm_infos = extract_tm_infos_from_poms(poms);
-    tm_infos.push(&sm.tm_info);
-    tm_infos.extend(extract_gm_tm_infos(sm, poms));
+
+    let tm_infos = extract_tm_infos_from_sm_poms(sm, poms); 
 
     tm_infos
         .into_iter()
