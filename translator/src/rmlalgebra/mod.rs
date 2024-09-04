@@ -6,22 +6,19 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-use operator::formats::ReferenceFormulation;
-use operator::{Extend, Field, Iterator, Operator, Projection, Source};
+use operator::{Extend, Operator};
+use operators::projection::ProjectionTranslator;
+use operators::source::SourceOpTranslator;
 use plangenerator::error::PlanError;
 use plangenerator::plan::{join, Plan, Processed, RcRefCellPlan};
-use rml_interpreter::rml_model::source_target::SourceType;
 use rml_interpreter::rml_model::term_map::SubjectMap;
 use rml_interpreter::rml_model::{Document, PredicateObjectMap, TriplesMap};
-use sophia_api::term::TTerm;
-use vocab::ToString;
 
 use self::operators::extend::*;
 use self::operators::fragment::FragmentTranslator;
 use self::operators::serializer::{self, translate_serializer_op};
 use self::util::{
-    extract_gm_tm_infos, extract_ptm_conditions_attributes,
-    extract_tm_infos_from_poms, generate_lt_quads_from_spo,
+    extract_gm_tm_infos, extract_tm_infos_from_poms, generate_lt_quads_from_spo,
 };
 use crate::rmlalgebra::types::SearchMap;
 use crate::rmlalgebra::util::{
@@ -36,20 +33,19 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
         let base_iri = doc.default_base_iri.clone();
         let mut plan = Plan::<()>::new();
 
-        //For each triples maps, create a plan with source and projection operator
-        //applied
-        let tm_projected_pairs_res: Result<Vec<_>, PlanError> = doc
+        //For each triples maps, create a plan with source operator applied
+        let tm_sourced_pairs_res: Result<Vec<_>, PlanError> = doc
             .triples_maps
             .iter()
             .map(|tm| {
-                let source_op = translate_source_op(tm);
-                let projection_op =
-                    translate_projection_op(tm, doc.triples_maps.iter());
+                let source_op = SourceOpTranslator { tm }.translate();
+                //  let projection_op =
+                //      translate_projection_op(tm, doc.triples_maps.iter());
                 let result = (
                     tm,
                     Rc::new(RefCell::new(
-                        plan.source(source_op)
-                            .apply(&projection_op, "Projection")?,
+                        plan.source(source_op),
+                        //              .apply(&projection_op, "Projection")?,
                     )),
                 );
 
@@ -61,8 +57,8 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
         let variable_map = generate_variable_map(&doc);
         let target_map = generate_logtarget_map(&doc);
         let lt_id_quad_map = generate_lt_quads_from_doc(&doc);
-        let tm_projected_pairs = tm_projected_pairs_res?;
-        let tm_rccellplan_map: HashMap<_, _> = tm_projected_pairs
+        let tm_sourced_pairs = tm_sourced_pairs_res?;
+        let tm_rccellplan_map: HashMap<_, _> = tm_sourced_pairs
             .clone()
             .into_iter()
             .map(|(tm, rccellplan)| (tm.identifier.clone(), (tm, rccellplan)))
@@ -80,7 +76,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
         //to those with parent triples map
         //and those without (for handling joins)
         let (ptm_tm_plan_pairs, noptm_tm_plan_pairs): (Vec<_>, Vec<_>) =
-            tm_projected_pairs
+            tm_sourced_pairs
                 .into_iter()
                 .partition(|(tm, _)| tm.contains_ptm());
 
@@ -106,6 +102,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
 
             if !no_join_poms.is_empty() {
                 add_non_join_related_ops(
+                    &tm.identifier,
                     &no_join_poms,
                     sm_ref,
                     &search_map,
@@ -122,6 +119,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
             let poms = tm.po_maps.clone();
 
             add_non_join_related_ops(
+                &tm.identifier,
                 &poms,
                 sm_ref,
                 &search_map,
@@ -164,6 +162,7 @@ fn partition_pom_join_nonjoin(
 }
 
 fn add_non_join_related_ops(
+    tm_iri: &str,
     no_join_poms: &[PredicateObjectMap],
     sm: &SubjectMap,
     search_map: &SearchMap,
@@ -178,6 +177,15 @@ fn add_non_join_related_ops(
     let target_map = &search_map.target_map;
     let mut plan = plan.borrow_mut();
 
+    let projection = ProjectionTranslator {
+        tm_iri,
+        sm,
+        poms: no_join_poms,
+        search_map,
+    }
+    .translate();
+    let mut next_plan = plan.apply(&projection, "ProjectionOp")?;
+
     let mut tms = extract_tm_infos_from_poms(no_join_poms);
     tms.push(&sm.tm_info);
     tms.extend(extract_gm_tm_infos(sm, no_join_poms));
@@ -188,8 +196,7 @@ fn add_non_join_related_ops(
         base_iri: base_iri.clone(),
     };
     let extend_op = extend_translator.translate();
-    let extended_plan = plan.apply(&extend_op, "ExtendOp")?;
-    let mut next_plan = extended_plan;
+    next_plan = next_plan.apply(&extend_op, "ExtendOp")?;
 
     // Generate quad patterns and group them by the logical targets using the
     // informations from the different term maps (subject, predicate, object)
@@ -268,15 +275,37 @@ fn add_join_related_ops(
             let ptm_variable = variable_map.get(&ptm.identifier).unwrap();
             let ptm_alias =
                 format!("join_{}", &ptm_variable[ptm_variable.len() - 1..]);
-            let mut aliased_plan =
-                join(Rc::clone(plan), Rc::clone(other_plan))?
-                    .alias(&ptm_alias)?;
 
             //Check for appropriate join type and add them to the plan
             let mut joined_plan: Plan<Processed>;
+            let pom_with_joined_ptm = vec![PredicateObjectMap {
+                predicate_maps: pms.clone(),
+                object_maps:    [om.clone()].to_vec(),
+                graph_maps:     pom.graph_maps.clone(),
+            }];
 
             let join_cond_opt = om.join_condition.as_ref();
             if let Some(join_cond) = join_cond_opt {
+                let mut aliased_plan =
+                    join(Rc::clone(plan), Rc::clone(other_plan))?
+                        .alias(&ptm_alias)?;
+
+                let left_projection = ProjectionTranslator {
+                    tm_iri: &tm.identifier,
+                    sm,
+                    poms: &pom_with_joined_ptm,
+                    search_map,
+                    child_tm_iri: None, 
+                }.translate();
+
+                let right_projection = ProjectionTranslator {
+                    tm_iri: &ptm.identifier,
+                    sm: &ptm.subject_map,
+                    poms: &vec![],
+                    search_map,
+                    child_tm_iri: Some(&tm.identifier), 
+                }.translate();
+
                 let child_attributes = &join_cond.child_attributes;
                 let parent_attributes = &join_cond.parent_attributes;
 
@@ -284,8 +313,14 @@ fn add_join_related_ops(
                     .where_by(child_attributes.clone())?
                     .compared_to(parent_attributes.clone())?;
             } else if tm.logical_source == ptm.logical_source {
+                let mut aliased_plan =
+                    join(Rc::clone(plan), Rc::clone(other_plan))?
+                        .alias(&ptm_alias)?;
                 joined_plan = aliased_plan.natural_join()?;
             } else {
+                let mut aliased_plan =
+                    join(Rc::clone(plan), Rc::clone(other_plan))?
+                        .alias(&ptm_alias)?;
                 joined_plan = aliased_plan.cross_join()?;
             }
 
@@ -303,12 +338,6 @@ fn add_join_related_ops(
                 );
             let om_extend_attr =
                 variable_map.get(&om.tm_info.identifier).unwrap().clone();
-
-            let pom_with_joined_ptm = vec![PredicateObjectMap {
-                predicate_maps: pms.clone(),
-                object_maps:    [om.clone()].to_vec(),
-                graph_maps:     pom.graph_maps.clone(),
-            }];
 
             let mut extend_pairs = translate_extend_pairs(
                 variable_map,
@@ -344,122 +373,6 @@ fn add_join_related_ops(
     }
 
     Ok(())
-}
-
-fn translate_source_op(tm: &TriplesMap) -> Source {
-    let reference_formulation =
-        match tm.logical_source.reference_formulation.value().to_string() {
-            iri if iri == vocab::query::CLASS::JSONPATH.to_string() => {
-                ReferenceFormulation::JSONPath
-            }
-            iri if iri == vocab::query::CLASS::XPATH.to_string() => {
-                ReferenceFormulation::XMLPath
-            }
-            _ => ReferenceFormulation::CSVRows,
-        };
-
-    let mut fields = Vec::new();
-    if reference_formulation != ReferenceFormulation::CSVRows {
-        let references = extract_references_in_tm(tm);
-
-        fields.extend(references.into_iter().map(|reference| {
-            Field {
-                alias:                 reference.clone(),
-                reference:             reference.clone(),
-                reference_formulation: reference_formulation.clone(),
-                inner_fields:          vec![],
-            }
-        }));
-    }
-
-    let root_iterator = Iterator {
-        reference: tm.logical_source.iterator.clone(),
-        reference_formulation,
-        fields,
-        alias: None,
-    };
-
-    let config = tm.logical_source.source.config.clone();
-    let source_type = match tm.logical_source.source.source_type {
-        SourceType::CSVW => operator::IOType::File,
-        SourceType::FileInput => operator::IOType::File,
-    };
-
-    Source {
-        config,
-        source_type,
-        root_iterator,
-    }
-}
-
-fn translate_projection_op<'a>(
-    tm: &'a TriplesMap,
-    all_tms: impl std::iter::Iterator<Item = &'a TriplesMap>,
-) -> Operator {
-    let tm_identifier = &tm.identifier;
-    let other_related_tms = all_tms
-        .filter(|tm| &tm.identifier != tm_identifier && tm.contains_ptm());
-    let jc_attributes =
-        extract_ptm_conditions_attributes(other_related_tms, tm_identifier);
-
-    let mut projection_attributes = extract_references_in_tm(tm);
-
-    projection_attributes.extend(jc_attributes);
-
-    Operator::ProjectOp {
-        config: Projection {
-            projection_attributes,
-        },
-    }
-}
-
-fn extract_references_in_tm(tm: &TriplesMap) -> HashSet<String> {
-    let mut projection_attributes = tm.subject_map.tm_info.get_attributes();
-
-    let po_attributes: HashSet<_> = tm
-        .po_maps
-        .iter()
-        .flat_map(|pom| {
-            let om_attrs = pom.object_maps.iter().flat_map(|om| {
-                let om_gm_attrs = om
-                    .graph_maps
-                    .iter()
-                    .flat_map(|gm| gm.tm_info.get_attributes());
-
-                let attrs = if let Some(join_cond) = &om.join_condition {
-                    let mut child_attr = join_cond.child_attributes.clone();
-                    let mut parent_attr = join_cond.parent_attributes.clone();
-                    child_attr.append(&mut parent_attr);
-                    child_attr.into_iter().collect()
-                } else {
-                    om.tm_info.get_attributes()
-                };
-
-                attrs.into_iter().chain(om_gm_attrs)
-            });
-
-            let pm_attrs = pom.predicate_maps.iter().flat_map(|pm| {
-                let attrs = pm.tm_info.get_attributes();
-                let pm_om_attrs = pm
-                    .graph_maps
-                    .iter()
-                    .flat_map(|gm| gm.tm_info.get_attributes());
-
-                attrs.into_iter().chain(pm_om_attrs)
-            });
-
-            let gm_attrs = pom
-                .graph_maps
-                .iter()
-                .flat_map(|gm| gm.tm_info.get_attributes());
-
-            om_attrs.chain(pm_attrs).chain(gm_attrs)
-        })
-        .collect();
-
-    // Subject map's attributes alread added to projection_attributes hashset
-    projection_attributes.extend(po_attributes);
-    projection_attributes
 }
 
 #[cfg(test)]

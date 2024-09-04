@@ -8,35 +8,57 @@ use rml_interpreter::rml_model::{Document, PredicateObjectMap, TriplesMap};
 
 use super::types::{Quad, RefPOM, Triple};
 
-pub fn extract_ptm_conditions_attributes<'a>(
-    tms: impl std::iter::Iterator<Item = &'a TriplesMap>,
-    target_ptm: &'a str,
+pub fn extract_attributes_in_sm_poms(
+    sm: &SubjectMap,
+    poms: &[PredicateObjectMap],
 ) -> HashSet<String> {
-    let mut result = HashSet::new();
-    for tm in tms {
-        for pom in &tm.po_maps {
-            for om in &pom.object_maps {
-                if let Some(ptm_iri) = &om.parent_tm {
-                    let key = ptm_iri.to_string();
-                    let value = om
-                        .join_condition
-                        .as_ref()
-                        .map(|jc| {
-                            HashSet::from_iter(
-                                jc.parent_attributes.clone().into_iter(),
-                            )
-                        })
-                        .unwrap_or(HashSet::new());
+    let mut projection_attributes = sm.tm_info.get_attributes();
+    let po_attributes: HashSet<_> = poms
+        .iter()
+        .flat_map(|pom| {
+            let om_attrs = pom.object_maps.iter().flat_map(|om| {
+                let om_gm_attrs = om
+                    .graph_maps
+                    .iter()
+                    .flat_map(|gm| gm.tm_info.get_attributes());
 
-                    if key == target_ptm {
-                        result.extend(value);
-                    }
-                }
-            }
-        }
-    }
+                let attrs = if let Some(join_cond) = &om.join_condition {
+                    let mut child_attr = join_cond.child_attributes.clone();
+                    let mut parent_attr = join_cond.parent_attributes.clone();
+                    child_attr.append(&mut parent_attr);
+                    child_attr.into_iter().collect()
+                } else {
+                    om.tm_info.get_attributes()
+                };
 
-    result
+                attrs.into_iter().chain(om_gm_attrs)
+            });
+
+            let pm_attrs = pom.predicate_maps.iter().flat_map(|pm| {
+                let attrs = pm.tm_info.get_attributes();
+                let pm_om_attrs = pm
+                    .graph_maps
+                    .iter()
+                    .flat_map(|gm| gm.tm_info.get_attributes());
+
+                attrs.into_iter().chain(pm_om_attrs)
+            });
+
+            let gm_attrs = pom
+                .graph_maps
+                .iter()
+                .flat_map(|gm| gm.tm_info.get_attributes());
+
+            om_attrs.chain(pm_attrs).chain(gm_attrs)
+        })
+        .collect();
+
+    projection_attributes.extend(po_attributes);
+    projection_attributes
+}
+
+pub fn extract_references_in_tm(tm: &TriplesMap) -> HashSet<String> {
+    extract_attributes_in_sm_poms(&tm.subject_map, &tm.po_maps)
 }
 
 pub fn extract_gm_tm_infos<'a>(
