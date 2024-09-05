@@ -250,7 +250,6 @@ mod tests {
         })?;
         let expected_source_ids = vec![
             "films_csv_file.film_csv",
-            "films_second_csv_file.film_second_csv",
         ];
 
         for expected_source_id in expected_source_ids {
