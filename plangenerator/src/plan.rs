@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::cell::RefCell;
 use std::fmt::{Debug, Display};
 use std::fs::File;
@@ -419,6 +420,34 @@ pub struct AliasedJoinedPlan<T> {
 }
 
 impl AliasedJoinedPlan<Processed> {
+    pub fn apply_right(
+        self,
+        operator: Operator,
+        op_name: Cow<str>,
+    ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
+        let applied_right =
+            self.right_plan.borrow_mut().apply(&operator, &op_name)?;
+
+        Ok(AliasedJoinedPlan {
+            right_plan: Rc::new(RefCell::new(applied_right)),
+            ..self
+        })
+    }
+
+    pub fn apply_left(
+        self,
+        operator: Operator,
+        op_name: Cow<str>,
+    ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
+        let applied_left =
+            self.left_plan.borrow_mut().apply(&operator, &op_name)?;
+
+        Ok(AliasedJoinedPlan {
+            left_plan: Rc::new(RefCell::new(applied_left)),
+            ..self
+        })
+    }
+
     fn add_join_op_to_plan(&mut self, join_op: Operator) -> Plan<Processed> {
         let fragment_str = &self.alias;
         let node_idx;
@@ -455,7 +484,7 @@ impl AliasedJoinedPlan<Processed> {
 
                 graph.add_edge(right_node, node_idx, right_edge);
             } else {
-                // This case happens when left_plan and right_plan are the same 
+                // This case happens when left_plan and right_plan are the same
                 // (self-join situation)
                 let right_node = left_plan.last_node_idx.unwrap();
                 let right_edge = PlanEdge {
