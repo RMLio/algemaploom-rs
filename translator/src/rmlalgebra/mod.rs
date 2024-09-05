@@ -2,8 +2,9 @@ mod operators;
 mod types;
 mod util;
 
+use std::borrow::Cow;
 use std::cell::RefCell;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use operator::{Extend, Operator};
@@ -11,18 +12,15 @@ use operators::projection::ProjectionTranslator;
 use operators::source::SourceOpTranslator;
 use plangenerator::error::PlanError;
 use plangenerator::plan::{join, Plan, Processed, RcRefCellPlan};
+use rml_interpreter::extractors::TermMapExtractor;
 use rml_interpreter::rml_model::term_map::SubjectMap;
 use rml_interpreter::rml_model::{Document, PredicateObjectMap, TriplesMap};
-use sophia_api::term::TTerm;
 use util::extract_tm_infos_from_sm_poms;
-use vocab::ToString;
 
 use self::operators::extend::*;
 use self::operators::fragment::FragmentTranslator;
 use self::operators::serializer::{self, translate_serializer_op};
-use self::util::{
-    extract_ptm_conditions_attributes, generate_lt_quads_from_spo,
-};
+use self::util::generate_lt_quads_from_spo;
 use crate::rmlalgebra::types::SearchMap;
 use crate::rmlalgebra::util::{
     generate_logtarget_map, generate_lt_quads_from_doc, generate_variable_map,
@@ -41,7 +39,13 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
             .triples_maps
             .iter()
             .map(|tm| {
-                let source_op = SourceOpTranslator { tm }.translate();
+                let other_tms = doc
+                    .triples_maps
+                    .iter()
+                    .filter(|other_tm| (*other_tm).identifier != tm.identifier)
+                    .collect();
+                let source_op =
+                    SourceOpTranslator { tm, other_tms }.translate();
                 //  let projection_op =
                 //      translate_projection_op(tm, doc.triples_maps.iter());
                 let result = (
@@ -180,11 +184,11 @@ fn add_non_join_related_ops(
     let target_map = &search_map.target_map;
     let mut plan = plan.borrow_mut();
 
+    let tm_infos = extract_tm_infos_from_sm_poms(sm, no_join_poms);
     let projection = ProjectionTranslator {
-        tm_iri,
-        sm,
-        poms: no_join_poms,
-        search_map,
+        tm_infos:       &tm_infos,
+        join_condition: vec![],
+        is_parent:      false,
     }
     .translate();
     let mut next_plan = plan.apply(&projection, "ProjectionOp")?;
@@ -286,29 +290,39 @@ fn add_join_related_ops(
             }];
 
             let join_cond_opt = om.join_condition.as_ref();
-            if let Some(join_cond) = join_cond_opt {
+            if let Some(join_condition) = join_cond_opt {
                 let mut aliased_plan =
                     join(Rc::clone(plan), Rc::clone(other_plan))?
                         .alias(&ptm_alias)?;
 
+                let tm_infos =
+                    &extract_tm_infos_from_sm_poms(sm, &pom_with_joined_ptm);
+
                 let left_projection = ProjectionTranslator {
-                    tm_iri: &tm.identifier,
-                    sm,
-                    poms: &pom_with_joined_ptm,
-                    search_map,
-                    child_tm_iri: None, 
-                }.translate();
+                    tm_infos,
+                    join_condition: vec![join_condition],
+                    is_parent: false,
+                }
+                .translate();
+                aliased_plan = aliased_plan.apply_left(
+                    left_projection,
+                    Cow::Borrowed("LeftProjection"),
+                )?;
 
                 let right_projection = ProjectionTranslator {
-                    tm_iri: &ptm.identifier,
-                    sm: &ptm.subject_map,
-                    poms: &vec![],
-                    search_map,
-                    child_tm_iri: Some(&tm.identifier), 
-                }.translate();
+                    tm_infos:       &vec![&ptm.subject_map.get_term_map_info()],
+                    join_condition: vec![join_condition],
+                    is_parent:      true,
+                }
+                .translate();
 
-                let child_attributes = &join_cond.child_attributes;
-                let parent_attributes = &join_cond.parent_attributes;
+                aliased_plan = aliased_plan.apply_right(
+                    right_projection,
+                    Cow::Borrowed("RightProjection"),
+                )?;
+
+                let child_attributes = &join_condition.child_attributes;
+                let parent_attributes = &join_condition.parent_attributes;
 
                 joined_plan = aliased_plan
                     .where_by(child_attributes.clone())?
@@ -385,6 +399,7 @@ mod tests {
     use rml_interpreter::extractors::triplesmap_extractor::extract_triples_maps;
     use rml_interpreter::rml_model::term_map::{self, TermMapInfo};
     use sophia_term::Term;
+    use util::{extract_tm_infos_from_poms, extract_tm_infos_from_tm};
 
     use super::*;
     use crate::import_test_mods;
@@ -428,11 +443,12 @@ mod tests {
         assert_eq!(triples_map_vec.len(), 1);
 
         let triples_map = triples_map_vec.pop().unwrap();
-        let _source_op = translate_source_op(&triples_map);
-        let projection_ops = translate_projection_op(
-            &triples_map,
-            &mut [triples_map.clone()].iter(),
-        );
+        let projection_ops = ProjectionTranslator {
+            tm_infos:       &extract_tm_infos_from_tm(&triples_map),
+            join_condition: vec![],
+            is_parent:      false,
+        }
+        .translate();
 
         let projection = match projection_ops.borrow() {
             Operator::ProjectOp { config: proj } => proj,
@@ -462,11 +478,6 @@ mod tests {
         let mut triples_map_vec = extract_triples_maps(&graph)?;
         assert_eq!(triples_map_vec.len(), 1);
         let triples_map = triples_map_vec.pop().unwrap();
-        let _source_op = translate_source_op(&triples_map);
-        let _projection_ops = translate_projection_op(
-            &triples_map,
-            &mut [triples_map.clone()].iter(),
-        );
 
         let variable_map = &generate_variable_map(&Document {
             triples_maps:     triples_map_vec,

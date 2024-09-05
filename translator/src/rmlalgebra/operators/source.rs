@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Iterator, Source};
 use rml_interpreter::rml_model::source_target::SourceType;
@@ -9,7 +11,8 @@ use crate::rmlalgebra::util::extract_references_in_tm;
 use crate::OperatorTranslator;
 #[derive(Debug, Clone)]
 pub struct SourceOpTranslator<'a> {
-    pub tm: &'a TriplesMap,
+    pub tm:        &'a TriplesMap,
+    pub other_tms: Vec<&'a TriplesMap>,
 }
 
 impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
@@ -28,7 +31,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
 
         let mut fields = Vec::new();
         if reference_formulation != ReferenceFormulation::CSVRows {
-            let references = extract_references_in_tm(tm);
+            let references = extract_references_in_tm(tm, &self.other_tms);
 
             fields.extend(references.into_iter().map(|reference| {
                 Field {
