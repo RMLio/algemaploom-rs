@@ -291,6 +291,7 @@ fn add_join_related_ops(
 
             let join_cond_opt = om.join_condition.as_ref();
             if let Some(join_condition) = join_cond_opt {
+                // Join condition exists so a θ-join operator will be added
                 let mut aliased_plan =
                     join(Rc::clone(plan), Rc::clone(other_plan))?
                         .alias(&ptm_alias)?;
@@ -310,7 +311,7 @@ fn add_join_related_ops(
                 )?;
 
                 let right_projection = ProjectionTranslator {
-                    tm_infos:       &vec![&ptm.subject_map.get_term_map_info()],
+                    tm_infos:       &[&ptm.subject_map.get_term_map_info()],
                     join_condition: vec![join_condition],
                     is_parent:      true,
                 }
@@ -328,6 +329,8 @@ fn add_join_related_ops(
                     .where_by(child_attributes.clone())?
                     .compared_to(parent_attributes.clone())?;
             } else if tm.logical_source == ptm.logical_source {
+                // Sources are the same, so a natural join operator will be added
+                // instead.
                 let mut aliased_plan =
                     join(Rc::clone(plan), Rc::clone(other_plan))?
                         .alias(&ptm_alias)?;
@@ -342,7 +345,9 @@ fn add_join_related_ops(
             // Prefix the attributes in the subject map with the alias of the PTM
             let mut ptm_sm_info = ptm.subject_map.tm_info.clone();
 
-            ptm_sm_info.prefix_attributes(&ptm_alias);
+            if join_cond_opt.is_some() {
+                ptm_sm_info.prefix_attributes(&ptm_alias);
+            }
 
             // Pair the ptm subject iri function with an extended attribute
             let (_, ptm_sub_function) =
