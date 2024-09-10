@@ -420,13 +420,17 @@ pub struct AliasedJoinedPlan<T> {
 }
 
 impl AliasedJoinedPlan<Processed> {
-    pub fn apply_right(
+    pub fn apply_right_fragment(
         self,
         operator: Operator,
         op_name: Cow<str>,
+        fragment_str: Cow<str>,
     ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
-        let applied_right =
-            self.right_plan.borrow_mut().apply(&operator, &op_name)?;
+        let applied_right = self.right_plan.borrow_mut().apply_to_fragment(
+            &operator,
+            &op_name,
+            &fragment_str,
+        )?;
 
         Ok(AliasedJoinedPlan {
             right_plan: Rc::new(RefCell::new(applied_right)),
@@ -434,13 +438,17 @@ impl AliasedJoinedPlan<Processed> {
         })
     }
 
-    pub fn apply_left(
+    pub fn apply_left_fragment(
         self,
         operator: Operator,
         op_name: Cow<str>,
+        fragment_str: Cow<str>,
     ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
-        let applied_left =
-            self.left_plan.borrow_mut().apply(&operator, &op_name)?;
+        let applied_left = self.left_plan.borrow_mut().apply_to_fragment(
+            &operator,
+            &op_name,
+            &fragment_str,
+        )?;
 
         Ok(AliasedJoinedPlan {
             left_plan: Rc::new(RefCell::new(applied_left)),

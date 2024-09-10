@@ -305,9 +305,10 @@ fn add_join_related_ops(
                     is_parent: false,
                 }
                 .translate();
-                aliased_plan = aliased_plan.apply_left(
+                aliased_plan = aliased_plan.apply_left_fragment(
                     left_projection,
                     Cow::Borrowed("LeftProjection"),
+                    Cow::Borrowed(&ptm_alias),
                 )?;
 
                 let right_projection = ProjectionTranslator {
@@ -317,9 +318,10 @@ fn add_join_related_ops(
                 }
                 .translate();
 
-                aliased_plan = aliased_plan.apply_right(
+                aliased_plan = aliased_plan.apply_right_fragment(
                     right_projection,
                     Cow::Borrowed("RightProjection"),
+                    Cow::Borrowed(&ptm_alias),
                 )?;
 
                 let child_attributes = &join_condition.child_attributes;
