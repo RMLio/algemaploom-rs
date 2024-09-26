@@ -2,7 +2,7 @@ test:
   image: rustdocker/rust:stable
   stage: test
   script:
-    - cargo test --verbose --jobs 1
+    - cargo test --verbose --jobs 1 --workspace
 
 build-no-bindings:
   image: rustdocker/rust:stable
