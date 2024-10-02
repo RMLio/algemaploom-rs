@@ -20,6 +20,9 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         let tm = self.tm;
         let reference_formulation =
             match tm.logical_source.reference_formulation.value().to_string() {
+                iri if iri == vocab::query::CLASS::CSV.to_string()  => {
+                    ReferenceFormulation::CSVRows
+                }
                 iri if iri == vocab::query::CLASS::JSONPATH.to_string() => {
                     ReferenceFormulation::JSONPath
                 }
@@ -27,6 +30,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
                     ReferenceFormulation::XMLPath
                 }
                 _ => ReferenceFormulation::CSVRows,
+
             };
 
         let mut fields = Vec::new();
@@ -51,9 +55,23 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         };
 
         let config = tm.logical_source.source.config.clone();
+
         let source_type = match tm.logical_source.source.source_type {
             SourceType::CSVW => operator::IOType::File,
             SourceType::FileInput => operator::IOType::File,
+            SourceType::RDB => match tm.logical_source.source.source_type {
+                SourceType::CSVW => operator::IOType::File,
+                SourceType::FileInput => operator::IOType::File,
+                SourceType::RDB => match config.get_key_value(&vocab::d2rq::PROPERTY::JDBCDriver.to_string()) {
+                Some(iri) if iri == "com.mysql.cj.jdbc.Driver" => operator::IOType::MySQL,
+                Some(iri) if iri == "org.postgresql.Driver" => operator::IOType::PostgreSQL,
+                _ => {
+                // Handle unsupported JDBC driver case gracefully
+                panic!("Unsupported JDBC driver");
+                }
+                },
+            };
+                ,
         };
 
         Source {

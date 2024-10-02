@@ -1,5 +1,6 @@
 mod csvw_source;
 mod file_source;
+mod rdb_source;
 
 use std::collections::HashMap;
 

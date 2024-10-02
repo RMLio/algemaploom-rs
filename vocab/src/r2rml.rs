@@ -27,6 +27,9 @@ pub mod PROPERTY {
     pub const DATATYPE: PAIR = (IRI, "datatype");
     pub const LANGUAGE: PAIR = (IRI, "language");
     pub const DEFAULTGRAPH: PAIR = (IRI, "defaultGraph");
+    pub const TABLE: PAIR = (IRI, "table");
+
+    pub const SQLVERSION: PAIR = (IRI, "sqlVersion");
 }
 
 pub mod CLASS {

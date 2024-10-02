@@ -11,6 +11,7 @@ pub mod rmlt;
 pub mod void;
 pub mod xsd;
 pub mod rml_core;
+pub mod d2rq;
 
 pub type PAIR<'a> = (&'a str, &'a str);
 
@@ -19,7 +20,7 @@ pub trait ToString {
 }
 
 impl<'a> ToString for PAIR<'a> {
-    fn to_string(self) -> String {
+    fn to_string(self) -> String  {
         format!("{}{}", self.0, self.1)
     }
 }

@@ -12,4 +12,5 @@ pub mod PROPERTY {
     pub const REFERENCEFORMULATION: PAIR = (IRI, "referenceFormulation");
     pub const SOURCE: PAIR = (IRI, "source");
     pub const LOGICALTARGET: PAIR = (IRI, "logicalTarget");
+    pub const QUERY: PAIR = (IRI, "query");
 }

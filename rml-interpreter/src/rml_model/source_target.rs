@@ -138,6 +138,7 @@ pub struct Source {
 pub enum SourceType {
     CSVW,
     FileInput,
+    RDB
 }
 
 impl Display for SourceType {
@@ -145,6 +146,7 @@ impl Display for SourceType {
         match self {
             SourceType::CSVW => write!(f, "CSVW"),
             SourceType::FileInput => write!(f, "FileInput"),
+            SourceType::RDB => write!(f, "RDataBase"),
         }
     }
 }
