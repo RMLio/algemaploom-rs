@@ -55,23 +55,11 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         };
 
         let config = tm.logical_source.source.config.clone();
-
+        println!("config: {:?}", config);
         let source_type = match tm.logical_source.source.source_type {
             SourceType::CSVW => operator::IOType::File,
             SourceType::FileInput => operator::IOType::File,
-            SourceType::RDB => match tm.logical_source.source.source_type {
-                SourceType::CSVW => operator::IOType::File,
-                SourceType::FileInput => operator::IOType::File,
-                SourceType::RDB => match config.get_key_value(&vocab::d2rq::PROPERTY::JDBCDriver.to_string()) {
-                Some(iri) if iri == "com.mysql.cj.jdbc.Driver" => operator::IOType::MySQL,
-                Some(iri) if iri == "org.postgresql.Driver" => operator::IOType::PostgreSQL,
-                _ => {
-                // Handle unsupported JDBC driver case gracefully
-                panic!("Unsupported JDBC driver");
-                }
-                },
-            };
-                ,
+            SourceType::RDB => operator::IOType::RDB
         };
 
         Source {

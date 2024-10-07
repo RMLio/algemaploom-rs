@@ -1,10 +1,16 @@
 pub const PREFIX: &str = "d2rq";
 pub const IRI: &str = "http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#";
 
+
+pub mod CLASS {
+    use super::IRI;
+    use crate::PAIR;
+    pub const DATABASE: PAIR = (IRI, "Database");
+}
+
 pub mod PROPERTY {
     use super::IRI;
     use crate::PAIR;
-    pub const DATABASE: PAIR = (IRI, "database");
     pub const SQLQUERY: PAIR = (IRI, "sqlQuery");
     pub const TABLENAME: PAIR = (IRI, "tableName");
     pub const COLUMN: PAIR = (IRI, "column");
