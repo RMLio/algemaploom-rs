@@ -199,9 +199,7 @@ impl<T> Plan<T> {
     }
 
     pub fn write_json(&self, path: PathBuf) -> Result<()> {
-        let graph = &*self.graph.borrow();
-        let json_string = serde_json::to_string(&graph).unwrap();
-        write_string_to_file(path, json_string)
+        write_string_to_file(path, self.to_json_string()?)
     }
 
     pub fn to_string(&self) -> Result<String> {
@@ -209,6 +207,12 @@ impl<T> Plan<T> {
         let json_string = serde_json::to_string(&graph).unwrap();
 
         Ok(json_string)
+    }
+    
+    pub fn to_json_string(&self) -> Result<String> {
+        let graph = &*self.graph.borrow();
+        let json_str = serde_json::to_string(&graph)?;
+        Ok(json_str)
     }
 }
 
