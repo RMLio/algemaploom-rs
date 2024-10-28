@@ -3,7 +3,6 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 use sophia_api::term::TTerm;
 use sophia_inmem::graph::FastGraph;
-use log::log;
 use crate::extractors::store::get_object;
 use crate::extractors::{ExtractorResult, FromVocab, RcTerm};
 use crate::extractors::config_extractor::extract_parse_config;
