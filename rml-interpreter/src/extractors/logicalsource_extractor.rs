@@ -4,7 +4,8 @@ use sophia_inmem::graph::FastGraph;
 use super::{Extractor, ExtractorResult, RcTerm};
 use crate::extractors::store::get_object;
 use crate::extractors::FromVocab;
-use crate::rml_model::source_target::{LogicalSource, Source};
+use crate::extractors::rdb_logicalsource::{update_with_logicalsource};
+use crate::rml_model::source_target::{LogicalSource, Source, SourceType};
 
 impl Extractor<LogicalSource> for LogicalSource {
     fn extract_self(
@@ -19,11 +20,23 @@ impl Extractor<LogicalSource> for LogicalSource {
             .ok()
             .map(|it| it.value().to_string());
 
-        let reference_formulation = get_object(graph, subject, &refform_pred)?
-            .map(|inner| (*inner).to_string())
-            .try_into()?;
+        // FIXME: This is a hack to handle the case where the reference formulation is not present, due to non existant SQL reference formulation in old rml spec.
 
-        let source = extract_concrete_source(subject, graph)?;
+
+        let mut source = extract_concrete_source(subject, graph)?;
+        let reference_formulation;
+        if(source.source_type == SourceType::RDB) {
+            // Default reference formulation for RDB is not required, default to CSV
+            reference_formulation = get_object(graph, subject, &refform_pred).unwrap_or(vocab::query::CLASS::CSV.to_rcterm())
+                .map(|inner| (*inner).to_string()).try_into()?;
+            // Add the config from the RDB logical source to the source
+            source = update_with_logicalsource(subject, graph, &source)?;
+
+        } else {
+            reference_formulation = get_object(graph, subject, &refform_pred)?
+                .map(|inner| (*inner).to_string())
+                .try_into()?;
+        }
 
         Ok(LogicalSource {
             identifier: subject.to_string(),
@@ -102,6 +115,23 @@ mod tests {
             expected
         );
 
+        Ok(())
+    }
+
+    #[test]
+    fn no_reference_formulation_test() -> ExtractorResult<()> {
+        let graph: FastGraph = load_graph!("sample_mapping_no_reference.ttl")?;
+        let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
+
+        let sub_ref = triple.o();
+        let logical_source = LogicalSource::extract_self(sub_ref, &graph)?;
+
+        assert_eq!(
+            logical_source.reference_formulation,
+            vocab::query::CLASS::CSV.to_rcterm()
+        );
+        assert!(logical_source.iterator.is_none());
         Ok(())
     }
 }

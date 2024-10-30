@@ -1,5 +1,6 @@
 mod csvw_source;
 mod file_source;
+mod rdb_source;
 
 use std::collections::HashMap;
 
@@ -65,6 +66,11 @@ fn extract_typed_source(
         iri_string if iri_string == vocab::csvw::CLASS::TABLE.to_rcterm() => {
             extract_csvw_source(subject, graph)
         }
+
+        iri_string if iri_string == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
+            rdb_source::extract_rdb_source(subject, graph)
+        }
+
         invalid_iri => {
             Err(ParseError::GenericError(format!(
                 "Source type extraction not yet supported {:#?}",

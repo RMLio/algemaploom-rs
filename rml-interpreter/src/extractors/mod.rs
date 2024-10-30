@@ -25,6 +25,8 @@ mod subjectmap_extractor;
 mod term_map_info_extractor;
 pub mod triplesmap_extractor;
 mod util;
+mod config_extractor;
+mod rdb_logicalsource;
 
 pub type ExtractorResult<T> = Result<T, ParseError>;
 

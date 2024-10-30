@@ -20,6 +20,9 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         let tm = self.tm;
         let reference_formulation =
             match tm.logical_source.reference_formulation.value().to_string() {
+                iri if iri == vocab::query::CLASS::CSV.to_string()  => {
+                    ReferenceFormulation::CSVRows
+                }
                 iri if iri == vocab::query::CLASS::JSONPATH.to_string() => {
                     ReferenceFormulation::JSONPath
                 }
@@ -27,6 +30,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
                     ReferenceFormulation::XMLPath
                 }
                 _ => ReferenceFormulation::CSVRows,
+
             };
 
         let mut fields = Vec::new();
@@ -51,9 +55,11 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         };
 
         let config = tm.logical_source.source.config.clone();
+        println!("config: {:?}", config);
         let source_type = match tm.logical_source.source.source_type {
             SourceType::CSVW => operator::IOType::File,
             SourceType::FileInput => operator::IOType::File,
+            SourceType::RDB => operator::IOType::RDB
         };
 
         Source {

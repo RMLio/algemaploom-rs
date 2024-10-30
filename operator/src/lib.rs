@@ -365,8 +365,7 @@ pub enum IOType {
     File,
     Kafka,
     Websocket,
-    MySQL,
-    PostgreSQL,
+    RDB,
     SPARQLEndpoint,
 }
 

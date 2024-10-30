@@ -26,6 +26,8 @@ where
             pred, obj
         )))
 }
+
+
 pub fn get_objects<TS, TP>(
     graph: &FastGraph,
     subject: &TS,

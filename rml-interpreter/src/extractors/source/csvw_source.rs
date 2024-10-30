@@ -6,6 +6,7 @@ use sophia_inmem::graph::FastGraph;
 
 use crate::extractors::store::get_object;
 use crate::extractors::{ExtractorResult, FromVocab, RcTerm};
+use crate::extractors::config_extractor::extract_parse_config;
 use crate::rml_model::source_target::{Source, SourceType};
 use crate::TermString;
 
@@ -66,22 +67,7 @@ lazy_static! {
     ];
 }
 
-fn extract_parse_config(
-    dialect_subject: &RcTerm,
-    graph: &FastGraph,
-) -> ExtractorResult<HashMap<String, String>> {
-    let mut result = HashMap::new();
 
-    let _ = PARSE_CONFIGS_PREDICATES.iter().try_for_each(
-        |(key, config_pred)| -> ExtractorResult<()> {
-            let config_val = get_object(graph, dialect_subject, config_pred)?;
-            result.insert(key.to_string(), config_val.value().to_string());
-            Ok(())
-        },
-    );
-
-    Ok(result)
-}
 
 pub fn extract_csvw_source(
     subject: &RcTerm,
@@ -91,7 +77,7 @@ pub fn extract_csvw_source(
     let url = get_object(graph, subject, &url_pred)?.value().to_string();
     let dialect_pred = vocab::csvw::PROPERTY::DIALECT.to_rcterm();
     let dialect_iri = get_object(graph, subject, &dialect_pred)?;
-    let mut config = extract_parse_config(&dialect_iri, graph)?;
+    let mut config = extract_parse_config(&dialect_iri, graph, &*PARSE_CONFIGS_PREDICATES)?;
 
     config.insert("url".to_string(), url);
     Ok(Source {
