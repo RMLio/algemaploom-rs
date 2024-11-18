@@ -103,8 +103,9 @@ These can be enabled with the features `jni`, `pyo3` and `neon` respectively.
 If you build from source, you can run the `build_java.sh`, `build_python.sh` and `build_nodejs.sh`
 scripts respectively.
 
-For usage, check out the [src/java](src/java), [src/python](src/python), and [src/nodejs](src/nodejs) folders.
+For cross-compiling Windows binaries from Linux you need to install the MinGW cross-compiler.
 
+For usage, check out the [src/java](src/java), [src/python](src/python), and [src/nodejs](src/nodejs) folders.
 
 ## Acknowledgement
 

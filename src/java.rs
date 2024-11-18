@@ -3,7 +3,7 @@ use jni::objects::{JClass, JString};
 use crate::api::process_one_str;
 
 #[no_mangle]
-pub extern "system" fn Java_Translator_translate<'local>(
+pub extern "system" fn Java_be_ugent_algemaploom_Translator_translate<'local>(
     mut env: JNIEnv<'local>,
     _class: JClass<'local>,
     input: JString<'local>,
