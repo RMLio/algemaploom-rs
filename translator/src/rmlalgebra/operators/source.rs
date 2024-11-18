@@ -59,7 +59,9 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         let source_type = match tm.logical_source.source.source_type {
             SourceType::CSVW => operator::IOType::File,
             SourceType::FileInput => operator::IOType::File,
-            SourceType::RDB => operator::IOType::RDB
+            SourceType::RDB => operator::IOType::RDB,
+            SourceType::TCP => operator::IOType::Websocket,
+            SourceType::Kafka => operator::IOType::Kafka,
         };
 
         Source {
