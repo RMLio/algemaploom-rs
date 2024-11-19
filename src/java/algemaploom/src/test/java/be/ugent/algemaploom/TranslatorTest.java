@@ -89,7 +89,7 @@ public class TranslatorTest
         String out = translator.translate_to_document(RML_EXAMPLE);
 
         assertTrue(out.contains("Source_0"));
-        assertTrue(out.contains("Projection_1"));
+        assertTrue(out.contains("ProjectionOp_1"));
         assertTrue(out.contains("ExtendOp_2"));
         assertTrue(out.contains("Serialize_3"));
         assertTrue(out.contains("Sink_4"));
