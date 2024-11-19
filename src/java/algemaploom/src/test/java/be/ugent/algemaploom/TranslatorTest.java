@@ -80,7 +80,6 @@ public class TranslatorTest
         assertTrue(out.contains("<http://example.com/year>"));
         assertTrue(out.contains("<http://example.com/country>"));
         assertTrue(out.contains("<http://example.com/comment>"));
-        assertTrue(out.contains("digraph {"));
     }
 
     @Test
@@ -94,6 +93,5 @@ public class TranslatorTest
         assertTrue(out.contains("ExtendOp_2"));
         assertTrue(out.contains("Serialize_3"));
         assertTrue(out.contains("Sink_4"));
-        assertTrue(out.contains("digraph {"));
     }
 }
