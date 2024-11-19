@@ -98,6 +98,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
             let mut inferred_term_type = match tm_info.term_map_type {
                 TermMapType::Reference => Some(TermKind::Literal),
                 TermMapType::Template => Some(TermKind::Iri),
+                TermMapType::Function => Some(TermKind::Literal),
                 _ => None,
             };
 
