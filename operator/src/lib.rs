@@ -326,8 +326,7 @@ pub enum Function {
     },
     FnO {
         fno_identifier:   String,
-        #[serde(flatten)]
-        param_func_pairs: HashMap<String, RcExtendFunction>,
+        parameters: HashMap<String, RcExtendFunction>,
     },
 }
 

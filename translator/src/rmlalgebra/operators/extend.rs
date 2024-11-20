@@ -134,7 +134,7 @@ fn extract_function(
 
             Function::FnO {
                 fno_identifier,
-                param_func_pairs,
+                parameters: param_func_pairs,
             }
         }
     }
