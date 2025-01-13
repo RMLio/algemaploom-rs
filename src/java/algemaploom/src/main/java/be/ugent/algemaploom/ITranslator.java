@@ -8,4 +8,11 @@ public interface ITranslator {
 	 * @param document AlgeMapLoom document generated from mapping
 	 */
 	String translate_to_document(String document);
+
+	/**
+	 * A default instance of the translator.
+	 */
+	static ITranslator getInstance() {
+		return new Translator();
+	}
 }
