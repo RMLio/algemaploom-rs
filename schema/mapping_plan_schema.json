@@ -1,0 +1,247 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Schema for the mapping plan generated from the algemaploom-rs translator",
+    "type": "object",
+    "properties": {
+        "nodes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "operator": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": {
+                                    "enum": [
+                                        "SourceOp",
+                                        "ProjectionOp",
+                                        "RenameOp",
+                                        "ExtendOp",
+                                        "SerializeOp",
+                                        "TargetOp",
+                                        "Fragmenter",
+                                        "Join",
+                                        "Union",
+                                        "LeftJoin"
+                                    ],
+                                    "$comment": "Types of the operator"
+                                }
+                            },
+                            "config": {
+                                "type": "object",
+                                "properties": {
+                                    "path": {
+                                        "type": "string",
+                                        "$comment": "URI path of the input data source"
+                                    },
+                                    "source_type": {
+                                        "type": {
+                                            "enum": [
+                                                "File",
+                                                "Kafka",
+                                                "WebSocket"
+                                            ]
+                                        },
+                                        "$comment": "The type of input data source"
+                                    },
+                                    "root_iterator": {
+                                        "type": "object",
+                                        "properties": {
+                                            "reference": {
+                                                "type": "string",
+                                                "$comment": "Query string such as JSONPath query or XPath query. Can be empty for formats such as CSV files since they do not have queries. "
+                                            },
+                                            "reference_formulation": {
+                                                "$ref": "#/$defs/reference_formulation"
+                                            },
+                                            "fields": {
+                                                "$ref": "#/$defs/fields"
+                                            }
+                                        },
+                                        "required": [
+                                            "reference_formulation",
+                                            "fields"
+                                        ]
+                                    },
+                                    "projection_attributes": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "?variable": {
+                                        "$ref": "#/$defs/extend_expression",
+                                        "$comment": "An extend expression"
+                                    },
+                                    "from": {
+                                        "type": "string",
+                                        "$comment": "Incoming fragment label"
+                                    },
+                                    "to": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "$comment": "Outgoing fragment labels"
+                                    },
+                                    "template": {
+                                        "type": "string",
+                                        "$comment": "The template string used by the serializer to replace the variables in the template with the values from the mapping tuples;"
+                                    },
+                                    "format": {
+                                        "type": "string",
+                                        "$comment": "Data format of the serializer"
+                                    },
+                                    "target_type": {
+                                        "type": "string"
+                                    },
+                                    "data_format": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": []
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "config"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "operator"
+                ]
+            }
+        },
+        "node_holes": {
+            "type": "array",
+            "items": {}
+        },
+        "edge_property": {
+            "type": "string"
+        },
+        "edges": {
+            "type": "array",
+            "items": {
+                "type": "array",
+                "items": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "fragment": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "fragment"
+                        ]
+                    }
+                ],
+                "additionalItems": false
+            }
+        }
+    },
+    "required": [
+        "nodes",
+        "node_holes",
+        "edge_property",
+        "edges"
+    ],
+    "$defs": {
+        "reference_formulation": {
+            "type": {
+                "enum": [
+                    "CSVRows",
+                    "JSONPath",
+                    "XPath"
+                ]
+            }
+        },
+        "fields": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "alias": {
+                        "type": "string"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "reference_formulation": {
+                        "$ref": "#/$defs/reference_formulation"
+                    },
+                    "inner_fields": {
+                        "$ref": "#/$defs/fields"
+                    }
+                },
+                "required": [
+                    "alias",
+                    "reference",
+                    "reference_formulation",
+                    "inner_fields"
+                ]
+            }
+        },
+        "inner_function": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                },
+                "config": {
+                    "type": "object"
+                },
+                "inner_function": {
+                    "$ref": "#/$defs/inner_function"
+                }
+            },
+            "required": [
+                "type",
+                "inner_function"
+            ]
+        },
+        "extend_expression": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "Literal",
+                        "BlankNode",
+                        "IRI"
+                    ]
+                },
+                "inner_function": {
+                    "$ref": "#/$defs/inner_function"
+                },
+                "base_iri": {
+                    "type": "string"
+                },
+                "dtype_function": {
+                    "type": "object"
+                },
+                "lang_function": {
+                    "type": "object"
+                }
+            },
+            "required": [
+                "type",
+                "inner_function"
+            ]
+        }
+    }
+}
