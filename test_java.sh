@@ -1,4 +1,4 @@
 #!/bin/sh
 
 cd src/java/algemaploom
-mvn clean install
+mvn clean test

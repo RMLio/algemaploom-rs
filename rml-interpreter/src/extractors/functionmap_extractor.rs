@@ -53,3 +53,40 @@ impl Extractor<FunctionMap> for FunctionMap {
         })
     }
 }
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+    use std::fs::File;
+    use std::io::BufReader;
+    use std::path::PathBuf;
+
+    use sophia_api::graph::Graph;
+    use sophia_api::triple::Triple;
+    use sophia_inmem::graph::FastGraph;
+    use super::*;
+    use crate::extractors::io::load_graph_bread;
+    use crate::extractors::ExtractorResult;
+    use crate::rml_model::source_target::SourceType;
+    use crate::{load_graph, test_case};
+
+    #[test]
+    fn fno_function_test() -> ExtractorResult<()> {
+
+        let graph: FastGraph = load_graph!("function_mapping.ttl")?;
+
+        // PredicateObjectMap predicate
+        let predicate_object_map_pred = vocab::r2rml::PROPERTY::PREDICATEOBJECTMAP.to_term();
+        let predicate_object_map_triple = graph.triples_with_p(&predicate_object_map_pred).next().unwrap()?;
+        let predicate_object_map_ref = predicate_object_map_triple.o();
+
+        // ObjectMap predicate
+        let object_map_pred = vocab::r2rml::PROPERTY::OBJECTMAP.to_term();
+        let object_map_triple = graph.triples_with_o(predicate_object_map_ref).next().unwrap()?;
+        let object_map_ref = object_map_triple.o();
+
+        // Extract the logical source from the ObjectMap
+        let logical_source = FunctionMap::extract_self(object_map_ref, &graph)?;
+
+        Ok(())
+    }
+}
