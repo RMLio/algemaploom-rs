@@ -1,6 +1,6 @@
 use sophia_api::term::TTerm;
 use sophia_inmem::graph::FastGraph;
-
+use sophia_term::index_map::assert_term_index_map_works;
 use super::{Extractor, ExtractorResult, RcTerm};
 use crate::extractors::store::get_object;
 use crate::extractors::FromVocab;
@@ -21,7 +21,6 @@ impl Extractor<LogicalSource> for LogicalSource {
             .map(|it| it.value().to_string());
 
         // FIXME: This is a hack to handle the case where the reference formulation is not present, due to non existant SQL reference formulation in old rml spec.
-
 
         let mut source = extract_concrete_source(subject, graph)?;
         let reference_formulation;
