@@ -1,6 +1,8 @@
 mod csvw_source;
 mod file_source;
 mod rdb_source;
+mod kafka_source;
+mod tcp_source;
 
 use std::collections::HashMap;
 
@@ -69,6 +71,13 @@ fn extract_typed_source(
 
         iri_string if iri_string == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
             rdb_source::extract_rdb_source(subject, graph)
+        }
+        iri_string if iri_string == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
+            kafka_source::extract_kafka_source(subject, graph)
+        }
+
+        iri_string if iri_string == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
+            tcp_source::extract_tcp_source(subject, graph)
         }
 
         invalid_iri => {

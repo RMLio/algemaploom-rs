@@ -138,7 +138,9 @@ pub struct Source {
 pub enum SourceType {
     CSVW,
     FileInput,
-    RDB
+    RDB,
+    Kafka,
+    TCP
 }
 
 impl Display for SourceType {
@@ -147,6 +149,8 @@ impl Display for SourceType {
             SourceType::CSVW => write!(f, "CSVW"),
             SourceType::FileInput => write!(f, "FileInput"),
             SourceType::RDB => write!(f, "RDataBase"),
+            SourceType::Kafka => write!(f, "Kafka Stream"),
+            SourceType::TCP => write!(f, "Websocket")
         }
     }
 }
