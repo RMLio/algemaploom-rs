@@ -1,6 +1,6 @@
 use sophia_api::term::TTerm;
 use sophia_inmem::graph::FastGraph;
-use sophia_term::index_map::assert_term_index_map_works;
+
 use super::{Extractor, ExtractorResult, RcTerm};
 use crate::extractors::store::get_object;
 use crate::extractors::FromVocab;
@@ -24,7 +24,7 @@ impl Extractor<LogicalSource> for LogicalSource {
 
         let mut source = extract_concrete_source(subject, graph)?;
         let reference_formulation;
-        if(source.source_type == SourceType::RDB) {
+        if source.source_type == SourceType::RDB {
             // Default reference formulation for RDB is not required, default to CSV
             reference_formulation = get_object(graph, subject, &refform_pred).unwrap_or(vocab::query::CLASS::CSV.to_rcterm())
                 .map(|inner| (*inner).to_string()).try_into()?;

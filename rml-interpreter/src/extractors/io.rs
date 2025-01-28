@@ -1,5 +1,5 @@
 use std::fs::File;
-use std::io::{BufRead, BufReader, Read, Seek};
+use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
 
 use sophia_api::triple::stream::TripleSource;

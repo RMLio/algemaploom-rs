@@ -55,7 +55,7 @@ impl Extractor<FunctionMap> for FunctionMap {
 }
 #[cfg(test)]
 mod tests {
-    use std::collections::{HashMap, HashSet};
+    use std::collections::{HashSet};
     use std::fs::File;
     use std::io::BufReader;
     use std::path::PathBuf;
@@ -63,14 +63,14 @@ mod tests {
     use sophia_api::graph::Graph;
     use sophia_api::triple::Triple;
     use sophia_inmem::graph::FastGraph;
-    use sophia_term::literal::Literal;
+    
     use sophia_term::Term;
 
     use super::*;
     use crate::extractors::io::load_graph_bread;
     use crate::extractors::ExtractorResult;
-    use crate::rml_model::source_target::SourceType;
-    use crate::rml_model::term_map::{ObjectMap, TermMapInfo};
+    
+    use crate::rml_model::term_map::{TermMapInfo};
     use crate::{load_graph, test_case};
 
     #[test]
