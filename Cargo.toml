@@ -8,7 +8,7 @@ edition = "2021"
 opt-level = 3
 
 [workspace]
-members = ["rml-interpreter", "shexml-interpreter",  "operator", "vocab", "plangenerator", "translator"]
+members = ["rml-interpreter", "shexml-interpreter",  "operator", "vocab", "plan", "translator"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.dependencies]
@@ -38,7 +38,7 @@ clap.workspace = true
 rml-interpreter = {path = "./rml-interpreter/"}
 shexml-interpreter = {path = "./shexml-interpreter/"}
 operator = {path = "./operator/"}
-plangenerator = {path = "./plangenerator/"}
+plangenerator = {path = "./plan/"}
 translator = {path = "./translator/"}
 
 csv = "1.2.2"
