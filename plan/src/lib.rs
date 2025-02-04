@@ -226,8 +226,40 @@ mod tests {
     use std::collections::{HashMap, HashSet};
 
     use operator::{Iterator, Projection, Rename, Source};
+    use states::Processed;
 
     use super::*;
+
+    fn generate_dummy_processed_plan(
+    ) -> std::result::Result<Plan<Processed>, PlanError> {
+        let mut plan = Plan::new();
+        let source = Source {
+            config:        HashMap::new(),
+            source_type:   operator::IOType::File,
+            root_iterator: Iterator::default(),
+        };
+
+        let project_op = Operator::ProjectOp {
+            config: Projection {
+                projection_attributes: HashSet::new(),
+            },
+        };
+        let rename_op = Operator::RenameOp {
+            config: Rename {
+                rename_pairs: HashMap::from([(
+                    "first".to_string(),
+                    "last".to_string(),
+                )]),
+            },
+        };
+
+        let plan = plan
+            .source(source.clone())
+            .apply(&project_op, "Projection")?
+            .apply(&rename_op, "Rename")?;
+
+        Ok(plan)
+    }
 
     #[test]
     fn test_plan_source() {
@@ -251,32 +283,7 @@ mod tests {
 
     #[test]
     fn test_plan_apply() -> std::result::Result<(), PlanError> {
-        let mut plan = Plan::new();
-        let source = Source {
-            config:        HashMap::new(),
-            source_type:   operator::IOType::File,
-            root_iterator: Iterator::default(),
-        };
-
-        let project_op = Operator::ProjectOp {
-            config: Projection {
-                projection_attributes: HashSet::new(),
-            },
-        };
-        let rename_op = Operator::RenameOp {
-            config: Rename {
-                rename_pairs: HashMap::from([(
-                    "first".to_string(),
-                    "last".to_string(),
-                )]),
-            },
-        };
-
-        let _ = plan
-            .source(source.clone())
-            .apply(&project_op, "Projection")?
-            .apply(&rename_op, "Rename")?;
-
+        let plan = generate_dummy_processed_plan()?;
         let graph = plan.graph.borrow();
 
         assert!(
