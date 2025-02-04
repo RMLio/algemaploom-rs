@@ -6,7 +6,7 @@ use anyhow::Result;
 use operator::display::PrettyDisplay;
 use operator::Operator;
 use petgraph::graph::{DiGraph, NodeIndex};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::Plan;
@@ -22,13 +22,13 @@ pub type RcRefCellPlan<T> = Rc<RefCell<Plan<T>>>;
 pub const DEFAULT_FRAGMENT: &'static str = "default";
 // Plan states in unit structs
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PlanEdge {
     pub fragment:  String,
     pub direction: EdgeDirection,
 }
 
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EdgeDirection {
     Left,
     Right,
@@ -56,7 +56,7 @@ impl Debug for PlanEdge {
     }
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct PlanNode {
     pub id:       String,
     pub operator: Operator,

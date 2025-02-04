@@ -1,6 +1,6 @@
 use std::cell::RefCell;
 use std::fs::File;
-use std::io::{BufWriter, Write};
+use std::io::{BufWriter, Read, Write};
 use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
@@ -186,7 +186,15 @@ impl<T> Plan<T> {
     }
 
     pub fn from_file_path(path: PathBuf) -> Result<Plan<Init>> {
-        todo!()
+        let mut file = File::open(path)?;
+        let mut buf = String::new();
+        file.read_to_string(&mut buf)?;
+
+        let graph: DiGraph<PlanNode, PlanEdge> = serde_json::from_str(&buf)?;
+
+        let mut plan = Plan::new();
+        plan.graph = Rc::new(RefCell::new(graph));
+        Ok(plan)
     }
 
     pub fn to_string(&self) -> Result<String> {
