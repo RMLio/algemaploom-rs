@@ -4,8 +4,10 @@ use std::rc::Rc;
 
 use log::{debug, trace};
 use operator::{Extend, Function, Rename, Serializer, Target};
+use plangenerator::data_type::RcRefCellPlan;
 use plangenerator::error::PlanError;
-use plangenerator::plan::{Plan, Processed, RcRefCellPlan, Serialized, Sunk};
+use plangenerator::states::{Processed, Serialized, Sunk};
+use plangenerator::Plan;
 use shexml_interpreter::{
     IndexedShExMLDocument, Object, PrefixNameSpace, ShExMLDocument, ShapeIdent,
     Subject,
@@ -237,7 +239,7 @@ fn add_rename_extend_op_from_quads(
                     }
                 } else {
                     Function::Iri {
-                        base_iri: None, 
+                        base_iri:       None,
                         inner_function: subj_term_func.into(),
                     }
                 };

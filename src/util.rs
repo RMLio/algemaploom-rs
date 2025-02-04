@@ -1,7 +1,8 @@
 use colored::Colorize;
 use log::info;
 use plangenerator::error::PlanError;
-use plangenerator::plan::{Init, Plan};
+use plangenerator::states::Init;
+use plangenerator::Plan;
 
 pub fn serialize_and_log_msg<F: AsRef<str>>(
     output_prefix: String,

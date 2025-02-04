@@ -11,7 +11,7 @@ sophia_inmem = "0.7.2"
 sophia_turtle = "0.7.2"
 vocab = { path = "../vocab/" }
 operator = { path = "../operator/" }
-plangenerator = { path = "../plangenerator/" }
+plangenerator = { path = "../plan/" }
 rml-interpreter = { path = "../rml-interpreter/" }
 shexml-interpreter = { path = "../shexml-interpreter/" }
 
