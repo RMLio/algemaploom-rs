@@ -16,7 +16,7 @@ use crate::data_type::{
 };
 use crate::error::PlanError;
 use crate::states::Init;
-mod data_type;
+pub mod data_type;
 pub mod error;
 pub mod states;
 
