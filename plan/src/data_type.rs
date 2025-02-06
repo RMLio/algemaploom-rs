@@ -22,13 +22,13 @@ pub type RcRefCellPlan<T> = Rc<RefCell<Plan<T>>>;
 pub const DEFAULT_FRAGMENT: &'static str = "default";
 // Plan states in unit structs
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, PartialEq)]
 pub struct PlanEdge {
     pub fragment:  String,
     pub direction: EdgeDirection,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum EdgeDirection {
     Left,
     Right,

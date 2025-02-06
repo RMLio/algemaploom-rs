@@ -226,6 +226,7 @@ mod tests {
     use std::collections::{HashMap, HashSet};
 
     use operator::{Iterator, Projection, Rename, Source};
+    use petgraph::algo::is_isomorphic_matching;
     use states::Processed;
 
     use super::*;
@@ -296,6 +297,40 @@ mod tests {
             "Number of edges should be 2 but it is instead: {}",
             graph.edge_count()
         );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_plan_serialization() -> Result<(), PlanError> {
+        let plan = generate_dummy_processed_plan()?;
+        plan.non_empty_plan_check()?;
+
+        let plan_json_string = plan.to_json_string().map_err(|_| {
+            PlanError::GenericError(format!(
+                "Something went wrong while serializing to json: {:?}",
+                plan
+            ))
+        })?;
+
+        let plan_serialized: DiGraphOperators =
+            serde_json::from_str(&plan_json_string)
+                .map_err(|err| PlanError::GenericError(err.to_string()))?;
+
+        let node_match_fn = |node1: &PlanNode, node2: &PlanNode| -> bool {
+            node1.operator == node2.operator
+        };
+
+        let edge_match_fn =
+            |edge1: &PlanEdge, edge2: &PlanEdge| -> bool { edge1 == edge2 };
+
+        let plan_graph: &DiGraphOperators = &plan.graph.borrow_mut();
+        assert!(is_isomorphic_matching(
+            plan_graph,
+            &plan_serialized,
+            node_match_fn,
+            edge_match_fn,
+        ));
 
         Ok(())
     }
