@@ -570,7 +570,6 @@ dependencies = [
  "regex",
  "rml-interpreter",
  "serde_json",
- "shexml-interpreter",
  "thiserror",
  "translator",
  "urlencoding",
@@ -993,20 +992,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "shexml-interpreter"
-version = "0.2.0"
-dependencies = [
- "anyhow",
- "chumsky",
- "clap",
- "lazy_static",
- "log4rs",
- "serde",
- "serde_json",
- "vocab",
-]
-
-[[package]]
 name = "smallvec"
 version = "1.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1198,6 +1183,7 @@ name = "translator"
 version = "0.2.0"
 dependencies = [
  "anyhow",
+ "chumsky",
  "clap",
  "either",
  "lazy_static",
@@ -1208,7 +1194,6 @@ dependencies = [
  "rml-interpreter",
  "serde",
  "serde_json",
- "shexml-interpreter",
  "sophia_api",
  "sophia_inmem",
  "sophia_term",

@@ -4,14 +4,14 @@ use std::rc::Rc;
 
 use log::{debug, trace};
 use operator::{Extend, Function, Rename, Serializer, Target};
+use parcombi::{
+    IndexedShExMLDocument, Object, PrefixNameSpace, ShExMLDocument,
+    ShapeExpression, ShapeIdent, Subject,
+};
 use plangenerator::data_type::RcRefCellPlan;
 use plangenerator::error::PlanError;
 use plangenerator::states::{Processed, Serialized, Sunk};
 use plangenerator::Plan;
-use shexml_interpreter::{
-    IndexedShExMLDocument, Object, PrefixNameSpace, ShExMLDocument, ShapeIdent,
-    Subject,
-};
 
 use self::util::IndexVariableTerm;
 use crate::shexml::operators::source::ShExMLSourceTranslator;
@@ -22,6 +22,7 @@ use crate::shexml::util::{
 use crate::{LanguageTranslator, OperatorTranslator};
 
 mod operators;
+pub mod parcombi;
 #[cfg(test)]
 mod tests;
 mod util;
@@ -258,7 +259,7 @@ fn add_rename_extend_op_from_quads(
                 match &obj.expression {
                     // Since it is a shape link just ignore the generation of obj function and
                     // reuse the linked target's subject variable during BGP generation
-                    shexml_interpreter::ShapeExpression::Link { .. } => {
+                    ShapeExpression::Link { .. } => {
                         continue;
                     }
                     _ => {
@@ -306,7 +307,7 @@ fn add_serializer_op_from_quads(
         let graph = *graph;
 
         let obj_variable = match &obj.expression {
-            shexml_interpreter::ShapeExpression::Link { other_shape_ident } => {
+            ShapeExpression::Link { other_shape_ident } => {
                 trace!("Object has a shape link expression: {:?}", obj);
                 let link_subj = &doc
                     .shapes

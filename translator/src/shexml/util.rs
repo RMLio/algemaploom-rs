@@ -1,7 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
 use log::{debug, trace};
-use shexml_interpreter::{
+
+use crate::shexml::parcombi::{
     GraphShapes, IndexedShExMLDocument, Object, Predicate, ShapeExpression,
     ShapeIdent, Subject,
 };

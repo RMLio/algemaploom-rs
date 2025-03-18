@@ -10,7 +10,7 @@ use chumsky::Parser;
 use errors::ShExMLResult;
 pub use parser::r#type::*;
 
-use crate::errors::{ShExMLError, ShExMLErrorType};
+use super::parcombi::errors::{ShExMLError, ShExMLErrorType};
 
 pub fn parse_file<P: AsRef<Path>>(
     file_path: P,

@@ -6,7 +6,7 @@ use chumsky::prelude::*;
 use chumsky::Parser;
 
 use self::r#type::*;
-use crate::lexer::token::*;
+use super::lexer::token::*;
 
 macro_rules! shex_just {
     ($exp:expr) => {

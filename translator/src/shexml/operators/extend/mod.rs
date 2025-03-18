@@ -4,20 +4,23 @@ use std::rc::Rc;
 use either::Either;
 use log::trace;
 use operator::Function;
-use shexml_interpreter::{ExpressionReferenceIdent, Iterator};
+
+use crate::shexml::parcombi::{
+    self, ExpressionReferenceIdent, ExpressionStmtEnum, Iterator
+};
 
 pub mod term;
 
 pub fn translate_concatenate_to_extend_pairs(
     expr_ident: &str,
     iterators: &HashMap<String, Iterator>,
-    expr_enum: &shexml_interpreter::ExpressionStmtEnum,
+    expr_enum: &ExpressionStmtEnum,
     source_iter_ident: &str,
 ) -> Vec<(String, Function)> {
     let mut result = Vec::new();
 
     match expr_enum {
-        shexml_interpreter::ExpressionStmtEnum::Union(
+        ExpressionStmtEnum::Union(
             left_enum,
             right_enum,
         ) => {
@@ -35,7 +38,7 @@ pub fn translate_concatenate_to_extend_pairs(
                 source_iter_ident,
             ));
         }
-        shexml_interpreter::ExpressionStmtEnum::ConcatenateString {
+        ExpressionStmtEnum::ConcatenateString {
             left_reference,
             concate_string,
             right_reference,

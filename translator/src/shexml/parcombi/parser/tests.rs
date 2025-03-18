@@ -1,3 +1,4 @@
+use crate::shexml::parcombi::*;
 #[cfg(test)]
 use std::collections::HashSet;
 

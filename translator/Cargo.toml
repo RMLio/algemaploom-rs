@@ -9,11 +9,13 @@ edition = "2021"
 sophia_api = "0.7.2"
 sophia_inmem = "0.7.2"
 sophia_turtle = "0.7.2"
+sophia_term = "0.7.2"
+chumsky = "0.9.3"
+
 vocab = { path = "../vocab/" }
 operator = { path = "../operator/" }
 plangenerator = { path = "../plan/" }
 rml-interpreter = { path = "../rml-interpreter/" }
-shexml-interpreter = { path = "../shexml-interpreter/" }
 
 
 either.workspace = true
@@ -26,4 +28,3 @@ serde.workspace = true
 clap.workspace = true
 log.workspace = true
 
-sophia_term = "0.7.2"
