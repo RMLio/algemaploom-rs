@@ -24,8 +24,8 @@ use self::operators::extend::*;
 use self::operators::fragment::FragmentTranslator;
 use self::operators::serializer::{self, translate_serializer_op};
 use self::util::generate_lt_quads_from_spo;
-use crate::rmlalgebra::types::SearchMap;
-use crate::rmlalgebra::util::{
+use crate::rml::types::SearchMap;
+use crate::rml::util::{
     generate_logtarget_map, generate_lt_quads_from_doc, generate_variable_map,
 };
 use crate::{LanguageTranslator, OperatorTranslator};

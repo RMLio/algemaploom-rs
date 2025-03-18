@@ -2,7 +2,7 @@ use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
 
-pub mod rmlalgebra;
+pub mod rml;
 pub mod shexml;
 
 #[cfg(test)]

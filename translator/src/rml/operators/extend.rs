@@ -9,7 +9,7 @@ use rml_interpreter::rml_model::term_map::{
 use rml_interpreter::rml_model::PredicateObjectMap;
 use sophia_api::term::{TTerm, TermKind};
 
-use crate::rmlalgebra::util::extract_tm_infos_from_sm_poms;
+use crate::rml::util::extract_tm_infos_from_sm_poms;
 use crate::OperatorTranslator;
 
 #[derive(Debug, Clone)]

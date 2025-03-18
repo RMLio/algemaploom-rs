@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use vocab::ToString;
 
-use crate::rmlalgebra::types::Quad;
+use crate::rml::types::Quad;
 
 pub fn get_triples_strings(
     quad: &Quad<'_>,

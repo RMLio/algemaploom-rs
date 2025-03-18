@@ -3,8 +3,8 @@ use rml_interpreter::rml_model::join::JoinCondition;
 use rml_interpreter::rml_model::term_map::{SubjectMap, TermMapInfo};
 use rml_interpreter::rml_model::{PredicateObjectMap, TriplesMap};
 
-use crate::rmlalgebra::types::SearchMap;
-use crate::rmlalgebra::util::{
+use crate::rml::types::SearchMap;
+use crate::rml::util::{
     extract_attributes_in_tm_infos, extract_ptm_join_conditions_attributes,
 };
 use crate::OperatorTranslator;

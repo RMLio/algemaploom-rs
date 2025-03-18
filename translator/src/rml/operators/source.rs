@@ -7,7 +7,7 @@ use rml_interpreter::rml_model::TriplesMap;
 use sophia_api::term::TTerm;
 use vocab::ToString;
 
-use crate::rmlalgebra::util::extract_references_in_tm;
+use crate::rml::util::extract_references_in_tm;
 use crate::OperatorTranslator;
 #[derive(Debug, Clone)]
 pub struct SourceOpTranslator<'a> {
@@ -20,7 +20,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         let tm = self.tm;
         let reference_formulation =
             match tm.logical_source.reference_formulation.value().to_string() {
-                iri if iri == vocab::query::CLASS::CSV.to_string()  => {
+                iri if iri == vocab::query::CLASS::CSV.to_string() => {
                     ReferenceFormulation::CSVRows
                 }
                 iri if iri == vocab::query::CLASS::JSONPATH.to_string() => {
@@ -30,7 +30,6 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
                     ReferenceFormulation::XMLPath
                 }
                 _ => ReferenceFormulation::CSVRows,
-
             };
 
         let mut fields = Vec::new();

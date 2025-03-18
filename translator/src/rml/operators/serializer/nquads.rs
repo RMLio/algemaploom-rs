@@ -5,8 +5,8 @@ use operator::formats::DataFormat;
 use vocab::ToString as _;
 
 use super::SerializeTranslator;
-use crate::rmlalgebra::operators::serializer::util::get_triples_strings;
-use crate::rmlalgebra::types::Quad;
+use crate::rml::operators::serializer::util::get_triples_strings;
+use crate::rml::types::Quad;
 
 #[derive(Debug, Clone)]
 pub struct NQuadsSerializer {}

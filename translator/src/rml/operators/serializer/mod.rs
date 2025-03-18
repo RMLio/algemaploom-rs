@@ -10,7 +10,7 @@ use operator::Serializer;
 
 use self::nquads::NQuadsSerializer;
 use self::ntriples::NTriplesSerializer;
-use crate::rmlalgebra::types::Quad;
+use crate::rml::types::Quad;
 
 trait SerializeTranslator {
     fn data_format() -> DataFormat;

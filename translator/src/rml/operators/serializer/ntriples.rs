@@ -4,7 +4,7 @@ use operator::formats::DataFormat;
 
 use super::util::get_triples_strings;
 use super::SerializeTranslator;
-use crate::rmlalgebra::types::Quad;
+use crate::rml::types::Quad;
 
 #[derive(Debug, Clone)]
 pub struct NTriplesSerializer {}

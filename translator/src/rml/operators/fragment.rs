@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use operator::Fragmenter;
 
-use crate::rmlalgebra::types::Quad;
+use crate::rml::types::Quad;
 use crate::OperatorTranslator;
 #[derive(Debug, Clone)]
 pub struct FragmentTranslator<'a> {
