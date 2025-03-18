@@ -5,11 +5,11 @@ use sophia_term::Term;
 use vocab::ToString;
 
 use super::{Extractor, ExtractorResult, RcTerm};
-use crate::extractors::store::{get_object, get_objects};
-use crate::extractors::{FromVocab, TermMapExtractor};
-use crate::rml_model::source_target::LogicalSource;
-use crate::rml_model::term_map::SubjectMap;
-use crate::rml_model::{PredicateObjectMap, TriplesMap};
+use crate::rml::parser::extractors::store::{get_object, get_objects};
+use crate::rml::parser::extractors::{FromVocab, TermMapExtractor};
+use crate::rml::parser::rml_model::source_target::LogicalSource;
+use crate::rml::parser::rml_model::term_map::SubjectMap;
+use crate::rml::parser::rml_model::{PredicateObjectMap, TriplesMap};
 
 impl Extractor<TriplesMap> for TriplesMap {
     fn extract_self(

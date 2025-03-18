@@ -1,7 +1,7 @@
 use operator::{Operator, Projection};
-use rml_interpreter::rml_model::join::JoinCondition;
-use rml_interpreter::rml_model::term_map::{SubjectMap, TermMapInfo};
-use rml_interpreter::rml_model::{PredicateObjectMap, TriplesMap};
+use crate::rml::parser::rml_model::join::JoinCondition;
+use crate::rml::parser::rml_model::term_map::{SubjectMap, TermMapInfo};
+use crate::rml::parser::rml_model::{PredicateObjectMap, TriplesMap};
 
 use crate::rml::types::SearchMap;
 use crate::rml::util::{

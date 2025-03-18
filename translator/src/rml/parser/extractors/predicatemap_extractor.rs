@@ -3,9 +3,9 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::{FromVocab, TermMapExtractor};
-use crate::extractors::error::ParseError;
-use crate::extractors::Extractor;
-use crate::rml_model::term_map::{GraphMap, PredicateMap, TermMapInfo};
+use crate::rml::parser::extractors::error::ParseError;
+use crate::rml::parser::extractors::Extractor;
+use crate::rml::parser::rml_model::term_map::{GraphMap, PredicateMap, TermMapInfo};
 
 impl TermMapExtractor<PredicateMap> for PredicateMap {
     fn create_constant_map(tm_info: TermMapInfo) -> PredicateMap {
@@ -65,9 +65,11 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
 #[cfg(test)]
 mod tests {
 
+    use sophia_api::triple::Triple;
+    use sophia_api::graph::Graph;
     use super::*;
     use crate::import_test_mods;
-    use crate::rml_model::term_map::TermMapType;
+    use crate::rml::parser::rml_model::term_map::TermMapType;
 
     import_test_mods!();
 

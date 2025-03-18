@@ -2,10 +2,10 @@ use sophia_api::term::TTerm;
 use sophia_inmem::graph::FastGraph;
 
 use super::{Extractor, ExtractorResult, RcTerm};
-use crate::extractors::store::get_object;
-use crate::extractors::FromVocab;
-use crate::extractors::rdb_logicalsource::{update_with_logicalsource};
-use crate::rml_model::source_target::{LogicalSource, Source, SourceType};
+use crate::rml::parser::extractors::store::get_object;
+use crate::rml::parser::extractors::FromVocab;
+use crate::rml::parser::extractors::rdb_logicalsource::{update_with_logicalsource};
+use crate::rml::parser::rml_model::source_target::{LogicalSource, Source, SourceType};
 
 impl Extractor<LogicalSource> for LogicalSource {
     fn extract_self(
@@ -67,9 +67,9 @@ mod tests {
     use sophia_api::triple::Triple;
 
     use super::*;
-    use crate::extractors::io::load_graph_bread;
-    use crate::extractors::ExtractorResult;
-    use crate::rml_model::source_target::SourceType;
+    use crate::rml::parser::extractors::io::load_graph_bread;
+    use crate::rml::parser::extractors::ExtractorResult;
+    use crate::rml::parser::rml_model::source_target::SourceType;
     use crate::{load_graph, test_case};
 
     #[test]

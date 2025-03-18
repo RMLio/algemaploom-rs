@@ -2,8 +2,8 @@ use std::collections::HashSet;
 
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Iterator, Source};
-use rml_interpreter::rml_model::source_target::SourceType;
-use rml_interpreter::rml_model::TriplesMap;
+use crate::rml::parser::rml_model::source_target::SourceType;
+use crate::rml::parser::rml_model::TriplesMap;
 use sophia_api::term::TTerm;
 use vocab::ToString;
 

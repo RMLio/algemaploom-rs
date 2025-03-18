@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 use operator::{Extend, Function, Operator, RcExtendFunction};
 use regex::Regex;
-use rml_interpreter::rml_model::term_map::{
+use crate::rml::parser::rml_model::term_map::{
     SubjectMap, TermMapInfo, TermMapType,
 };
-use rml_interpreter::rml_model::PredicateObjectMap;
+use crate::rml::parser::rml_model::PredicateObjectMap;
 use sophia_api::term::{TTerm, TermKind};
 
 use crate::rml::util::extract_tm_infos_from_sm_poms;

@@ -9,8 +9,8 @@ use sophia_api::term::TTerm;
 use sophia_term::iri::Iri;
 use vocab::ToString;
 
-use crate::extractors::FromVocab;
-use crate::IriString;
+use crate::rml::parser::extractors::FromVocab;
+use crate::rml::parser::IriString;
 
 #[derive(Debug, Clone, Eq)]
 pub struct LogicalSource {

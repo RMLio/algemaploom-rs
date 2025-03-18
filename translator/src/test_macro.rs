@@ -20,8 +20,8 @@ macro_rules! import_test_mods {
         use std::io::BufReader;
         use std::path::PathBuf;
 
-        use rml_interpreter::extractors::io::load_graph_bread;
-        use rml_interpreter::extractors::ExtractorResult;
+        use $crate::rml::parser::extractors::io::load_graph_bread;
+        use $crate::rml::parser::extractors::ExtractorResult;
         use $crate::{load_graph, test_case};
     };
 }

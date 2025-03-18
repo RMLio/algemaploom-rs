@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use sophia_api::term::TTerm;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
-use crate::extractors::ExtractorResult;
-use crate::extractors::store::get_object;
-use crate::TermString;
+use crate::rml::parser::extractors::ExtractorResult;
+use crate::rml::parser::extractors::store::get_object;
+use super::TermString;
 
 pub fn extract_parse_config(
     dialect_subject: &RcTerm,

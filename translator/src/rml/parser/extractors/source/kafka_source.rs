@@ -6,10 +6,10 @@ use sophia_inmem::graph::FastGraph;
 
 
 
-use crate::extractors::{ExtractorResult, FromVocab, RcTerm};
-use crate::extractors::config_extractor::extract_parse_config;
-use crate::rml_model::source_target::{Source, SourceType};
-use crate::TermString;
+use crate::rml::parser::extractors::{ExtractorResult, FromVocab, RcTerm};
+use crate::rml::parser::extractors::config_extractor::extract_parse_config;
+use crate::rml::parser::rml_model::source_target::{Source, SourceType};
+use crate::rml::parser::TermString;
 
 
 lazy_static! {

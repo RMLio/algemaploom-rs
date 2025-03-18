@@ -8,7 +8,7 @@ use sophia_term::{RcTerm, Term};
 
 use super::join::JoinCondition;
 use super::source_target::LogicalTarget;
-use crate::{IriString, TermString};
+use crate::rml::parser::{IriString, TermString};
 
 lazy_static! {
     static ref TEMPLATE_REGEX: Regex = Regex::new(r"\{([^\{\}]+)\}").unwrap();

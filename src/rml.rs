@@ -1,8 +1,8 @@
 use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
-use rml_interpreter::extractors::io::{parse_file, parse_str};
-use translator::rmlalgebra::OptimizedRMLDocumentTranslator;
+use translator::rml::parser::extractors::io::{parse_file, parse_str};
+use translator::rml::OptimizedRMLDocumentTranslator;
 use translator::LanguageTranslator;
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};

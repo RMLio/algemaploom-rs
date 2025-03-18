@@ -10,8 +10,8 @@ use sophia_term::RcTerm;
 use super::error::ParseError;
 use super::store::{get_object, get_objects};
 use super::{Extractor, ExtractorResult, FromVocab};
-use crate::rml_model::source_target::LogicalTarget;
-use crate::rml_model::term_map::{FunctionMap, TermMapInfo, TermMapType};
+use crate::rml::parser::rml_model::source_target::LogicalTarget;
+use crate::rml::parser::rml_model::term_map::{FunctionMap, TermMapInfo, TermMapType};
 
 fn extract_term_map_type_value(
     subject_ref: &RcTerm,
@@ -161,9 +161,9 @@ mod tests {
     use sophia_api::triple::Triple;
 
     use super::*;
-    use crate::extractors::io::load_graph_bread;
-    use crate::extractors::ExtractorResult;
-    use crate::rml_model::term_map::TermMapType;
+    use crate::rml::parser::extractors::io::load_graph_bread;
+    use crate::rml::parser::extractors::ExtractorResult;
+    use crate::rml::parser::rml_model::term_map::TermMapType;
     use crate::{load_graph, test_case};
 
     #[test]

@@ -2,8 +2,8 @@ use sophia_api::term::TermKind;
 
 
 use super::{Extractor, ExtractorResult, FromVocab, TermMapExtractor};
-use crate::extractors::error::ParseError;
-use crate::rml_model::term_map::{GraphMap, TermMapInfo};
+use crate::rml::parser::extractors::error::ParseError;
+use crate::rml::parser::rml_model::term_map::{GraphMap, TermMapInfo};
 
 impl TermMapExtractor<GraphMap> for GraphMap {
     fn get_term_map_info(&self) -> TermMapInfo {

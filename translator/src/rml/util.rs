@@ -2,9 +2,9 @@ use std::collections::{HashMap, HashSet};
 use std::vec;
 
 use operator::Target;
-use rml_interpreter::rml_model::source_target::LogicalTarget;
-use rml_interpreter::rml_model::term_map::{GraphMap, SubjectMap, TermMapInfo};
-use rml_interpreter::rml_model::{Document, PredicateObjectMap, TriplesMap};
+use crate::rml::parser::rml_model::source_target::LogicalTarget;
+use crate::rml::parser::rml_model::term_map::{GraphMap, SubjectMap, TermMapInfo};
+use crate::rml::parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
 use sophia_api::term::TTerm;
 
 use super::types::{Quad, RefPOM, Triple};

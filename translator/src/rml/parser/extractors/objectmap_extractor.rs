@@ -4,13 +4,13 @@ use sophia_term::RcTerm;
 
 use super::error::ParseError;
 use super::{ExtractorResult, FromVocab, TermMapExtractor};
-use crate::extractors::store::{get_object, get_objects};
-use crate::extractors::Extractor;
-use crate::rml_model::join::JoinCondition;
-use crate::rml_model::term_map::{
+use crate::rml::parser::extractors::store::{get_object, get_objects};
+use crate::rml::parser::extractors::Extractor;
+use crate::rml::parser::rml_model::join::JoinCondition;
+use crate::rml::parser::rml_model::term_map::{
     GraphMap, ObjectMap, TermMapInfo, TermMapType,
 };
-use crate::IriString;
+use crate::rml::parser::IriString;
 
 fn extract_join_condition(
     subject_ref: &RcTerm,
@@ -142,9 +142,11 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 #[cfg(test)]
 mod tests {
 
+    use sophia_api::triple::Triple;
+    use sophia_api::graph::Graph;
     use super::*;
     use crate::import_test_mods;
-    use crate::rml_model::term_map::TermMapType;
+    use crate::rml::parser::rml_model::term_map::TermMapType;
 
     import_test_mods!();
 

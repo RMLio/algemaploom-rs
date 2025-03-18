@@ -9,7 +9,7 @@ use sophia_turtle::parser::turtle;
 use super::error::ParseError;
 use super::triplesmap_extractor::extract_triples_maps;
 use super::ExtractorResult;
-use crate::rml_model::Document;
+use crate::rml::parser::rml_model::Document;
 
 fn extract_base_iri(input: &str) -> Option<String> {
     input.strip_prefix("@base").map(|e| e[0..e.len()-1].replace(['<', '>'], "").trim().to_string())

@@ -2,8 +2,8 @@ use sophia_api::term::TTerm;
 
 use super::store::get_objects;
 use super::{Extractor, FromVocab};
-use crate::rml_model::term_map::FunctionMap;
-use crate::rml_model::PredicateObjectMap;
+use crate::rml::parser::rml_model::term_map::FunctionMap;
+use crate::rml::parser::rml_model::PredicateObjectMap;
 
 impl Extractor<FunctionMap> for FunctionMap {
     fn extract_self(
@@ -67,10 +67,10 @@ mod tests {
     use sophia_term::Term;
 
     use super::*;
-    use crate::extractors::io::load_graph_bread;
-    use crate::extractors::ExtractorResult;
+    use crate::rml::parser::extractors::io::load_graph_bread;
+    use crate::rml::parser::extractors::ExtractorResult;
     
-    use crate::rml_model::term_map::{TermMapInfo};
+    use crate::rml::parser::rml_model::term_map::{TermMapInfo};
     use crate::{load_graph, test_case};
 
     #[test]
@@ -97,7 +97,7 @@ mod tests {
         let expected_term_info = TermMapInfo {
             identifier:      "".to_string(),
             logical_targets: HashSet::new(),
-            term_map_type:   crate::rml_model::term_map::TermMapType::Reference,
+            term_map_type:   crate::rml::parser::rml_model::term_map::TermMapType::Reference,
             term_value:      Term::new_literal_dt(
                 "Name",
                 vocab::xsd::TYPE::XSD_STRING.to_term(),

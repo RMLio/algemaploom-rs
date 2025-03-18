@@ -568,7 +568,6 @@ dependencies = [
  "plangenerator",
  "pyo3",
  "regex",
- "rml-interpreter",
  "serde_json",
  "thiserror",
  "translator",
@@ -874,25 +873,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rml-interpreter"
-version = "0.2.0"
-dependencies = [
- "anyhow",
- "clap",
- "lazy_static",
- "operator",
- "regex",
- "serde",
- "serde_json",
- "sophia_api",
- "sophia_inmem",
- "sophia_term",
- "sophia_turtle",
- "uuid",
- "vocab",
-]
-
-[[package]]
 name = "rustix"
 version = "0.38.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1191,7 +1171,6 @@ dependencies = [
  "operator",
  "plangenerator",
  "regex",
- "rml-interpreter",
  "serde",
  "serde_json",
  "sophia_api",

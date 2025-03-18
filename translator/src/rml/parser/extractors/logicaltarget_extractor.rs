@@ -7,9 +7,9 @@ use sophia_term::iri::Iri;
 use sophia_term::RcTerm;
 
 use super::{Extractor, ExtractorResult};
-use crate::extractors::store::get_object;
-use crate::extractors::FromVocab;
-use crate::rml_model::source_target::LogicalTarget;
+use crate::rml::parser::extractors::store::get_object;
+use crate::rml::parser::extractors::FromVocab;
+use crate::rml::parser::rml_model::source_target::LogicalTarget;
 
 fn extract_output_target(
     target_subject: &RcTerm,

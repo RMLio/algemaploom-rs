@@ -1,6 +1,7 @@
 mod operators;
 mod types;
 mod util;
+pub mod parser;
 
 use std::borrow::Cow;
 use std::cell::RefCell;
@@ -15,9 +16,9 @@ use plangenerator::error::PlanError;
 use plangenerator::states::join::join;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
-use rml_interpreter::extractors::TermMapExtractor;
-use rml_interpreter::rml_model::term_map::SubjectMap;
-use rml_interpreter::rml_model::{Document, PredicateObjectMap, TriplesMap};
+use parser::extractors::TermMapExtractor;
+use parser::rml_model::term_map::SubjectMap;
+use parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
 use util::extract_tm_infos_from_sm_poms;
 
 use self::operators::extend::*;
@@ -405,9 +406,9 @@ mod tests {
     use std::borrow::Borrow;
     use std::collections::HashSet;
 
-    use rml_interpreter::extractors::io::parse_file;
-    use rml_interpreter::extractors::triplesmap_extractor::extract_triples_maps;
-    use rml_interpreter::rml_model::term_map::{self, TermMapInfo};
+    use parser::extractors::io::parse_file;
+    use parser::extractors::triplesmap_extractor::extract_triples_maps;
+    use parser::rml_model::term_map::{self, TermMapInfo};
     use sophia_term::Term;
     use util::{extract_tm_infos_from_poms, extract_tm_infos_from_tm};
 

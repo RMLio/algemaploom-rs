@@ -1,9 +1,9 @@
 use sophia_term::RcTerm;
 
 use super::Extractor;
-use crate::extractors::TermMapExtractor;
-use crate::rml_model::term_map::{GraphMap, ObjectMap, PredicateMap};
-use crate::rml_model::PredicateObjectMap;
+use crate::rml::parser::extractors::TermMapExtractor;
+use crate::rml::parser::rml_model::term_map::{GraphMap, ObjectMap, PredicateMap};
+use crate::rml::parser::rml_model::PredicateObjectMap;
 
 impl Extractor<PredicateObjectMap> for PredicateObjectMap {
     fn extract_self(

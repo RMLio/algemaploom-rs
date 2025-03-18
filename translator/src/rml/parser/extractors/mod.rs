@@ -6,9 +6,9 @@ use sophia_term::{RcTerm, Term};
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
-use crate::extractors::store::get_objects;
-use crate::rml_model::term_map::TermMapInfo;
-use crate::TermString;
+use super::extractors::store::get_objects;
+use super::rml_model::term_map::TermMapInfo;
+use super::TermString;
 
 pub mod error;
 mod functionmap_extractor;

@@ -5,10 +5,10 @@ use std::rc::Rc;
 use operator::Target;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
-use rml_interpreter::rml_model::term_map::{
+use crate::rml::parser::rml_model::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
-use rml_interpreter::rml_model::{PredicateObjectMap, TriplesMap};
+use crate::rml::parser::rml_model::{PredicateObjectMap, TriplesMap};
 
 #[derive(Debug, Clone)]
 pub struct RefPOM<'a> {

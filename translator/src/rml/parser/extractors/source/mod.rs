@@ -12,9 +12,9 @@ use sophia_inmem::graph::FastGraph;
 use self::csvw_source::extract_csvw_source;
 use super::error::ParseError;
 use super::{Extractor, ExtractorResult, RcTerm};
-use crate::extractors::store::get_object;
-use crate::extractors::FromVocab;
-use crate::rml_model::source_target::{Source, SourceType};
+use crate::rml::parser::extractors::store::get_object;
+use crate::rml::parser::extractors::FromVocab;
+use crate::rml::parser::rml_model::source_target::{Source, SourceType};
 
 impl Extractor<Source> for Source {
     fn extract_self(

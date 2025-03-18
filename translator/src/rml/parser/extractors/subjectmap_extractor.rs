@@ -4,10 +4,10 @@ use sophia_term::RcTerm;
 use super::error::ParseError;
 use super::store::get_objects;
 use super::{Extractor, TermMapExtractor};
-use crate::extractors::FromVocab;
-use crate::rml_model::source_target::LogicalTarget;
-use crate::rml_model::term_map::{GraphMap, SubjectMap, TermMapInfo};
-use crate::IriString;
+use crate::rml::parser::extractors::FromVocab;
+use crate::rml::parser::rml_model::source_target::LogicalTarget;
+use crate::rml::parser::rml_model::term_map::{GraphMap, SubjectMap, TermMapInfo};
+use crate::rml::parser::IriString;
 
 impl TermMapExtractor<SubjectMap> for SubjectMap {
     fn create_constant_map(tm_info: TermMapInfo) -> SubjectMap {
@@ -107,9 +107,9 @@ mod tests {
     use sophia_api::graph::Graph;
     use sophia_api::triple::Triple;
 
-    use crate::extractors::io::load_graph_bread;
-    use crate::extractors::{ExtractorResult, FromVocab, TermMapExtractor};
-    use crate::rml_model::term_map::{SubjectMap, TermMapType};
+    use crate::rml::parser::extractors::io::load_graph_bread;
+    use crate::rml::parser::extractors::{ExtractorResult, FromVocab, TermMapExtractor};
+    use crate::rml::parser::rml_model::term_map::{SubjectMap, TermMapType};
     use crate::{load_graph, test_case};
 
     #[test]
