@@ -1,7 +1,7 @@
 [package]
 name = "meamer-rs"
-version = "0.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 
 [profile.release]
@@ -10,6 +10,11 @@ opt-level = 3
 [workspace]
 members = ["operator", "vocab", "plan", "translator"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.package]
+version = "0.2.0"
+authors = ["Sitt Min Oo"]
+edition = "2021"
 
 [workspace.dependencies]
 anyhow = "1.0.71"
