@@ -152,7 +152,7 @@ mod tests {
 
     #[test]
     fn map_object_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("sample_mapping.ttl")?;
+        let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let map_pred = vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm();
         let container_vec = graph
             .triples_with_p(&map_pred)

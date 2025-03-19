@@ -74,7 +74,7 @@ mod tests {
 
     #[test]
     fn logical_source_extract_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("sample_mapping.ttl")?;
+        let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
 
@@ -91,7 +91,7 @@ mod tests {
 
     #[test]
     fn input_type_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("sample_mapping.ttl")?;
+        let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
 
@@ -119,7 +119,7 @@ mod tests {
 
     #[test]
     fn no_reference_formulation_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("sample_mapping_no_reference.ttl")?;
+        let graph: FastGraph = load_graph!("rml/sample_mapping_no_reference.ttl")?;
         let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
 

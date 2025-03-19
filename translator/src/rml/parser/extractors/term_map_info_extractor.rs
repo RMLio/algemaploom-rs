@@ -168,7 +168,7 @@ mod tests {
 
     #[test]
     fn term_map_info_extraction_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("sample_mapping.ttl")?;
+        let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
         let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
         let sub_ref = triple.o();

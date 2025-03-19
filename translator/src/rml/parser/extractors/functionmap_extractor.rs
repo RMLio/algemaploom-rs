@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn fno_function_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("function_mapping.ttl")?;
+        let graph: FastGraph = load_graph!("rml/function_mapping.ttl")?;
 
         // Function map IRI extraction
         let predicate_object_map_pred =

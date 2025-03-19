@@ -75,7 +75,7 @@ mod tests {
 
     #[test]
     fn create_const_predicatemap_test() -> ExtractorResult<()> {
-        let graph = load_graph!("sample_mapping.ttl")?;
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let pm_const_pred = vocab::r2rml::PROPERTY::PREDICATE.to_rcterm();
         let triples = graph.triples_with_p(&pm_const_pred);
         let values = triples.flatten().map(|trip| trip.o().to_owned());

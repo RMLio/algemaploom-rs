@@ -87,7 +87,7 @@ mod tests {
 
     #[test]
     fn one_tm_test() -> ExtractorResult<()> {
-        let path = PathBuf::from(test_case!("sample_mapping.ttl"));
+        let path = PathBuf::from(test_case!("rml/sample_mapping.ttl"));
         let parsed_res = parse_file(path)?;
 
         // One TriplesMap should be parsed
@@ -98,7 +98,7 @@ mod tests {
 
     #[test]
     fn multiple_tm_test() {
-        let path = PathBuf::from(test_case!("multiple_tm.ttl"));
+        let path = PathBuf::from(test_case!("rml/multiple_tm.ttl"));
         let parsed_res = parse_file(path);
 
         assert!(parsed_res.is_ok());
