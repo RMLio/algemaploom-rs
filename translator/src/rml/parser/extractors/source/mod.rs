@@ -6,12 +6,12 @@ mod tcp_source;
 
 use std::collections::HashMap;
 
-use sophia_api::term::TTerm;
+use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
 use self::csvw_source::extract_csvw_source;
 use super::error::ParseError;
-use super::{Extractor, ExtractorResult, RcTerm};
+use super::{rcterm_to_string, Extractor, ExtractorResult, RcTerm};
 use crate::rml::parser::extractors::store::get_object;
 use crate::rml::parser::extractors::FromVocab;
 use crate::rml::parser::rml_model::source_target::{Source, SourceType};
@@ -30,7 +30,7 @@ impl Extractor<Source> for Source {
                 let mut config = HashMap::new();
                 config.insert(
                     "path".to_string(),
-                    subject_ref.value().to_string(),
+                    rcterm_to_string(subject_ref),
                 );
                 Ok(Source {
                     source_type: SourceType::FileInput,
@@ -40,7 +40,7 @@ impl Extractor<Source> for Source {
 
             _ => {
                 Err(ParseError::GenericError(format!(
-                    "Variables cannot be parsed as Source {}",
+                    "Variables cannot be parsed as Source {:?}",
                     subject_ref
                 )))
             }
@@ -56,12 +56,12 @@ fn extract_typed_source(
     let source_type = get_object(graph, subject, &type_pred)?;
 
     let match_result = match source_type {
-        sophia_term::Term::Iri(iri) => Ok(iri),
+        RcTerm::Iri(_) => Ok(source_type),
         _ => {
-            Err(ParseError::GenericError(
-                "Object of predicate 'a' cannot be Literal".to_string(),
-            ))
-        }
+                Err(ParseError::GenericError(
+                    "Object of predicate 'a' cannot be Literal".to_string(),
+                ))
+            }
     }?;
 
     match match_result {

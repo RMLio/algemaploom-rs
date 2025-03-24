@@ -4,12 +4,12 @@ use std::hash::Hash;
 
 use operator::formats::DataFormat;
 use operator::{IOType, Target};
-
-use sophia_api::term::TTerm;
-use sophia_term::iri::Iri;
+use sophia_api::prelude::Iri;
+use sophia_api::term::{FromTerm, Term};
+use sophia_term::RcTerm;
 use vocab::ToString;
 
-use crate::rml::parser::extractors::FromVocab;
+use crate::rml::parser::extractors::{rcterm_to_string, FromVocab};
 use crate::rml::parser::IriString;
 
 #[derive(Debug, Clone, Eq)]
@@ -17,7 +17,7 @@ pub struct LogicalSource {
     pub identifier:            String,
     pub iterator:              Option<String>,
     pub source:                Source,
-    pub reference_formulation: IriString,
+    pub reference_formulation: RcTerm,
 }
 impl PartialEq for LogicalSource {
     fn eq(&self, other: &Self) -> bool {
@@ -48,8 +48,8 @@ pub fn default_file_output(path: String) -> Output {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LogicalTarget {
     pub identifier:    String,
-    pub compression:   Option<IriString>,
-    pub serialization: IriString,
+    pub compression:   Option<RcTerm>,
+    pub serialization: RcTerm,
     pub output_type:   IOType,
     pub config:        HashMap<String, String>,
 }
@@ -59,8 +59,9 @@ impl Default for LogicalTarget {
         Self {
             identifier:    String::from("default"),
             compression:   Default::default(),
-            serialization: Iri::new(vocab::formats::CLASS::NQUADS.to_string())
-                .unwrap(),
+            serialization: RcTerm::from_term(Iri::new_unchecked(
+                vocab::formats::CLASS::NQUADS.to_string(),
+            )),
             output_type:   Default::default(),
             config:        Default::default(),
         }
@@ -73,7 +74,7 @@ impl Hash for LogicalTarget {
     }
 }
 
-fn serialization_to_dataformat(serialization: &IriString) -> DataFormat {
+fn serialization_to_dataformat(serialization: &RcTerm) -> DataFormat {
     match serialization.to_owned() {
         ser_iri_string
             if ser_iri_string == vocab::formats::CLASS::TURTLE.to_rcterm() =>
@@ -108,7 +109,7 @@ impl From<&LogicalTarget> for operator::Target {
         if let Some(comp_iri) = val.compression.as_ref() {
             configuration.insert(
                 "compresssion".to_string(),
-                comp_iri.value().to_string(),
+                rcterm_to_string(comp_iri),
             );
         }
         configuration.extend(val.config.clone());
@@ -140,7 +141,7 @@ pub enum SourceType {
     FileInput,
     RDB,
     Kafka,
-    TCP
+    TCP,
 }
 
 impl Display for SourceType {
@@ -150,7 +151,7 @@ impl Display for SourceType {
             SourceType::FileInput => write!(f, "FileInput"),
             SourceType::RDB => write!(f, "RDataBase"),
             SourceType::Kafka => write!(f, "Kafka Stream"),
-            SourceType::TCP => write!(f, "Websocket")
+            SourceType::TCP => write!(f, "Websocket"),
         }
     }
 }

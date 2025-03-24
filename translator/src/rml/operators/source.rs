@@ -2,9 +2,10 @@ use std::collections::HashSet;
 
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Iterator, Source};
+use crate::rml::parser::extractors::FromVocab;
 use crate::rml::parser::rml_model::source_target::SourceType;
 use crate::rml::parser::rml_model::TriplesMap;
-use sophia_api::term::TTerm;
+use sophia_api::term::Term;
 use vocab::ToString;
 
 use crate::rml::util::extract_references_in_tm;
@@ -19,14 +20,14 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
     fn translate(&self) -> Source {
         let tm = self.tm;
         let reference_formulation =
-            match tm.logical_source.reference_formulation.value().to_string() {
-                iri if iri == vocab::query::CLASS::CSV.to_string() => {
+            match &tm.logical_source.reference_formulation {
+                iri if *iri == vocab::query::CLASS::CSV.to_rcterm() => {
                     ReferenceFormulation::CSVRows
                 }
-                iri if iri == vocab::query::CLASS::JSONPATH.to_string() => {
+                iri if *iri == vocab::query::CLASS::JSONPATH.to_rcterm() => {
                     ReferenceFormulation::JSONPath
                 }
-                iri if iri == vocab::query::CLASS::XPATH.to_string() => {
+                iri if *iri == vocab::query::CLASS::XPATH.to_rcterm() => {
                     ReferenceFormulation::XMLPath
                 }
                 _ => ReferenceFormulation::CSVRows,
@@ -54,7 +55,6 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         };
 
         let config = tm.logical_source.source.config.clone();
-        println!("config: {:?}", config);
         let source_type = match tm.logical_source.source.source_type {
             SourceType::CSVW => operator::IOType::File,
             SourceType::FileInput => operator::IOType::File,

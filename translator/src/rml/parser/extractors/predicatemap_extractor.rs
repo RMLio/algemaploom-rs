@@ -65,6 +65,8 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
 #[cfg(test)]
 mod tests {
 
+    use sophia_api::prelude::Any;
+    use sophia_api::term::FromTerm;
     use sophia_api::triple::Triple;
     use sophia_api::graph::Graph;
     use super::*;
@@ -77,9 +79,10 @@ mod tests {
     fn create_const_predicatemap_test() -> ExtractorResult<()> {
         let graph = load_graph!("rml/sample_mapping.ttl")?;
         let pm_const_pred = vocab::r2rml::PROPERTY::PREDICATE.to_rcterm();
-        let triples = graph.triples_with_p(&pm_const_pred);
+        let triples = graph.triples_matching(Any, [pm_const_pred], Any);
         let values = triples.flatten().map(|trip| trip.o().to_owned());
         let pms: Vec<PredicateMap> = values
+            .map(|map_const_simp| RcTerm::from_term(map_const_simp))
             .map(|map_const| {
                 PredicateMap::extract_constant_term_map(&map_const)
             })

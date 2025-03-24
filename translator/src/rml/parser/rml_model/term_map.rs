@@ -3,12 +3,14 @@ use std::hash::Hash;
 
 use lazy_static::lazy_static;
 use regex::Regex;
-use sophia_api::term::{TTerm, TermKind};
-use sophia_term::{RcTerm, Term};
+use sophia_api::ns::IriRef;
+use sophia_api::term::{BnodeId, FromTerm, Term, TermKind};
+use sophia_term::{GenericLiteral, RcTerm};
+use vocab::ToString;
 
 use super::join::JoinCondition;
 use super::source_target::LogicalTarget;
-use crate::rml::parser::{IriString, TermString};
+use crate::rml::parser::extractors::rcterm_to_string;
 
 lazy_static! {
     static ref TEMPLATE_REGEX: Regex = Regex::new(r"\{([^\{\}]+)\}").unwrap();
@@ -33,7 +35,7 @@ pub struct TermMapInfo {
     pub identifier:      String,
     pub logical_targets: HashSet<LogicalTarget>,
     pub term_map_type:   TermMapType,
-    pub term_value:      TermString,
+    pub term_value:      RcTerm,
     pub term_type:       Option<TermKind>,
     pub fun_map_opt:     Option<FunctionMap>,
 }
@@ -41,7 +43,7 @@ pub struct TermMapInfo {
 impl Hash for TermMapInfo {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.identifier.hash(state);
-        self.term_value.hash(state);
+        Term::hash(&self.term_value, state);
         self.term_type.hash(state);
         self.term_map_type.hash(state);
     }
@@ -55,7 +57,9 @@ impl Default for TermMapInfo {
         Self {
             identifier: Default::default(),
             term_map_type: TermMapType::Constant,
-            term_value: Term::new_bnode("qsdkfldsfj").unwrap(),
+            term_value: RcTerm::BlankNode(BnodeId::new_unchecked(
+                "ksldjfsdf".into(),
+            )),
             term_type: Default::default(),
             fun_map_opt: Default::default(),
             logical_targets,
@@ -65,15 +69,16 @@ impl Default for TermMapInfo {
 
 impl TermMapInfo {
     pub fn prefix_attributes(&mut self, prefix: &str) {
-        let mut term_value = self.term_value.clone();
-        term_value = match self.term_map_type {
-            TermMapType::Constant => term_value,
+        let term_value = self.term_value.clone();
+
+        let term_value_string = term_value.lexical_form().unwrap().to_string();
+        let prefixed_term_value_string: String = match self.term_map_type {
+            TermMapType::Constant => term_value_string,
             TermMapType::Reference => {
-                term_value.map(|val| format!("{}_{}", prefix, val))
+                format!("{}_{}", prefix, term_value_string)
             }
             TermMapType::Template => {
-                term_value
-                    .map(|val| prefix_attributes_from_template(&val, prefix))
+                prefix_attributes_from_template(&term_value_string, prefix)
             }
             TermMapType::Function => {
                 self.fun_map_opt
@@ -82,16 +87,19 @@ impl TermMapInfo {
                     .param_om_pairs
                     .iter_mut()
                     .for_each(|(_, om)| om.tm_info.prefix_attributes(prefix));
-                term_value
+                term_value_string
             }
         };
 
-        self.term_value = term_value;
+        self.term_value = RcTerm::from_term(GenericLiteral::Typed(
+            prefixed_term_value_string.into(),
+            IriRef::new_unchecked(vocab::xsd::TYPE::XSD_STRING.to_string()),
+        ));
     }
 
     pub fn get_attributes(&self) -> HashSet<String> {
         let tm_info = self;
-        let value = tm_info.term_value.value().to_string();
+        let value = rcterm_to_string(&tm_info.term_value);
         match tm_info.term_map_type {
             TermMapType::Constant => HashSet::new(),
             TermMapType::Reference => vec![value].into_iter().collect(),
@@ -112,28 +120,22 @@ impl TermMapInfo {
     }
     pub fn from_constant_value(const_value: RcTerm) -> TermMapInfo {
         let identifier = match const_value.clone() {
-            Term::Iri(iri) => Term::Iri(iri.map(|i| i.to_string())),
-            Term::BNode(bnode) => Term::BNode(bnode.map(|i| i.to_string())),
-            Term::Literal(lit) => {
-                Term::new_bnode(format!(
-                    "{}-{}",
-                    lit.txt(),
-                    uuid::Uuid::new_v4()
-                ))
-                .unwrap()
+            RcTerm::Iri(iri) => iri.to_string(),
+            RcTerm::BlankNode(bnode) => bnode.to_string(),
+            RcTerm::Literal(lit) => {
+                format!("{}-{}", lit.get_lexical_form(), uuid::Uuid::new_v4())
             }
-            Term::Variable(_) => {
-                panic!("Variable not supported yet!")
+            _ => {
+                panic!("{:?} Type not supported yet!", const_value.kind())
             }
-        }
-        .to_string();
+        };
 
         let term_type = Some(const_value.kind());
 
         TermMapInfo {
             identifier,
             term_map_type: TermMapType::Constant,
-            term_value: const_value.map(|i| i.to_string()),
+            term_value: const_value,
             term_type,
             fun_map_opt: None,
             ..Default::default()
@@ -151,10 +153,9 @@ pub enum TermMapType {
 #[derive(Debug, Clone, Hash)]
 pub struct SubjectMap {
     pub tm_info:    TermMapInfo,
-    pub classes:    Vec<IriString>,
+    pub classes:    Vec<RcTerm>,
     pub graph_maps: Vec<GraphMap>,
 }
-
 
 #[derive(Debug, Clone, Hash)]
 pub struct PredicateMap {
@@ -165,9 +166,9 @@ pub struct PredicateMap {
 #[derive(Debug, Clone, Hash)]
 pub struct ObjectMap {
     pub tm_info:        TermMapInfo,
-    pub parent_tm:      Option<IriString>,
+    pub parent_tm:      Option<RcTerm>,
     pub join_condition: Option<JoinCondition>,
-    pub data_type:      Option<IriString>,
+    pub data_type:      Option<RcTerm>,
     pub language:       Option<String>,
     pub graph_maps:     Vec<GraphMap>,
 }

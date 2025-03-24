@@ -1,9 +1,9 @@
-use sophia_api::term::{TTerm, TermKind};
+use sophia_api::term::{Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::error::ParseError;
-use super::{ExtractorResult, FromVocab, TermMapExtractor};
+use super::{rcterm_to_string, ExtractorResult, FromVocab, TermMapExtractor};
 use crate::rml::parser::extractors::store::{get_object, get_objects};
 use crate::rml::parser::extractors::Extractor;
 use crate::rml::parser::rml_model::join::JoinCondition;
@@ -22,13 +22,13 @@ fn extract_join_condition(
     let child_pred = vocab::r2rml::PROPERTY::CHILD.to_rcterm();
     let child_attributes = get_objects(graph_ref, &jc_iri, &child_pred)
         .iter()
-        .map(|term| term.value().to_string())
+        .map(|term| rcterm_to_string(term))
         .collect();
 
     let parent_pred = vocab::r2rml::PROPERTY::PARENT.to_rcterm();
     let parent_attributes = get_objects(graph_ref, &jc_iri, &parent_pred)
         .iter()
-        .map(|term| term.value().to_string())
+        .map(|term| rcterm_to_string(term))
         .collect();
 
     Ok(JoinCondition {
@@ -40,10 +40,9 @@ fn extract_join_condition(
 fn extract_parent_tm(
     subject_ref: &RcTerm,
     graph_ref: &FastGraph,
-) -> ExtractorResult<IriString> {
+) -> ExtractorResult<RcTerm> {
     let parent_tm_pred = vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_rcterm();
     get_object(graph_ref, subject_ref, &parent_tm_pred)
-        .map(|rcterm| IriString::new(rcterm.value()).unwrap())
 }
 
 impl TermMapExtractor<ObjectMap> for ObjectMap {
@@ -66,16 +65,13 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         graph_ref: &FastGraph,
     ) -> super::ExtractorResult<ObjectMap> {
         let dtype_pred = vocab::r2rml::PROPERTY::DATATYPE.to_rcterm();
-        let data_type: Option<IriString> =
-            get_object(graph_ref, subj_ref, &dtype_pred)
-                .ok()
-                .map(|tshared| tshared.map(|i| i.to_string()))
-                .and_then(|tstring| tstring.try_into().ok());
+        let data_type: Option<RcTerm> =
+            get_object(graph_ref, subj_ref, &dtype_pred).ok();
 
         let lang_pred = vocab::r2rml::PROPERTY::LANGUAGE.to_rcterm();
         let language = get_object(graph_ref, subj_ref, &lang_pred)
             .ok()
-            .map(|tshared| tshared.value_raw().0.to_string());
+            .map(|tshared| rcterm_to_string(&tshared));
         let parent_tm = extract_parent_tm(subj_ref, graph_ref).ok();
         let join_condition = extract_join_condition(subj_ref, graph_ref).ok();
 
@@ -85,7 +81,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         }
 
         if tm_info_res.is_err() && parent_tm.is_some() {
-            let identifier = subj_ref.to_string();
+            let identifier = rcterm_to_string(subj_ref);
             tm_info_res = Ok(TermMapInfo {
                 identifier,
                 term_type: Some(TermKind::Iri),
@@ -142,8 +138,12 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 #[cfg(test)]
 mod tests {
 
-    use sophia_api::triple::Triple;
+
     use sophia_api::graph::Graph;
+    use sophia_api::prelude::Any;
+    use sophia_api::term::FromTerm;
+    use sophia_api::triple::Triple;
+
     use super::*;
     use crate::import_test_mods;
     use crate::rml::parser::rml_model::term_map::TermMapType;
@@ -155,7 +155,7 @@ mod tests {
         let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let map_pred = vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm();
         let container_vec = graph
-            .triples_with_p(&map_pred)
+            .triples_matching(Any, [map_pred], Any)
             .flatten()
             .map(|trip| trip.s().to_owned());
 
@@ -163,7 +163,7 @@ mod tests {
             .flat_map(|objmap_container| {
                 ObjectMap::extract_many_from_container(
                     &graph,
-                    &objmap_container,
+                    &RcTerm::from_term(objmap_container),
                 )
             })
             .flatten()

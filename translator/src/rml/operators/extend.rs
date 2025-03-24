@@ -3,12 +3,13 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 use operator::{Extend, Function, Operator, RcExtendFunction};
 use regex::Regex;
+use sophia_api::term::{Term, TermKind};
+
+use crate::rml::parser::extractors::rcterm_to_string;
 use crate::rml::parser::rml_model::term_map::{
     SubjectMap, TermMapInfo, TermMapType,
 };
 use crate::rml::parser::rml_model::PredicateObjectMap;
-use sophia_api::term::{TTerm, TermKind};
-
 use crate::rml::util::extract_tm_infos_from_sm_poms;
 use crate::OperatorTranslator;
 
@@ -103,7 +104,7 @@ fn extract_function(
     tm_info: &TermMapInfo,
     base_iri: &Option<String>,
 ) -> Function {
-    let term_value = tm_info.term_value.value().to_string();
+    let term_value = rcterm_to_string(&tm_info.term_value);
     let value_function: RcExtendFunction = match tm_info.term_map_type {
         TermMapType::Constant => {
             Function::Constant {
@@ -169,8 +170,7 @@ pub fn translate_extend_pairs(
     poms: &[PredicateObjectMap],
     base_iri: &Option<String>,
 ) -> HashMap<String, Function> {
-
-    let tm_infos = extract_tm_infos_from_sm_poms(sm, poms); 
+    let tm_infos = extract_tm_infos_from_sm_poms(sm, poms);
 
     tm_infos
         .into_iter()

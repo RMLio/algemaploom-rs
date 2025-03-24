@@ -1,15 +1,16 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
+use sophia_api::term::{IriRef, Term};
 use sophia_inmem::graph::FastGraph;
-use sophia_term::{RcTerm, Term};
+use sophia_term::{ArcTerm, RcTerm};
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
 use super::extractors::store::get_objects;
 use super::rml_model::term_map::TermMapInfo;
-use super::TermString;
 
+mod config_extractor;
 pub mod error;
 mod functionmap_extractor;
 mod graphmap_extractor;
@@ -19,14 +20,13 @@ mod logicaltarget_extractor;
 mod objectmap_extractor;
 mod pom_extractor;
 mod predicatemap_extractor;
+mod rdb_logicalsource;
 mod source;
 mod store;
 mod subjectmap_extractor;
 mod term_map_info_extractor;
 pub mod triplesmap_extractor;
 mod util;
-mod config_extractor;
-mod rdb_logicalsource;
 
 pub type ExtractorResult<T> = Result<T, ParseError>;
 
@@ -40,13 +40,11 @@ pub trait TermMapExtractor<T: Debug> {
         graph_ref: &FastGraph,
     ) -> ExtractorResult<T>;
 
-    fn extract_constant_term_map(
-        map_const: &Term<Rc<str>>,
-    ) -> ExtractorResult<T> {
-        if let Term::BNode(_) = map_const {
+    fn extract_constant_term_map(map_const: &RcTerm) -> ExtractorResult<T> {
+        if let RcTerm::BlankNode(_) = map_const {
             return Err(ParseError::GenericError(format!(
                 "Constant-valued term map cannot be a BlankNode"
-            )))
+            )));
         };
 
         let tm_info = TermMapInfo::from_constant_value(map_const.clone());
@@ -89,7 +87,7 @@ pub trait TermMapExtractor<T: Debug> {
 
         if result.is_empty() {
             Err(ParseError::NoTermMapFoundError(format!(
-                "0 TermMap of type {} found for {}",
+                "0 TermMap of type {:?} found for {:?}",
                 map_pred, container_map_subj_ref
             )))
         } else {
@@ -102,29 +100,42 @@ pub trait TermMapExtractor<T: Debug> {
 }
 
 pub trait Extractor<T> {
-    fn extract_identifier(subj_ref: RcTerm) -> Result<TermString, ParseError> {
-        let identifier =
-            subj_ref.to_owned().map(|i| i.to_string());
-        Ok(identifier)
-    }
-
     fn extract_self(
         subject_ref: &RcTerm,
         graph_ref: &FastGraph,
     ) -> ExtractorResult<T>;
 }
 
+
+
+/// .
+///
+/// # Panics
+///
+/// Panics if the given term is of kind "Varialbe" or "Triple".
+pub fn rcterm_to_string(rcterm: &RcTerm) -> String {
+    let re_opt = match rcterm {
+        RcTerm::Iri(iri_ref) => Some(iri_ref.to_string()),
+        RcTerm::BlankNode(bnode_id) => Some(bnode_id.to_string()),
+        RcTerm::Literal(generic_literal) => {
+            Some(generic_literal.get_lexical_form().to_string())
+        }
+        _ => None,
+    };
+
+    re_opt.unwrap()
+}
+
 pub trait FromVocab {
     fn to_rcterm(&self) -> RcTerm;
-
-    fn to_term(&self) -> Term<String>;
+    fn to_arcterm(&self) -> ArcTerm;
 }
 
 impl<'a> FromVocab for PAIR<'a> {
-    fn to_term(&self) -> Term<String> {
-        Term::new_iri(self.to_string()).unwrap()
-    }
     fn to_rcterm(&self) -> RcTerm {
-        Term::new_iri(self.to_string().as_ref()).unwrap()
+        RcTerm::Iri(IriRef::new_unchecked(self.to_string().into()))
+    }
+    fn to_arcterm(&self) -> ArcTerm {
+        ArcTerm::Iri(IriRef::new_unchecked(self.to_string().into()))
     }
 }

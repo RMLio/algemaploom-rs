@@ -1,13 +1,11 @@
 use std::convert::Infallible;
 use std::io;
 
-use sophia_term::TermError;
-
 #[derive(Debug)]
 pub enum ParseError {
     IOErrorStr(String),
     IOError(io::Error),
-    SophiaTermError(TermError),
+    //SophiaTermError(TermError),
     SerdeError(serde_json::Error),
     GenericError(String),
     NoTermMapFoundError(String),
@@ -27,11 +25,11 @@ impl From<Infallible> for ParseError {
     }
 }
 
-impl From<TermError> for ParseError {
-    fn from(value: TermError) -> Self {
-        ParseError::SophiaTermError(value)
-    }
-}
+//impl From<TermError> for ParseError {
+//    fn from(value: TermError) -> Self {
+//        ParseError::SophiaTermError(value)
+//    }
+//}
 
 impl From<io::Error> for ParseError {
     fn from(value: io::Error) -> Self {

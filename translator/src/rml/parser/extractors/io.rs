@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
 
-use sophia_api::triple::stream::TripleSource;
+use sophia_api::source::TripleSource;
 use sophia_inmem::graph::FastGraph;
 use sophia_turtle::parser::turtle;
 

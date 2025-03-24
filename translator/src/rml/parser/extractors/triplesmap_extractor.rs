@@ -1,10 +1,11 @@
 use sophia_api::graph::Graph;
+use sophia_api::prelude::Any;
+use sophia_api::term::{FromTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
-use sophia_term::Term;
 use vocab::ToString;
 
-use super::{Extractor, ExtractorResult, RcTerm};
+use super::{rcterm_to_string, Extractor, ExtractorResult, RcTerm};
 use crate::rml::parser::extractors::store::{get_object, get_objects};
 use crate::rml::parser::extractors::{FromVocab, TermMapExtractor};
 use crate::rml::parser::rml_model::source_target::LogicalSource;
@@ -34,7 +35,7 @@ impl Extractor<TriplesMap> for TriplesMap {
         let po_maps = po_maps_res?;
 
         Ok(TriplesMap {
-            identifier: subject.to_string(),
+            identifier: rcterm_to_string(subject),
             logical_source,
             subject_map,
             po_maps,
@@ -45,21 +46,22 @@ impl Extractor<TriplesMap> for TriplesMap {
 pub fn extract_triples_maps(
     graph: &FastGraph,
 ) -> ExtractorResult<Vec<TriplesMap>> {
-    let old_rml_subject_map: RcTerm = Term::new_iri(vocab::r2rml::PROPERTY::SUBJECTMAP.to_string())?;
-    let rml_core_subject_map: RcTerm = Term::new_iri(vocab::rml_core::PROPERTY::SUBJECTMAP.to_string())?;
-    
-    let old_rml_tm_iter = graph.triples_with_p(&old_rml_subject_map);
-    let rml_core_tm_iter = graph.triples_with_p(&rml_core_subject_map);
-    
+    let old_rml_subject_map: RcTerm =
+        vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
+    let rml_core_subject_map: RcTerm =
+        vocab::rml_core::PROPERTY::SUBJECTMAP.to_rcterm();
+
+    let old_rml_tm_iter =
+        graph.triples_matching(Any, [old_rml_subject_map], Any);
+    let rml_core_tm_iter =
+        graph.triples_matching(Any, [rml_core_subject_map], Any);
+
     old_rml_tm_iter
         .chain(rml_core_tm_iter)
-        .filter_map(|triple| { 
-            triple.ok()
-        })
-        .map(|triple| {
-            TriplesMap::extract_self(triple.s(), graph)
-        })
+        .filter_map(|triple| triple.ok())
+        .map(|sim_triple| RcTerm::from_term(sim_triple.s()))
+        .map(|subj| TriplesMap::extract_self(&subj, graph))
         .collect()
-    
+
     // TODO: if it really needs to be valid at thid point, check for a logical source for old RML
 }

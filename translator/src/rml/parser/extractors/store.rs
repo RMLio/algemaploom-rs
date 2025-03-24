@@ -1,7 +1,8 @@
-use std::fmt::Display;
+use std::fmt::Debug;
 
 use sophia_api::graph::Graph;
-use sophia_api::term::TTerm;
+use sophia_api::prelude::Any;
+use sophia_api::term::{FromTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 
@@ -10,51 +11,54 @@ use super::RcTerm;
 
 pub fn get_subject<TP, TO>(
     graph: &FastGraph,
-    pred: &TP,
-    obj: &TO,
+    pred: TP,
+    obj: TO,
 ) -> Result<RcTerm, ParseError>
 where
-    TP: TTerm + ?Sized + Display,
-    TO: TTerm + ?Sized + Display,
+    TP: Term + Debug + Copy,
+    TO: Term + Debug + Copy,
 {
     graph
-        .triples_with_po(pred, obj)
+        .triples_matching(Any, [pred], [obj])
+        .filter_map(|res| res.ok())
         .next()
-        .map(|trip_res| trip_res.map(|trip| trip.o().to_owned()).unwrap())
+        .map(|trip| RcTerm::from_term(trip.o()))
         .ok_or(ParseError::GenericError(format!(
-            "Subject not found in graph with obj {} and pred {}",
+            "Subject not found in graph with obj {:?} and pred {:?}",
             pred, obj
         )))
 }
 
-
 pub fn get_objects<TS, TP>(
     graph: &FastGraph,
-    subject: &TS,
-    pred: &TP,
+    subject: TS,
+    pred: TP,
 ) -> Vec<RcTerm>
 where
-    TS: TTerm + ?Sized + Display,
-    TP: TTerm + ?Sized + Display,
+    TS: Term + Debug + Copy,
+    TP: Term + Debug + Copy,
 {
     graph
-        .triples_with_sp(subject, pred)
-        .filter_map(|trip_res| trip_res.ok().map(|trip| trip.o().to_owned()))
+        .triples_matching([subject], [pred], Any)
+        .filter_map(|trip_res| {
+            trip_res.ok().map(|trip| RcTerm::from_term(trip.o()))
+        })
         .collect()
 }
+
 pub fn get_object<TS, TP>(
     graph: &FastGraph,
-    subject: &TS,
-    pred: &TP,
+    subject: TS,
+    pred: TP,
 ) -> Result<RcTerm, ParseError>
 where
-    TS: TTerm + ?Sized + Display,
-    TP: TTerm + ?Sized + Display,
+    TS: Term + Debug + Copy,
+    TP: Term + Debug + Copy,
 {
     let mut objects = get_objects(graph, subject, pred);
 
     objects.pop().ok_or(ParseError::GenericError(format!(
-        "Object not found in graph with subj {} and pred {}",
+        "Object not found in graph with subj {:?} and pred {:?}",
         subject, pred
     )))
 }

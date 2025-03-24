@@ -6,7 +6,9 @@ use super::store::get_objects;
 use super::{Extractor, TermMapExtractor};
 use crate::rml::parser::extractors::FromVocab;
 use crate::rml::parser::rml_model::source_target::LogicalTarget;
-use crate::rml::parser::rml_model::term_map::{GraphMap, SubjectMap, TermMapInfo};
+use crate::rml::parser::rml_model::term_map::{
+    GraphMap, SubjectMap, TermMapInfo,
+};
 use crate::rml::parser::IriString;
 
 impl TermMapExtractor<SubjectMap> for SubjectMap {
@@ -52,10 +54,9 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
 
         let class_pred = vocab::r2rml::PROPERTY::CLASS.to_rcterm();
 
-        let classes: Vec<IriString> =
+        let classes: Vec<RcTerm> =
             get_objects(graph_ref, subj_ref, &class_pred)
-                .iter()
-                .map(|item| item.try_into().unwrap())
+                .into_iter()
                 .collect();
 
         let graph_maps =
@@ -88,7 +89,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
             .and_then(|mut sms| {
                 if sms.len() > 1 {
                     Err(ParseError::GenericError(format!(
-                        "There can only be ONE subject map for {}",
+                        "There can only be ONE subject map for {:?}",
                         container_map_subj_ref
                     )))
                 } else {
@@ -105,10 +106,15 @@ mod tests {
     use std::path::PathBuf;
 
     use sophia_api::graph::Graph;
+    use sophia_api::prelude::Any;
+    use sophia_api::term::FromTerm;
     use sophia_api::triple::Triple;
+    use sophia_term::RcTerm;
 
     use crate::rml::parser::extractors::io::load_graph_bread;
-    use crate::rml::parser::extractors::{ExtractorResult, FromVocab, TermMapExtractor};
+    use crate::rml::parser::extractors::{
+        ExtractorResult, FromVocab, TermMapExtractor,
+    };
     use crate::rml::parser::rml_model::term_map::{SubjectMap, TermMapType};
     use crate::{load_graph, test_case};
 
@@ -116,9 +122,14 @@ mod tests {
     fn create_subjectmap_test() -> ExtractorResult<()> {
         let graph = load_graph!("rml/sample_mapping.ttl")?;
         let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
-        let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
+        let triple = graph
+            .triples_matching(Any, [sub_pred], Any)
+            .next()
+            .unwrap()
+            .unwrap();
         let sub_ref = triple.o();
-        let subj_map = SubjectMap::create_term_map(sub_ref, &graph)?;
+        let subj_map =
+            SubjectMap::create_term_map(&RcTerm::from_term(sub_ref), &graph)?;
 
         assert_eq!(subj_map.tm_info.term_map_type, TermMapType::Template);
         assert!(subj_map.classes.len() == 0);

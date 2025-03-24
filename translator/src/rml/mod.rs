@@ -1,7 +1,7 @@
 mod operators;
+pub mod parser;
 mod types;
 mod util;
-pub mod parser;
 
 use std::borrow::Cow;
 use std::cell::RefCell;
@@ -11,14 +11,14 @@ use std::rc::Rc;
 use operator::{Extend, Operator};
 use operators::projection::ProjectionTranslator;
 use operators::source::SourceOpTranslator;
+use parser::extractors::{rcterm_to_string, TermMapExtractor};
+use parser::rml_model::term_map::SubjectMap;
+use parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
 use plangenerator::data_type::RcRefCellPlan;
 use plangenerator::error::PlanError;
 use plangenerator::states::join::join;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
-use parser::extractors::TermMapExtractor;
-use parser::rml_model::term_map::SubjectMap;
-use parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
 use util::extract_tm_infos_from_sm_poms;
 
 use self::operators::extend::*;
@@ -263,14 +263,12 @@ fn add_join_related_ops(
         let oms = &pom.object_maps;
 
         for om in oms.iter() {
-            let ptm_iri = om
-                .parent_tm
-                .as_ref()
-                .ok_or(PlanError::GenericError(format!(
+            let ptm_iri = rcterm_to_string(om.parent_tm.as_ref().ok_or(
+                PlanError::GenericError(format!(
                     "Parent triples map needs to be present in OM: {:#?}",
                     om
-                )))?
-                .to_string();
+                )),
+            )?);
 
             //Search for the plan associated with the parent triples map's IRI
             let (ptm, other_plan) = search_tm_plan_map.get(&ptm_iri).ok_or(
@@ -409,7 +407,10 @@ mod tests {
     use parser::extractors::io::parse_file;
     use parser::extractors::triplesmap_extractor::extract_triples_maps;
     use parser::rml_model::term_map::{self, TermMapInfo};
-    use sophia_term::Term;
+    use sophia_api::ns::rdfs::Literal;
+    use sophia_api::prelude::Iri;
+    use sophia_api::term::{FromTerm, LanguageTag, Term};
+    use sophia_term::{GenericLiteral, RcTerm};
     use util::{extract_tm_infos_from_poms, extract_tm_infos_from_tm};
 
     use super::*;
@@ -474,8 +475,11 @@ mod tests {
         Ok(())
     }
 
-    fn new_term_value(value: String) -> Term<String> {
-        Term::new_literal_dt_unchecked(value, Term::new_iri("string").unwrap())
+    fn new_term_value(value: String) -> RcTerm {
+        RcTerm::from_term(GenericLiteral::LanguageString(
+            value,
+            LanguageTag::new_unchecked("en".to_string()),
+        ))
     }
 
     fn new_hash_set(v: Vec<&str>) -> HashSet<String> {

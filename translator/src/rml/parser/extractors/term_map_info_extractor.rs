@@ -1,17 +1,19 @@
 use std::collections::HashSet;
 
 use sophia_api::graph::Graph;
-use sophia_api::term::TermKind;
+use sophia_api::prelude::Any;
+use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
-use sophia_term::matcher::ANY;
 use sophia_term::RcTerm;
 
 use super::error::ParseError;
 use super::store::{get_object, get_objects};
-use super::{Extractor, ExtractorResult, FromVocab};
+use super::{rcterm_to_string, Extractor, ExtractorResult, FromVocab};
 use crate::rml::parser::rml_model::source_target::LogicalTarget;
-use crate::rml::parser::rml_model::term_map::{FunctionMap, TermMapInfo, TermMapType};
+use crate::rml::parser::rml_model::term_map::{
+    FunctionMap, TermMapInfo, TermMapType,
+};
 
 fn extract_term_map_type_value(
     subject_ref: &RcTerm,
@@ -30,11 +32,10 @@ fn extract_term_map_type_value(
     let ref_pred: RcTerm = vocab::rml::PROPERTY::REFERENCE.to_rcterm();
     let col_pred: RcTerm = vocab::r2rml::PROPERTY::COLUMN.to_rcterm();
 
-    let pred_query =
-        &[&ref_pred, &col_pred, &const_pred, &temp_pred, &fno_pred];
+    let pred_query = [&ref_pred, &col_pred, &const_pred, &temp_pred, &fno_pred];
 
     let mut results_query: Vec<_> = graph_ref
-        .triples_matching(subject_ref, pred_query, &ANY)
+        .triples_matching([subject_ref], pred_query, Any)
         .filter_map(|trip| trip.ok())
         .collect();
 
@@ -59,13 +60,13 @@ fn extract_term_map_type_value(
         func_map if *func_map == fno_pred => Ok(TermMapType::Function),
         leftover => {
             Err(ParseError::GenericError(format!(
-                "Term map type not handled {}",
+                "Term map type not handled {:?}",
                 leftover
             )))
         }
     };
 
-    let term_value = trip.o().to_owned();
+    let term_value = RcTerm::from_term(trip.o());
 
     term_map_type_res.map(|map_type| (map_type, term_value))
 }
@@ -91,15 +92,9 @@ impl Extractor<TermMapInfo> for TermMapInfo {
             let bnode_class = vocab::r2rml::CLASS::BLANKNODE.to_rcterm();
 
             term_type = match term_type_soph {
-                sophia_term::Term::Iri(iri) if iri == iri_class => {
-                    Some(TermKind::Iri)
-                }
-                sophia_term::Term::Iri(iri) if iri == bnode_class => {
-                    Some(TermKind::BlankNode)
-                }
-                sophia_term::Term::Iri(iri) if iri == lit_class => {
-                    Some(TermKind::Literal)
-                }
+                iri if iri == iri_class => Some(TermKind::Iri),
+                iri if iri == bnode_class => Some(TermKind::BlankNode),
+                iri if iri == lit_class => Some(TermKind::Literal),
                 _ => None,
             };
         }
@@ -107,10 +102,10 @@ impl Extractor<TermMapInfo> for TermMapInfo {
         //Implicit term type derivation for constant-valued term maps
         if term_map_type == TermMapType::Constant {
             term_type = match term_value {
-                sophia_term::Term::Iri(_) => Some(TermKind::Iri),
-                sophia_term::Term::BNode(_) => Some(TermKind::BlankNode),
-                sophia_term::Term::Literal(_) => Some(TermKind::Literal),
-                sophia_term::Term::Variable(_) => None,
+                RcTerm::Iri(_) => Some(TermKind::Iri),
+                RcTerm::BlankNode(_) => Some(TermKind::BlankNode),
+                RcTerm::Literal(_) => Some(TermKind::Literal),
+                _ => None,
             };
         }
 
@@ -132,7 +127,7 @@ impl Extractor<TermMapInfo> for TermMapInfo {
             logical_targets.insert(LogicalTarget::default());
         }
 
-        let identifier = subj_ref.to_string();
+        let identifier = rcterm_to_string(subj_ref);
         let mut fun_map_opt = None;
         if term_map_type == TermMapType::Function {
             fun_map_opt =
@@ -143,7 +138,7 @@ impl Extractor<TermMapInfo> for TermMapInfo {
             identifier,
             logical_targets,
             term_map_type,
-            term_value: term_value.map(|rc_str| rc_str.to_string()),
+            term_value,
             term_type,
             fun_map_opt,
         })
@@ -157,7 +152,7 @@ mod tests {
     use std::path::PathBuf;
 
     use sophia_api::graph::Graph;
-    use sophia_api::term::TTerm;
+    use sophia_api::term::Term;
     use sophia_api::triple::Triple;
 
     use super::*;
@@ -170,15 +165,15 @@ mod tests {
     fn term_map_info_extraction_test() -> ExtractorResult<()> {
         let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
-        let triple = graph.triples_with_p(&sub_pred).next().unwrap().unwrap();
-        let sub_ref = triple.o();
+        let triple = graph.triples_matching(Any,[sub_pred], Any).next().unwrap().unwrap();
+        let sub_ref = RcTerm::from_term(triple.o());
 
-        let tm_info = TermMapInfo::extract_self(sub_ref, &graph)?;
+        let tm_info = TermMapInfo::extract_self(&sub_ref, &graph)?;
 
         assert!(tm_info.term_type.is_none());
         assert!(tm_info.term_map_type == TermMapType::Template);
         println!("{:?}", tm_info);
-        assert!(tm_info.term_value.value() == "example/{brand}");
+        assert!(rcterm_to_string(&tm_info.term_value) == "example/{brand}");
 
         Ok(())
     }

@@ -2,12 +2,15 @@ use std::collections::{HashMap, HashSet};
 use std::vec;
 
 use operator::Target;
-use crate::rml::parser::rml_model::source_target::LogicalTarget;
-use crate::rml::parser::rml_model::term_map::{GraphMap, SubjectMap, TermMapInfo};
-use crate::rml::parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
-use sophia_api::term::TTerm;
+use sophia_api::term::Term;
 
+use super::parser::extractors::rcterm_to_string;
 use super::types::{Quad, RefPOM, Triple};
+use crate::rml::parser::rml_model::source_target::LogicalTarget;
+use crate::rml::parser::rml_model::term_map::{
+    GraphMap, SubjectMap, TermMapInfo,
+};
+use crate::rml::parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
 
 pub fn extract_ptm_join_conditions_attributes<'a>(
     tms: Vec<&'a TriplesMap>,
@@ -19,7 +22,7 @@ pub fn extract_ptm_join_conditions_attributes<'a>(
         for pom in poms {
             for om in &pom.object_maps {
                 if let Some(ptm_iri) = &om.parent_tm {
-                    let ptm_iri_string = ptm_iri.to_string();
+                    let ptm_iri_string = rcterm_to_string(ptm_iri);
                     if ptm_iri_string == target_ptm {
                         let value = om
                             .join_condition
@@ -66,7 +69,7 @@ pub fn extract_references_in_tm(
         for other_pom in other_poms {
             for other_om in &other_pom.object_maps {
                 if let Some(ptm_iri) = &other_om.parent_tm {
-                    if *ptm_iri.value() == tm.identifier {
+                    if rcterm_to_string(ptm_iri) == tm.identifier {
                         if let Some(jc_condition) = &other_om.join_condition {
                             references
                                 .extend(jc_condition.parent_attributes.clone());
