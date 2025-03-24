@@ -2,6 +2,7 @@
 name = "meamer-rs"
 version.workspace = true
 edition.workspace = true
+authors.workspace = true
 
 
 [profile.release]
