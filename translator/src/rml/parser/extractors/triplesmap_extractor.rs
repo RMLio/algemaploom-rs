@@ -46,15 +46,22 @@ impl Extractor<TriplesMap> for TriplesMap {
 pub fn extract_triples_maps(
     graph: &FastGraph,
 ) -> ExtractorResult<Vec<TriplesMap>> {
-    let old_rml_subject_map: RcTerm =
-        vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
-    let rml_core_subject_map: RcTerm =
-        vocab::rml_core::PROPERTY::SUBJECTMAP.to_rcterm();
-
-    let old_rml_tm_iter =
-        graph.triples_matching(Any, [old_rml_subject_map], Any);
-    let rml_core_tm_iter =
-        graph.triples_matching(Any, [rml_core_subject_map], Any);
+    let old_rml_tm_iter = graph.triples_matching(
+        Any,
+        [
+            vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm(),
+            vocab::r2rml::PROPERTY::SUBJECT.to_rcterm(),
+        ],
+        Any,
+    );
+    let rml_core_tm_iter = graph.triples_matching(
+        Any,
+        [
+            vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm(),
+            vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),
+        ],
+        Any,
+    );
 
     old_rml_tm_iter
         .chain(rml_core_tm_iter)
