@@ -416,7 +416,7 @@ mod tests {
     use super::*;
     use crate::import_test_mods;
 
-    import_test_mods!();
+    import_test_mods!(rml,parser);
 
     #[ignore]
     #[test]

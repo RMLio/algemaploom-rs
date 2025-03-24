@@ -15,13 +15,13 @@ macro_rules! load_graph {
 
 #[macro_export]
 macro_rules! import_test_mods {
-    () => {
+    ($($module:ident),*) => {
         use std::fs::File;
         use std::io::BufReader;
         use std::path::PathBuf;
 
-        use $crate::rml::parser::extractors::io::load_graph_bread;
-        use $crate::rml::parser::extractors::ExtractorResult;
+        use $crate::$($module::)*extractors::io::load_graph_bread;
+        use $crate::$($module::)*extractors::ExtractorResult;
         use $crate::{load_graph, test_case};
     };
 }

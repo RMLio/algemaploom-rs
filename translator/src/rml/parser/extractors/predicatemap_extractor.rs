@@ -73,7 +73,7 @@ mod tests {
     use crate::import_test_mods;
     use crate::rml::parser::rml_model::term_map::TermMapType;
 
-    import_test_mods!();
+    import_test_mods!(rml,parser);
 
     #[test]
     fn create_const_predicatemap_test() -> ExtractorResult<()> {
