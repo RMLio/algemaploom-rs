@@ -226,9 +226,9 @@ mod tests {
 
         assert_eq!(split_vec[0], "http://example/");
         assert_eq!(split_vec[1], "{id}");
-        assert_eq!(split_vec[2], "/\\{");
+        assert_eq!(split_vec[2], "/{");
         assert_eq!(split_vec[3], "{blah}");
-        assert_eq!(split_vec[4], "\\}");
+        assert_eq!(split_vec[4], "}");
 
         Ok(())
     }
