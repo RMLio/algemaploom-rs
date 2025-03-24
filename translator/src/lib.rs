@@ -3,6 +3,7 @@ use plangenerator::states::Init;
 use plangenerator::Plan;
 
 pub mod rml;
+pub mod new_rml;
 pub mod shexml;
 pub mod normalized_rml; 
 
