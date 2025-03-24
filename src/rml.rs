@@ -1,9 +1,8 @@
-
-
 use plangenerator::error::PlanError;
-use plangenerator::plan::{Init, Plan};
-use rml_interpreter::extractors::io::{parse_file, parse_str};
-use translator::rmlalgebra::OptimizedRMLDocumentTranslator;
+use plangenerator::states::Init;
+use plangenerator::Plan;
+use translator::rml::parser::extractors::io::{parse_file, parse_str};
+use translator::rml::OptimizedRMLDocumentTranslator;
 use translator::LanguageTranslator;
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
@@ -31,10 +30,7 @@ impl FileTranslatorHandler for RMLFileHandler {
 }
 
 impl StringTranslatorHandler for RMLStringHandler {
-    fn translate(
-        &self,
-        mapping: &str
-    ) -> Result<Plan<Init>, PlanError> {
+    fn translate(&self, mapping: &str) -> Result<Plan<Init>, PlanError> {
         let document = parse_str(mapping)
             .map_err(|err| PlanError::GenericError(format!("{:?}", err)))?;
 

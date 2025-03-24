@@ -7,4 +7,5 @@ pub mod CLASS {
     pub const JSONPATH: PAIR = (IRI, "JSONPath");
     pub const CSV: PAIR = (IRI, "CSV");
     pub const XPATH: PAIR = (IRI, "XPath");
+
 }

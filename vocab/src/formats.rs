@@ -14,9 +14,15 @@ pub mod CLASS {
     pub const OWL_XML: PAIR = (IRI, "OWL_XML");
     pub const OWL_FUNCTIONAL: PAIR = (IRI, "OWL_Functional");
     pub const OWL_MANCHESTER: PAIR = (IRI, "OWL_Manchester");
+    pub const POWDER: PAIR = (IRI, "POWDER");
+    pub const POWDER_S: PAIR = (IRI, "POWDER-S");
     pub const TURTLE: PAIR = (IRI, "Turtle");
     pub const TRIG: PAIR = (IRI, "TriG");
     pub const RDFA: PAIR = (IRI, "RDFa");
-    pub const RDFJSON: PAIR = (IRI, "RDF_JSON");
-    pub const RDFXML: PAIR = (IRI, "RDF_XML");
+    pub const RDF_JSON: PAIR = (IRI, "RDF_JSON");
+    pub const RDF_XML: PAIR = (IRI, "RDF_XML");
+    pub const SPARQL_XML: PAIR = (IRI, "SPARQL_Results_XML");
+    pub const SPARQL_JSON: PAIR = (IRI, "SPARQL_Results_JSON");
+    pub const SPARQL_CSV: PAIR = (IRI, "SPARQL_Results_CSV");
+    pub const SPARQL_TSV: PAIR = (IRI, "SPARQL_Results_TSV");
 }

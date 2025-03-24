@@ -2,7 +2,8 @@ use std::rc::Rc;
 
 use log::warn;
 use operator::Function;
-use shexml_interpreter::{
+
+use crate::shexml::parcombi::{
     IndexedShExMLDocument, Object, PrefixNameSpace, ShapeExpression,
 };
 
@@ -21,7 +22,7 @@ pub fn obj_lang_datatype_function(
             })
         } else {
             Some(Function::Iri {
-                base_iri:None,
+                base_iri:       None,
                 inner_function: obj_inner_function.into(),
             })
         }

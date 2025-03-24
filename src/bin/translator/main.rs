@@ -1,14 +1,14 @@
+
 mod cli;
 
 use std::io;
 use std::io::BufRead;
 use std::path::PathBuf;
 
-use ltranslator::api::{process_one_file, process_one_str};
 use log::debug;
+use ltranslator::api::{process_one_file, process_one_str};
 use ltranslator::logger::init_logger;
 use plangenerator::error::PlanError;
-
 use walkdir::WalkDir;
 
 pub fn main() -> Result<(), PlanError> {
@@ -16,6 +16,7 @@ pub fn main() -> Result<(), PlanError> {
 
     let matches = cli.cmd.get_matches();
     let debug_flag_count = *matches.get_one::<u8>("debug").unwrap();
+    let json_only = (*matches.get_one::<u8>("json").unwrap()) >= 1;
     init_logger(debug_flag_count >= 1)
         .map_err(|err| PlanError::GenericError(err.to_string()))?;
 
@@ -30,8 +31,7 @@ pub fn main() -> Result<(), PlanError> {
             let derived_string = derived_prefix.to_string_lossy();
             let _ = output_prefix.insert(derived_string.to_string());
         }
-
-        process_one_file(file_path, output_prefix);
+        process_one_file(file_path, output_prefix, json_only);
     } else if let Some(folder_matches) = matches.subcommand_matches("folder") {
         let folder_path_string: &String =
             folder_matches.get_one("FOLDER").unwrap();
@@ -56,16 +56,13 @@ pub fn main() -> Result<(), PlanError> {
                 + "/"
                 + &input_path.file_stem().unwrap().to_string_lossy();
 
-            process_one_file(
-                input_path.to_path_buf(),
-                Some(output_prefix),
-            );
+            process_one_file(input_path.to_path_buf(), Some(output_prefix), json_only);
         }
     } else if let Some(_stdin_matches) = matches.subcommand_matches("stdin") {
         let mut mapping = String::new();
         let stdin = io::stdin();
         for line in stdin.lock().lines() {
-           mapping = String::from(mapping + line.unwrap().clone().as_str());
+            mapping = String::from(mapping + line.unwrap().clone().as_str());
         }
 
         debug!("Attempting to translate from stdin");

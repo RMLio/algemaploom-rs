@@ -1,12 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
-set -e
-
-# Rust build
-echo "==> Rust building and bindings"
-cargo build --lib --release --features=jni
-
-# Java bindings
-echo "==> Java bindings"
-# Compile Translator CLI
-javac src/java/Translator.java
+cd src/java/algemaploom
+mvn clean install

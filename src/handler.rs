@@ -2,7 +2,8 @@ use std::fmt::Debug;
 use std::path::PathBuf;
 
 use plangenerator::error::PlanError;
-use plangenerator::plan::{Init, Plan};
+use plangenerator::states::Init;
+use plangenerator::Plan;
 
 pub trait FileTranslatorHandler: Debug {
     fn supported_extension(&self) -> String;
@@ -38,11 +39,14 @@ pub trait FileTranslatorHandler: Debug {
 }
 
 pub trait StringTranslatorHandler: Debug {
-    fn translate(
-        &self,
-        mapping: &str,
-    ) -> Result<Plan<Init>, PlanError>;
+    fn translate(&self, mapping: &str) -> Result<Plan<Init>, PlanError>;
 }
 
-pub trait TranslatorHandler: FileTranslatorHandler + StringTranslatorHandler {}
-impl<T> TranslatorHandler for T where T: FileTranslatorHandler + StringTranslatorHandler {}
+pub trait TranslatorHandler:
+    FileTranslatorHandler + StringTranslatorHandler
+{
+}
+impl<T> TranslatorHandler for T where
+    T: FileTranslatorHandler + StringTranslatorHandler
+{
+}

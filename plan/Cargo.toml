@@ -1,0 +1,15 @@
+[package]
+name = "plangenerator"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+operator = {path="../operator/"}
+anyhow.workspace = true
+petgraph = { version = "0.6.5", features = ["serde-1"] }
+serde_json.workspace = true
+serde = {version="1.0.164", features= ["derive", "rc"]}
+thiserror.workspace = true

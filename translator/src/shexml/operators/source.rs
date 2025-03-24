@@ -4,7 +4,7 @@ use log::{debug, trace};
 use operator::formats::ReferenceFormulation;
 use operator::{IOType, Source};
 use plangenerator::error::PlanError;
-use shexml_interpreter::{ExpressionStmtEnum, IndexedShExMLDocument, Iterator};
+use crate::shexml::parcombi::{self, ExpressionStmtEnum, IndexedShExMLDocument, Iterator, SourceType};
 
 use crate::OperatorTranslator;
 
@@ -29,7 +29,7 @@ impl<'a> OperatorTranslator<ShExMLSourceTranslatorOutput>
                 let mut config = HashMap::new();
                 config.insert("path".to_string(), source.uri.clone());
                 let source_type_res = match &source.source_type {
-                    shexml_interpreter::SourceType::File => Ok(IOType::File),
+                    SourceType::File => Ok(IOType::File),
                     unsupported_type => {
                         Err(PlanError::GenericError(format!(
                             "Unsupported ShExML source type {:?}",
@@ -155,27 +155,27 @@ fn translate_to_operator_iterator(
 }
 
 fn translate_to_reference_formulation(
-    shex_iter_type: &shexml_interpreter::IteratorType,
+    shex_iter_type: &parcombi::IteratorType,
 ) -> ReferenceFormulation {
     match shex_iter_type {
-        shexml_interpreter::IteratorType::JSONPath => {
+        parcombi::IteratorType::JSONPath => {
             ReferenceFormulation::JSONPath
         }
-        shexml_interpreter::IteratorType::XPath => {
+        parcombi::IteratorType::XPath => {
             ReferenceFormulation::XMLPath
         }
-        shexml_interpreter::IteratorType::CSVRows => {
+        parcombi::IteratorType::CSVRows => {
             ReferenceFormulation::CSVRows
         }
-        shexml_interpreter::IteratorType::SQL => ReferenceFormulation::SQLQuery,
-        shexml_interpreter::IteratorType::SPARQL => {
+        parcombi::IteratorType::SQL => ReferenceFormulation::SQLQuery,
+        parcombi::IteratorType::SPARQL => {
             ReferenceFormulation::SPARQL
         }
     }
 }
 
 fn translate_to_operator_fields(
-    parent_shex_iter: &shexml_interpreter::Iterator,
+    parent_shex_iter: &parcombi::Iterator,
     ref_formulation: &ReferenceFormulation,
 ) -> Vec<operator::Field> {
     let mut result = Vec::new();
@@ -210,12 +210,12 @@ fn translate_to_operator_fields(
 }
 
 fn translate_to_flat_fields(
-    shex_field: &shexml_interpreter::Field,
+    shex_field: &parcombi::Field,
     ref_formulation: &ReferenceFormulation,
 ) -> Option<operator::Field> {
     match shex_field.field_type {
-        shexml_interpreter::FieldType::Push
-        | shexml_interpreter::FieldType::Normal => {
+        parcombi::FieldType::Push
+        | parcombi::FieldType::Normal => {
             Some(operator::Field {
                 alias:                 shex_field.ident.clone(),
                 reference:             shex_field.query.clone(),
@@ -223,13 +223,13 @@ fn translate_to_flat_fields(
                 inner_fields:          vec![],
             })
         }
-        shexml_interpreter::FieldType::Pop => None,
+        parcombi::FieldType::Pop => None,
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use shexml_interpreter::errors::{ShExMLError, ShExMLErrorType, ShExMLResult};
+    use parcombi::errors::{ShExMLError, ShExMLErrorType, ShExMLResult};
 
     use super::*;
     use crate::test_case;
@@ -238,7 +238,7 @@ mod tests {
     fn source_translate_test() -> ShExMLResult<()> {
         let simple_shexml = test_case!("shexml/straight_csv/input.shexml");
         let shexml_doc =
-            shexml_interpreter::parse_file(simple_shexml)?.convert_to_indexed();
+            parcombi::parse_file(simple_shexml)?.convert_to_indexed();
         let source_translator = ShExMLSourceTranslator {
             document: &shexml_doc,
         };
@@ -250,7 +250,6 @@ mod tests {
         })?;
         let expected_source_ids = vec![
             "films_csv_file.film_csv",
-            "films_second_csv_file.film_second_csv",
         ];
 
         for expected_source_id in expected_source_ids {

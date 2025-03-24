@@ -1,9 +1,10 @@
 use plangenerator::error::PlanError;
-use plangenerator::plan::{Init, Plan};
+use plangenerator::states::Init;
+use plangenerator::Plan;
 
-pub mod rmlalgebra;
+pub mod rml;
 pub mod shexml;
-
+pub mod normalized_rml; 
 
 #[cfg(test)]
 mod test_macro;

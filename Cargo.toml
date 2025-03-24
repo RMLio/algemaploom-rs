@@ -1,20 +1,25 @@
 [package]
 name = "meamer-rs"
-version = "0.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
 
 
 [profile.release]
 opt-level = 3
 
 [workspace]
-members = ["rml-interpreter", "shexml-interpreter",  "operator", "vocab", "plangenerator", "translator"]
+members = ["operator", "vocab", "plan", "translator"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.package]
+version = "0.2.0"
+authors = ["Sitt Min Oo"]
+edition = "2021"
 
 [workspace.dependencies]
 anyhow = "1.0.71"
 lazy_static = "1.4.0"
-petgraph = { version = "0.6.5", features = ["serde-1"] }
 regex = "1.8.4"
 serde = {version="1.0.164", features= ["derive", "rc"]}
 serde_json = "1.0.99"
@@ -29,16 +34,13 @@ clap = {version= "4.3.12", features=["derive"]}
 [dependencies]
 anyhow.workspace = true
 lazy_static.workspace = true 
-petgraph.workspace = true
 regex.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 clap.workspace = true
 
-rml-interpreter = {path = "./rml-interpreter/"}
-shexml-interpreter = {path = "./shexml-interpreter/"}
 operator = {path = "./operator/"}
-plangenerator = {path = "./plangenerator/"}
+plangenerator = {path = "./plan/"}
 translator = {path = "./translator/"}
 
 csv = "1.2.2"

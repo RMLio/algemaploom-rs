@@ -1,6 +1,7 @@
 use plangenerator::error::PlanError;
-use plangenerator::plan::{Init, Plan};
-use translator::LanguageTranslator;
+use plangenerator::states::Init;
+use plangenerator::Plan;
+use translator::{shexml::parcombi, LanguageTranslator};
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
 
@@ -15,7 +16,7 @@ impl FileTranslatorHandler for ShExMLFileHandler {
         &self,
         file_path: &dyn AsRef<str>,
     ) -> Result<Plan<Init>, PlanError> {
-        let shexml_document = shexml_interpreter::parse_file(
+        let shexml_document = parcombi::parse_file(
             file_path.as_ref(),
         )
         .map_err(|shex_err| {
@@ -34,11 +35,8 @@ impl FileTranslatorHandler for ShExMLFileHandler {
 }
 
 impl StringTranslatorHandler for ShExMLStringHandler {
-    fn translate(
-        &self,
-        mapping: &str,
-    ) -> Result<Plan<Init>, PlanError> {
-        let shexml_document = shexml_interpreter::parse_string(
+    fn translate(&self, mapping: &str) -> Result<Plan<Init>, PlanError> {
+        let shexml_document = parcombi::parse_string(
             mapping.to_string(),
         )
         .map_err(|shex_err| {
