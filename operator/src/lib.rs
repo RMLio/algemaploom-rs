@@ -20,6 +20,7 @@ pub type RcOperator = Rc<Operator>;
 pub enum Operator {
     SourceOp { config: Source },
     JoinOp { config: Join },
+    UnionOp, 
     ProjectOp { config: Projection },
     ExtendOp { config: Extend },
     RenameOp { config: Rename },
@@ -61,6 +62,7 @@ impl PrettyDisplay for Operator {
             Operator::FragmentOp { config } => {
                 ("Fragment Operator".to_string(), config.pretty_string()?)
             }
+            Operator::UnionOp => ("Union Operator".to_string(), "".to_string()),
         };
 
         Ok(format!("{}\n{}", title_string, content_string))
@@ -275,9 +277,21 @@ impl PrettyDisplay for Extend {
 }
 
 pub type RcExtendFunction = Rc<Function>;
+
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub enum TermType {
+    Literal,
+    IRI
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Function {
+    Nop, 
+    SimpleConcat{
+        inner_function: Option<RcExtendFunction>
+    }, 
     Concatenate{
         left_value: RcExtendFunction,
         separator: String, 
@@ -286,6 +300,12 @@ pub enum Function {
     Reference {
         value: String,
     },
+    TypedConstant{
+
+        value:String, 
+        term_type: TermType, 
+    },
+
     Constant {
         value: String,
     },

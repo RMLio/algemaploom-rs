@@ -40,4 +40,5 @@ pub mod CLASS {
     pub const IRI: PAIR = (SUPER_IRI, "IRI");
     pub const BLANKNODE: PAIR = (SUPER_IRI, "BlankNode");
     pub const LITERAL: PAIR = (SUPER_IRI, "Literal");
+    pub const DEFAULTGRAPH: PAIR = (SUPER_IRI, "DefaultGraph");
 }

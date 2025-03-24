@@ -6,6 +6,7 @@ pub mod PROPERTY {
     use super::IRI;
     use crate::PAIR;
 
+    pub const LANGUAGE_MAP : PAIR = (IRI, "languageMap");
     pub const REFERENCE: PAIR = (IRI, "reference");
     pub const LOGICALSOURCE: PAIR = (IRI, "logicalSource");
     pub const ITERATOR: PAIR = (IRI, "iterator");

@@ -6,6 +6,7 @@ use std::path::PathBuf;
 use std::rc::Rc;
 
 use anyhow::Result;
+use data_type::RcRefCellPlan;
 use operator::{Fragmenter, Operator};
 use petgraph::dot::Dot;
 use petgraph::graph::{DiGraph, NodeIndex};
@@ -28,6 +29,12 @@ pub struct Plan<T> {
     pub last_node_idx:     Option<NodeIndex>,
     pub fragment_node_idx: Option<NodeIndex>,
     pub fragment_string:   Rc<String>,
+}
+
+impl<T> From<Plan<T>> for RcRefCellPlan<T> {
+    fn from(value: Plan<T>) -> Self {
+        Rc::new(RefCell::new(value))
+    }
 }
 
 impl Plan<()> {

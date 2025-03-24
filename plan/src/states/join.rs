@@ -113,7 +113,7 @@ impl AliasedJoinedPlan<Processed> {
         let node_idx;
         {
             let left_plan = self.left_plan.borrow_mut();
-            let graph = &mut left_plan.graph.borrow_mut();
+            let mut graph = left_plan.graph.borrow_mut();
 
             let join_node = PlanNode {
                 id:       format!("Join_{}", graph.node_count()),
