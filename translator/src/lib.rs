@@ -4,6 +4,7 @@ use plangenerator::Plan;
 
 pub mod rml;
 pub mod shexml;
+pub mod normalized_rml; 
 
 #[cfg(test)]
 mod test_macro;

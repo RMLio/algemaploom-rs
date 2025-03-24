@@ -11,6 +11,8 @@ sophia_api = "0.9.0"
 sophia_inmem = "0.9.0"
 sophia_turtle = "0.9.0"
 sophia_term = "0.9.0"
+oxigraph = { version = "0.4.8", default-features = false }
+
 chumsky = "0.9.3"
 
 vocab = { path = "../vocab/" }
