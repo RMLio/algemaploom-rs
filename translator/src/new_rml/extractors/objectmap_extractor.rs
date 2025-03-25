@@ -127,7 +127,7 @@ mod tests {
 
     #[test]
     fn map_object_test() -> ExtractorResult<()> {
-        let graph: FastGraph = load_graph!("sample_mapping.ttl")?;
+        let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
         let map_pred = vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm();
         let container_vec = graph
             .triples_matching(Any, [map_pred], Any)
@@ -145,7 +145,7 @@ mod tests {
             .collect();
 
         assert_eq!(obj_maps.len(), 2);
-        obj_maps.iter().try_for_each(|om| {
+        let _ = obj_maps.iter().try_for_each(|om| {
             assert_eq!(
                 om.term_map.term_type,
                 vocab::rml_core::CLASS::LITERAL.to_rcterm()

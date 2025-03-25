@@ -126,7 +126,7 @@ mod tests {
 
     #[test]
     fn create_subjectmap_test() -> ExtractorResult<()> {
-        let graph = load_graph!("sample_mapping.ttl")?;
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
         let triple = graph
             .triples_matching(Any, [sub_pred], Any)

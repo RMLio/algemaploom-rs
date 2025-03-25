@@ -58,7 +58,7 @@ mod tests {
 
     #[test]
     fn create_const_predicatemap_test() -> ExtractorResult<()> {
-        let graph = load_graph!("sample_mapping.ttl")?;
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let pm_const_pred = vocab::r2rml::PROPERTY::PREDICATE.to_rcterm();
         let triples = graph.triples_matching(Any, [pm_const_pred], Any);
         let values = triples.flatten().map(|trip| trip.o().to_owned());
@@ -70,7 +70,7 @@ mod tests {
 
         assert_eq!(pms.len(), 2);
 
-        pms.iter().try_for_each(|pm| {
+        let _ = pms.iter().try_for_each(|pm| {
             assert_eq!(
                 pm.term_map.expression.get_value_type_enum()?,
                 ExpressionValueEnum::Constant

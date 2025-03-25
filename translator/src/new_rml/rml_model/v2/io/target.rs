@@ -1,29 +1,20 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
-use sophia_api::prelude::Iri;
 use sophia_api::serializer::*;
-use sophia_api::term::{FromTerm, Term};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
 
-#[derive(Debug, Clone)]
+use crate::new_rml::extractors::FromVocab;
+
+#[derive(Debug, Clone, Default)]
 pub struct LogicalTarget {
     pub target:     Target,
     pub ser_format: Option<RcTerm>,
 }
 
-impl Default for LogicalTarget {
-    fn default() -> Self {
-        Self {
-            target:     Default::default(),
-            ser_format: Default::default(),
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Target {
     pub encoding:    Option<RcTerm>,
     pub compression: Option<RcTerm>,
@@ -31,16 +22,6 @@ pub struct Target {
     pub kind:        TargetKind,
 }
 
-impl Default for Target {
-    fn default() -> Self {
-        Self {
-            encoding:    Default::default(),
-            compression: Default::default(),
-            mode:        Default::default(),
-            kind:        Default::default(),
-        }
-    }
-}
 
 #[derive(Clone)]
 pub struct TargetKind {
@@ -67,7 +48,7 @@ impl Debug for TargetKind {
 impl Default for TargetKind {
     fn default() -> Self {
         Self {
-            type_iri: RcTerm::from_term(Iri::new_unchecked("default")),
+            type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }

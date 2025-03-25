@@ -1,9 +1,7 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
-use sophia_api::prelude::Iri;
 use sophia_api::serializer::*;
-use sophia_api::term::FromTerm;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
@@ -125,7 +123,7 @@ impl Debug for SourceKind {
 impl Default for SourceKind {
     fn default() -> Self {
         Self {
-            type_iri: RcTerm::from_term(Iri::new_unchecked("default")),
+            type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }
