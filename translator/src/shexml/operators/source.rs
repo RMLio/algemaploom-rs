@@ -4,8 +4,11 @@ use log::{debug, trace};
 use operator::formats::ReferenceFormulation;
 use operator::{IOType, Source};
 use plangenerator::error::PlanError;
-use crate::shexml::parcombi::{self, ExpressionStmtEnum, IndexedShExMLDocument, Iterator, SourceType};
 
+use crate::shexml::error::ShExMLTranslationError;
+use crate::shexml::parcombi::{
+    self, ExpressionStmtEnum, IndexedShExMLDocument, Iterator, SourceType,
+};
 use crate::OperatorTranslator;
 
 #[derive(Debug, Clone)]
@@ -15,7 +18,7 @@ pub struct ShExMLSourceTranslator<'a> {
 
 pub type SourceExprIdentVecPair = (Source, Vec<String>);
 pub type ShExMLSourceTranslatorOutput =
-    Result<HashMap<String, SourceExprIdentVecPair>, PlanError>;
+    Result<HashMap<String, SourceExprIdentVecPair>, ShExMLTranslationError>;
 
 impl<'a> OperatorTranslator<ShExMLSourceTranslatorOutput>
     for ShExMLSourceTranslator<'a>
@@ -158,19 +161,11 @@ fn translate_to_reference_formulation(
     shex_iter_type: &parcombi::IteratorType,
 ) -> ReferenceFormulation {
     match shex_iter_type {
-        parcombi::IteratorType::JSONPath => {
-            ReferenceFormulation::JSONPath
-        }
-        parcombi::IteratorType::XPath => {
-            ReferenceFormulation::XMLPath
-        }
-        parcombi::IteratorType::CSVRows => {
-            ReferenceFormulation::CSVRows
-        }
+        parcombi::IteratorType::JSONPath => ReferenceFormulation::JSONPath,
+        parcombi::IteratorType::XPath => ReferenceFormulation::XMLPath,
+        parcombi::IteratorType::CSVRows => ReferenceFormulation::CSVRows,
         parcombi::IteratorType::SQL => ReferenceFormulation::SQLQuery,
-        parcombi::IteratorType::SPARQL => {
-            ReferenceFormulation::SPARQL
-        }
+        parcombi::IteratorType::SPARQL => ReferenceFormulation::SPARQL,
     }
 }
 
@@ -214,8 +209,7 @@ fn translate_to_flat_fields(
     ref_formulation: &ReferenceFormulation,
 ) -> Option<operator::Field> {
     match shex_field.field_type {
-        parcombi::FieldType::Push
-        | parcombi::FieldType::Normal => {
+        parcombi::FieldType::Push | parcombi::FieldType::Normal => {
             Some(operator::Field {
                 alias:                 shex_field.ident.clone(),
                 reference:             shex_field.query.clone(),
@@ -229,13 +223,15 @@ fn translate_to_flat_fields(
 
 #[cfg(test)]
 mod tests {
-    use parcombi::errors::{ShExMLError, ShExMLErrorType, ShExMLResult};
+    use parcombi::errors::{
+        ParseCombiError, ParseCombiErrorKind, ShExMLParseCombiResult,
+    };
 
     use super::*;
     use crate::test_case;
 
     #[test]
-    fn source_translate_test() -> ShExMLResult<()> {
+    fn source_translate_test() -> ShExMLParseCombiResult<()> {
         let simple_shexml = test_case!("shexml/straight_csv/input.shexml");
         let shexml_doc =
             parcombi::parse_file(simple_shexml)?.convert_to_indexed();
@@ -243,14 +239,14 @@ mod tests {
             document: &shexml_doc,
         };
 
-        let alge_source = source_translator.translate().map_err(|err| ShExMLError{
-            dbg_msg: err.to_string(),
-            msg: err.to_string(),
-            err: ShExMLErrorType::IOError,
+        let alge_source = source_translator.translate().map_err(|err| {
+            ParseCombiError {
+                dbg_msg: err.to_string(),
+                msg:     err.to_string(),
+                kind:    ParseCombiErrorKind::IOError,
+            }
         })?;
-        let expected_source_ids = vec![
-            "films_csv_file.film_csv",
-        ];
+        let expected_source_ids = vec!["films_csv_file.film_csv"];
 
         for expected_source_id in expected_source_ids {
             let (source, expr_ident) =

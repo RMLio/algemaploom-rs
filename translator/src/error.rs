@@ -5,10 +5,19 @@ use plangenerator::error::PlanError;
 use crate::new_rml::extractors::error::ParseError as NewRMLParseError;
 use crate::rml::error::RMLTranslationError;
 use crate::rml::parser::extractors::error::ParseError as RMLParseError;
+use crate::shexml::error::ShExMLTranslationError;
 
 #[derive(Debug)]
 pub struct TranslationError {
     pub kind: TranslationErrorKind,
+}
+
+impl From<ShExMLTranslationError> for TranslationError {
+    fn from(value: ShExMLTranslationError) -> Self {
+        Self {
+            kind: TranslationErrorKind::LanguageError(value.into()),
+        }
+    }
 }
 
 impl From<RMLTranslationError> for TranslationError {
@@ -18,7 +27,6 @@ impl From<RMLTranslationError> for TranslationError {
         }
     }
 }
-
 
 #[derive(Debug)]
 pub enum TranslationErrorKind {
@@ -43,6 +51,13 @@ impl From<LanguageErrorKind> for TranslationErrorKind {
 #[derive(Debug)]
 pub enum LanguageErrorKind {
     RMLTranslationError(RMLTranslationError),
+    ShExMLTranslationError(ShExMLTranslationError),
+}
+
+impl From<ShExMLTranslationError> for LanguageErrorKind {
+    fn from(v: ShExMLTranslationError) -> Self {
+        Self::ShExMLTranslationError(v)
+    }
 }
 
 impl From<RMLTranslationError> for LanguageErrorKind {

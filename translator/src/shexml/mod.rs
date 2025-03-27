@@ -2,6 +2,7 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
+use error::ShExMLTranslationError;
 use log::{debug, trace};
 use operator::{Extend, Function, Rename, Serializer, Target};
 use parcombi::{
@@ -21,6 +22,7 @@ use crate::shexml::util::{
 };
 use crate::{LanguageTranslator, OperatorTranslator};
 
+pub mod error;
 mod operators;
 pub mod parcombi;
 #[cfg(test)]
@@ -95,7 +97,7 @@ fn add_non_join_related_op(
     quads: &ShExMLQuads<'_>,
     sourced_plan: RcRefCellPlan<Processed>,
     source_iter_ident: &str,
-) -> Result<Plan<Sunk>, PlanError> {
+) -> Result<Plan<Sunk>, ShExMLTranslationError> {
     debug!("Variabelizing quads");
     let variabelized_terms = variablelize_quads(quads);
     trace!("Variabelized quads: {:#?}", variabelized_terms);
@@ -114,11 +116,11 @@ fn add_non_join_related_op(
         &variabelized_terms,
     )?;
 
-    serialized_plan.sink(&Target {
+    Ok(serialized_plan.sink(&Target {
         configuration: HashMap::new(),
         target_type:   operator::IOType::StdOut,
         data_format:   operator::formats::DataFormat::NQuads,
-    })
+    })?)
 }
 
 fn add_rename_extend_op_from_quads(
