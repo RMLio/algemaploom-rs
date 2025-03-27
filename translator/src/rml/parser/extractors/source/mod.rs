@@ -42,7 +42,7 @@ impl Extractor<Source> for Source {
                 Err(ParseError::GenericError(format!(
                     "Variables cannot be parsed as Source {:?}",
                     subject_ref
-                )))
+                )).into())
             }
         }
     }
@@ -84,7 +84,7 @@ fn extract_typed_source(
             Err(ParseError::GenericError(format!(
                 "Source type extraction not yet supported {:#?}",
                 invalid_iri
-            )))
+            )).into())
         }
     }
 }

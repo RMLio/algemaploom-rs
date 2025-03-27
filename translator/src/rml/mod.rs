@@ -1,3 +1,4 @@
+pub mod error;
 mod operators;
 pub mod parser;
 mod types;
@@ -6,8 +7,10 @@ mod util;
 use std::borrow::Cow;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::path::Path;
 use std::rc::Rc;
 
+use error::RMLTranslationError;
 use operator::{Extend, Operator};
 use operators::projection::ProjectionTranslator;
 use operators::source::SourceOpTranslator;
@@ -25,6 +28,7 @@ use self::operators::extend::*;
 use self::operators::fragment::FragmentTranslator;
 use self::operators::serializer::{self, translate_serializer_op};
 use self::util::generate_lt_quads_from_spo;
+use crate::rml::parser::extractors::io::parse_file;
 use crate::rml::types::SearchMap;
 use crate::rml::util::{
     generate_logtarget_map, generate_lt_quads_from_doc, generate_variable_map,
@@ -33,13 +37,24 @@ use crate::{LanguageTranslator, OperatorTranslator};
 
 pub struct OptimizedRMLDocumentTranslator;
 
+impl LanguageTranslator<&Path> for OptimizedRMLDocumentTranslator {
+    fn translate_to_plan(path: &Path) -> crate::LanguageTranslateResult {
+        let doc = parse_file(path.to_path_buf())?;
+        Self::translate_to_plan(doc)
+    }
+}
+
 impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
     fn translate_to_plan(doc: Document) -> crate::LanguageTranslateResult {
         let base_iri = doc.default_base_iri.clone();
         let mut plan = Plan::<()>::new();
 
         //For each triples maps, create a plan with source operator applied
-        let tm_sourced_pairs_res: Result<Vec<_>, PlanError> = doc
+        // Search dictionaries instantiations
+        let variable_map = generate_variable_map(&doc);
+        let target_map = generate_logtarget_map(&doc);
+        let lt_id_quad_map = generate_lt_quads_from_doc(&doc);
+        let tm_sourced_pairs: Vec<_> = doc
             .triples_maps
             .iter()
             .map(|tm| {
@@ -60,15 +75,9 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                     )),
                 );
 
-                Ok(result)
+                result
             })
             .collect();
-
-        // Search dictionaries instantiations
-        let variable_map = generate_variable_map(&doc);
-        let target_map = generate_logtarget_map(&doc);
-        let lt_id_quad_map = generate_lt_quads_from_doc(&doc);
-        let tm_sourced_pairs = tm_sourced_pairs_res?;
         let tm_rccellplan_map: HashMap<_, _> = tm_sourced_pairs
             .clone()
             .into_iter()
@@ -121,7 +130,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                     &base_iri,
                 )?;
             }
-            Ok::<(), PlanError>(())
+            Ok::<(), RMLTranslationError>(())
         })?;
 
         // Simple case of triples maps without parent triples maps
@@ -138,7 +147,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                 &base_iri,
             )?;
 
-            Ok::<(), PlanError>(())
+            Ok::<(), RMLTranslationError >(())
         })?;
 
         Ok(plan)
@@ -416,7 +425,7 @@ mod tests {
     use super::*;
     use crate::import_test_mods;
 
-    import_test_mods!(rml,parser);
+    import_test_mods!(rml, parser);
 
     #[ignore]
     #[test]
@@ -519,7 +528,7 @@ mod tests {
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
-        let _output = File::create("op_trans_output.json")?;
+        let _output = File::create("op_trans_output.json").unwrap();
         println!("{:#?}", operators);
         Ok(())
     }
@@ -531,7 +540,7 @@ mod tests {
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
-        let _output = File::create("op_trans_complex_output.json")?;
+        let _output = File::create("op_trans_complex_output.json").unwrap();
         println!("{:#?}", operators);
         Ok(())
     }

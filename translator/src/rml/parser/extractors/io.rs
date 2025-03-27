@@ -22,7 +22,7 @@ pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
             Err(ParseError::GenericError(format!(
                 "Something went wrong with sophia's turtle parsing: {}",
                 err
-            )))
+            )).into())
         }
     }
 }
@@ -34,7 +34,7 @@ pub fn load_graph_str(input_str: &str) -> ExtractorResult<FastGraph> {
             Err(ParseError::GenericError(format!(
                 "Something went wrong with sophia's turtle parsing: {}",
                 err
-            )))
+            )).into())
         }
     }
 }
@@ -55,7 +55,7 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
             return Err(ParseError::ExtensionError(format!(
                 "Extension does not exist {}",
                 ext.to_str().unwrap()
-            )));
+            )).into());
         }
 
         let buf_read = BufReader::new(File::open(path.clone())?);
@@ -76,7 +76,7 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
     Err(ParseError::IOErrorStr(format!(
         "File can't be read {}",
         path.to_str().unwrap()
-    )))
+    )).into())
 }
 
 #[cfg(test)]

@@ -42,7 +42,7 @@ fn extract_term_map_type_value(
     if results_query.len() > 1 {
         return Err(ParseError::GenericError(
                     "More than one occurences of rr:template, rml:reference, rr:constant, fnml:functionValue or rr:column".to_string()
-                    ));
+                    ).into());
     }
 
     let trip = results_query
@@ -68,7 +68,7 @@ fn extract_term_map_type_value(
 
     let term_value = RcTerm::from_term(trip.o());
 
-    term_map_type_res.map(|map_type| (map_type, term_value))
+    Ok(term_map_type_res.map(|map_type| (map_type, term_value))?)
 }
 
 impl Extractor<TermMapInfo> for TermMapInfo {

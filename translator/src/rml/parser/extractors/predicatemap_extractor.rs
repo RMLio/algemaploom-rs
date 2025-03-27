@@ -29,7 +29,7 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
                 return Err(ParseError::GenericError(
                     "PredicateMap can only have rr:Iri as rr:termType!"
                         .to_string(),
-                ))
+                ).into())
             }
             Some(_) => tm_info,
             None => {

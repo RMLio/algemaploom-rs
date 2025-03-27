@@ -1,6 +1,5 @@
 use sophia_api::term::TermKind;
 
-
 use super::{Extractor, ExtractorResult, FromVocab, TermMapExtractor};
 use crate::rml::parser::extractors::error::ParseError;
 use crate::rml::parser::rml_model::term_map::{GraphMap, TermMapInfo};
@@ -26,7 +25,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
         tm_info = match tm_info.term_type{
             Some(ttype) if ttype == TermKind::Literal || ttype== TermKind::Variable => {
 
-                return Err(ParseError::GenericError("GraphMap can only have either rr:Iri or rr:BNode as rr:termType!".to_string()))
+                return Err(ParseError::GenericError("GraphMap can only have either rr:Iri or rr:BNode as rr:termType!".to_string()).into())
             },
             Some(_) => tm_info,
             None => TermMapInfo{term_type: Some(TermKind::Iri), ..tm_info},

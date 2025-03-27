@@ -8,7 +8,7 @@ macro_rules! load_graph {
     ($fname:expr) => {{
         let path = test_case!($fname);
         let pathbuf = PathBuf::from(path);
-        let bread = BufReader::new(File::open(pathbuf)?);
+        let bread = BufReader::new(File::open(pathbuf).unwrap());
         load_graph_bread(bread)
     }};
 }

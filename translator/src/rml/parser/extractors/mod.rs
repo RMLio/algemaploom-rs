@@ -6,6 +6,8 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 use vocab::{ToString, PAIR};
 
+use crate::rml::error::RMLTranslationError;
+
 use self::error::ParseError;
 use super::extractors::store::get_objects;
 use super::rml_model::term_map::TermMapInfo;
@@ -28,7 +30,7 @@ mod term_map_info_extractor;
 pub mod triplesmap_extractor;
 mod util;
 
-pub type ExtractorResult<T> = Result<T, ParseError>;
+pub type ExtractorResult<T> = Result<T, RMLTranslationError>;
 
 pub trait TermMapExtractor<T: Debug> {
     fn get_term_map_info(&self) -> TermMapInfo;
@@ -44,7 +46,7 @@ pub trait TermMapExtractor<T: Debug> {
         if let RcTerm::BlankNode(_) = map_const {
             return Err(ParseError::GenericError(format!(
                 "Constant-valued term map cannot be a BlankNode"
-            )));
+            )).into());
         };
 
         let tm_info = TermMapInfo::from_constant_value(map_const.clone());
@@ -57,7 +59,7 @@ pub trait TermMapExtractor<T: Debug> {
         container_map_subj_ref: &RcTerm,
     ) -> ExtractorResult<T> {
         Self::extract_many_from_container(graph_ref, container_map_subj_ref)
-            .and_then(|mut vec| vec.pop().ok_or(ParseError::Infallible))
+            .and_then(|mut vec| vec.pop().ok_or(ParseError::Infallible.into()))
     }
 
     fn extract_many_from_container(
@@ -89,7 +91,7 @@ pub trait TermMapExtractor<T: Debug> {
             Err(ParseError::NoTermMapFoundError(format!(
                 "0 TermMap of type {:?} found for {:?}",
                 map_pred, container_map_subj_ref
-            )))
+            )).into())
         } else {
             Ok(result)
         }

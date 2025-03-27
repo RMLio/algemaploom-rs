@@ -42,7 +42,7 @@ fn extract_parent_tm(
     graph_ref: &FastGraph,
 ) -> ExtractorResult<RcTerm> {
     let parent_tm_pred = vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_rcterm();
-    get_object(graph_ref, subject_ref, &parent_tm_pred)
+    Ok(get_object(graph_ref, subject_ref, &parent_tm_pred)?)
 }
 
 impl TermMapExtractor<ObjectMap> for ObjectMap {
@@ -77,7 +77,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 
         let mut tm_info_res = TermMapInfo::extract_self(subj_ref, graph_ref);
         if tm_info_res.is_err() && parent_tm.is_none() {
-            return Err(ParseError::GenericError("Object Map doesn't have either parent triplesmap nor term map type".to_string()));
+            return Err(ParseError::GenericError("Object Map doesn't have either parent triplesmap nor term map type".to_string()).into());
         }
 
         if tm_info_res.is_err() && parent_tm.is_some() {

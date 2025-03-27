@@ -41,7 +41,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                 return Err(ParseError::GenericError(
                     "SubjectMap can only have rr:Iri or rr:BlankNode as rr:termType!"
                         .to_string(),
-                ))
+                ).into())
             }
             Some(_) => tm_info,
             None => {
@@ -91,9 +91,9 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                     Err(ParseError::GenericError(format!(
                         "There can only be ONE subject map for {:?}",
                         container_map_subj_ref
-                    )))
+                    )).into())
                 } else {
-                    sms.pop().ok_or(ParseError::Infallible)
+                    sms.pop().ok_or(ParseError::Infallible.into())
                 }
             })
     }

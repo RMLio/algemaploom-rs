@@ -41,7 +41,7 @@ fn extract_output_target(
     Err(super::error::ParseError::GenericError(format!(
         "Void dataset extraction failed for {:?}",
         target_subject
-    )))
+    )).into())
 }
 
 impl Extractor<LogicalTarget> for LogicalTarget {
