@@ -21,24 +21,26 @@ pub fn parse_file<P: AsRef<Path>>(
     parse_string(buffer_string)
 }
 
-pub fn parse_string(shexml_doc_string: String) -> ShExMLParseCombiResult<ShExMLDocument> {
+pub fn parse_string(
+    shexml_doc_string: String,
+) -> ShExMLParseCombiResult<ShExMLDocument> {
     let tokens_res = lexer::shexml().parse(shexml_doc_string);
 
-    let tokens = tokens_res.or_else(|err| {
-        Err(ParseCombiError {
+    let tokens = tokens_res.map_err(|err| {
+        ParseCombiError {
             dbg_msg: format!("{:?}", err),
             msg:     format!("{}", ParseCombiErrorKind::LexerError),
-            kind:     ParseCombiErrorKind::LexerError,
-        })
+            kind:    ParseCombiErrorKind::LexerError,
+        }
     })?;
 
     let shexml_doc_res = parser::shexml().parse(tokens);
 
-    shexml_doc_res.or_else(|err| {
-        Err(ParseCombiError {
+    shexml_doc_res.map_err(|err| {
+        ParseCombiError {
             dbg_msg: format!("{:?}", err),
             msg:     format!("{}", ParseCombiErrorKind::ParserError),
-            kind:     ParseCombiErrorKind::ParserError,
-        })
+            kind:    ParseCombiErrorKind::ParserError,
+        }
     })
 }

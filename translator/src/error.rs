@@ -1,10 +1,8 @@
+use std::fmt::Display;
 use std::path::PathBuf;
 
-use plangenerator::error::PlanError;
-
-use crate::new_rml::extractors::error::ParseError as NewRMLParseError;
+use crate::normalized_rml::error;
 use crate::rml::error::RMLTranslationError;
-use crate::rml::parser::extractors::error::ParseError as RMLParseError;
 use crate::shexml::error::ShExMLTranslationError;
 
 #[derive(Debug)]
@@ -28,14 +26,33 @@ impl From<RMLTranslationError> for TranslationError {
     }
 }
 
+impl Display for TranslationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "error while translating a mapping document to algebraic plan"
+        )
+    }
+}
+
+impl std::error::Error for TranslationError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        self.kind.source()
+    }
+}
+
 #[derive(Debug)]
 pub enum TranslationErrorKind {
     LanguageError(LanguageErrorKind),
     FileLanguageError {
-        file:  PathBuf,
-        error: LanguageErrorKind,
+        file:          PathBuf,
+        lang_err_kind: LanguageErrorKind,
     },
-    FileError {
+    FileMsgError {
+        file: PathBuf,
+        msg:  String,
+    },
+    FileStdError {
         file:  PathBuf,
         error: std::io::Error,
     },
@@ -45,6 +62,66 @@ pub enum TranslationErrorKind {
 impl From<LanguageErrorKind> for TranslationErrorKind {
     fn from(v: LanguageErrorKind) -> Self {
         Self::LanguageError(v)
+    }
+}
+
+impl Display for TranslationErrorKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TranslationErrorKind::LanguageError(_language_error_kind) => {
+                write!(
+                    f,
+                    "error with a particular mapping language translation"
+                )
+            }
+            TranslationErrorKind::FileLanguageError {
+                file,
+                lang_err_kind: _,
+            } => {
+                write!(
+                    f,
+                    "error while translating the file {}",
+                    file.to_string_lossy()
+                )
+            }
+            TranslationErrorKind::FileMsgError { file, msg } => {
+                write!(
+                    f,
+                    "erorr while translating file {} with msg: {}",
+                    file.to_string_lossy(),
+                    msg
+                )
+            }
+            TranslationErrorKind::FileStdError { file, error: _ } => {
+                write!(
+                    f,
+                    "error while translating file {} with std error",
+                    file.to_string_lossy()
+                )
+            }
+            TranslationErrorKind::IoError(_error) => {
+                write!(f, "IO error occurred")
+            }
+        }
+    }
+}
+
+impl std::error::Error for TranslationErrorKind {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            TranslationErrorKind::LanguageError(language_error_kind) => {
+                language_error_kind.source()
+            }
+            TranslationErrorKind::FileLanguageError {
+                file: _,
+                lang_err_kind,
+            } => lang_err_kind.source(),
+            TranslationErrorKind::FileStdError { file: _, error } => {
+                error.source()
+            }
+            TranslationErrorKind::IoError(error) => error.source(),
+            _ => None,
+        }
     }
 }
 
@@ -63,5 +140,31 @@ impl From<ShExMLTranslationError> for LanguageErrorKind {
 impl From<RMLTranslationError> for LanguageErrorKind {
     fn from(v: RMLTranslationError) -> Self {
         Self::RMLTranslationError(v)
+    }
+}
+
+impl Display for LanguageErrorKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            LanguageErrorKind::RMLTranslationError(_rmltranslation_error) => {
+                write!(f, "error while translating a RML v1.1.2 document")
+            }
+            LanguageErrorKind::ShExMLTranslationError(
+                _shexml_translation_error,
+            ) => write!(f, "error while translating a ShExML document"),
+        }
+    }
+}
+
+impl std::error::Error for LanguageErrorKind {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            LanguageErrorKind::RMLTranslationError(rmltranslation_error) => {
+                rmltranslation_error.source()
+            }
+            LanguageErrorKind::ShExMLTranslationError(
+                shexml_translation_error,
+            ) => shexml_translation_error.source(),
+        }
     }
 }
