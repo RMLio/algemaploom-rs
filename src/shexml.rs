@@ -1,7 +1,10 @@
 use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
-use translator::{shexml::parcombi, LanguageTranslator};
+use translator::error::TranslationError;
+use translator::shexml::error::ShExMLTranslationError;
+use translator::shexml::{parcombi, ShExMLTranslator};
+use translator::LanguageTranslator;
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
 
@@ -15,18 +18,12 @@ impl FileTranslatorHandler for ShExMLFileHandler {
     fn translate(
         &self,
         file_path: &dyn AsRef<str>,
-    ) -> Result<Plan<Init>, PlanError> {
-        let shexml_document = parcombi::parse_file(
-            file_path.as_ref(),
-        )
-        .map_err(|shex_err| {
-            PlanError::GenericError(format!(
-                "Something went wrong while parsing shexml: \n {:?}",
-                shex_err
-            ))
-        })?;
+    ) -> Result<Plan<Init>, TranslationError> {
+        let shexml_document =
+            parcombi::parse_file(file_path.as_ref())
+                .map_err::<ShExMLTranslationError, _>(|err| err.into())?;
 
-        translator::shexml::ShExMLTranslator::translate_to_plan(shexml_document)
+        ShExMLTranslator::translate_to_plan(shexml_document)
     }
 
     fn supported_extension(&self) -> String {
@@ -35,17 +32,11 @@ impl FileTranslatorHandler for ShExMLFileHandler {
 }
 
 impl StringTranslatorHandler for ShExMLStringHandler {
-    fn translate(&self, mapping: &str) -> Result<Plan<Init>, PlanError> {
-        let shexml_document = parcombi::parse_string(
-            mapping.to_string(),
-        )
-        .map_err(|shex_err| {
-            PlanError::GenericError(format!(
-                "Something went wrong while parsing shexml: \n {:?}",
-                shex_err
-            ))
-        })?;
+    fn translate(&self, mapping: &str) -> Result<Plan<Init>, TranslationError> {
+        let shexml_document =
+            parcombi::parse_string(mapping.to_string())
+                .map_err::<ShExMLTranslationError, _>(|err| err.into())?;
 
-        translator::shexml::ShExMLTranslator::translate_to_plan(shexml_document)
+        ShExMLTranslator::translate_to_plan(shexml_document)
     }
 }

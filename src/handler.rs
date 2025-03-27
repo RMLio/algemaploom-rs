@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
+use translator::error::{TranslationError, TranslationErrorKind};
 
 pub trait FileTranslatorHandler: Debug {
     fn supported_extension(&self) -> String;
@@ -21,25 +22,26 @@ pub trait FileTranslatorHandler: Debug {
     fn translate(
         &self,
         file_path: &dyn AsRef<str>,
-    ) -> Result<Plan<Init>, PlanError>;
+    ) -> Result<Plan<Init>, TranslationError>;
 
     fn handle_file(
         &self,
         file_path: &dyn AsRef<str>,
-    ) -> Result<Plan<Init>, PlanError> {
+    ) -> Result<Plan<Init>, TranslationError> {
         if !self.can_handle(file_path) {
-            return Err(PlanError::GenericError(format!(
-                "{:?} do not support handling the file: {}",
-                self,
-                file_path.as_ref()
-            )));
+            return Err(TranslationError {
+                kind: TranslationErrorKind::FileMsgError {
+                    file: file_path.as_ref().into(),
+                    msg:  format!("Unsupported file for {:?}", self),
+                },
+            });
         }
         self.translate(file_path)
     }
 }
 
 pub trait StringTranslatorHandler: Debug {
-    fn translate(&self, mapping: &str) -> Result<Plan<Init>, PlanError>;
+    fn translate(&self, mapping: &str) -> Result<Plan<Init>, TranslationError>;
 }
 
 pub trait TranslatorHandler:
