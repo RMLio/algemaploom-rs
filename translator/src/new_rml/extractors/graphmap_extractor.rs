@@ -22,7 +22,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
     {
         let term_map = TermMap::extract_self(subj_ref, graph_ref)?;
         if term_map.is_literal_term_type() {
-            Err(ParseError::GenericError("GraphMap has to have a term type of either an IRI or a BlankNode".to_string()))
+            Err(ParseError::GenericError("GraphMap has to have a term type of either an IRI or a BlankNode".to_string()).into())
         } else {
             Ok(GraphMap { term_map })
         }

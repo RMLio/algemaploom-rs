@@ -102,7 +102,7 @@ impl Extractor<(RcTerm, RcTerm)> for ExpressionMap {
         .ok_or(super::error::ParseError::GenericError(format!(
             "Cannot parse term map type for {:?}",
             subject_ref
-        )))
+        )).into())
     }
 }
 

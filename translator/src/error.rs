@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use std::path::PathBuf;
 
+use crate::new_rml::error::NewRMLTranslationError;
 use crate::normalized_rml::error;
 use crate::rml::error::RMLTranslationError;
 use crate::shexml::error::ShExMLTranslationError;
@@ -10,6 +11,11 @@ pub struct TranslationError {
     pub kind: TranslationErrorKind,
 }
 
+impl From<NewRMLTranslationError> for TranslationError {
+    fn from(value: NewRMLTranslationError) -> Self {
+        Self { kind: TranslationErrorKind::LanguageError(value.into()) }
+    }
+}
 impl From<ShExMLTranslationError> for TranslationError {
     fn from(value: ShExMLTranslationError) -> Self {
         Self {
@@ -128,7 +134,14 @@ impl std::error::Error for TranslationErrorKind {
 #[derive(Debug)]
 pub enum LanguageErrorKind {
     RMLTranslationError(RMLTranslationError),
+    NewRMLTranslationError(NewRMLTranslationError),
     ShExMLTranslationError(ShExMLTranslationError),
+}
+
+impl From<NewRMLTranslationError> for LanguageErrorKind {
+    fn from(v: NewRMLTranslationError) -> Self {
+        Self::NewRMLTranslationError(v)
+    }
 }
 
 impl From<ShExMLTranslationError> for LanguageErrorKind {
@@ -152,6 +165,9 @@ impl Display for LanguageErrorKind {
             LanguageErrorKind::ShExMLTranslationError(
                 _shexml_translation_error,
             ) => write!(f, "error while translating a ShExML document"),
+            LanguageErrorKind::NewRMLTranslationError(
+                new_rmltranslation_error,
+            ) => write!(f, "error while translating RML v2.0 document"),
         }
     }
 }
@@ -165,6 +181,9 @@ impl std::error::Error for LanguageErrorKind {
             LanguageErrorKind::ShExMLTranslationError(
                 shexml_translation_error,
             ) => shexml_translation_error.source(),
+            LanguageErrorKind::NewRMLTranslationError(
+                new_rmltranslation_error,
+            ) => new_rmltranslation_error.source(),
         }
     }
 }

@@ -9,13 +9,15 @@ use sophia_api::term::{FromTerm, SimpleTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 
+use crate::new_rml::error::NewRMLTranslationError;
+
 use super::error::ParseError;
 use super::RcTerm;
 
 pub fn get_subgraph_subject<TS>(
     graph: &FastGraph,
     subj: TS,
-) -> Result<FastGraph, ParseError>
+) -> Result<FastGraph, NewRMLTranslationError>
 where
     TS: Term + Debug,
 {
@@ -80,7 +82,7 @@ pub fn get_subject<TP, TO>(
     graph: &FastGraph,
     pred: TP,
     obj: TO,
-) -> Result<RcTerm, ParseError>
+) -> Result<RcTerm, NewRMLTranslationError>
 where
     TP: Term + Debug,
     TO: Term + Debug,
@@ -93,7 +95,7 @@ where
         .ok_or(ParseError::GenericError(format!(
             "Subject not found in graph with obj {:?} and pred {:?}",
             pred, obj
-        )))
+        )).into())
 }
 
 pub fn get_objects<TS, TP>(
@@ -114,7 +116,7 @@ pub fn get_object<TS, TP>(
     graph_ref: &FastGraph,
     subject_ref: TS,
     pred: TP,
-) -> Result<RcTerm, ParseError>
+) -> Result<RcTerm, NewRMLTranslationError>
 where
     TS: Term + Debug,
     TP: Term + Debug,
@@ -124,7 +126,7 @@ where
     objects.pop().ok_or(ParseError::GenericError(format!(
         "Object not found in graph with subj {:?} and pred {:?}",
         subject_ref, pred
-    )))
+    )).into())
 }
 
 pub fn get_objects_with_ps<TS, TP>(
@@ -146,7 +148,7 @@ pub fn get_object_with_ps<TS, TP>(
     graph: &FastGraph,
     subject: TS,
     pred_vec: &[TP],
-) -> Result<RcTerm, ParseError>
+) -> Result<RcTerm, NewRMLTranslationError>
 where
     TS: Term + Debug,
     TP: Term + Debug,
@@ -155,5 +157,5 @@ where
     object_opt.pop().ok_or(ParseError::GenericError(format!(
         "Object not found in graph with subj {:?} and preds {:?}",
         subject, pred_vec
-    )))
+    )).into())
 }

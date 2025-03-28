@@ -35,7 +35,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             return Err(ParseError::GenericError(format!(
                 "PredicateObject map {:?} contains 0 object maps",
                 subject_ref
-            )));
+            )).into());
         }
 
         let (ref_obj_map_terms, obj_map_terms): (Vec<_>, Vec<_>) =
@@ -67,7 +67,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             return Err(ParseError::GenericError(format!(
                 "Predicate Object Map {:?} has 0 object maps",
                 subject_ref
-            )));
+            )).into());
         }
 
         let graph_map_vec =

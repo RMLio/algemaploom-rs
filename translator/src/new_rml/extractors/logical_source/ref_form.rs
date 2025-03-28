@@ -3,6 +3,7 @@ use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
+use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::store::get_subgraph_subject;
 use crate::new_rml::extractors::{Extractor, ExtractorResult};
@@ -14,7 +15,7 @@ impl Extractor<ReferenceFormulation> for ReferenceFormulation {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> Result<ReferenceFormulation, ParseError>
+    ) -> Result<ReferenceFormulation, NewRMLTranslationError>
     where
         TTerm: Term,
     {
@@ -25,7 +26,7 @@ impl Extractor<ReferenceFormulation> for ReferenceFormulation {
             _ => {
                 Err(ParseError::GenericError(
                     "RML reference formulation cannot be a Literal".to_string(),
-                ))
+                ).into())
             }
         }
     }

@@ -11,6 +11,8 @@ use self::error::ParseError;
 use crate::new_rml::extractors::store::get_objects;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
 
+use super::error::NewRMLTranslationError;
+
 mod abstract_logical_source_extractor;
 pub mod error;
 mod expression_map;
@@ -34,7 +36,7 @@ mod term_map_extractor;
 pub mod triplesmap_extractor;
 mod util;
 
-pub type ExtractorResult<T> = Result<T, ParseError>;
+pub type ExtractorResult<T> = Result<T, NewRMLTranslationError>;
 
 pub trait TermMapExtractor<T: Debug> {
     fn create_constant_map(tm: TermMap) -> T;
@@ -53,7 +55,7 @@ pub trait TermMapExtractor<T: Debug> {
         if let TermKind::BlankNode = map_const.kind() {
             return Err(ParseError::GenericError(format!(
                 "Constant-valued term map cannot be a BlankNode"
-            )));
+            )).into());
         };
 
         let tm_info = term_map_from_constant_term(map_const)?;
@@ -69,7 +71,7 @@ pub trait TermMapExtractor<T: Debug> {
         TTerm: Term + Clone,
     {
         Self::extract_many_from_container(graph_ref, container_map_subj_ref)
-            .and_then(|mut vec| vec.pop().ok_or(ParseError::Infallible))
+            .and_then(|mut vec| vec.pop().ok_or(ParseError::Infallible.into()))
     }
 
     fn extract_many_from_container<TTerm>(
@@ -104,7 +106,7 @@ pub trait TermMapExtractor<T: Debug> {
             Err(ParseError::NoTermMapFoundError(format!(
                 "0 TermMap of type {:?} found for {:?}",
                 map_preds, container_map_subj_ref
-            )))
+            )).into())
         } else {
             Ok(result)
         }

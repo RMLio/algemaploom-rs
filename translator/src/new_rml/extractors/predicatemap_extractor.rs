@@ -50,6 +50,7 @@ mod tests {
     use sophia_api::triple::Triple;
 
     use super::*;
+    use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
     use crate::import_test_mods;
     use crate::new_rml::rml_model::v2::core::expression_map::ExpressionValueEnum;
@@ -76,7 +77,7 @@ mod tests {
                 ExpressionValueEnum::Constant
             );
             assert!(pm.term_map.is_iri_term_type());
-            Ok::<(), ParseError>(())
+            Ok::<(), NewRMLTranslationError>(())
         });
 
         Ok(())

@@ -54,7 +54,7 @@ impl Extractor<Source> for Source {
             return Err(
                 ParseError::GenericError(
                     "Subject term for source extraction cannot be a literal nor a variable"
-                    .to_string()));
+                    .to_string()).into());
         }
 
         let encoding_pred = vocab::rml_io::PROPERTY::ENCODING.to_rcterm();
@@ -106,7 +106,8 @@ where
         }
     }?;
 
-    let mut metadata: FastGraph = get_subgraph_subject(graph, subject.borrow_term())?;
+    let mut metadata: FastGraph =
+        get_subgraph_subject(graph, subject.borrow_term())?;
 
     // Remove the properties that have been saved previously in Source struct
     metadata.remove_matching(

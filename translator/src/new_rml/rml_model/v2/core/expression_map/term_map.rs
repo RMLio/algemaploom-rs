@@ -82,7 +82,7 @@ impl TermMap {
             Err(ParseError::GenericError(format!(
                 "Term type is not supported yet: {:?}",
                 self.term_type
-            )))
+            )).into())
         }
     }
 }

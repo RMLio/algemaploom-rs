@@ -6,6 +6,7 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
 
+use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::FromVocab;
 
@@ -53,7 +54,7 @@ pub enum RMLReferenceFormulationTypeKind {
 }
 
 impl TryFrom<ReferenceFormulation> for RMLReferenceFormulationTypeKind {
-    type Error = ParseError;
+    type Error = NewRMLTranslationError;
 
     fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
         value.iri.try_into()
@@ -61,7 +62,7 @@ impl TryFrom<ReferenceFormulation> for RMLReferenceFormulationTypeKind {
 }
 
 impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
-    type Error = ParseError;
+    type Error = NewRMLTranslationError;
 
     fn try_from(value: RcTerm) -> Result<Self, Self::Error> {
         match value {
@@ -78,7 +79,7 @@ impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
                 Err(ParseError::GenericError(format!(
                     "reference formulation type is not supported: {:?}",
                     value
-                )))
+                )).into())
             }
         }
     }

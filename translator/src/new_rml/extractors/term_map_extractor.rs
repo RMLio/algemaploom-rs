@@ -94,7 +94,7 @@ impl Extractor<TermMap> for TermMap {
                 return Err(ParseError::GenericError(format!(
                     "Term type node for {:?} has value {:?} which is not an IRI",
                     subject_ref, ttype_iri
-                )));
+                )).into());
             }
             Ok(ttype_iri)
         } else {

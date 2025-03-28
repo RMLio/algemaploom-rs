@@ -5,6 +5,7 @@ use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
+use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{Extractor, ExtractorResult, FromVocab};
@@ -41,12 +42,12 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
             &vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
         )
         .iter()
-        .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, ParseError> {
+        .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, NewRMLTranslationError> {
             let res = RMLField::extract_self(t, graph_ref);
             match res {
                 Ok(field) => {
                     if let Iterable(_) = field.kind{
-                        Err(ParseError::GenericError(format!("Logical view join's field cannot be an iterable {:?}", t)))
+                        Err(ParseError::GenericError(format!("Logical view join's field cannot be an iterable {:?}", t)).into())
                     }else{
                         acc.push(field);
                         Ok(acc)

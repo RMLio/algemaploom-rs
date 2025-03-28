@@ -58,7 +58,7 @@ impl ExpressionMap {
                 Err(ParseError::GenericError(format!(
                 "Invalid predicate IRI detected for term map type inference {:?}",
                 self.map_type_pred_iri
-            )))
+            )).into())
             }
         }
     }

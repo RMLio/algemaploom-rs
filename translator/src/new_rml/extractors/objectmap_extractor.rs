@@ -116,6 +116,7 @@ mod tests {
 
 
     use super::*;
+    use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
     use crate::import_test_mods;
     use crate::new_rml::rml_model::v2::core::expression_map::ExpressionValueEnum;
@@ -154,7 +155,7 @@ mod tests {
                 om.term_map.expression.get_value_type_enum()?,
                 ExpressionValueEnum::Reference
             );
-            Ok::<(), ParseError>(())
+            Ok::<(), NewRMLTranslationError>(())
         });
 
         Ok(())
