@@ -23,6 +23,7 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
         let search_store = SearchStore::from_document(&model);
 
 
+
         todo!()
     }
 }

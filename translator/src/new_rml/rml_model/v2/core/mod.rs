@@ -13,7 +13,7 @@ pub mod expression_map;
 
 #[derive(Debug, Clone)]
 pub struct TriplesMap {
-    pub identifier:               String,
+    pub identifier:               RcTerm,
     pub base_iri:                 String,
     pub subject_map:              SubjectMap,
     pub predicate_object_map_vec: Vec<PredicateObjectMap>,

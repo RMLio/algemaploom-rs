@@ -1,24 +1,23 @@
 use std::collections::HashMap;
 
+use sophia_term::RcTerm;
 use uuid::Uuid;
 
-use crate::new_rml::extractors::ExtractorResult;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
 use crate::new_rml::rml_model::v2::core::TriplesMap;
 use crate::new_rml::rml_model::Document;
-use crate::rml::parser::extractors::rcterm_to_string;
 
 #[derive(Debug, Clone, Default)]
 pub struct SearchStore<'a> {
     reference_attr_map: HashMap<String, String>,
-    tm_id_quad_var_map: HashMap<String, String>,
-    sm_search_map:      HashMap<String, &'a SubjectMap>,
-    pm_search_map:      HashMap<String, &'a PredicateMap>,
-    om_search_map:      HashMap<String, &'a ObjectMap>,
-    gm_search_map:      HashMap<String, &'a GraphMap>,
-    tm_search_map:      HashMap<String, &'a TriplesMap>,
+    tm_id_quad_var_map: HashMap<RcTerm, String>,
+    sm_search_map:      HashMap<RcTerm, &'a SubjectMap>,
+    pm_search_map:      HashMap<RcTerm, &'a PredicateMap>,
+    om_search_map:      HashMap<RcTerm, &'a ObjectMap>,
+    gm_search_map:      HashMap<RcTerm, &'a GraphMap>,
+    tm_search_map:      HashMap<RcTerm, &'a TriplesMap>,
 }
 
 impl SearchStore<'_> {
@@ -42,16 +41,16 @@ impl SearchStore<'_> {
             let tm_count: u32 = 0;
             tm_search_map.insert(tm.identifier.clone(), tm);
             let sm = &tm.subject_map;
-            let sm_ident_string = rcterm_to_string(&sm.term_map.identifier);
-            sm_search_map.insert(sm_ident_string.clone(), sm);
+            let sm_ident = sm.term_map.identifier.clone();
+            sm_search_map.insert(sm_ident.clone(), sm);
 
             tm_id_quad_var_map
-                .insert(sm_ident_string.clone(), format!("sm_{}", tm_count));
+                .insert(sm_ident.clone(), format!("sm_{}", tm_count));
 
             let sm_gms: Vec<_> = sm
                 .graph_maps
                 .iter()
-                .map(|gm| (rcterm_to_string(&gm.term_map.identifier), gm))
+                .map(|gm| (gm.term_map.identifier.clone(), gm))
                 .collect();
 
             tm_id_quad_var_map.extend(sm_gms.iter().enumerate().map(
@@ -67,7 +66,7 @@ impl SearchStore<'_> {
                 let pom_gms: Vec<_> = pom
                     .graph_map_vec
                     .iter()
-                    .map(|gm| (rcterm_to_string(&gm.term_map.identifier), gm))
+                    .map(|gm| (gm.term_map.identifier.clone(), gm))
                     .collect();
                 let pom_gms_var_iter = pom_gms.iter().enumerate().map(
                     |(gm_idx, (gm_ident, _))| {
@@ -87,13 +86,13 @@ impl SearchStore<'_> {
                 pm_search_map = pom
                     .predicate_map_vec
                     .iter()
-                    .map(|pm| (rcterm_to_string(&pm.term_map.identifier), pm))
+                    .map(|pm| (pm.term_map.identifier.clone(), pm))
                     .collect();
 
                 let pm_var_iter = pom.predicate_map_vec.iter().enumerate().map(
                     |(pm_idx, pm)| {
                         (
-                            rcterm_to_string(&pm.term_map.identifier),
+                            pm.term_map.identifier.clone(),
                             format!(
                                 "pom_{}_{}_pm_{}",
                                 tm_count, pom_idx, pm_idx
@@ -105,12 +104,12 @@ impl SearchStore<'_> {
                 om_search_map = pom
                     .object_map_vec
                     .iter()
-                    .map(|om| (rcterm_to_string(&om.term_map.identifier), om))
+                    .map(|om| (om.term_map.identifier.clone(), om))
                     .collect();
                 let om_var_iter = pom.object_map_vec.iter().enumerate().map(
                     |(om_idx, om)| {
                         (
-                            rcterm_to_string(&om.term_map.identifier),
+                            om.term_map.identifier.clone(),
                             format!(
                                 "pom_{}_{}_om_{}",
                                 tm_count, pom_idx, om_idx
@@ -119,8 +118,7 @@ impl SearchStore<'_> {
                     },
                 );
 
-
-                let pm_om_id_var_chain = pm_var_iter.chain(om_var_iter); 
+                let pm_om_id_var_chain = pm_var_iter.chain(om_var_iter);
                 tm_id_quad_var_map.extend(pm_om_id_var_chain);
             }
         }
@@ -140,23 +138,23 @@ impl SearchStore<'_> {
         self.reference_attr_map.get(reference)
     }
 
-    pub fn get_tm_variable(&self, identifier: &str) -> Option<&String> {
+    pub fn get_tm_variable(&self, identifier: &RcTerm) -> Option<&String> {
         self.tm_id_quad_var_map.get(identifier)
     }
 
-    pub fn get_sm(&self, identifier: &str) -> Option<&SubjectMap> {
+    pub fn get_sm(&self, identifier: &RcTerm) -> Option<&SubjectMap> {
         self.sm_search_map.get(identifier).copied()
     }
 
-    pub fn get_om(&self, identifier: &str) -> Option<&ObjectMap> {
+    pub fn get_om(&self, identifier: &RcTerm) -> Option<&ObjectMap> {
         self.om_search_map.get(identifier).copied()
     }
 
-    pub fn get_pm(&self, identifier: &str) -> Option<&PredicateMap> {
+    pub fn get_pm(&self, identifier: &RcTerm) -> Option<&PredicateMap> {
         self.pm_search_map.get(identifier).copied()
     }
 
-    pub fn get_gm(&self, identifier: &str) -> Option<&GraphMap> {
+    pub fn get_gm(&self, identifier: &RcTerm) -> Option<&GraphMap> {
         self.gm_search_map.get(identifier).copied()
     }
 }

@@ -48,7 +48,7 @@ impl Extractor<TriplesMap> for TriplesMap {
 
         Ok(TriplesMap {
             base_iri: "".to_string(),
-            identifier: stringify_rcterm(subject.borrow_term()).unwrap(),
+            identifier: RcTerm::from_term(subject),
             logical_source,
             subject_map,
             predicate_object_map_vec: po_maps,
