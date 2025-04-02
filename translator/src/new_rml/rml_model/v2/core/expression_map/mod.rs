@@ -14,6 +14,30 @@ pub struct ExpressionMap {
 }
 
 impl ExpressionMap {
+    pub fn from_template_str(template: &str) -> ExpressionMap {
+        Self {
+            map_type_pred_iri: vocab::rml_core::PROPERTY::TEMPLATE.to_rcterm(),
+            kind:              ExpressionMapKind::NonFunction(
+                template.to_string(),
+            ),
+        }
+    }
+    pub fn from_const_str(const_str: &str) -> ExpressionMap {
+        Self {
+            map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+            kind:              ExpressionMapKind::NonFunction(
+                const_str.to_string(),
+            ),
+        }
+    }
+    pub fn from_ref_str(ref_str: &str) -> ExpressionMap {
+        Self {
+            map_type_pred_iri: vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+            kind:              ExpressionMapKind::NonFunction(
+                ref_str.to_string(),
+            ),
+        }
+    }
     pub fn try_new(
         value_pred: RcTerm,
         value: String,
