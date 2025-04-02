@@ -29,6 +29,15 @@ impl ExpressionMap {
             kind:              ExpressionMapKind::NonFunction(value),
         })
     }
+    pub fn get_value(&self) -> Option<&String> {
+        match &self.kind {
+            ExpressionMapKind::FunctionExecution {
+                execution: _,
+                returns: _,
+            } => None,
+            ExpressionMapKind::NonFunction(s) => Some(s),
+        }
+    }
 
     pub fn get_value_type_enum(&self) -> ExtractorResult<ExpressionValueEnum> {
         match self.map_type_pred_iri.clone() {
