@@ -33,7 +33,7 @@ impl Extractor<TriplesMap> for TriplesMap {
             subject.borrow_term(),
             &[ls_old_pred, ls_new_pred],
         )?;
-        let logical_source =
+        let abs_logical_source =
             AbstractLogicalSource::extract_self(&logical_source_subj, graph)?;
 
         let pom = vocab::r2rml::PROPERTY::PREDICATEOBJECTMAP.to_rcterm();
@@ -49,7 +49,7 @@ impl Extractor<TriplesMap> for TriplesMap {
         Ok(TriplesMap {
             base_iri: "".to_string(),
             identifier: RcTerm::from_term(subject),
-            logical_source,
+            abs_logical_source,
             subject_map,
             predicate_object_map_vec: po_maps,
         })

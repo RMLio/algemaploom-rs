@@ -5,11 +5,17 @@ use sophia_term::RcTerm;
 use super::io::source::{
     LogicalSource, RMLReferenceFormulationTypeKind, ReferenceFormulation,
 };
-use super::lv::LogicalView;
+use super::lv::{LogicalView, RMLField};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::ExtractorResult;
 
 pub mod expression_map;
+
+#[derive(Debug, Clone)]
+pub enum TemplateSubString {
+    Attribute(String),
+    NormalString(String),
+}
 
 #[derive(Debug, Clone)]
 pub struct TriplesMap {
@@ -17,7 +23,63 @@ pub struct TriplesMap {
     pub base_iri:                 String,
     pub subject_map:              SubjectMap,
     pub predicate_object_map_vec: Vec<PredicateObjectMap>,
-    pub logical_source:           AbstractLogicalSource,
+    pub abs_logical_source:       AbstractLogicalSource,
+}
+
+impl TriplesMap {
+    pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
+        let abs_ls = &self.abs_logical_source;
+        if let AbstractSourceEnum::IOLogicalSource(ls) = &abs_ls.abs_source_enum
+        {
+            let mut references = self.subject_map.term_map.get_ref_attributes();
+            let sm_gm_references = self
+                .subject_map
+                .graph_maps
+                .iter()
+                .flat_map(|gm| gm.term_map.get_ref_attributes());
+
+            let pm_references = self
+                .predicate_object_map_vec
+                .iter()
+                .flat_map(|pom| pom.predicate_map_vec.iter())
+                .flat_map(|pm| pm.term_map.get_ref_attributes());
+            let om_references = self
+                .predicate_object_map_vec
+                .iter()
+                .flat_map(|pom| pom.object_map_vec.iter())
+                .flat_map(|om| om.term_map.get_ref_attributes());
+            let pom_gm_references = self
+                .predicate_object_map_vec
+                .iter()
+                .flat_map(|pom| pom.graph_map_vec.iter())
+                .flat_map(|gm| gm.term_map.get_ref_attributes());
+
+            references.extend(sm_gm_references);
+            references.extend(pom_gm_references);
+            references.extend(pm_references);
+            references.extend(om_references);
+
+            let mut fields = references
+                .iter()
+                .map(|ref_val| RMLField::from_ref_str(ref_val))
+                .collect();
+
+            let lv = LogicalView {
+                identifier: ls.identifier.clone(),
+                view_on: ls.clone(),
+                fields,
+                struct_annotations: vec![],
+                join_kind_view_pairs: vec![],
+            };
+
+            //modify the old IOLogicalSource to logical views
+            self.abs_logical_source = AbstractLogicalSource {
+                iterable:        self.abs_logical_source.iterable.clone(),
+                abs_source_enum: AbstractSourceEnum::LogicalView(lv),
+            };
+        }
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -64,6 +126,21 @@ impl RMLIterable {
 pub struct AbstractLogicalSource {
     pub iterable:        RMLIterable,
     pub abs_source_enum: AbstractSourceEnum,
+}
+
+impl AbstractLogicalSource {
+    pub fn get_identifier(&self) -> RcTerm {
+        let term_ref = match &self.abs_source_enum {
+            AbstractSourceEnum::IOLogicalSource(logical_source) => {
+                &logical_source.identifier
+            }
+            AbstractSourceEnum::LogicalView(logical_view) => {
+                &logical_view.identifier
+            }
+        };
+
+        term_ref.clone()
+    }
 }
 
 #[derive(Debug, Clone)]

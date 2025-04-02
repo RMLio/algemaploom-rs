@@ -6,9 +6,10 @@ use sophia_api::prelude::Iri;
 use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
 use sophia_term::RcTerm;
 
-use super::ExpressionMap;
+use super::{ExpressionMap, ExpressionMapKind, ExpressionValueEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
+use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
 lazy_static! {
     static ref TEMPLATE_REGEX: Regex = Regex::new(r"\{([^\{\}]+)\}").unwrap();
@@ -21,12 +22,31 @@ fn prefix_attributes_from_template(template: &str, prefix: &str) -> String {
         .replace("\\)", "\\}")
 }
 
-fn get_attributes_from_template(template: &str) -> Vec<String> {
-    let sanitized = template.replace("\\{", "").replace("\\}", "");
-    let captured = TEMPLATE_REGEX.captures_iter(&sanitized);
-    captured
-        .filter_map(|cap| cap.get(1).map(|c| c.as_str().to_owned()))
-        .collect()
+fn split_template_string(template: &str) -> Vec<TemplateSubString> {
+    let mut chars = template.chars();
+
+    let mut is_escape;
+    let mut current_buf = String::new();
+    let mut result = Vec::new();
+    while let Some(c) = chars.next() {
+        is_escape = c == '\\';
+        if is_escape {
+            if let Some(c) = chars.next() {
+                current_buf.push(c);
+            }
+        } else if c == '{' {
+            result.push(TemplateSubString::NormalString(current_buf.clone()));
+            current_buf.clear();
+            current_buf.push(c);
+        } else if c == '}' {
+            current_buf.push(c);
+            result.push(TemplateSubString::Attribute(current_buf.clone()));
+            current_buf.clear();
+        } else {
+            current_buf.push(c);
+        }
+    }
+    result
 }
 
 #[derive(Debug, Clone)]
@@ -38,6 +58,43 @@ pub struct TermMap {
 }
 
 impl TermMap {
+    pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
+        if let ExpressionValueEnum::Template =
+            self.expression.get_value_type_enum().unwrap()
+        {
+            if let Some(template) = self.expression.get_value() {
+                return split_template_string(template);
+            }
+        }
+        vec![]
+    }
+
+    pub fn get_ref_attributes(&self) -> Vec<String> {
+        let template_attr_vec: Vec<_> = self
+            .get_template_string_split()
+            .into_iter()
+            .filter_map(|sstring| {
+                match sstring {
+                    TemplateSubString::Attribute(str) => Some(str),
+                    TemplateSubString::NormalString(_) => None,
+                }
+            })
+            .collect();
+
+        if !template_attr_vec.is_empty() {
+            return template_attr_vec;
+        }
+
+        if let ExpressionValueEnum::Reference =
+            self.expression.get_value_type_enum().unwrap()
+        {
+            let val = self.expression.get_value().unwrap();
+            vec![val.to_string()]
+        } else {
+            vec![]
+        }
+    }
+
     pub fn try_get_node(&self) -> Option<RcTerm> {
         if let super::ExpressionMapKind::NonFunction(val) =
             &self.expression.kind
@@ -82,7 +139,8 @@ impl TermMap {
             Err(ParseError::GenericError(format!(
                 "Term type is not supported yet: {:?}",
                 self.term_type
-            )).into())
+            ))
+            .into())
         }
     }
 }
