@@ -22,6 +22,18 @@ pub struct RMLField {
     pub fields: Vec<RMLField>,
 }
 
+impl RMLField {
+    pub fn from_ref_str(ref_str: &str) -> RMLField {
+        RMLField {
+            name:   ref_str.to_string(),
+            kind:   RMLFieldKind::Expression(ExpressionMap::from_ref_str(
+                ref_str,
+            )),
+            fields: vec![],
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub enum RMLFieldKind {
     Iterable(RMLIterable),
