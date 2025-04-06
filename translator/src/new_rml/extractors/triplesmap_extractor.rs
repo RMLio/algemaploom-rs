@@ -5,13 +5,13 @@ use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use vocab::ToString;
 
-use super::store::get_object_with_ps;
+use super::store::{get_object_with_ps, get_subject, get_subjects};
 use super::{stringify_rcterm, Extractor, ExtractorResult, RcTerm};
 use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{FromVocab, TermMapExtractor};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, PredicateObjectMap, TriplesMap,
+    AbstractLogicalSource, JoinCondition, PredicateObjectMap, TriplesMap,
 };
 
 impl Extractor<TriplesMap> for TriplesMap {
@@ -46,10 +46,33 @@ impl Extractor<TriplesMap> for TriplesMap {
                 .collect();
         let po_maps = po_maps_res?;
 
+        // Find all the attributes of this triples maps (tm) which are used in the rr:parent of the
+        // referencing object maps in the child triples map (tm')
+        let child_ref_obj_maps = get_subjects(
+            graph,
+            &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP.to_rcterm(),
+            &subject,
+        );
+
+        let join_conditions =
+            child_ref_obj_maps.into_iter().flat_map(|ref_obj| {
+                get_objects(
+                    graph,
+                    ref_obj,
+                    vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
+                )
+            });
+
+        let ref_obj_attributes = join_conditions
+            .flat_map(|jc| JoinCondition::extract_self(jc, graph))
+            .flat_map(|jc| jc.parent.get_value().cloned())
+            .collect();
+
         Ok(TriplesMap {
             base_iri: "".to_string(),
             identifier: RcTerm::from_term(subject),
             abs_logical_source,
+            ref_obj_attributes,
             subject_map,
             predicate_object_map_vec: po_maps,
         })

@@ -9,10 +9,9 @@ use sophia_api::term::{FromTerm, SimpleTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 
-use crate::new_rml::error::NewRMLTranslationError;
-
 use super::error::ParseError;
 use super::RcTerm;
+use crate::new_rml::error::NewRMLTranslationError;
 
 pub fn get_subgraph_subject<TS>(
     graph: &FastGraph,
@@ -78,24 +77,39 @@ where
     .unwrap())
 }
 
-pub fn get_subject<TP, TO>(
+pub fn get_subjects<TP, TO>(
     graph: &FastGraph,
-    pred: TP,
-    obj: TO,
-) -> Result<RcTerm, NewRMLTranslationError>
+    pred: &TP,
+    obj: &TO,
+) -> Vec<RcTerm>
 where
     TP: Term + Debug,
     TO: Term + Debug,
 {
     graph
         .triples_matching(Any, [pred.borrow_term()], [obj.borrow_term()])
-        .next()
-        .map(|trip_res| trip_res.map(|trip| RcTerm::from_term(trip.o())).ok())
-        .flatten()
-        .ok_or(ParseError::GenericError(format!(
+        .filter_map(|trip_res| {
+            trip_res.map(|trip| RcTerm::from_term(trip.s())).ok()
+        })
+        .collect()
+}
+
+pub fn get_subject<TP, TO>(
+    graph: &FastGraph,
+    pred: &TP,
+    obj: &TO,
+) -> Result<RcTerm, NewRMLTranslationError>
+where
+    TP: Term + Debug,
+    TO: Term + Debug,
+{
+    get_subjects(graph, pred, obj).pop().ok_or(
+        ParseError::GenericError(format!(
             "Subject not found in graph with obj {:?} and pred {:?}",
             pred, obj
-        )).into())
+        ))
+        .into(),
+    )
 }
 
 pub fn get_objects<TS, TP>(
@@ -121,12 +135,16 @@ where
     TS: Term + Debug,
     TP: Term + Debug,
 {
-    let mut objects = get_objects(graph_ref, subject_ref.borrow_term(), pred.borrow_term());
+    let mut objects =
+        get_objects(graph_ref, subject_ref.borrow_term(), pred.borrow_term());
 
-    objects.pop().ok_or(ParseError::GenericError(format!(
-        "Object not found in graph with subj {:?} and pred {:?}",
-        subject_ref, pred
-    )).into())
+    objects.pop().ok_or(
+        ParseError::GenericError(format!(
+            "Object not found in graph with subj {:?} and pred {:?}",
+            subject_ref, pred
+        ))
+        .into(),
+    )
 }
 
 pub fn get_objects_with_ps<TS, TP>(
@@ -140,7 +158,9 @@ where
 {
     pred_vec
         .iter()
-        .flat_map(|pred| get_objects(graph, subject.borrow_term(), pred.borrow_term()))
+        .flat_map(|pred| {
+            get_objects(graph, subject.borrow_term(), pred.borrow_term())
+        })
         .collect()
 }
 
@@ -153,9 +173,13 @@ where
     TS: Term + Debug,
     TP: Term + Debug,
 {
-    let mut object_opt = get_objects_with_ps(graph, subject.borrow_term(), pred_vec);
-    object_opt.pop().ok_or(ParseError::GenericError(format!(
-        "Object not found in graph with subj {:?} and preds {:?}",
-        subject, pred_vec
-    )).into())
+    let mut object_opt =
+        get_objects_with_ps(graph, subject.borrow_term(), pred_vec);
+    object_opt.pop().ok_or(
+        ParseError::GenericError(format!(
+            "Object not found in graph with subj {:?} and preds {:?}",
+            subject, pred_vec
+        ))
+        .into(),
+    )
 }

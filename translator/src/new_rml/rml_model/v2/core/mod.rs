@@ -22,6 +22,7 @@ pub struct TriplesMap {
     pub identifier:               RcTerm,
     pub base_iri:                 String,
     pub subject_map:              SubjectMap,
+    pub ref_obj_attributes:       Vec<String>,
     pub predicate_object_map_vec: Vec<PredicateObjectMap>,
     pub abs_logical_source:       AbstractLogicalSource,
 }
@@ -58,8 +59,9 @@ impl TriplesMap {
             references.extend(pom_gm_references);
             references.extend(pm_references);
             references.extend(om_references);
+            references.extend(self.ref_obj_attributes.iter().cloned());
 
-            let mut fields = references
+            let fields = references
                 .iter()
                 .map(|ref_val| RMLField::from_ref_str(ref_val))
                 .collect();
