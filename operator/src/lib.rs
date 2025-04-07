@@ -380,6 +380,7 @@ impl Hash for Serializer {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum IOType {
+    StdIn, 
     StdOut,
     File,
     Kafka,
