@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
+use operator::{formats, IOType};
 use sophia_api::serializer::*;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
@@ -8,12 +9,64 @@ use sophia_turtle::serializer::nt::NtSerializer;
 
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::FromVocab;
+use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
+use crate::new_rml::translator::error::TranslationError;
 
 #[derive(Debug, Clone)]
 pub struct ReferenceFormulation {
     pub iri:  RcTerm,
     pub kind: ReferenceFormulationKind,
+}
+
+impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
+    type Error = TranslationError;
+
+    fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
+        (&value).try_into()
+    }
+}
+
+impl TryFrom<&ReferenceFormulation>
+    for operator::formats::ReferenceFormulation
+{
+    type Error = TranslationError;
+
+    fn try_from(value: &ReferenceFormulation) -> Result<Self, Self::Error> {
+        match value.kind {
+            ReferenceFormulationKind::Iri => {
+                match value.iri.clone() {
+                    value if value == vocab::query::CLASS::CSV.to_rcterm() => {
+                        Ok(formats::ReferenceFormulation::CSVRows)
+                    }
+                    value
+                        if value
+                            == vocab::query::CLASS::JSONPATH.to_rcterm() =>
+                    {
+                        Ok(formats::ReferenceFormulation::JSONPath)
+                    }
+                    value
+                        if value == vocab::query::CLASS::XPATH.to_rcterm() =>
+                    {
+                        Ok(formats::ReferenceFormulation::XMLPath)
+                    }
+                    value => {
+                        Err(TranslationError::SourceError(format!(
+                            "Unsupported reference formulation: {}",
+                            stringify_rcterm(value).unwrap()
+                        )))
+                    }
+                }
+            }
+            ReferenceFormulationKind::CustomReferenceFormulation {
+                meta_data_graph: _,
+            } => {
+                Err(TranslationError::SourceError(format!(
+                    "Complex reference formulation unsupported: {:?}",
+                    value
+                )))
+            }
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -79,7 +132,8 @@ impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
                 Err(ParseError::GenericError(format!(
                     "reference formulation type is not supported: {:?}",
                     value
-                )).into())
+                ))
+                .into())
             }
         }
     }
@@ -103,6 +157,31 @@ pub struct Source {
 pub struct SourceKind {
     pub type_iri: RcTerm,
     pub metadata: Rc<FastGraph>,
+}
+impl TryFrom<SourceKind> for IOType {
+    type Error = TranslationError;
+
+    fn try_from(value: SourceKind) -> Result<Self, Self::Error> {
+        value.try_into()
+    }
+}
+
+impl TryFrom<&SourceKind> for IOType {
+    type Error = TranslationError;
+    fn try_from(value: &SourceKind) -> Result<Self, Self::Error> {
+        if value.type_iri == vocab::rml_io::CLASS::FILE_PATH.to_rcterm()
+            || value.type_iri == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
+        {
+            Ok(IOType::File)
+        } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm() {
+            Ok(IOType::RDB)
+        } else {
+            Err(TranslationError::SourceError(format!(
+                "Input format {} not not supported to convert to IOType",
+                stringify_rcterm(value.type_iri.clone()).unwrap()
+            )))
+        }
+    }
 }
 
 impl Debug for SourceKind {

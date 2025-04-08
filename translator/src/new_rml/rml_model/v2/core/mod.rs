@@ -4,6 +4,7 @@ use sophia_term::RcTerm;
 
 use super::io::source::{
     LogicalSource, RMLReferenceFormulationTypeKind, ReferenceFormulation,
+    Source,
 };
 use super::lv::{LogicalView, RMLField};
 use crate::new_rml::extractors::error::ParseError;
@@ -131,6 +132,16 @@ pub struct AbstractLogicalSource {
 }
 
 impl AbstractLogicalSource {
+    pub fn get_source(&self) -> &Source {
+        match &self.abs_source_enum {
+            AbstractSourceEnum::IOLogicalSource(logical_source) => {
+                &logical_source.source
+            }
+            AbstractSourceEnum::LogicalView(logical_view) => {
+                &logical_view.view_on.source
+            }
+        }
+    }
     pub fn get_identifier(&self) -> RcTerm {
         let term_ref = match &self.abs_source_enum {
             AbstractSourceEnum::IOLogicalSource(logical_source) => {

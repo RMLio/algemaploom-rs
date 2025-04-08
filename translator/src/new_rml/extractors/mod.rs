@@ -3,15 +3,14 @@ use std::fmt::Debug;
 use sophia_api::prelude::Iri;
 use sophia_api::term::{FromTerm, IriRef, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
-use sophia_term::RcTerm;
+use sophia_term::{ArcTerm, RcTerm};
 use term_map_extractor::term_map_from_constant_term;
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
+use super::error::NewRMLTranslationError;
 use crate::new_rml::extractors::store::get_objects;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
-
-use super::error::NewRMLTranslationError;
 
 mod abstract_logical_source_extractor;
 pub mod error;
@@ -29,7 +28,7 @@ mod predicatemap_extractor;
 //mod rdb_logicalsource;
 mod refobject_extractor;
 mod source;
-mod store;
+pub mod store;
 mod subjectmap_extractor;
 mod target;
 mod term_map_extractor;
@@ -55,7 +54,8 @@ pub trait TermMapExtractor<T: Debug> {
         if let TermKind::BlankNode = map_const.kind() {
             return Err(ParseError::GenericError(format!(
                 "Constant-valued term map cannot be a BlankNode"
-            )).into());
+            ))
+            .into());
         };
 
         let tm_info = term_map_from_constant_term(map_const)?;
@@ -83,12 +83,12 @@ pub trait TermMapExtractor<T: Debug> {
     {
         let map_preds = Self::get_map_preds();
         let const_preds = Self::get_const_preds();
-        let map_subj_vec = map_preds
-            .iter()
-            .flat_map(|f| get_objects(graph_ref, container_map_subj_ref.borrow_term(), f));
-        let map_const_obj_vec = const_preds
-            .iter()
-            .flat_map(|f| get_objects(graph_ref, container_map_subj_ref.borrow_term(), f));
+        let map_subj_vec = map_preds.iter().flat_map(|f| {
+            get_objects(graph_ref, container_map_subj_ref.borrow_term(), f)
+        });
+        let map_const_obj_vec = const_preds.iter().flat_map(|f| {
+            get_objects(graph_ref, container_map_subj_ref.borrow_term(), f)
+        });
 
         let mut result: Vec<_> = map_subj_vec
             .map(|map_subj| Self::create_term_map(&map_subj, graph_ref))
@@ -106,7 +106,8 @@ pub trait TermMapExtractor<T: Debug> {
             Err(ParseError::NoTermMapFoundError(format!(
                 "0 TermMap of type {:?} found for {:?}",
                 map_preds, container_map_subj_ref
-            )).into())
+            ))
+            .into())
         } else {
             Ok(result)
         }
@@ -134,11 +135,15 @@ pub trait Extractor<T> {
 
 pub trait FromVocab {
     fn to_rcterm(&self) -> RcTerm;
+    fn to_arcterm(&self) -> ArcTerm;
 }
 
 impl<'a> FromVocab for PAIR<'a> {
     fn to_rcterm(&self) -> RcTerm {
         RcTerm::from_term(Iri::new_unchecked(format!("{}{}", self.0, self.1)))
+    }
+    fn to_arcterm(&self) -> ArcTerm {
+        ArcTerm::from_term(Iri::new_unchecked(format!("{}{}", self.0, self.1)))
     }
 }
 

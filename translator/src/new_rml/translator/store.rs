@@ -6,21 +6,45 @@ use uuid::Uuid;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
-use crate::new_rml::rml_model::v2::core::TriplesMap;
+use crate::new_rml::rml_model::v2::core::{AbstractLogicalSource, TriplesMap};
 use crate::new_rml::rml_model::Document;
 
 #[derive(Debug, Clone, Default)]
 pub struct SearchStore<'a> {
-    reference_attr_map: HashMap<String, String>,
-    tm_id_quad_var_map: HashMap<RcTerm, String>,
-    sm_search_map:      HashMap<RcTerm, &'a SubjectMap>,
-    pm_search_map:      HashMap<RcTerm, &'a PredicateMap>,
-    om_search_map:      HashMap<RcTerm, &'a ObjectMap>,
-    gm_search_map:      HashMap<RcTerm, &'a GraphMap>,
-    tm_search_map:      HashMap<RcTerm, &'a TriplesMap>,
+    pub reference_attr_map: HashMap<String, String>,
+    pub tm_id_quad_var_map: HashMap<RcTerm, String>,
+    pub abs_ls_search_map:  HashMap<RcTerm, &'a AbstractLogicalSource>,
+    pub sm_search_map:      HashMap<RcTerm, &'a SubjectMap>,
+    pub pm_search_map:      HashMap<RcTerm, &'a PredicateMap>,
+    pub om_search_map:      HashMap<RcTerm, &'a ObjectMap>,
+    pub gm_search_map:      HashMap<RcTerm, &'a GraphMap>,
+    pub tm_search_map:      HashMap<RcTerm, &'a TriplesMap>,
 }
 
 impl SearchStore<'_> {
+    /// Returns a vector containing pairs where the left value is the identifier of the
+    /// [`AbstractLogicalSource`]
+    /// and the right value is a vector of the associated
+    /// [`TriplesMap`]'s
+    /// identifiers [`SearchStore`].
+    ///
+    pub fn partition_lsid_tmid(&self) -> Vec<(RcTerm, Vec<RcTerm>)> {
+        let mut result: HashMap<RcTerm, Vec<RcTerm>> = HashMap::new();
+
+        for tm in self.tm_search_map.values() {
+            let abs_ls_id = tm.abs_logical_source.get_identifier();
+            let value = &tm.identifier;
+
+            result
+                .entry(abs_ls_id)
+                // RcTerm's cloning (low cost ref counter addition)
+                .or_insert(vec![value.clone()])
+                .push(value.clone());
+        }
+
+        result.into_iter().collect()
+    }
+
     pub fn add_reference_name(&mut self, reference: &str) -> &String {
         self.reference_attr_map
             .entry(reference.to_string())
@@ -31,6 +55,7 @@ impl SearchStore<'_> {
         let tm_iter = document.triples_maps.iter();
 
         let mut tm_search_map = HashMap::new();
+        let mut abs_ls_search_map = HashMap::new();
         let mut sm_search_map = HashMap::new();
         let mut pm_search_map = HashMap::new();
         let mut om_search_map = HashMap::new();
@@ -39,6 +64,10 @@ impl SearchStore<'_> {
 
         for tm in tm_iter {
             let tm_count: u32 = 0;
+            abs_ls_search_map.insert(
+                tm.abs_logical_source.get_identifier(),
+                &tm.abs_logical_source,
+            );
             tm_search_map.insert(tm.identifier.clone(), tm);
             let sm = &tm.subject_map;
             let sm_ident = sm.term_map.identifier.clone();
@@ -130,31 +159,8 @@ impl SearchStore<'_> {
             om_search_map,
             gm_search_map,
             tm_search_map,
+            abs_ls_search_map,
             ..Default::default()
         }
-    }
-
-    pub fn get_reference_attr(&self, reference: &str) -> Option<&String> {
-        self.reference_attr_map.get(reference)
-    }
-
-    pub fn get_tm_variable(&self, identifier: &RcTerm) -> Option<&String> {
-        self.tm_id_quad_var_map.get(identifier)
-    }
-
-    pub fn get_sm(&self, identifier: &RcTerm) -> Option<&SubjectMap> {
-        self.sm_search_map.get(identifier).copied()
-    }
-
-    pub fn get_om(&self, identifier: &RcTerm) -> Option<&ObjectMap> {
-        self.om_search_map.get(identifier).copied()
-    }
-
-    pub fn get_pm(&self, identifier: &RcTerm) -> Option<&PredicateMap> {
-        self.pm_search_map.get(identifier).copied()
-    }
-
-    pub fn get_gm(&self, identifier: &RcTerm) -> Option<&GraphMap> {
-        self.gm_search_map.get(identifier).copied()
     }
 }
