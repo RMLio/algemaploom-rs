@@ -1,6 +1,6 @@
+pub mod error;
 mod source;
 mod store;
-pub mod error;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -9,11 +9,13 @@ use operator::Source;
 use plangenerator::data_type::RcRefCellPlan;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
+use sophia_term::RcTerm;
 use source::AbstractLogicalSourceTranslator;
 use store::SearchStore;
 
 use super::error::NewRMLTranslationResult;
 use super::rml_model::Document;
+use crate::error::TranslationError;
 use crate::new_rml::extractors::io::parse_file;
 use crate::LanguageTranslator;
 
@@ -21,7 +23,15 @@ pub trait OperatorTranslator {
     type Input;
     type Output;
 
-    fn translate(store: &SearchStore, input: &Self::Input) -> NewRMLTranslationResult<Self::Output>;
+    fn translate(input: &Self::Input) -> NewRMLTranslationResult<Self::Output> {
+        unimplemented!("Operator translator does not support translation without the usage of a search store")
+    }
+    fn translate_with_store(
+        store: &SearchStore,
+        input: &Self::Input,
+    ) -> NewRMLTranslationResult<Self::Output> {
+        unimplemented!("Operator translator does not support translation with the usage of a search store")
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -43,24 +53,12 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
             tm.transform_to_logical_view()?;
         }
 
-        let search_store = SearchStore::from_document(&model);
-        let mut ls_id_sourced_plan_map = HashMap::new();
+        let search_store = SearchStore::from_document(&model)?;
 
-        for abs_ls in search_store.abs_ls_search_map.values().copied() {
-            let mut plan = Plan::new();
-
-            let source = AbstractLogicalSourceTranslator::translate(
-                &search_store,
-                abs_ls,
-            )?;
-            let sourced_plan: RcRefCellPlan<Processed> =
-                plan.source(source).into();
-
-            ls_id_sourced_plan_map
-                .insert(abs_ls.get_identifier(), sourced_plan);
+        for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {
+            let plan =
+                search_store.ls_id_sourced_plan_map.get(&abs_ls_id).unwrap();
         }
-
-        for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {}
 
         todo!()
     }

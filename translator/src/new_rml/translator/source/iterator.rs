@@ -17,7 +17,6 @@ impl OperatorTranslator for IteratorTranslator {
     type Output = Iterator;
 
     fn translate(
-        store: &crate::new_rml::translator::store::SearchStore,
         abs_ls: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
         let logical_view = match &abs_ls.abs_source_enum {

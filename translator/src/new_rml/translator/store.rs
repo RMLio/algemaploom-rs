@@ -1,8 +1,14 @@
 use std::collections::HashMap;
 
+use plangenerator::data_type::RcRefCellPlan;
+use plangenerator::states::Processed;
+use plangenerator::Plan;
 use sophia_term::RcTerm;
 use uuid::Uuid;
 
+use super::source::AbstractLogicalSourceTranslator;
+use super::OperatorTranslator;
+use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
@@ -11,14 +17,15 @@ use crate::new_rml::rml_model::Document;
 
 #[derive(Debug, Clone, Default)]
 pub struct SearchStore<'a> {
-    pub reference_attr_map: HashMap<String, String>,
-    pub tm_id_quad_var_map: HashMap<RcTerm, String>,
-    pub abs_ls_search_map:  HashMap<RcTerm, &'a AbstractLogicalSource>,
-    pub sm_search_map:      HashMap<RcTerm, &'a SubjectMap>,
-    pub pm_search_map:      HashMap<RcTerm, &'a PredicateMap>,
-    pub om_search_map:      HashMap<RcTerm, &'a ObjectMap>,
-    pub gm_search_map:      HashMap<RcTerm, &'a GraphMap>,
-    pub tm_search_map:      HashMap<RcTerm, &'a TriplesMap>,
+    pub reference_attr_map:     HashMap<String, String>,
+    pub tm_id_quad_var_map:     HashMap<RcTerm, String>,
+    pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSource>,
+    pub ls_id_sourced_plan_map: HashMap<RcTerm, RcRefCellPlan<Processed>>,
+    pub sm_search_map:          HashMap<RcTerm, &'a SubjectMap>,
+    pub pm_search_map:          HashMap<RcTerm, &'a PredicateMap>,
+    pub om_search_map:          HashMap<RcTerm, &'a ObjectMap>,
+    pub gm_search_map:          HashMap<RcTerm, &'a GraphMap>,
+    pub tm_search_map:          HashMap<RcTerm, &'a TriplesMap>,
 }
 
 impl SearchStore<'_> {
@@ -51,7 +58,9 @@ impl SearchStore<'_> {
             .or_insert_with(|| Uuid::new_v4().to_string())
     }
 
-    pub fn from_document(document: &Document) -> SearchStore<'_> {
+    pub fn from_document(
+        document: &Document,
+    ) -> NewRMLTranslationResult<SearchStore<'_>> {
         let tm_iter = document.triples_maps.iter();
 
         let mut tm_search_map = HashMap::new();
@@ -152,15 +161,34 @@ impl SearchStore<'_> {
             }
         }
 
-        SearchStore {
+        let ls_id_sourced_plan_map =
+            create_ls_id_sourced_plan_map(abs_ls_search_map)?;
+
+        Ok(SearchStore {
             tm_id_quad_var_map,
             sm_search_map,
             pm_search_map,
             om_search_map,
             gm_search_map,
             tm_search_map,
+            ls_id_sourced_plan_map,
             abs_ls_search_map,
             ..Default::default()
-        }
+        })
     }
+}
+
+fn create_ls_id_sourced_plan_map(
+    abs_ls_search_map: HashMap<RcTerm, &AbstractLogicalSource>,
+) -> NewRMLTranslationResult<HashMap<RcTerm, RcRefCellPlan<Processed>>> {
+    let mut ls_id_sourced_plan_map = HashMap::new();
+    for abs_ls in abs_ls_search_map.values().copied() {
+        let mut plan = Plan::new();
+
+        let source = AbstractLogicalSourceTranslator::translate(abs_ls)?;
+        let sourced_plan: RcRefCellPlan<Processed> = plan.source(source).into();
+
+        ls_id_sourced_plan_map.insert(abs_ls.get_identifier(), sourced_plan);
+    }
+    Ok(ls_id_sourced_plan_map)
 }

@@ -81,7 +81,6 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
     type Output = operator::Source;
 
     fn translate(
-        store: &super::store::SearchStore,
         abs_ls: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
         let source = abs_ls.get_source();
@@ -116,8 +115,7 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
 
         config.extend(source_kind_config);
 
-        let root_iterator =
-            iterator::IteratorTranslator::translate(store, abs_ls)?;
+        let root_iterator = iterator::IteratorTranslator::translate(abs_ls)?;
 
         Ok(operator::Source {
             config,
