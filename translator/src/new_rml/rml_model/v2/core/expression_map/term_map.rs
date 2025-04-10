@@ -1,53 +1,12 @@
-use std::rc::Rc;
-
-use lazy_static::lazy_static;
-use regex::Regex;
 use sophia_api::prelude::Iri;
 use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
 use sophia_term::RcTerm;
 
-use super::{ExpressionMap, ExpressionMapKind, ExpressionValueEnum};
+use super::{ExpressionMap, ExpressionMapKind, ExpressionMapTypeEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
-lazy_static! {
-    static ref TEMPLATE_REGEX: Regex = Regex::new(r"\{([^\{\}]+)\}").unwrap();
-}
-fn prefix_attributes_from_template(template: &str, prefix: &str) -> String {
-    let sanitized = template.replace("\\{", "\\(").replace("\\}", "\\)");
-    TEMPLATE_REGEX
-        .replace_all(&sanitized, format!("{{{}_$1}}", prefix))
-        .replace("\\(", "\\{")
-        .replace("\\)", "\\}")
-}
-
-fn split_template_string(template: &str) -> Vec<TemplateSubString> {
-    let mut chars = template.chars();
-
-    let mut is_escape;
-    let mut current_buf = String::new();
-    let mut result = Vec::new();
-    while let Some(c) = chars.next() {
-        is_escape = c == '\\';
-        if is_escape {
-            if let Some(c) = chars.next() {
-                current_buf.push(c);
-            }
-        } else if c == '{' {
-            result.push(TemplateSubString::NormalString(current_buf.clone()));
-            current_buf.clear();
-            current_buf.push(c);
-        } else if c == '}' {
-            current_buf.push(c);
-            result.push(TemplateSubString::Attribute(current_buf.clone()));
-            current_buf.clear();
-        } else {
-            current_buf.push(c);
-        }
-    }
-    result
-}
 
 #[derive(Debug, Clone)]
 pub struct TermMap {
@@ -59,14 +18,7 @@ pub struct TermMap {
 
 impl TermMap {
     pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
-        if let ExpressionValueEnum::Template =
-            self.expression.get_value_type_enum().unwrap()
-        {
-            if let Some(template) = self.expression.get_value() {
-                return split_template_string(template);
-            }
-        }
-        vec![]
+        self.expression.get_template_string_split()
     }
 
     pub fn get_ref_attributes(&self) -> Vec<String> {
@@ -85,8 +37,8 @@ impl TermMap {
             return template_attr_vec;
         }
 
-        if let ExpressionValueEnum::Reference =
-            self.expression.get_value_type_enum().unwrap()
+        if let ExpressionMapTypeEnum::Reference =
+            self.expression.get_map_type_enum().unwrap()
         {
             let val = self.expression.get_value().unwrap();
             vec![val.to_string()]
