@@ -18,12 +18,9 @@ impl Extractor<InputMap> for InputMap {
         let parameter = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[
-                &vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm(),
-                &vocab::rml_fnml::PROPERTY::PARAMETER.to_rcterm(),
-            ],
+            &[&vocab::rml_fnml::PROPERTY::PARAMETER.to_rcterm()],
         )
-        .iter()
+        .into_iter()
         .filter_map(|iri| term_map_from_constant_term(iri).ok())
         .filter_map(|tm| tm.try_get_node());
 
@@ -32,7 +29,7 @@ impl Extractor<InputMap> for InputMap {
             subject_ref.borrow_term(),
             &[&vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm()],
         )
-        .iter()
+        .into_iter()
         .filter_map(|iri| TermMap::extract_self(iri, graph_ref).ok())
         .filter_map(|tm| tm.try_get_node());
 
@@ -46,11 +43,9 @@ impl Extractor<InputMap> for InputMap {
         let value = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[
-                &vocab::rml_fnml::PROPERTY::INPUT_VALUE.to_rcterm(),
-            ],
+            &[&vocab::rml_fnml::PROPERTY::INPUT_VALUE.to_rcterm()],
         )
-        .iter()
+        .into_iter()
         .filter_map(|iri| term_map_from_constant_term(iri).ok());
 
         let value_map = get_object_with_ps(
@@ -58,8 +53,8 @@ impl Extractor<InputMap> for InputMap {
             subject_ref.borrow_term(),
             &[&vocab::rml_fnml::PROPERTY::INPUT_VALUE_MAP.to_rcterm()],
         )
-        .iter()
-        .filter_map(|iri| TermMap::extract_self(iri).ok());
+        .into_iter()
+        .filter_map(|iri| TermMap::extract_self(iri, graph_ref).ok());
 
         let value_map =
             value

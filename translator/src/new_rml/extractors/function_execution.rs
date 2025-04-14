@@ -19,7 +19,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             subject_ref.borrow_term(),
             &[&vocab::rml_fnml::PROPERTY::FUNCTION.to_rcterm()],
         )
-        .iter()
+        .into_iter()
         .filter_map(|term| term_map_from_constant_term(term).ok())
         .filter_map(|tm| tm.try_get_node());
 
@@ -28,7 +28,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             subject_ref.borrow_term(),
             &[&vocab::rml_fnml::PROPERTY::FUNCTION_MAP.to_rcterm()],
         )
-        .iter()
+        .into_iter()
         .filter_map(|term| TermMap::extract_self(term, graph_ref).ok())
         .filter_map(|tm| tm.try_get_node());
 
