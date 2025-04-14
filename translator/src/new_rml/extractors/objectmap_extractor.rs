@@ -119,7 +119,7 @@ mod tests {
     use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
     use crate::import_test_mods;
-    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionValueEnum;
+    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
     use sophia_api::graph::Graph;
     use sophia_api::prelude::Any;
     use sophia_api::triple::Triple;
@@ -152,8 +152,8 @@ mod tests {
                 vocab::rml_core::CLASS::LITERAL.to_rcterm()
             );
             assert_eq!(
-                om.term_map.expression.get_value_type_enum()?,
-                ExpressionValueEnum::Reference
+                om.term_map.expression.get_map_type_enum()?,
+                ExpressionMapTypeEnum::Reference
             );
             Ok::<(), NewRMLTranslationError>(())
         });

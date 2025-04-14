@@ -11,6 +11,7 @@ use super::store::get_objects_with_ps;
 use super::term_map_extractor::term_map_from_constant_term;
 use super::{stringify_rcterm, Extractor};
 use crate::new_rml::extractors::FromVocab;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind,
 };
@@ -29,18 +30,27 @@ impl Extractor<ExpressionMap> for ExpressionMap {
         let kind = if value_pred
             == vocab::rml_fnml::PROPERTY::FUNCTION_EXECUTION.to_rcterm()
         {
-            let returns = get_objects_with_ps(
+            let mut returns: Vec<_> = get_objects_with_ps(
                 graph_ref,
                 subject_ref.borrow_term(),
-                &[
-                    &vocab::rml_fnml::PROPERTY::RETURN_MAP.to_rcterm(),
-                    &vocab::rml_fnml::PROPERTY::RETURN.to_rcterm(),
-                ],
+                &[&vocab::rml_fnml::PROPERTY::RETURN.to_rcterm()],
             )
             .iter()
             .filter_map(|term| term_map_from_constant_term(term).ok())
             .filter_map(|tm| tm.try_get_node())
             .collect();
+
+            let return_maps: Vec<_> = get_objects_with_ps(
+                graph_ref,
+                subject_ref.borrow_term(),
+                &[&vocab::rml_fnml::PROPERTY::RETURN_MAP.to_rcterm()],
+            )
+            .iter()
+            .filter_map(|term| TermMap::extract_self(term, graph_ref).ok())
+            .filter_map(|tm| tm.try_get_node())
+            .collect();
+
+            returns.extend(return_maps);
 
             ExpressionMapKind::FunctionExecution {
                 execution: FunctionExecution::extract_self(
@@ -99,13 +109,20 @@ impl Extractor<(RcTerm, RcTerm)> for ExpressionMap {
                 &vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
             ],
         ))
-        .ok_or(super::error::ParseError::GenericError(format!(
-            "Cannot parse term map type for {:?}",
-            subject_ref
-        )).into())
+        .ok_or(
+            super::error::ParseError::GenericError(format!(
+                "Cannot parse term map type for {:?}",
+                subject_ref
+            ))
+            .into(),
+        )
     }
 }
 
+
+/// Given a subject IRI (s), a list of predicattes (P) and a graph (G) 
+/// return an optional pair (p,o) of predicate (p) and object (o) such that
+/// (s,p,o) ∈ G with p ∈ P
 fn get_expr_value_enum<TS, TP>(
     subject_ref: TS,
     graph_ref: &FastGraph,

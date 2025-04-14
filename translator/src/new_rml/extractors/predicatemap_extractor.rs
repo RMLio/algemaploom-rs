@@ -53,7 +53,7 @@ mod tests {
     use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
     use crate::import_test_mods;
-    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionValueEnum;
+    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
 
     import_test_mods!(new_rml);
 
@@ -73,8 +73,8 @@ mod tests {
 
         let _ = pms.iter().try_for_each(|pm| {
             assert_eq!(
-                pm.term_map.expression.get_value_type_enum()?,
-                ExpressionValueEnum::Constant
+                pm.term_map.expression.get_map_type_enum()?,
+                ExpressionMapTypeEnum::Constant
             );
             assert!(pm.term_map.is_iri_term_type());
             Ok::<(), NewRMLTranslationError>(())
