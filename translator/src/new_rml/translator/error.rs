@@ -1,10 +1,19 @@
 use std::fmt::Display;
 
+use plangenerator::error::PlanError;
+
 #[derive(Debug)]
 pub enum TranslationError {
     SourceError(String),
     ExtendError(String), 
+    PlanError(PlanError), 
     Infallible,
+}
+
+impl From<PlanError> for TranslationError {
+    fn from(v: PlanError) -> Self {
+        Self::PlanError(v)
+    }
 }
 
 

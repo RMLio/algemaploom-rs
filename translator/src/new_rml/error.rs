@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+use plangenerator::error::PlanError;
+
 use super::extractors::error::ParseError;
 use super::translator::error::TranslationError;
 
@@ -8,8 +10,14 @@ pub type NewRMLTranslationResult<T> = Result<T, NewRMLTranslationError>;
 #[derive(Debug)]
 pub enum NewRMLTranslationError {
     ParseError(ParseError),
-    TranslationError(TranslationError),
+    TranslationError(Box<TranslationError>),
     IoError(std::io::Error),
+}
+
+impl From<PlanError> for NewRMLTranslationError {
+    fn from(value: PlanError) -> Self {
+        Self::TranslationError(Box::new(value.into()))
+    }
 }
 
 impl From<std::io::Error> for NewRMLTranslationError {
@@ -26,7 +34,7 @@ impl From<ParseError> for NewRMLTranslationError {
 
 impl From<TranslationError> for NewRMLTranslationError {
     fn from(value: TranslationError) -> Self {
-        Self::TranslationError(value)
+        Self::TranslationError(Box::new(value))
     }
 }
 
