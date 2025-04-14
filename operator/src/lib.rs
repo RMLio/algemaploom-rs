@@ -29,6 +29,12 @@ pub enum Operator {
     FragmentOp { config: Fragmenter },
 }
 
+impl From<Extend> for Operator {
+    fn from(config: Extend) -> Self {
+        Self::ExtendOp { config }
+    }
+}
+
 impl JsonDisplay for Operator {
     fn json_string(&self) -> Result<String> {
         Ok(serde_json::to_string(self)?)
