@@ -162,7 +162,7 @@ impl SearchStore<'_> {
         }
 
         let ls_id_sourced_plan_map =
-            create_ls_id_sourced_plan_map(abs_ls_search_map)?;
+            create_ls_id_sourced_plan_map(&abs_ls_search_map)?;
 
         Ok(SearchStore {
             tm_id_quad_var_map,
@@ -179,7 +179,7 @@ impl SearchStore<'_> {
 }
 
 fn create_ls_id_sourced_plan_map(
-    abs_ls_search_map: HashMap<RcTerm, &AbstractLogicalSource>,
+    abs_ls_search_map: &HashMap<RcTerm, &AbstractLogicalSource>,
 ) -> NewRMLTranslationResult<HashMap<RcTerm, RcRefCellPlan<Processed>>> {
     let mut ls_id_sourced_plan_map = HashMap::new();
     for abs_ls in abs_ls_search_map.values().copied() {

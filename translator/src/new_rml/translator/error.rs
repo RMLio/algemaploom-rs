@@ -3,6 +3,8 @@ use std::fmt::Display;
 #[derive(Debug)]
 pub enum TranslationError {
     SourceError(String),
+    ExtendError(String), 
+    Infallible,
 }
 
 

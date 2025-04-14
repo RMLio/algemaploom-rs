@@ -1,21 +1,15 @@
 pub mod error;
+mod extend;
 mod source;
 mod store;
 
-use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
-use operator::Source;
-use plangenerator::data_type::RcRefCellPlan;
-use plangenerator::states::Processed;
-use plangenerator::Plan;
-use sophia_term::RcTerm;
-use source::AbstractLogicalSourceTranslator;
+use extend::ExtendOperatorTranslator;
 use store::SearchStore;
 
 use super::error::NewRMLTranslationResult;
 use super::rml_model::Document;
-use crate::error::TranslationError;
 use crate::new_rml::extractors::io::parse_file;
 use crate::LanguageTranslator;
 
@@ -56,8 +50,21 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
         let search_store = SearchStore::from_document(&model)?;
 
         for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {
-            let plan =
-                search_store.ls_id_sourced_plan_map.get(&abs_ls_id).unwrap();
+            let plan = search_store
+                .ls_id_sourced_plan_map
+                .get(&abs_ls_id)
+                .unwrap()
+                .borrow_mut();
+
+            for tm in tm_vec
+                .iter()
+                .flat_map(|tm_id| search_store.tm_search_map.get(tm_id))
+            {
+                let extend_op = ExtendOperatorTranslator::translate_with_store(
+                    &search_store,
+                    tm,
+                )?;
+            }
         }
 
         todo!()
