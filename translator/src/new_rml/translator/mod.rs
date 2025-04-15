@@ -1,5 +1,6 @@
 pub mod error;
 mod extend;
+mod serializer;
 mod source;
 mod store;
 
@@ -9,6 +10,7 @@ use std::path::Path;
 use extend::ExtendOperatorTranslator;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
+use serializer::SerializerOperatorTranslator;
 use store::SearchStore;
 
 use super::error::NewRMLTranslationResult;
@@ -62,14 +64,24 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
                 .unwrap()
                 .borrow_mut();
 
-            for tm in tm_vec
+            let tm_vec: Vec<_> = tm_vec
                 .iter()
-                .flat_map(|tm_id| search_store.tm_search_map.get(tm_id))
-            {
-                let extended_plan = plan_with_extend_operator(&search_store, &mut plan, tm)?;
+                .flat_map(|tm_id| {
+                    search_store.tm_search_map.get(tm_id).copied()
+                })
+                .collect();
 
+            for tm in &tm_vec {
+                let extended_plan =
+                    plan_with_extend_operator(&search_store, &mut plan, tm)?;
                 *plan = extended_plan;
             }
+
+            let serializer_operator =
+                SerializerOperatorTranslator::translate_with_store(
+                    &search_store,
+                    &tm_vec,
+                );
         }
 
         todo!()

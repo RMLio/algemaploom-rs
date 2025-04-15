@@ -17,6 +17,29 @@ pub struct TermMap {
 }
 
 impl TermMap {
+    pub fn get_constant_value(&self) -> Option<String> {
+        match self.expression.get_map_type_enum().unwrap() {
+            ExpressionMapTypeEnum::Constant => {
+                match self.try_get_term_type_enum().unwrap() {
+                    RMLTermTypeKind::IRI => {
+                        Some(format!(
+                            "<{}>",
+                            self.expression.get_value().unwrap()
+                        ))
+                    }
+                    RMLTermTypeKind::BlankNode => {
+                        self.expression.get_value().cloned()
+                    }
+                    RMLTermTypeKind::Literal => {
+                        self.expression.get_value().cloned()
+                    }
+                    _ => None,
+                }
+            }
+            _ => None,
+        }
+    }
+
     pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
         self.expression.get_template_string_split()
     }
