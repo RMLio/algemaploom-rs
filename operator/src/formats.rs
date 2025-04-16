@@ -1,35 +1,29 @@
 use serde::{Deserialize, Serialize};
 
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash, Default,
+)]
 pub enum ReferenceFormulation {
+    #[default]
     CSVRows,
-    JSONPath, 
+    JSONPath,
     XMLPath,
     XMLQuery,
-    SQLQuery, 
-    SPARQL
-}
-impl Default for ReferenceFormulation {
-    fn default() -> Self {
-        ReferenceFormulation::CSVRows
-    }
+    SQLQuery,
+    SPARQL,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
+#[derive(
+    Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash, Default,
+)]
 pub enum DataFormat {
     JSONLD,
     JSON,
     XML,
+    #[default]
     CSV,
     TTL,
     NQuads,
     NTriples,
     SQL,
-}
-
-impl Default for DataFormat {
-    fn default() -> Self {
-        DataFormat::CSV
-    }
 }
