@@ -16,7 +16,7 @@ pub struct RefPOM<'a> {
     pub oms: Vec<&'a ObjectMap>,
 }
 
-impl<'a> PartialEq for RefPOM<'a> {
+impl PartialEq for RefPOM<'_> {
     fn eq(&self, other: &Self) -> bool {
         let pm_identifiers_left: Vec<_> =
             self.pms.iter().map(|pm| &pm.tm_info.identifier).collect();
@@ -47,9 +47,9 @@ pub struct Quad<'a> {
 }
 
 //Marker trait Eq to enable usage of Quads in set operations
-impl<'a> Eq for Quad<'a> {}
+impl Eq for Quad<'_> {}
 
-impl<'a> PartialEq for Quad<'a> {
+impl PartialEq for Quad<'_> {
     fn eq(&self, other: &Self) -> bool {
         let gm_identifiers_left: Vec<_> = self
             .gm_opt
@@ -83,9 +83,9 @@ impl<'a> From<&'a Triple<'a>> for Triple<'a> {
         }
     }
 }
-impl<'a> Eq for Triple<'a> {}
+impl Eq for Triple<'_> {}
 
-impl<'a> PartialEq for Triple<'a> {
+impl PartialEq for Triple<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.sm.tm_info.identifier == other.sm.tm_info.identifier
             && self.pm.tm_info.identifier == other.pm.tm_info.identifier
