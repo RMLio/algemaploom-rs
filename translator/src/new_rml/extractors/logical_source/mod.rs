@@ -33,16 +33,16 @@ impl Extractor<LogicalSource> for LogicalSource {
                 let mut metadata = FastGraph::new();
                 let subj_bnode = BnodeId::<&str>::new("default").unwrap();
                 metadata.insert(
-                    &subj_bnode,
-                    &vocab::rml_io::PROPERTY::ROOT.to_rcterm(),
-                    &vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
-                );
+                    subj_bnode,
+                    vocab::rml_io::PROPERTY::ROOT.to_rcterm(),
+                    vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
+                ).unwrap();
 
                 metadata.insert(
-                    &subj_bnode,
-                    &vocab::rml_io::PROPERTY::PATH.to_rcterm(),
-                    &literal,
-                );
+                    subj_bnode,
+                    vocab::rml_io::PROPERTY::PATH.to_rcterm(),
+                    literal,
+                ).unwrap();
 
                 Source {
                     kind:         SourceKind {
