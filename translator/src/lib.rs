@@ -1,5 +1,4 @@
 use error::TranslationError;
-use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
 

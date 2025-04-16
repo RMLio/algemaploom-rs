@@ -133,26 +133,26 @@ impl std::error::Error for TranslationErrorKind {
 
 #[derive(Debug)]
 pub enum LanguageErrorKind {
-    RMLTranslationError(RMLTranslationError),
-    NewRMLTranslationError(NewRMLTranslationError),
-    ShExMLTranslationError(ShExMLTranslationError),
+    RMLTranslationError(Box<RMLTranslationError>),
+    NewRMLTranslationError(Box<NewRMLTranslationError>),
+    ShExMLTranslationError(Box<ShExMLTranslationError>),
 }
 
 impl From<NewRMLTranslationError> for LanguageErrorKind {
     fn from(v: NewRMLTranslationError) -> Self {
-        Self::NewRMLTranslationError(v)
+        Self::NewRMLTranslationError(Box::new(v))
     }
 }
 
 impl From<ShExMLTranslationError> for LanguageErrorKind {
     fn from(v: ShExMLTranslationError) -> Self {
-        Self::ShExMLTranslationError(v)
+        Self::ShExMLTranslationError(Box::new(v))
     }
 }
 
 impl From<RMLTranslationError> for LanguageErrorKind {
     fn from(v: RMLTranslationError) -> Self {
-        Self::RMLTranslationError(v)
+        Self::RMLTranslationError(Box::new(v))
     }
 }
 
