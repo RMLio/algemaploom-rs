@@ -409,6 +409,12 @@ pub struct Target {
     pub data_format:   DataFormat,
 }
 
+impl Default for Target{
+    fn default() -> Self {
+        Self { configuration: Default::default(), target_type: IOType::StdOut, data_format: DataFormat::NQuads }
+    }
+}
+
 impl PrettyDisplay for Target {
     fn pretty_string(&self) -> Result<String> {
         let result = format!(
