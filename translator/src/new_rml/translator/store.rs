@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use plangenerator::data_type::RcRefCellPlan;
-use plangenerator::states::Processed;
+use plangenerator::states::{Init, Processed};
 use plangenerator::Plan;
 use sophia_term::RcTerm;
 use uuid::Uuid;
@@ -17,6 +17,7 @@ use crate::new_rml::rml_model::Document;
 
 #[derive(Debug, Clone, Default)]
 pub struct SearchStore<'a> {
+    pub root_plan:              Option<Plan<Init>>,
     pub reference_attr_map:     HashMap<String, String>,
     pub tm_id_quad_var_map:     HashMap<RcTerm, String>,
     pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSource>,
@@ -161,8 +162,9 @@ impl SearchStore<'_> {
             }
         }
 
+        let mut root_plan = Plan::new();
         let ls_id_sourced_plan_map =
-            create_ls_id_sourced_plan_map(&abs_ls_search_map)?;
+            create_ls_id_sourced_plan_map(&mut root_plan, &abs_ls_search_map)?;
 
         Ok(SearchStore {
             tm_id_quad_var_map,
@@ -173,18 +175,18 @@ impl SearchStore<'_> {
             tm_search_map,
             ls_id_sourced_plan_map,
             abs_ls_search_map,
+            root_plan: Some(root_plan),
             ..Default::default()
         })
     }
 }
 
 fn create_ls_id_sourced_plan_map(
+    plan: &mut Plan<Init>,
     abs_ls_search_map: &HashMap<RcTerm, &AbstractLogicalSource>,
 ) -> NewRMLTranslationResult<HashMap<RcTerm, RcRefCellPlan<Processed>>> {
     let mut ls_id_sourced_plan_map = HashMap::new();
     for abs_ls in abs_ls_search_map.values().copied() {
-        let mut plan = Plan::new();
-
         let source = AbstractLogicalSourceTranslator::translate(abs_ls)?;
         let sourced_plan: RcRefCellPlan<Processed> = plan.source(source).into();
 

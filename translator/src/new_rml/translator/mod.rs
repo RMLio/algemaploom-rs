@@ -8,6 +8,7 @@ use std::cell::RefMut;
 use std::path::Path;
 
 use extend::ExtendOperatorTranslator;
+use operator::Target;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
 use serializer::SerializerOperatorTranslator;
@@ -16,7 +17,6 @@ use store::SearchStore;
 use super::error::NewRMLTranslationResult;
 use super::rml_model::v2::core::TriplesMap;
 use super::rml_model::Document;
-use crate::error::TranslationError;
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::io::parse_file;
 use crate::LanguageTranslator;
@@ -25,12 +25,14 @@ pub trait OperatorTranslator {
     type Input;
     type Output;
 
-    fn translate(input: &Self::Input) -> NewRMLTranslationResult<Self::Output> {
+    fn translate(
+        _input: &Self::Input,
+    ) -> NewRMLTranslationResult<Self::Output> {
         unimplemented!("Operator translator does not support translation without the usage of a search store")
     }
     fn translate_with_store(
-        store: &SearchStore,
-        input: &Self::Input,
+        _store: &SearchStore,
+        _input: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
         unimplemented!("Operator translator does not support translation with the usage of a search store")
     }
@@ -81,10 +83,15 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
                 SerializerOperatorTranslator::translate_with_store(
                     &search_store,
                     &tm_vec,
-                );
+                )?;
+
+            plan.serialize(serializer_operator)
+                .map_err(Into::<NewRMLTranslationError>::into)?
+                .sink(&Target::default())
+                .map_err(Into::<NewRMLTranslationError>::into)?;
         }
 
-        todo!()
+        Ok(search_store.root_plan.unwrap())
     }
 }
 
