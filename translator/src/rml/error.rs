@@ -8,7 +8,7 @@ use super::parser::extractors::error::ParseError;
 #[derive(Debug)]
 pub enum RMLTranslationError {
     IOError(std::io::Error),
-    PlanError(PlanError),
+    PlanError(Box<PlanError>),
     ParseError(ParseError),
 }
 
@@ -54,6 +54,6 @@ impl From<ParseError> for RMLTranslationError {
 
 impl From<PlanError> for RMLTranslationError {
     fn from(v: PlanError) -> Self {
-        Self::PlanError(v)
+        Self::PlanError(Box::new(v))
     }
 }
