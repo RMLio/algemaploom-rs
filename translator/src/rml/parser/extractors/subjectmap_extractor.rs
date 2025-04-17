@@ -91,9 +91,13 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                     Err(ParseError::GenericError(format!(
                         "There can only be ONE subject map for {:?}",
                         container_map_subj_ref
-                    )).into())
+                    ))
+                    .into())
                 } else {
-                    sms.pop().ok_or(ParseError::Infallible.into())
+                    sms.pop().ok_or(ParseError::GenericError(format!(
+                        "Subject not found for the given triples map {:?}",
+                        container_map_subj_ref
+                    )).into())
                 }
             })
     }
