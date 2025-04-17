@@ -54,21 +54,10 @@ pub fn extract_triples_maps(
         ],
         Any,
     );
-    let rml_core_tm_iter = graph.triples_matching(
-        Any,
-        [
-            vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm(),
-            vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),
-        ],
-        Any,
-    );
 
     old_rml_tm_iter
-        .chain(rml_core_tm_iter)
         .filter_map(|triple| triple.ok())
         .map(|sim_triple| RcTerm::from_term(sim_triple.s()))
         .map(|subj| TriplesMap::extract_self(&subj, graph))
         .collect()
-
-    // TODO: if it really needs to be valid at thid point, check for a logical source for old RML
 }
