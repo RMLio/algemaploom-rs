@@ -94,7 +94,7 @@ impl Display for TranslationErrorKind {
             TranslationErrorKind::FileMsgError { file, msg } => {
                 write!(
                     f,
-                    "erorr while translating file {} with msg: {}",
+                    "error while translating file {} with msg: {}",
                     file.to_string_lossy(),
                     msg
                 )

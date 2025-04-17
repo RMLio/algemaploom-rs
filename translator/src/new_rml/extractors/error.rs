@@ -45,13 +45,13 @@ impl Display for ParseError {
                 write!(f, "JSON serde error occurred while parsing")
             }
             ParseError::GenericError(msg) => {
-                write!(f, "generic error while parsing with msg: {}", msg)
+                write!(f, "generic error while parsing with msg: \n {}", msg)
             }
             ParseError::NoTermMapFoundError(msg) => {
-                write!(f, "no term map found error with msg: {}", msg)
+                write!(f, "no term map found error with msg: \n {}", msg)
             }
             ParseError::ExtensionError(msg) => {
-                write!(f, "file extension error with msg: {}", msg)
+                write!(f, "file extension error with msg: \n {}", msg)
             }
             ParseError::Infallible => panic!(),
         }

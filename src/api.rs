@@ -1,3 +1,4 @@
+use std::error::Error;
 use std::path::PathBuf;
 
 use log::{debug, error};
@@ -43,7 +44,8 @@ pub fn process_one_file(
             .enumerate()
             .for_each(|(id, err)| {
                 error!("Handler is: {:?} ", handlers[id]);
-                pretty_print_err(Box::new(&err));
+                println!("{:?}", err.source()); 
+                pretty_print_err(&err);
             });
     } else {
         for mut plan in generated_plans.into_iter().flat_map(|p_res| p_res.ok())
@@ -58,7 +60,7 @@ pub fn process_one_file(
                     "Errored while serializing mapping plan for: {}",
                     file_path.to_string_lossy()
                 );
-                pretty_print_err(Box::new(&err));
+                pretty_print_err(&err);
             }
         }
     };
@@ -83,7 +85,7 @@ pub fn process_one_str(mapping: &str) -> String {
             .enumerate()
             .for_each(|(id, err)| {
                 error!("Handler is: {:?} ", handlers[id]);
-                pretty_print_err(Box::new(&err));
+                pretty_print_err(&err);
             });
     } else if let Some(plan) = generated_plans
         .into_iter()

@@ -6,10 +6,19 @@ use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
 
-pub fn pretty_print_err(err: Box<&dyn Error>) {
-    error!("{}", err);
+pub fn pretty_print_err(err: &dyn Error) {
+    error!("Error: {:#}", err);
     if let Some(inner) = err.source() {
-        pretty_print_err(Box::new(inner)); 
+        error!("Caused by: ");
+        nested_pretty_print_err(0, inner);
+    }
+}
+
+fn nested_pretty_print_err(mut idx: u32, err: &dyn Error) {
+    error!("{}: {:#}", idx, err);
+    if let Some(inner) = err.source() {
+        idx += 1;
+        nested_pretty_print_err(idx, inner);
     }
 }
 
