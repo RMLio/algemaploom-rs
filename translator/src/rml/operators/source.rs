@@ -1,12 +1,9 @@
-use std::collections::HashSet;
 
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Iterator, Source};
 use crate::rml::parser::extractors::FromVocab;
 use crate::rml::parser::rml_model::source_target::SourceType;
 use crate::rml::parser::rml_model::TriplesMap;
-use sophia_api::term::Term;
-use vocab::ToString;
 
 use crate::rml::util::extract_references_in_tm;
 use crate::OperatorTranslator;

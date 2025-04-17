@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use operator::{Extend, Function, RcExtendFunction};
-use sophia_term::RcTerm;
+use operator::{Extend, Function};
 
 use super::error::TranslationError;
 use super::store::SearchStore;

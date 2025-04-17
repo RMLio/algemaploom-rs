@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
 use operator::IOType;
-use sophia_api::prelude::Iri;
-use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 

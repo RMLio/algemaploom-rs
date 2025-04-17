@@ -2,7 +2,7 @@ use sophia_api::term::Term;
 
 use super::Extractor;
 use crate::new_rml::extractors::store::{
-    get_object, get_object_with_ps, get_objects_with_ps,
+    get_object, get_object_with_ps,
 };
 use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::io::target::{LogicalTarget, Target};

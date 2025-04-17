@@ -1,4 +1,3 @@
-use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
 use super::{rcterm_to_string, Extractor, ExtractorResult, RcTerm};

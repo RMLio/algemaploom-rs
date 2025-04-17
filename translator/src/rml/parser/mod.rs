@@ -1,4 +1,4 @@
-use sophia_api::{prelude::Iri, term::Term};
+use sophia_api::prelude::Iri;
 
 pub mod extractors;
 pub mod rml_model;

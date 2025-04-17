@@ -2,7 +2,6 @@ use sophia_api::graph::MutableGraph;
 use sophia_api::prelude::Any;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
-use sophia_term::RcTerm;
 
 use super::error::ParseError;
 use super::store::{get_objects, get_subgraph_subject};

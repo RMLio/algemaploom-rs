@@ -10,7 +10,6 @@ use sophia_term::RcTerm;
 use vocab::ToString;
 
 use crate::rml::parser::extractors::{rcterm_to_string, FromVocab};
-use crate::rml::parser::IriString;
 
 #[derive(Debug, Clone, Eq)]
 pub struct LogicalSource {

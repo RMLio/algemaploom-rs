@@ -23,7 +23,7 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
     where
         TS: Term + Clone,
     {
-        let mut term_map = TermMap::extract_self(subj_ref, graph_ref)?;
+        let term_map = TermMap::extract_self(subj_ref, graph_ref)?;
         Ok(PredicateMap { term_map })
     }
 

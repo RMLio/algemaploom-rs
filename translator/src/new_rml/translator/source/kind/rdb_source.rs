@@ -3,9 +3,8 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 
 use crate::new_rml::translator::source::extract_parse_config;
-use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::{
-    stringify_rcterm, ExtractorResult, FromVocab,
+    ExtractorResult, FromVocab,
 };
 
 lazy_static! {

@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 

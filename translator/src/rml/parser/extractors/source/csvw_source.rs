@@ -1,5 +1,4 @@
 use lazy_static::lazy_static;
-use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::ArcTerm;
 

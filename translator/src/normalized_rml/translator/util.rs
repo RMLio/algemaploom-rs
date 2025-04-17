@@ -1,8 +1,8 @@
 use anyhow::Result;
 use oxigraph::model::{
-    Literal, LiteralRef, NamedNodeRef, Quad, Subject, SubjectRef, Term, TermRef,
+    LiteralRef, NamedNodeRef, Quad, Subject, SubjectRef, Term, TermRef,
 };
-use oxigraph::store::{QuadIter, Store};
+use oxigraph::store::Store;
 
 use crate::normalized_rml::error::oxigraph::{OxigraphError, OxigraphErrorKind};
 use crate::normalized_rml::FromVocab;

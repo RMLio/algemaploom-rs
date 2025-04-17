@@ -2,11 +2,11 @@ use std::rc::Rc;
 
 use anyhow::Result;
 use operator::{Function, TermType};
-use oxigraph::model::{NamedOrBlankNodeRef, Quad, SubjectRef, TermRef};
-use oxigraph::store::{StorageError, Store};
+use oxigraph::model::{SubjectRef, TermRef};
+use oxigraph::store::Store;
 
 use super::data::QueryAttrMap;
-use super::util::{get_quads, termref_to_literal};
+use super::util::termref_to_literal;
 use crate::normalized_rml::error::oxigraph::OxigraphErrorKind;
 use crate::normalized_rml::translator::util::get_object;
 use crate::normalized_rml::FromVocab;

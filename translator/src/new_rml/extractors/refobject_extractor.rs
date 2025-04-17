@@ -1,6 +1,5 @@
 use sophia_api::term::{Term, TermKind};
 use sophia_inmem::graph::FastGraph;
-use sophia_term::RcTerm;
 
 use super::store::{get_object_with_ps, get_objects_with_ps};
 use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};

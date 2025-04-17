@@ -2,7 +2,7 @@ use sophia_api::prelude::Iri;
 use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
 use sophia_term::RcTerm;
 
-use super::{ExpressionMap, ExpressionMapKind, ExpressionMapTypeEnum};
+use super::{ExpressionMap, ExpressionMapTypeEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;

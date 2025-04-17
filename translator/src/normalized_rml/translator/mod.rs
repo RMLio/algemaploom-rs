@@ -3,19 +3,16 @@ mod extend_creation;
 mod source_creation;
 mod util;
 
-use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
-use std::rc::Rc;
 
 use anyhow::Result;
 use extend_creation::create_extend_function;
 use operator::formats::DataFormat;
 use operator::{Extend, Function, Operator, Projection, Serializer, Target, TermType};
-use oxigraph::model::{SubjectRef, Term};
+use oxigraph::model::SubjectRef;
 use oxigraph::store::Store;
-use plangenerator::data_type::RcRefCellPlan;
 use plangenerator::states::join::join;
-use plangenerator::states::{processed, Init, Processed, Sunk};
+use plangenerator::states::{Init, Processed, Sunk};
 use plangenerator::Plan;
 use source_creation::create_source_operator;
 use util::{get_object, get_quads, termref_to_literal, termref_to_subjref};

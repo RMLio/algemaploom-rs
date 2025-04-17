@@ -5,7 +5,7 @@ use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
-use super::store::{get_object, get_objects_with_ps};
+use super::store::get_objects_with_ps;
 use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::extractors::store::get_object_with_ps;
 use crate::new_rml::extractors::ParseError;

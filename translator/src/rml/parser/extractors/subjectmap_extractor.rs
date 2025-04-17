@@ -9,7 +9,6 @@ use crate::rml::parser::rml_model::source_target::LogicalTarget;
 use crate::rml::parser::rml_model::term_map::{
     GraphMap, SubjectMap, TermMapInfo,
 };
-use crate::rml::parser::IriString;
 
 impl TermMapExtractor<SubjectMap> for SubjectMap {
     fn create_constant_map(tm_info: TermMapInfo) -> SubjectMap {

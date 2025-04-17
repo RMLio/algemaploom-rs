@@ -2,7 +2,6 @@ use operator::formats::ReferenceFormulation;
 use operator::Field as OperatorField;
 
 use crate::new_rml::error::NewRMLTranslationResult;
-use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::rml_model::v2::lv::{RMLField, RMLFieldKind};
 
 pub fn translate_rml_field(

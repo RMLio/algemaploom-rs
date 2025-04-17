@@ -6,7 +6,7 @@ use log::trace;
 use operator::Function;
 
 use crate::shexml::parcombi::{
-    self, ExpressionReferenceIdent, ExpressionStmtEnum, Iterator
+    ExpressionReferenceIdent, ExpressionStmtEnum, Iterator
 };
 
 pub mod term;

@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use lazy_static::lazy_static;
 use operator::{Extend, Function, Operator, RcExtendFunction};
 use regex::Regex;
-use sophia_api::term::{Term, TermKind};
+use sophia_api::term::TermKind;
 
 use crate::rml::parser::extractors::rcterm_to_string;
 use crate::rml::parser::rml_model::term_map::{

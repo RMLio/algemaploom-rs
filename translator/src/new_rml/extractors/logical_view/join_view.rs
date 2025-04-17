@@ -1,16 +1,14 @@
 use std::rc::Rc;
 
-use operator::Field;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
-use sophia_term::RcTerm;
 
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::JoinCondition;
-use crate::new_rml::rml_model::v2::lv::RMLFieldKind::{Expression, Iterable};
+use crate::new_rml::rml_model::v2::lv::RMLFieldKind::Iterable;
 use crate::new_rml::rml_model::v2::lv::{LogicalView, LogicalViewJoin, RMLField};
 
 impl Extractor<LogicalViewJoin> for LogicalViewJoin {

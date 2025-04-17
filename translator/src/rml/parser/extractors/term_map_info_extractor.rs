@@ -2,7 +2,7 @@ use std::collections::HashSet;
 
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
-use sophia_api::term::{FromTerm, Term, TermKind};
+use sophia_api::term::{FromTerm, TermKind};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;

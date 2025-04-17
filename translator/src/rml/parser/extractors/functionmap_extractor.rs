@@ -1,4 +1,3 @@
-use sophia_api::term::Term;
 
 use super::store::get_objects;
 use super::{rcterm_to_string, Extractor, FromVocab};

@@ -3,8 +3,6 @@ mod kind;
 
 use std::collections::HashMap;
 
-use operator::formats::{self, ReferenceFormulation};
-use operator::Iterator;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 
@@ -15,12 +13,8 @@ use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::{
     stringify_rcterm, ExtractorResult, FromVocab,
 };
-use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractSourceEnum,
-};
-use crate::new_rml::rml_model::v2::io::source::{
-    LogicalSource, Source, SourceKind,
-};
+use crate::new_rml::rml_model::v2::core::AbstractLogicalSource;
+use crate::new_rml::rml_model::v2::io::source::Source;
 use crate::new_rml::translator::source::kind::{
     kafka_source, rdb_source, tcp_source,
 };

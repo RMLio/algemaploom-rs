@@ -1,4 +1,4 @@
-use sophia_api::term::{Term, TermKind};
+use sophia_api::term::TermKind;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
@@ -10,7 +10,6 @@ use crate::rml::parser::rml_model::join::JoinCondition;
 use crate::rml::parser::rml_model::term_map::{
     GraphMap, ObjectMap, TermMapInfo, TermMapType,
 };
-use crate::rml::parser::IriString;
 
 fn extract_join_condition(
     subject_ref: &RcTerm,

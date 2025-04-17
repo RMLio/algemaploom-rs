@@ -5,7 +5,6 @@
 //mod tcp_source;
 
 use std::collections::HashMap;
-use std::rc::Rc;
 
 use sophia_api::graph::MutableGraph;
 use sophia_api::prelude::Any;

@@ -1,12 +1,8 @@
 use operator::{Operator, Projection};
 use crate::rml::parser::rml_model::join::JoinCondition;
-use crate::rml::parser::rml_model::term_map::{SubjectMap, TermMapInfo};
-use crate::rml::parser::rml_model::{PredicateObjectMap, TriplesMap};
+use crate::rml::parser::rml_model::term_map::TermMapInfo;
 
-use crate::rml::types::SearchMap;
-use crate::rml::util::{
-    extract_attributes_in_tm_infos, extract_ptm_join_conditions_attributes,
-};
+use crate::rml::util::extract_attributes_in_tm_infos;
 use crate::OperatorTranslator;
 
 #[derive(Debug, Clone)]

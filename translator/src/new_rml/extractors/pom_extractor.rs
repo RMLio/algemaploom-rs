@@ -1,5 +1,4 @@
 use sophia_api::term::Term;
-use sophia_term::RcTerm;
 
 use super::error::ParseError;
 use super::store::{get_object, get_object_with_ps};

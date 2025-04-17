@@ -6,7 +6,7 @@ use super::{stringify_rcterm, TermMapExtractor};
 use crate::new_rml::extractors::store::get_object_with_ps;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, ObjectMap, TermMap,
+    ObjectMap, TermMap,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind,

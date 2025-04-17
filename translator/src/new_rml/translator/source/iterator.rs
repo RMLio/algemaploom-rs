@@ -1,7 +1,7 @@
 use operator::{formats, Iterator};
 
-use super::fields::{translate_rml_field, translate_rml_field_vec};
-use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
+use super::fields::translate_rml_field_vec;
+use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::rml_model::v2::core::{
     AbstractLogicalSource, AbstractSourceEnum,
 };

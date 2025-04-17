@@ -4,7 +4,6 @@ use std::fmt::Debug;
 
 use sophia_api::graph::{CollectibleGraph, Graph};
 use sophia_api::prelude::Any;
-use sophia_api::term::matcher::TermMatcher;
 use sophia_api::term::{FromTerm, SimpleTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;

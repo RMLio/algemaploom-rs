@@ -1,6 +1,5 @@
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
-use sophia_term::RcTerm;
 
 use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{

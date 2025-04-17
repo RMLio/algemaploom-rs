@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
 use sophia_api::prelude::Iri;
-use sophia_api::term::{FromTerm, IriRef, Term, TermKind};
+use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 use term_map_extractor::term_map_from_constant_term;

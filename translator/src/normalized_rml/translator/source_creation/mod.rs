@@ -5,10 +5,9 @@ use std::collections::{HashMap, HashSet};
 use anyhow::Result;
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Source};
-use oxigraph::model::{NamedNodeRef, Quad, Subject, SubjectRef, Term, TermRef};
-use oxigraph::store::{QuadIter, Store};
+use oxigraph::model::{Quad, Subject, SubjectRef, Term, TermRef};
+use oxigraph::store::Store;
 use util::get_queries_from_template;
-use vocab::rml;
 
 use super::data::QueryAttrMap;
 use super::util::{get_quads, termref_to_literal};

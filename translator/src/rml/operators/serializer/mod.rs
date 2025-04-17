@@ -4,7 +4,6 @@ mod util;
 
 use std::collections::{HashMap, HashSet};
 
-use log::debug;
 use operator::formats::DataFormat;
 use operator::Serializer;
 

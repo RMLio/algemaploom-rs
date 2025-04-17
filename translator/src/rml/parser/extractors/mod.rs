@@ -1,7 +1,6 @@
 use std::fmt::Debug;
-use std::rc::Rc;
 
-use sophia_api::term::{IriRef, Term};
+use sophia_api::term::IriRef;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 use vocab::{ToString, PAIR};

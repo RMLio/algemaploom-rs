@@ -2,7 +2,7 @@ use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
 use super::store::get_object;
-use super::{Extractor, RcTerm};
+use super::Extractor;
 use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::core::{
     AbstractLogicalSource, AbstractSourceEnum, RMLIterable,

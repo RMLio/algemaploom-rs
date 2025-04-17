@@ -1,9 +1,8 @@
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
-use sophia_api::term::{FromTerm, Term};
+use sophia_api::term::FromTerm;
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
-use vocab::ToString;
 
 use super::{rcterm_to_string, Extractor, ExtractorResult, RcTerm};
 use crate::rml::parser::extractors::store::{get_object, get_objects};
