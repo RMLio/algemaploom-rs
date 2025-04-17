@@ -9,7 +9,7 @@ pub type NewRMLTranslationResult<T> = Result<T, NewRMLTranslationError>;
 
 #[derive(Debug)]
 pub enum NewRMLTranslationError {
-    ParseError(ParseError),
+    ParseError(Box<ParseError>),
     TranslationError(Box<TranslationError>),
     IoError(std::io::Error),
 }
@@ -28,7 +28,7 @@ impl From<std::io::Error> for NewRMLTranslationError {
 
 impl From<ParseError> for NewRMLTranslationError {
     fn from(v: ParseError) -> Self {
-        Self::ParseError(v)
+        Self::ParseError(Box::new(v))
     }
 }
 
@@ -40,12 +40,23 @@ impl From<TranslationError> for NewRMLTranslationError {
 
 impl Display for NewRMLTranslationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        write!(
+            f,
+            "error occurred while translating a RML 2.0 spec mapping document"
+        )
     }
 }
 
 impl std::error::Error for NewRMLTranslationError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        todo!()
+        match self {
+            NewRMLTranslationError::ParseError(parse_error) => {
+                parse_error.source()
+            }
+            NewRMLTranslationError::TranslationError(translation_error) => {
+                translation_error.source()
+            }
+            NewRMLTranslationError::IoError(error) => error.source(),
+        }
     }
 }

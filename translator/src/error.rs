@@ -2,7 +2,6 @@ use std::fmt::Display;
 use std::path::PathBuf;
 
 use crate::new_rml::error::NewRMLTranslationError;
-use crate::normalized_rml::error;
 use crate::rml::error::RMLTranslationError;
 use crate::shexml::error::ShExMLTranslationError;
 
@@ -13,7 +12,8 @@ pub struct TranslationError {
 
 impl From<NewRMLTranslationError> for TranslationError {
     fn from(value: NewRMLTranslationError) -> Self {
-        Self { kind: TranslationErrorKind::LanguageError(value.into()) }
+        Self {kind: TranslationErrorKind::LanguageError(value.into()),
+        }
     }
 }
 impl From<ShExMLTranslationError> for TranslationError {
@@ -127,6 +127,7 @@ impl std::error::Error for TranslationErrorKind {
             }
             TranslationErrorKind::IoError(error) => error.source(),
             _ => None,
+            TranslationErrorKind::FileMsgError { file, msg } => todo!(),
         }
     }
 }
