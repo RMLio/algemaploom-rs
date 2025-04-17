@@ -12,7 +12,8 @@ pub struct TranslationError {
 
 impl From<NewRMLTranslationError> for TranslationError {
     fn from(value: NewRMLTranslationError) -> Self {
-        Self {kind: TranslationErrorKind::LanguageError(value.into()),
+        Self {
+            kind: TranslationErrorKind::LanguageError(value.into()),
         }
     }
 }
@@ -43,7 +44,7 @@ impl Display for TranslationError {
 
 impl std::error::Error for TranslationError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        self.kind.source()
+        Some(&self.kind)
     }
 }
 
@@ -126,8 +127,7 @@ impl std::error::Error for TranslationErrorKind {
                 error.source()
             }
             TranslationErrorKind::IoError(error) => error.source(),
-            _ => None,
-            TranslationErrorKind::FileMsgError { file, msg } => todo!(),
+            TranslationErrorKind::FileMsgError { file, msg } => None,
         }
     }
 }
@@ -177,14 +177,14 @@ impl std::error::Error for LanguageErrorKind {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             LanguageErrorKind::RMLTranslationError(rmltranslation_error) => {
-                rmltranslation_error.source()
+                Some(rmltranslation_error)
             }
             LanguageErrorKind::ShExMLTranslationError(
                 shexml_translation_error,
-            ) => shexml_translation_error.source(),
+            ) => Some(shexml_translation_error),
             LanguageErrorKind::NewRMLTranslationError(
                 new_rmltranslation_error,
-            ) => new_rmltranslation_error.source(),
+            ) => Some(new_rmltranslation_error),
         }
     }
 }

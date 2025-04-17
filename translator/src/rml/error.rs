@@ -31,11 +31,11 @@ impl Display for RMLTranslationError {
 impl Error for RMLTranslationError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            RMLTranslationError::PlanError(plan_error) => plan_error.source(),
+            RMLTranslationError::PlanError(plan_error) => Some(plan_error),
             RMLTranslationError::ParseError(parse_error) => {
-                parse_error.source()
+                Some(parse_error)
             }
-            RMLTranslationError::IOError(error) => error.source(),
+            RMLTranslationError::IOError(error) => Some(error),
         }
     }
 }

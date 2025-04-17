@@ -8,7 +8,7 @@ use super::parcombi::errors::ParseCombiError;
 pub enum ShExMLTranslationError {
     ParseCombiError(ParseCombiError),
     IOError(std::io::Error),
-    PlanError(PlanError),
+    PlanError(Box<PlanError>),
 }
 
 impl From<ParseCombiError> for ShExMLTranslationError {
@@ -19,7 +19,7 @@ impl From<ParseCombiError> for ShExMLTranslationError {
 
 impl From<PlanError> for ShExMLTranslationError {
     fn from(v: PlanError) -> Self {
-        Self::PlanError(v)
+        Self::PlanError(Box::new(v))
     }
 }
 
@@ -43,8 +43,8 @@ impl Display for ShExMLTranslationError {
 impl std::error::Error for ShExMLTranslationError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
-            ShExMLTranslationError::IOError(error) => error.source(),
-            ShExMLTranslationError::PlanError(error) => error.source(),
+            ShExMLTranslationError::IOError(error) => Some(error),
+            ShExMLTranslationError::PlanError(error) => Some(error),
             _ => None,
         }
     }

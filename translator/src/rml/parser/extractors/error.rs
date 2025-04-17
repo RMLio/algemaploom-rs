@@ -44,8 +44,8 @@ impl Display for ParseError {
 impl Error for ParseError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         match self {
-            ParseError::IOError(error) => error.source(),
-            ParseError::SerdeError(error) => error.source(),
+            ParseError::IOError(error) => Some(error),
+            ParseError::SerdeError(error) => Some(error),
             _ => None,
         }
     }

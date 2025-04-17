@@ -51,12 +51,12 @@ impl std::error::Error for NewRMLTranslationError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             NewRMLTranslationError::ParseError(parse_error) => {
-                parse_error.source()
+                Some(parse_error)
             }
             NewRMLTranslationError::TranslationError(translation_error) => {
-                translation_error.source()
+                Some(translation_error)
             }
-            NewRMLTranslationError::IoError(error) => error.source(),
+            NewRMLTranslationError::IoError(error) => Some(error),
         }
     }
 }
