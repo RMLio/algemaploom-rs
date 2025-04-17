@@ -1,8 +1,17 @@
+use std::error::Error;
+
 use colored::Colorize;
-use log::info;
+use log::{error, info};
 use plangenerator::error::PlanError;
 use plangenerator::states::Init;
 use plangenerator::Plan;
+
+pub fn pretty_print_err(err: Box<&dyn Error>) {
+    error!("{}", err);
+    if let Some(inner) = err.source() {
+        pretty_print_err(Box::new(inner)); 
+    }
+}
 
 pub fn serialize_and_log_msg<F: AsRef<str>>(
     output_prefix: String,

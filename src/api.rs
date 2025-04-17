@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
-use log::error;
+use log::{debug, error};
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
 use crate::rml::{RMLFileHandler, RMLStringHandler};
 use crate::shexml::{ShExMLFileHandler, ShExMLStringHandler};
-use crate::util::serialize_and_log_msg;
+use crate::util::{pretty_print_err, serialize_and_log_msg};
 
 pub fn process_one_file(
     file_path: PathBuf,
@@ -14,6 +14,18 @@ pub fn process_one_file(
 ) {
     let handlers: Vec<Box<dyn FileTranslatorHandler>> =
         vec![Box::new(RMLFileHandler), Box::new(ShExMLFileHandler)];
+
+    if !handlers
+        .iter()
+        .any(|handler| handler.can_handle(&file_path.to_string_lossy()))
+    {
+        debug!(
+            "Skipped processing file {} since it is not supported",
+            file_path.to_string_lossy()
+        );
+        return; 
+    }
+
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
         .iter()
         .map(|handler| handler.handle_file(&file_path.to_string_lossy()))
@@ -31,7 +43,7 @@ pub fn process_one_file(
             .enumerate()
             .for_each(|(id, err)| {
                 error!("Handler is: {:?} ", handlers[id]);
-                error!("{}", err);
+                pretty_print_err(Box::new(&err));
             });
     } else {
         for mut plan in generated_plans.into_iter().flat_map(|p_res| p_res.ok())
@@ -46,17 +58,15 @@ pub fn process_one_file(
                     "Errored while serializing mapping plan for: {}",
                     file_path.to_string_lossy()
                 );
-                error!("{}", err);
+                pretty_print_err(Box::new(&err));
             }
         }
     };
 }
 
 pub fn process_one_str(mapping: &str) -> String {
-    // TODO: fix segfault in parsing ShExML documents to re-enable ShExML.
     let handlers: Vec<Box<dyn StringTranslatorHandler>> =
         vec![Box::new(RMLStringHandler), Box::new(ShExMLStringHandler)];
-    //let handlers: Vec<Box<dyn StringTranslatorHandler>> = vec![Box::new(RMLStringHandler)]
 
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
         .iter()
@@ -73,7 +83,7 @@ pub fn process_one_str(mapping: &str) -> String {
             .enumerate()
             .for_each(|(id, err)| {
                 error!("Handler is: {:?} ", handlers[id]);
-                error!("{}", err);
+                pretty_print_err(Box::new(&err));
             });
     } else if let Some(plan) = generated_plans
         .into_iter()
