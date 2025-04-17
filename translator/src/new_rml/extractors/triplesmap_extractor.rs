@@ -82,23 +82,19 @@ impl Extractor<TriplesMap> for TriplesMap {
 pub fn extract_triples_maps(
     graph: &FastGraph,
 ) -> ExtractorResult<Vec<TriplesMap>> {
-    let old_rml_subject_map: RcTerm =
-        vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
-    let rml_core_subject_map: RcTerm =
-        vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm();
+    let rml_core_subject_map_vec = [
+        vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm(),
+        vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),
+    ];
 
-    let old_rml_tm_iter =
-        graph.triples_matching(Any, [old_rml_subject_map], Any);
     let rml_core_tm_iter =
-        graph.triples_matching(Any, [rml_core_subject_map], Any);
+        graph.triples_matching(Any, rml_core_subject_map_vec, Any);
 
-    old_rml_tm_iter
-        .chain(rml_core_tm_iter)
+    rml_core_tm_iter
         .filter_map(|triple| triple.ok())
         .map(|triple| {
             TriplesMap::extract_self(RcTerm::from_term(triple.s()), graph)
         })
         .collect()
 
-    // TODO: if it really needs to be valid at thid point, check for a logical source for old RML
 }
