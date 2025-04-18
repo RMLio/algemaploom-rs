@@ -42,4 +42,13 @@ pub mod CLASS {
     pub const FILE_PATH: PAIR = (IRI, "FilePath");
     pub const RELATIVE_PATH: PAIR = (IRI, "RelativePath");
     pub const RELATIVE_PATH_SOURCE: PAIR = (IRI, "RelativePathSource");
+
+
+    //Reference Formulations
+    pub const JSONPATH: PAIR = (IRI, "JSONPath");
+    pub const CSV: PAIR = (IRI, "CSV");
+    pub const XPATH: PAIR = (IRI, "XPath");
+    pub const CSVW: PAIR = (IRI, "CSVWReferenceFormulation"); 
+    pub const SQL_QUERY: PAIR = (IRI, "SQLQuery"); 
+    pub const SQL_TABLE: PAIR = (IRI, "SQLTable"); 
 }
