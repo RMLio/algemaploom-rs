@@ -41,4 +41,5 @@ pub mod CLASS {
 
     pub const FILE_PATH: PAIR = (IRI, "FilePath");
     pub const RELATIVE_PATH: PAIR = (IRI, "RelativePath");
+    pub const RELATIVE_PATH_SOURCE: PAIR = (IRI, "RelativePathSource");
 }
