@@ -3,6 +3,7 @@ mod kind;
 
 use std::collections::HashMap;
 
+use kind::file_source;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 
@@ -51,21 +52,38 @@ fn extract_source_specific_config(
     source: &Source,
 ) -> ExtractorResult<HashMap<String, String>> {
     let kind = &source.kind;
-    if kind.type_iri == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() {
-        Ok(kafka_source::extract_kafka_source(
-            subject_ref,
-            &kind.metadata,
-        )?)
-    } else if kind.type_iri == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() {
-        Ok(tcp_source::extract_tcp_source(subject_ref, &kind.metadata)?)
-    } else if kind.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm() {
-        Ok(rdb_source::extract_rdb_source(subject_ref, &kind.metadata)?)
-    } else {
-        Err(TranslationError::SourceError(format!(
-            "Cannot generate config hash maps for the given source : {:?}",
-            source
-        ))
-        .into())
+    match kind.type_iri.clone() {
+        value if value == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
+            Ok(kafka_source::extract_kafka_source(
+                subject_ref,
+                &kind.metadata,
+            )?)
+        }
+        value if value == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
+            Ok(tcp_source::extract_tcp_source(subject_ref, &kind.metadata)?)
+        }
+        value if value == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
+            Ok(rdb_source::extract_rdb_source(subject_ref, &kind.metadata)?)
+        }
+        value
+            if value == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
+                || value
+                    == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE
+                        .to_rcterm()
+                || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() =>
+        {
+            Ok(file_source::extract_file_source(
+                subject_ref,
+                &kind.metadata,
+            )?)
+        }
+        _ => {
+            Err(TranslationError::SourceError(format!(
+                "Cannot generate config hash maps for the given source : {:?}",
+                source
+            ))
+            .into())
+        }
     }
 }
 
