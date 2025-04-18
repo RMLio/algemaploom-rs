@@ -7,12 +7,14 @@ use sophia_inmem::graph::FastGraph;
 use sophia_turtle::parser::turtle;
 
 use super::error::ParseError;
-use super::triplesmap_extractor::extract_triples_maps;
+use super::triplesmap_extractor::{self, extract_triples_maps};
 use super::ExtractorResult;
-use crate::rml::parser::rml_model::Document;
+use crate::rml::parser::rml_model::{Document, TriplesMap};
 
 fn extract_base_iri(input: &str) -> Option<String> {
-    input.strip_prefix("@base").map(|e| e[0..e.len()-1].replace(['<', '>'], "").trim().to_string())
+    input
+        .strip_prefix("@base")
+        .map(|e| e[0..e.len() - 1].replace(['<', '>'], "").trim().to_string())
 }
 
 pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
@@ -22,7 +24,8 @@ pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
             Err(ParseError::GenericError(format!(
                 "Something went wrong with sophia's turtle parsing: {}",
                 err
-            )).into())
+            ))
+            .into())
         }
     }
 }
@@ -34,7 +37,8 @@ pub fn load_graph_str(input_str: &str) -> ExtractorResult<FastGraph> {
             Err(ParseError::GenericError(format!(
                 "Something went wrong with sophia's turtle parsing: {}",
                 err
-            )).into())
+            ))
+            .into())
         }
     }
 }
@@ -43,6 +47,20 @@ pub fn parse_str(input_str: &str) -> ExtractorResult<Document> {
     let graph = load_graph_str(input_str)?;
     let triples_maps = extract_triples_maps(&graph)?;
     let base_iri = input_str.split('\n').filter_map(extract_base_iri).next();
+    try_create_document(triples_maps, base_iri)
+}
+
+fn try_create_document(
+    triples_maps: Vec<TriplesMap>,
+    base_iri: Option<String>,
+) -> ExtractorResult<Document> {
+    if triples_maps.is_empty() {
+        return Err(ParseError::GenericError(
+            "no triples maps are sucessfully extracted".to_string(),
+        )
+        .into());
+    }
+
     Ok(Document {
         triples_maps,
         default_base_iri: base_iri,
@@ -55,7 +73,8 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
             return Err(ParseError::ExtensionError(format!(
                 "Extension does not exist {}",
                 ext.to_str().unwrap()
-            )).into());
+            ))
+            .into());
         }
 
         let buf_read = BufReader::new(File::open(path.clone())?);
@@ -65,18 +84,17 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
         let mut buf_read = BufReader::new(File::open(path)?);
         let mut input_string = String::default();
         buf_read.read_to_string(&mut input_string)?;
-        let base_iri = input_string.split('\n').filter_map(extract_base_iri).next();
+        let base_iri =
+            input_string.split('\n').filter_map(extract_base_iri).next();
 
-        return Ok(Document {
-            triples_maps,
-            default_base_iri: base_iri,
-        });
+        return try_create_document(triples_maps, base_iri);
     }
 
     Err(ParseError::IOErrorStr(format!(
         "File can't be read {}",
         path.to_str().unwrap()
-    )).into())
+    ))
+    .into())
 }
 
 #[cfg(test)]

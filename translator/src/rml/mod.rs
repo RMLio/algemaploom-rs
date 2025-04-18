@@ -61,21 +61,20 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                 let other_tms = doc
                     .triples_maps
                     .iter()
-                    .filter(|other_tm| (*other_tm).identifier != tm.identifier)
+                    .filter(|other_tm| other_tm.identifier != tm.identifier)
                     .collect();
                 let source_op =
                     SourceOpTranslator { tm, other_tms }.translate();
                 //  let projection_op =
                 //      translate_projection_op(tm, doc.triples_maps.iter());
-                let result = (
+
+                (
                     tm,
                     Rc::new(RefCell::new(
                         plan.source(source_op),
                         //              .apply(&projection_op, "Projection")?,
                     )),
-                );
-
-                result
+                )
             })
             .collect();
         let tm_rccellplan_map: HashMap<_, _> = tm_sourced_pairs
@@ -147,7 +146,7 @@ impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
                 &base_iri,
             )?;
 
-            Ok::<(), RMLTranslationError >(())
+            Ok::<(), RMLTranslationError>(())
         })?;
 
         Ok(plan)
