@@ -35,17 +35,38 @@ impl TryFrom<&ReferenceFormulation>
         match value.kind {
             ReferenceFormulationKind::Iri => {
                 match value.iri.clone() {
-                    value if value == vocab::query::CLASS::CSV.to_rcterm() => {
+                    value
+                        if value
+                            == vocab::d2rq::CLASS::DATABASE.to_rcterm()
+                            || value
+                                == vocab::rml_io::CLASS::SQL_QUERY
+                                    .to_rcterm()
+                            || value
+                                == vocab::rml_io::CLASS::SQL_TABLE
+                                    .to_rcterm() =>
+                    {
+                        Ok(formats::ReferenceFormulation::SQLQuery)
+                    }
+                    value
+                        if value == vocab::query::CLASS::CSV.to_rcterm()
+                            || value
+                                == vocab::rml_io::CLASS::CSV.to_rcterm() =>
+                    {
                         Ok(formats::ReferenceFormulation::CSVRows)
                     }
                     value
                         if value
-                            == vocab::query::CLASS::JSONPATH.to_rcterm() =>
+                            == vocab::query::CLASS::JSONPATH.to_rcterm()
+                            || value
+                                == vocab::rml_io::CLASS::JSONPATH
+                                    .to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::JSONPath)
                     }
                     value
-                        if value == vocab::query::CLASS::XPATH.to_rcterm() =>
+                        if value == vocab::query::CLASS::XPATH.to_rcterm()
+                            || value
+                                == vocab::rml_io::CLASS::XPATH.to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath)
                     }
@@ -171,9 +192,13 @@ impl TryFrom<&SourceKind> for IOType {
     fn try_from(value: &SourceKind) -> Result<Self, Self::Error> {
         if value.type_iri == vocab::rml_io::CLASS::FILE_PATH.to_rcterm()
             || value.type_iri == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
+            || value.type_iri
+                == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE.to_rcterm()
         {
             Ok(IOType::File)
-        } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm() {
+        } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm()
+            || value.type_iri == vocab::rml_io::CLASS::SQL_TABLE.to_rcterm()
+        {
             Ok(IOType::RDB)
         } else {
             Err(TranslationError::SourceError(format!(
