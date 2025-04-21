@@ -56,13 +56,12 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             .filter_map(|term| RefObjectMap::extract_self(term, graph_ref).ok())
             .collect();
 
-        let object_map_opt = ObjectMap::extract_many_from_container(
+        let object_map_vec = ObjectMap::extract_many_from_container(
             graph_ref,
             subject_ref.borrow_term(),
-        )
-        .ok();
+        )?;
 
-        if object_map_opt.is_none() && ref_object_map.is_empty() {
+        if object_map_vec.is_empty() && ref_object_map.is_empty() {
             return Err(ParseError::GenericError(format!(
                 "Predicate Object Map {:?} has 0 object maps",
                 subject_ref
@@ -78,7 +77,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
 
         Ok(PredicateObjectMap {
             predicate_map_vec,
-            object_map_vec: object_map_opt.unwrap(),
+            object_map_vec,
             ref_object_map,
             graph_map_vec,
         })
