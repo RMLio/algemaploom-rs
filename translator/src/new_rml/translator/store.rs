@@ -45,9 +45,9 @@ impl SearchStore<'_> {
 
             result
                 .entry(abs_ls_id)
+                .and_modify(|tms| tms.push(value.clone()))
                 // RcTerm's cloning (low cost ref counter addition)
-                .or_insert(vec![value.clone()])
-                .push(value.clone());
+                .or_insert(vec![value.clone()]); 
         }
 
         result.into_iter().collect()

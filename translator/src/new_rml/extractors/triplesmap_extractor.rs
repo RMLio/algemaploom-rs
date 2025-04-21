@@ -25,18 +25,17 @@ impl Extractor<TriplesMap> for TriplesMap {
         let subject_map =
             SubjectMap::extract_from_container(graph, subject.borrow_term())?;
 
-        let ls_old_pred = &vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
         let ls_new_pred =
             &vocab::rml_core::PROPERTY::LOGICAL_SOURCE.to_rcterm();
         let logical_source_subj = get_object_with_ps(
             graph,
             subject.borrow_term(),
-            &[ls_old_pred, ls_new_pred],
+            &[ls_new_pred],
         )?;
         let abs_logical_source =
             AbstractLogicalSource::extract_self(&logical_source_subj, graph)?;
 
-        let pom = vocab::r2rml::PROPERTY::PREDICATEOBJECTMAP.to_rcterm();
+        let pom = vocab::rml_core::PROPERTY::PREDICATE_OBJECT_MAP.to_rcterm();
         let po_maps_res: ExtractorResult<Vec<_>> =
             get_objects(graph, subject.borrow_term(), &pom)
                 .into_iter()
@@ -96,5 +95,4 @@ pub fn extract_triples_maps(
             TriplesMap::extract_self(RcTerm::from_term(triple.s()), graph)
         })
         .collect()
-
 }

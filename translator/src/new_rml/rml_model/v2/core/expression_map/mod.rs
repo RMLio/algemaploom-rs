@@ -36,9 +36,7 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
         } else if c == '{' {
             result.push(TemplateSubString::NormalString(current_buf.clone()));
             current_buf.clear();
-            current_buf.push(c);
         } else if c == '}' {
-            current_buf.push(c);
             result.push(TemplateSubString::Attribute(current_buf.clone()));
             current_buf.clear();
         } else {

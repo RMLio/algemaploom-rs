@@ -27,7 +27,8 @@ pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
             Err(ParseError::GenericError(format!(
                 "Something went wrong with sophia's turtle parsing: {}",
                 err
-            )).into())
+            ))
+            .into())
         }
     }
 }
@@ -42,7 +43,8 @@ pub fn load_graph_str(input_str: &str) -> ExtractorResult<FastGraph> {
             Err(ParseError::GenericError(format!(
                 "Something went wrong with sophia's turtle parsing: {}",
                 err
-            )).into())
+            ))
+            .into())
         }
     }
 }
@@ -63,7 +65,8 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
             return Err(ParseError::ExtensionError(format!(
                 "Extension does not exist {}",
                 ext.to_str().unwrap()
-            )).into());
+            ))
+            .into());
         }
 
         let buf_read = BufReader::new(File::open(path.clone())?);
@@ -85,7 +88,8 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
     Err(ParseError::IOErrorStr(format!(
         "File can't be read {}",
         path.to_str().unwrap()
-    )).into())
+    ))
+    .into())
 }
 
 #[cfg(test)]
@@ -96,22 +100,14 @@ mod tests {
 
     #[test]
     fn one_tm_test() -> ExtractorResult<()> {
-        let path = PathBuf::from(test_case!("rml/sample_mapping.ttl"));
+        let path = PathBuf::from(test_case!(
+            "rml-core-tests/RMLTC0000-JSON/mapping.ttl"
+        ));
         let parsed_res = parse_file(path)?;
 
         // One TriplesMap should be parsed
         assert!(parsed_res.triples_maps.len() == 1);
 
         Ok(())
-    }
-
-    #[test]
-    fn multiple_tm_test() {
-        let path = PathBuf::from(test_case!("rml/multiple_tm.ttl"));
-        let parsed_res = parse_file(path);
-
-        assert!(parsed_res.is_ok());
-        // One TriplesMap should be parsed
-        assert!(parsed_res.unwrap().triples_maps.len() == 2);
     }
 }

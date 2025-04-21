@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use sophia_api::prelude::Iri;
 use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
 use sophia_term::RcTerm;
@@ -44,8 +46,8 @@ impl TermMap {
         self.expression.get_template_string_split()
     }
 
-    pub fn get_ref_attributes(&self) -> Vec<String> {
-        let template_attr_vec: Vec<_> = self
+    pub fn get_ref_attributes(&self) -> HashSet<String> {
+        let template_attr_vec: HashSet<_> = self
             .get_template_string_split()
             .into_iter()
             .filter_map(|sstring| {
@@ -64,9 +66,9 @@ impl TermMap {
             self.expression.get_map_type_enum().unwrap()
         {
             let val = self.expression.get_value().unwrap();
-            vec![val.to_string()]
+            HashSet::from([val.to_string()])
         } else {
-            vec![]
+            HashSet::new()
         }
     }
 
