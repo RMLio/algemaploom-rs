@@ -8,7 +8,7 @@ use std::collections::HashMap;
 
 use sophia_api::graph::MutableGraph;
 use sophia_api::prelude::Any;
-use sophia_api::term::{Term, TermKind};
+use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 
 use super::error::ParseError;
@@ -126,6 +126,7 @@ where
     );
 
     Ok(SourceKind {
+        subj_iri: RcTerm::from_term(subject), 
         type_iri: source_type_iri.into(),
         metadata: metadata.into(),
     })

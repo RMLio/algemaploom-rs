@@ -3,6 +3,7 @@ use std::rc::Rc;
 
 use operator::{formats, IOType};
 use sophia_api::serializer::*;
+use sophia_api::term::{BnodeId, FromTerm};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
@@ -176,6 +177,7 @@ pub struct Source {
 
 #[derive(Clone)]
 pub struct SourceKind {
+    pub subj_iri: RcTerm, 
     pub type_iri: RcTerm,
     pub metadata: Rc<FastGraph>,
 }
@@ -228,6 +230,7 @@ impl Debug for SourceKind {
 impl Default for SourceKind {
     fn default() -> Self {
         Self {
+            subj_iri: RcTerm::from_term(BnodeId::new_unchecked_const("default_bnode")), 
             type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }

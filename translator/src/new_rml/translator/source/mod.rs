@@ -55,15 +55,21 @@ fn extract_source_specific_config(
     match kind.type_iri.clone() {
         value if value == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
             Ok(kafka_source::extract_kafka_source(
-                subject_ref,
+                &kind.subj_iri,
                 &kind.metadata,
             )?)
         }
         value if value == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
-            Ok(tcp_source::extract_tcp_source(subject_ref, &kind.metadata)?)
+            Ok(tcp_source::extract_tcp_source(
+                &kind.subj_iri,
+                &kind.metadata,
+            )?)
         }
         value if value == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
-            Ok(rdb_source::extract_rdb_source(subject_ref, &kind.metadata)?)
+            Ok(rdb_source::extract_rdb_source(
+                &kind.subj_iri,
+                &kind.metadata,
+            )?)
         }
         value
             if value == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
@@ -73,7 +79,7 @@ fn extract_source_specific_config(
                 || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() =>
         {
             Ok(file_source::extract_file_source(
-                subject_ref,
+                &kind.subj_iri,
                 &kind.metadata,
             )?)
         }

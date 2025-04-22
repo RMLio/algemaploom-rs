@@ -31,13 +31,16 @@ pub struct TriplesMap {
 }
 
 impl TriplesMap {
-    pub fn get_parent_triples_maps_ids(&self) -> HashSet<RcTerm> {
+
+
+
+    pub fn get_parent_triples_maps_ids(&self) -> HashSet<(RcTerm, JoinCondition)> {
         let mut result = HashSet::new();
-        for pom in &self.predicate_object_map_vec {
-            for ref_om in &pom.ref_object_map {
-                result.insert(ref_om.ptm_iri.clone());
-            }
-        }
+        //for pom in &self.predicate_object_map_vec {
+        //    for ref_om in &pom.ref_object_map {
+        //        result.insert(ref_om.ptm_iri.clone());
+        //    }
+        //}
         result
     }
 

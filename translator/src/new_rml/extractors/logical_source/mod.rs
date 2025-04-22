@@ -46,6 +46,7 @@ impl Extractor<LogicalSource> for LogicalSource {
 
                 Source {
                     kind:         SourceKind {
+                        subj_iri: RcTerm::from_term(subj_bnode), 
                         type_iri: vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
                         metadata: Rc::new(metadata),
                     },

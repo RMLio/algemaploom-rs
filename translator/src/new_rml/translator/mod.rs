@@ -9,6 +9,7 @@ use std::cell::RefMut;
 use std::path::Path;
 
 use extend::ExtendOperatorTranslator;
+use join::JoinTranslator;
 use operator::Target;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
@@ -60,6 +61,10 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
 
         let search_store = SearchStore::from_document(&model)?;
 
+       // for tm in model.triples_maps.iter() {
+       //     JoinTranslator::translate_with_store(&search_store, tm)?;
+       // }
+
         for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {
             let tm_vec: Vec<_> = tm_vec
                 .iter()
@@ -91,7 +96,6 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
                 .sink(&Target::default())
                 .map_err(Into::<NewRMLTranslationError>::into)?;
         }
-        println!("{:#?}", search_store);
 
         Ok(search_store.root_plan.unwrap())
     }

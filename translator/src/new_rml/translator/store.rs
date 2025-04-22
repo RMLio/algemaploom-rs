@@ -181,7 +181,7 @@ impl SearchStore<'_> {
             abs_ls_search_map,
             root_plan: Some(root_plan),
             reference_attr_map: HashMap::new(),
-            tm_id_join_map,
+            tm_id_join_map: HashMap::new(),
         })
     }
 }
