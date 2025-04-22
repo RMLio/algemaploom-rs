@@ -17,6 +17,27 @@ use crate::new_rml::rml_model::v2::core::expression_map::{
 use crate::new_rml::rml_model::v2::core::{TemplateSubString, TriplesMap};
 use crate::new_rml::rml_model::v2::fnml::InputMap;
 
+pub fn func_is_not_constant(func: &Function) -> bool {
+    match func {
+        Function::Iri {
+            base_iri,
+            inner_function,
+        } => func_is_not_constant(inner_function),
+        Function::Literal {
+            inner_function,
+            dtype_function,
+            langtype_function,
+        } => func_is_not_constant(inner_function),
+        Function::BlankNode { inner_function } => {
+            func_is_not_constant(inner_function)
+        }
+        Function::TypedConstant { value, term_type } => false,
+        Function::Constant { value } => false,
+        Function::Nop => false,
+        _ => true,
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct ExtendOperatorTranslator {}
 
@@ -35,13 +56,13 @@ impl OperatorTranslator for ExtendOperatorTranslator {
         // Extend function for the subject map
         let (var, func) =
             extend_from_term_map(store, base_iri, &tm.subject_map.term_map)?;
-        extend_pairs.insert(var, func);
+        insert_non_constant_func(&mut extend_pairs, var, func);
 
         // Extend functions for each graph map of a subject map
         for gm in &tm.subject_map.graph_maps {
             let (var, func) =
                 extend_from_term_map(store, base_iri, &gm.term_map)?;
-            extend_pairs.insert(var, func);
+            insert_non_constant_func(&mut extend_pairs, var, func);
         }
 
         // Extend functions for each predicate object map of the given triples map
@@ -49,13 +70,13 @@ impl OperatorTranslator for ExtendOperatorTranslator {
             for gm in &pom.graph_map_vec {
                 let (var, func) =
                     extend_from_term_map(store, base_iri, &gm.term_map)?;
-                extend_pairs.insert(var, func);
+                insert_non_constant_func(&mut extend_pairs, var, func);
             }
 
             for pm in &pom.predicate_map_vec {
                 let (var, func) =
                     extend_from_term_map(store, base_iri, &pm.term_map)?;
-                extend_pairs.insert(var, func);
+                insert_non_constant_func(&mut extend_pairs, var, func);
             }
 
             for om in &pom.object_map_vec {
@@ -63,10 +84,20 @@ impl OperatorTranslator for ExtendOperatorTranslator {
                     extend_from_term_map(store, base_iri, &om.term_map)?;
 
                 let func = extend_lang_dtype_function_for_om(store, om, func)?;
-                extend_pairs.insert(var, func);
+                insert_non_constant_func(&mut extend_pairs, var, func);
             }
         }
         Ok(operator::Extend { extend_pairs })
+    }
+}
+
+fn insert_non_constant_func(
+    extend_pairs: &mut HashMap<String, Function>,
+    var: String,
+    func: Function,
+) {
+    if func_is_not_constant(&func) {
+        extend_pairs.insert(var, func);
     }
 }
 
