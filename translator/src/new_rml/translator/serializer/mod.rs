@@ -27,7 +27,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
             let mut triples: Vec<String> = vec![];
 
             let sm_var = store
-                .tm_id_quad_var_map
+                .termm_id_quad_var_map
                 .get(&tm.subject_map.term_map.identifier)
                 .unwrap();
 
@@ -89,7 +89,7 @@ fn add_graph_to_triple(
     for gm in graph_map_vec {
         let gm_part = gm.term_map.get_constant_value().unwrap_or_else(|| {
             store
-                .tm_id_quad_var_map
+                .termm_id_quad_var_map
                 .get(&gm.term_map.identifier)
                 .unwrap()
                 .to_string()
@@ -107,7 +107,7 @@ fn cproduct_pm_om_vars<'a>(
 ) -> impl Iterator<Item = (String, String)> + 'a {
     let pm_var_iter = pom.predicate_map_vec.iter().map(|pm| {
         let pm_var = store
-            .tm_id_quad_var_map
+            .termm_id_quad_var_map
             .get(&pm.term_map.identifier)
             .unwrap();
         pm.term_map
@@ -117,7 +117,7 @@ fn cproduct_pm_om_vars<'a>(
 
     let om_var_iter = pom.object_map_vec.iter().map(|om| {
         let om_var = store
-            .tm_id_quad_var_map
+            .termm_id_quad_var_map
             .get(&om.term_map.identifier)
             .unwrap();
         om.term_map

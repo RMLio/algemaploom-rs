@@ -1,5 +1,6 @@
 pub mod error;
 mod extend;
+mod join;
 mod serializer;
 mod source;
 mod store;
@@ -60,18 +61,18 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
         let search_store = SearchStore::from_document(&model)?;
 
         for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {
-            let mut plan = search_store
-                .ls_id_sourced_plan_map
-                .get(&abs_ls_id)
-                .unwrap()
-                .borrow_mut();
-
             let tm_vec: Vec<_> = tm_vec
                 .iter()
                 .flat_map(|tm_id| {
                     search_store.tm_search_map.get(tm_id).copied()
                 })
                 .collect();
+
+            let mut plan = search_store
+                .ls_id_sourced_plan_map
+                .get(&abs_ls_id)
+                .unwrap()
+                .borrow_mut();
 
             for tm in &tm_vec {
                 let extended_plan =
@@ -90,6 +91,7 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
                 .sink(&Target::default())
                 .map_err(Into::<NewRMLTranslationError>::into)?;
         }
+        println!("{:#?}", search_store);
 
         Ok(search_store.root_plan.unwrap())
     }

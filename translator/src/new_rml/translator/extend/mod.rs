@@ -141,7 +141,7 @@ fn extend_from_term_map(
     }?;
 
     let var = store
-        .tm_id_quad_var_map
+        .termm_id_quad_var_map
         .get(&term_map.identifier)
         .unwrap()
         .to_string();

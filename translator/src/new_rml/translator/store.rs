@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use plangenerator::data_type::RcRefCellPlan;
 use plangenerator::states::{Init, Processed};
@@ -19,7 +19,8 @@ use crate::new_rml::rml_model::Document;
 pub struct SearchStore<'a> {
     pub root_plan:              Option<Plan<Init>>,
     pub reference_attr_map:     HashMap<String, String>,
-    pub tm_id_quad_var_map:     HashMap<RcTerm, String>,
+    pub termm_id_quad_var_map:  HashMap<RcTerm, String>,
+    pub tm_id_join_map:         HashMap<RcTerm, HashSet<RcTerm>>,
     pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSource>,
     pub ls_id_sourced_plan_map: HashMap<RcTerm, RcRefCellPlan<Processed>>,
     pub sm_search_map:          HashMap<RcTerm, &'a SubjectMap>,
@@ -47,7 +48,7 @@ impl SearchStore<'_> {
                 .entry(abs_ls_id)
                 .and_modify(|tms| tms.push(value.clone()))
                 // RcTerm's cloning (low cost ref counter addition)
-                .or_insert(vec![value.clone()]); 
+                .or_insert(vec![value.clone()]);
         }
 
         result.into_iter().collect()
@@ -62,28 +63,31 @@ impl SearchStore<'_> {
     pub fn from_document(
         document: &Document,
     ) -> NewRMLTranslationResult<SearchStore<'_>> {
-        let tm_iter = document.triples_maps.iter();
-
         let mut tm_search_map = HashMap::new();
         let mut abs_ls_search_map = HashMap::new();
         let mut sm_search_map = HashMap::new();
         let mut pm_search_map = HashMap::new();
         let mut om_search_map = HashMap::new();
         let mut gm_search_map = HashMap::new();
-        let mut tm_id_quad_var_map = HashMap::new();
+        let mut termm_id_quad_var_map = HashMap::new();
+        let mut tm_id_join_map = HashMap::new();
 
-        for tm in tm_iter {
+        for tm in document.triples_maps.iter() {
             let tm_count: u32 = 0;
             abs_ls_search_map.insert(
                 tm.abs_logical_source.get_identifier(),
                 &tm.abs_logical_source,
             );
-            tm_search_map.insert(tm.identifier.clone(), tm);
+            let tm_id = &tm.identifier;
+            tm_search_map.insert(tm_id.clone(), tm);
+            tm_id_join_map
+                .insert(tm_id.clone(), tm.get_parent_triples_maps_ids());
+
             let sm = &tm.subject_map;
             let sm_ident = sm.term_map.identifier.clone();
             sm_search_map.insert(sm_ident.clone(), sm);
 
-            tm_id_quad_var_map
+            termm_id_quad_var_map
                 .insert(sm_ident.clone(), format!("sm_{}", tm_count));
 
             let sm_gms: Vec<_> = sm
@@ -92,7 +96,7 @@ impl SearchStore<'_> {
                 .map(|gm| (gm.term_map.identifier.clone(), gm))
                 .collect();
 
-            tm_id_quad_var_map.extend(sm_gms.iter().enumerate().map(
+            termm_id_quad_var_map.extend(sm_gms.iter().enumerate().map(
                 |(gm_idx, (gm_ident, _))| {
                     (gm_ident.clone(), format!("sm_{}_gm_{}", tm_count, gm_idx))
                 },
@@ -119,7 +123,7 @@ impl SearchStore<'_> {
                     },
                 );
 
-                tm_id_quad_var_map.extend(pom_gms_var_iter);
+                termm_id_quad_var_map.extend(pom_gms_var_iter);
                 gm_search_map.extend(pom_gms);
 
                 pm_search_map = pom
@@ -158,7 +162,7 @@ impl SearchStore<'_> {
                 );
 
                 let pm_om_id_var_chain = pm_var_iter.chain(om_var_iter);
-                tm_id_quad_var_map.extend(pm_om_id_var_chain);
+                termm_id_quad_var_map.extend(pm_om_id_var_chain);
             }
         }
 
@@ -167,7 +171,7 @@ impl SearchStore<'_> {
             create_ls_id_sourced_plan_map(&mut root_plan, &abs_ls_search_map)?;
 
         Ok(SearchStore {
-            tm_id_quad_var_map,
+            termm_id_quad_var_map,
             sm_search_map,
             pm_search_map,
             om_search_map,
@@ -176,7 +180,8 @@ impl SearchStore<'_> {
             ls_id_sourced_plan_map,
             abs_ls_search_map,
             root_plan: Some(root_plan),
-            ..Default::default()
+            reference_attr_map: HashMap::new(),
+            tm_id_join_map,
         })
     }
 }

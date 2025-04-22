@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
 use expression_map::ExpressionMap;
 use sophia_term::RcTerm;
@@ -29,6 +31,16 @@ pub struct TriplesMap {
 }
 
 impl TriplesMap {
+    pub fn get_parent_triples_maps_ids(&self) -> HashSet<RcTerm> {
+        let mut result = HashSet::new();
+        for pom in &self.predicate_object_map_vec {
+            for ref_om in &pom.ref_object_map {
+                result.insert(ref_om.ptm_iri.clone());
+            }
+        }
+        result
+    }
+
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
         let abs_ls = &self.abs_logical_source;
         if let AbstractSourceEnum::IOLogicalSource(ls) = &abs_ls.abs_source_enum
