@@ -13,6 +13,10 @@ pub struct SerializerOperatorTranslator<'a> {
     _phantom: PhantomData<&'a PhantomPinned>,
 }
 
+fn format_var(var: &str) -> String {
+    format!("?{}", var)
+}
+
 impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
     type Input = Vec<&'a TriplesMap>;
 
@@ -29,6 +33,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
             let sm_var = store
                 .termm_id_quad_var_map
                 .get(&tm.subject_map.term_map.identifier)
+                .map(|var| format_var(var))
                 .unwrap();
 
             let sm = tm
@@ -61,7 +66,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
 
             if !is_part_of_graph {
                 graph_pattern
-                    .extend(triples.iter().map(|trip| format!("{}.", trip)));
+                    .extend(triples.iter().map(|trip| format!("{} .", trip)));
             }
 
             add_graph_to_triple(
@@ -91,12 +96,13 @@ fn add_graph_to_triple(
             store
                 .termm_id_quad_var_map
                 .get(&gm.term_map.identifier)
+                .map(|var| format_var(var))
                 .unwrap()
                 .to_string()
         });
 
         for triple in triples {
-            graph_pattern.push(format!("{} {}.", triple, gm_part));
+            graph_pattern.push(format!("{} {} .", triple, gm_part));
         }
     }
 }
@@ -109,6 +115,7 @@ fn cproduct_pm_om_vars<'a>(
         let pm_var = store
             .termm_id_quad_var_map
             .get(&pm.term_map.identifier)
+            .map(|var| format_var(var))
             .unwrap();
         pm.term_map
             .get_constant_value()
@@ -119,6 +126,7 @@ fn cproduct_pm_om_vars<'a>(
         let om_var = store
             .termm_id_quad_var_map
             .get(&om.term_map.identifier)
+            .map(|var| format_var(var))
             .unwrap();
         om.term_map
             .get_constant_value()
