@@ -44,13 +44,10 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                 ).into());
         }
 
-        let class_pred = vocab::r2rml::PROPERTY::CLASS.to_rcterm();
+        let class_pred = vocab::rml_core::PROPERTY::CLASS.to_rcterm();
 
         let classes: Vec<RcTerm> =
-            get_objects(graph_ref, subj_ref.borrow_term(), &class_pred)
-                .iter()
-                .map(|item| item.clone())
-                .collect();
+            get_objects(graph_ref, subj_ref.borrow_term(), &class_pred);
 
         let graph_maps = GraphMap::extract_many_from_container(
             graph_ref,
@@ -98,7 +95,8 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                 Err(ParseError::GenericError(format!(
                     "There can only be ONE subject map for {:?}",
                     container_map_subj_ref
-                )).into())
+                ))
+                .into())
             } else {
                 sms.pop().ok_or(ParseError::Infallible.into())
             }

@@ -1,10 +1,12 @@
 use std::marker::{PhantomData, PhantomPinned};
 
 use operator::Serializer;
+use vocab::ToString;
 
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
+use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::GraphMap;
 use crate::new_rml::rml_model::v2::core::{PredicateObjectMap, TriplesMap};
 
@@ -41,6 +43,18 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
                 .term_map
                 .get_constant_value()
                 .unwrap_or_else(|| sm_var.to_string());
+
+            let class_triples_iter =
+                tm.subject_map.classes.iter().map(|class_iri| {
+                    format!(
+                        "{} <{}> <{}>",
+                        sm,
+                        vocab::rdf::PROPERTY::TYPE.to_string(),
+                        stringify_rcterm(class_iri).unwrap()
+                    )
+                });
+
+            triples.extend(class_triples_iter);
 
             let mut is_part_of_graph = false;
             for pom in &tm.predicate_object_map_vec {
