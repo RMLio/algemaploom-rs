@@ -44,7 +44,6 @@ pub fn process_one_file(
             .enumerate()
             .for_each(|(id, err)| {
                 error!("Handler is: {:?} ", handlers[id]);
-                println!("{:?}", err.source()); 
                 pretty_print_err(&err);
             });
     } else {
