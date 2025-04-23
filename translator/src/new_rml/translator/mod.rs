@@ -10,6 +10,7 @@ use std::path::Path;
 
 use extend::ExtendOperatorTranslator;
 use join::JoinTranslator;
+use log::debug;
 use operator::Target;
 use plangenerator::states::Processed;
 use plangenerator::Plan;
@@ -58,6 +59,7 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
         for tm in model.triples_maps.iter_mut() {
             tm.transform_to_logical_view()?;
         }
+        debug!("Triples Maps: \n {:#?}", model.triples_maps); 
 
         let search_store = SearchStore::from_document(&model)?;
 

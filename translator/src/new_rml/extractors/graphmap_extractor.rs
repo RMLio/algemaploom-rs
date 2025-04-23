@@ -6,7 +6,7 @@ use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{GraphMap, TermMap};
 
 impl TermMapExtractor<GraphMap> for GraphMap {
-    fn create_constant_map(term_map: TermMap) -> GraphMap {
+    fn create_shortcut_map(term_map: TermMap) -> GraphMap {
         if term_map.is_literal_term_type() {
             panic!("Constant-valued GraphMap has to be either an IRI or a BlankNode");
         }
@@ -28,7 +28,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
         }
     }
 
-    fn get_const_preds() -> Vec<RcTerm> {
+    fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
             vocab::rml_core::PROPERTY::GRAPH.to_rcterm(),
             vocab::r2rml::PROPERTY::GRAPH.to_rcterm(),

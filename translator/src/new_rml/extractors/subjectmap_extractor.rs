@@ -10,7 +10,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
 };
 
 impl TermMapExtractor<SubjectMap> for SubjectMap {
-    fn create_constant_map(tm: TermMap) -> SubjectMap {
+    fn create_shortcut_map(tm: TermMap) -> SubjectMap {
         match tm.term_type {
             ref term if *term == vocab::rml_core::CLASS::IRI.to_rcterm() => {
                 SubjectMap {
@@ -65,7 +65,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
         })
     }
 
-    fn get_const_preds() -> Vec<RcTerm> {
+    fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::PROPERTY::SUBJECT.to_rcterm(),
             vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),

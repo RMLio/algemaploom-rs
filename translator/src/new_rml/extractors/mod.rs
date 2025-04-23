@@ -38,7 +38,7 @@ mod util;
 pub type ExtractorResult<T> = Result<T, NewRMLTranslationError>;
 
 pub trait TermMapExtractor<T: Debug> {
-    fn create_constant_map(tm: TermMap) -> T;
+    fn create_shortcut_map(tm: TermMap) -> T;
 
     fn create_term_map<TTerm>(
         subj_ref: TTerm,
@@ -60,7 +60,7 @@ pub trait TermMapExtractor<T: Debug> {
 
         let tm_info = term_map_from_constant_term(map_const)?;
 
-        Ok(Self::create_constant_map(tm_info))
+        Ok(Self::create_shortcut_map(tm_info))
     }
 
     fn extract_from_container<TTerm>(
@@ -82,7 +82,7 @@ pub trait TermMapExtractor<T: Debug> {
         TTerm: Term + Clone,
     {
         let map_preds = Self::get_map_preds();
-        let const_preds = Self::get_const_preds();
+        let const_preds = Self::get_shortcut_preds();
         let map_subj_vec = map_preds.iter().flat_map(|f| {
             get_objects(graph_ref, container_map_subj_ref.borrow_term(), f)
         });
@@ -113,7 +113,7 @@ pub trait TermMapExtractor<T: Debug> {
         }
     }
 
-    fn get_const_preds() -> Vec<RcTerm>;
+    fn get_shortcut_preds() -> Vec<RcTerm>;
     fn get_map_preds() -> Vec<RcTerm>;
 }
 

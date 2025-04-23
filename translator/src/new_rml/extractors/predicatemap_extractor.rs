@@ -9,7 +9,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
 };
 
 impl TermMapExtractor<PredicateMap> for PredicateMap {
-    fn create_constant_map(term_map: TermMap) -> PredicateMap {
+    fn create_shortcut_map(term_map: TermMap) -> PredicateMap {
         if !term_map.is_iri_term_type() {
             panic!("Constant-valued PredicateMap has to have an IRI as value");
         }
@@ -27,7 +27,7 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
         Ok(PredicateMap { term_map })
     }
 
-    fn get_const_preds() -> Vec<RcTerm> {
+    fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::PROPERTY::PREDICATE.to_rcterm(),
             vocab::rml_core::PROPERTY::PREDICATE.to_rcterm(),

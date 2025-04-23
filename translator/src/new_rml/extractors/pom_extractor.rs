@@ -20,7 +20,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             graph_ref,
             subject_ref.borrow_term(),
         )?;
-        let mut object_pred_vec = ObjectMap::get_const_preds();
+        let mut object_pred_vec = ObjectMap::get_shortcut_preds();
         object_pred_vec.append(&mut ObjectMap::get_map_preds());
 
         let object_terms: Vec<_> = object_pred_vec

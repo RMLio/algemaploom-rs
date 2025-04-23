@@ -15,8 +15,8 @@ use crate::new_rml::rml_model::v2::core::expression_map::{
 fn extract_sub_expr_maps<TS, TCP, TMP>(
     subj_ref: TS,
     graph_ref: &FastGraph,
-    const_preds: &Vec<TCP>,
-    map_preds: &Vec<TMP>,
+    const_preds: &[TCP],
+    map_preds: &[TMP],
 ) -> Option<ExpressionMap>
 where
     TS: Term,
@@ -37,14 +37,13 @@ where
 
     get_object_with_ps(graph_ref, subj_ref.borrow_term(), map_preds)
         .ok()
-        .map(|dtype_map_iri| {
+        .and_then(|dtype_map_iri| {
             ExpressionMap::extract_self(&dtype_map_iri, graph_ref).ok()
         })
-        .flatten()
 }
 
 impl TermMapExtractor<ObjectMap> for ObjectMap {
-    fn create_constant_map(term_map: TermMap) -> ObjectMap {
+    fn create_shortcut_map(term_map: TermMap) -> ObjectMap {
         if term_map.is_bnode_term_type() {
             panic!("Constant-valued ObjectMap has to have an IRI or a Literal as value");
         }
@@ -66,21 +65,21 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         let datatype_map = extract_sub_expr_maps(
             subj_ref.borrow_term(),
             graph_ref,
-            &vec![
+            &[
                 &vocab::r2rml::PROPERTY::DATATYPE.to_rcterm(),
                 &vocab::rml_core::PROPERTY::DATATYPE.to_rcterm(),
             ],
-            &vec![&vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm()],
+            &[&vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm()],
         );
 
         let language_map = extract_sub_expr_maps(
             subj_ref.borrow_term(),
             graph_ref,
-            &vec![
+            &[
                 &vocab::r2rml::PROPERTY::LANGUAGE.to_rcterm(),
                 &vocab::rml_core::PROPERTY::LANGUAGE.to_rcterm(),
             ],
-            &vec![
+            &[
                 &vocab::rml_core::PROPERTY::LANGUAGE_MAP.to_rcterm(),
                 &vocab::rml::PROPERTY::LANGUAGE_MAP.to_rcterm(),
             ],
@@ -96,7 +95,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         })
     }
 
-    fn get_const_preds() -> Vec<RcTerm> {
+    fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::PROPERTY::OBJECT.to_rcterm(),
             vocab::rml_core::PROPERTY::OBJECT.to_rcterm(),
@@ -114,15 +113,15 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 #[cfg(test)]
 mod tests {
 
-
-    use super::*;
-    use crate::new_rml::error::NewRMLTranslationError;
-    use crate::new_rml::extractors::error::ParseError;
-    use crate::import_test_mods;
-    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
     use sophia_api::graph::Graph;
     use sophia_api::prelude::Any;
     use sophia_api::triple::Triple;
+
+    use super::*;
+    use crate::import_test_mods;
+    use crate::new_rml::error::NewRMLTranslationError;
+    use crate::new_rml::extractors::error::ParseError;
+    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
 
     import_test_mods!(new_rml);
 
