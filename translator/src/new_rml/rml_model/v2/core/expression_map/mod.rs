@@ -20,7 +20,6 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
         is_escape = c == '\\';
         if is_escape {
             if let Some(c) = chars.next() {
-                println!("{}", c); 
                 current_buf.push(c);
             }
         } else if c == '{' {

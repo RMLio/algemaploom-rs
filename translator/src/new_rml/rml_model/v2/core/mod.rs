@@ -34,7 +34,8 @@ impl TriplesMap {
     pub fn get_parent_triples_maps_ids(
         &self,
     ) -> HashSet<(RcTerm, JoinCondition)> {
-        todo!()
+        // TODO: Implement a proper parent triples map ids  <23-04-25, yourname> //
+        HashSet::new()
     }
 
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
