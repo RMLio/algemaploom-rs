@@ -10,17 +10,6 @@ use crate::new_rml::rml_model::v2::fnml::FunctionExecution;
 
 pub mod term_map;
 
-lazy_static! {
-    static ref TEMPLATE_REGEX: Regex = Regex::new(r"\{([^\{\}]+)\}").unwrap();
-}
-fn prefix_attributes_from_template(template: &str, prefix: &str) -> String {
-    let sanitized = template.replace("\\{", "\\(").replace("\\}", "\\)");
-    TEMPLATE_REGEX
-        .replace_all(&sanitized, format!("{{{}_$1}}", prefix))
-        .replace("\\(", "\\{")
-        .replace("\\)", "\\}")
-}
-
 fn split_template_string(template: &str) -> Vec<TemplateSubString> {
     let mut chars = template.chars();
 
@@ -31,6 +20,7 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
         is_escape = c == '\\';
         if is_escape {
             if let Some(c) = chars.next() {
+                println!("{}", c); 
                 current_buf.push(c);
             }
         } else if c == '{' {
@@ -43,8 +33,13 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
             current_buf.push(c);
         }
     }
+
+    if !current_buf.is_empty(){
+        result.push(TemplateSubString::NormalString(current_buf));
+    }
     result
 }
+
 #[derive(Debug, Clone)]
 pub struct ExpressionMap {
     pub map_type_pred_iri: RcTerm,
@@ -177,4 +172,24 @@ pub enum ExpressionMapTypeEnum {
     Template,
     Constant,
     Reference,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn template_backslash_test() {
+        let test_str = "\\{\\{\\{ {$.['ISO 3166']} \\}\\}\\}";
+
+        let expected = vec![
+            TemplateSubString::NormalString("{{{ ".to_string()),
+            TemplateSubString::Attribute("$.['ISO 3166']".to_string()), 
+            TemplateSubString::NormalString(" }}}".to_string()),
+        ];
+
+        let actual = split_template_string(test_str);
+
+        assert_eq!(expected, actual); 
+    }
 }
