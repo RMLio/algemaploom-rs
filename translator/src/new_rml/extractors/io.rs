@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
 
+use log::debug;
 use sophia_api::graph::CollectibleGraph;
 use sophia_inmem::graph::FastGraph;
 use sophia_turtle::parser::turtle;
@@ -71,6 +72,12 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
 
         let buf_read = BufReader::new(File::open(path.clone())?);
         let triples_maps = extract_triples_maps(&load_graph_bread(buf_read)?)?;
+        if triples_maps.is_empty() {
+            return Err(ParseError::GenericError(format!(
+                "No Triples maps exected for the input RML document: {:?}",
+                path
+            )).into());
+        }
 
         // TODO: Refactor extraction of base iri from RML file <02-08-24, SMO> //
         let mut buf_read = BufReader::new(File::open(path)?);
