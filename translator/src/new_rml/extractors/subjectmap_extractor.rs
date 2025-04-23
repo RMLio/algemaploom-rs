@@ -56,6 +56,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
         .ok()
         .into_iter()
         .flatten()
+        .filter(|gm| !gm.is_default_graph())
         .collect();
 
         Ok(SubjectMap {

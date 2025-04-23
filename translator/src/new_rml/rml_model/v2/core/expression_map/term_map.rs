@@ -1,8 +1,10 @@
 use std::collections::HashSet;
 
+use log::debug;
 use sophia_api::prelude::Iri;
 use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
 use sophia_term::RcTerm;
+use vocab::ToString;
 
 use super::{ExpressionMap, ExpressionMapTypeEnum};
 use crate::new_rml::extractors::error::ParseError;
@@ -192,6 +194,18 @@ pub struct ObjectMap {
 #[derive(Debug, Clone)]
 pub struct GraphMap {
     pub term_map: TermMap,
+}
+
+impl GraphMap {
+    pub fn is_default_graph(&self) -> bool {
+        
+        if let Some(value) = self.term_map.get_constant_value() {
+            debug!("Graph map's constant iri is {:?}", value); 
+            value == format!("<{}>", vocab::rml_core::CLASS::DEFAULT_GRAPH.to_string())
+        } else {
+            false
+        }
+    }
 }
 
 impl Default for GraphMap {

@@ -56,7 +56,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
 
             triples.extend(class_triples_iter);
 
-            let mut is_part_of_graph = false;
+            let mut is_part_of_graph = !tm.subject_map.graph_maps.is_empty();
             for pom in &tm.predicate_object_map_vec {
                 // TODO: Handles reference object maps too <15-04-25, Min Oo> //
 
@@ -102,10 +102,10 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
 fn add_graph_to_triple(
     store: &SearchStore,
     graph_pattern: &mut Vec<String>,
-    triples: &Vec<String>,
-    graph_map_vec: &Vec<GraphMap>,
+    triples: &[String],
+    graph_map_vec: &[GraphMap],
 ) {
-    for gm in graph_map_vec {
+    for gm in graph_map_vec.iter().filter(|gm| !gm.is_default_graph()) {
         let gm_part = gm.term_map.get_constant_value().unwrap_or_else(|| {
             store
                 .termm_id_quad_var_map
