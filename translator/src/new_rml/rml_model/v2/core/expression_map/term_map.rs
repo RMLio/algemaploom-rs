@@ -33,7 +33,10 @@ impl TermMap {
                         self.expression.get_value().cloned()
                     }
                     RMLTermTypeKind::Literal => {
-                        self.expression.get_value().cloned()
+                        self.expression
+                            .get_value()
+                            .cloned()
+                            .map(|e| format!("\"{}\"", e))
                     }
                     _ => None,
                 }
@@ -155,9 +158,9 @@ pub fn termkind_to_rml_rcterm(kind: TermKind) -> Result<RcTerm, ParseError> {
     }
 }
 
-impl Into<RMLTermTypeKind> for TermKind {
-    fn into(self) -> RMLTermTypeKind {
-        match self {
+impl From<TermKind> for RMLTermTypeKind {
+    fn from(val: TermKind) -> Self {
+        match val {
             TermKind::Iri => RMLTermTypeKind::IRI,
             TermKind::Literal => RMLTermTypeKind::Literal,
             TermKind::BlankNode => RMLTermTypeKind::BlankNode,

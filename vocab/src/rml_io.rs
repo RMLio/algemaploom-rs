@@ -24,6 +24,7 @@ pub mod PROPERTY {
 pub mod CLASS {
     use super::IRI;
     use crate::PAIR;
+    pub const STD_OUT: PAIR = (IRI, "StandardOutput"); 
     pub const CURRENT_WORKING_DIR: PAIR = (IRI, "CurrentWorkingDirectory");
     pub const MAPPING_DIR: PAIR = (IRI, "MappingDirectory");
 

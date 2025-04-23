@@ -22,7 +22,6 @@ pub struct Target {
     pub kind:        TargetKind,
 }
 
-
 #[derive(Clone)]
 pub struct TargetKind {
     pub type_iri: RcTerm,
@@ -48,7 +47,7 @@ impl Debug for TargetKind {
 impl Default for TargetKind {
     fn default() -> Self {
         Self {
-            type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
+            type_iri: vocab::rml_io::CLASS::STD_OUT.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }

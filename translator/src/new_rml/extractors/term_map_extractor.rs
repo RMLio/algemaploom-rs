@@ -1,3 +1,6 @@
+use std::fmt::Debug;
+
+use log::debug;
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
 use sophia_api::term::{BnodeId, FromTerm, Term, TermKind};
@@ -7,7 +10,7 @@ use sophia_term::RcTerm;
 
 use super::store::get_objects_with_ps;
 use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
-use crate::new_rml::extractors::store::get_object_with_ps;
+use crate::new_rml::extractors::store::{get_object, get_object_with_ps};
 use crate::new_rml::extractors::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     termkind_to_rml_rcterm, TermMap,
@@ -115,7 +118,7 @@ fn infer_term_type<TTerm>(
     graph_ref: &FastGraph,
 ) -> Result<RcTerm, ParseError>
 where
-    TTerm: Term,
+    TTerm: Term + Debug,
 {
     let triple =  graph_ref.triples_matching(Any,Any,  [subject_ref.borrow_term()])
         .flatten()
@@ -124,31 +127,40 @@ where
                 format!("Dangling term map which is not used anywhere in the mapping document {:?}", subject_ref)
                 ))?;
 
+    debug!("Inferring term type for term map {:?}", subject_ref);
     let rml_termmap_pred: RcTerm = RcTerm::from_term(triple.p());
 
     let rml_termmap_type: RMLTermMapType = rml_termmap_pred.try_into()?;
     match rml_termmap_type {
         RMLTermMapType::ObjectMap => {
+            debug!("{:?} is an object map", subject_ref);
+            debug!("Inferring term type for object map");
             let datatype_lang_opt = graph_ref
                 .triples_matching(
                     [subject_ref.borrow_term()],
                     [
-                        vocab::r2rml::PROPERTY::DATATYPE.to_rcterm(),
-                        vocab::r2rml::PROPERTY::LANGUAGE.to_rcterm(),
                         vocab::rml_core::PROPERTY::LANGUAGE.to_rcterm(),
                         vocab::rml_core::PROPERTY::LANGUAGE_MAP.to_rcterm(),
                         vocab::rml_core::PROPERTY::DATATYPE.to_rcterm(),
                         vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm(),
                         vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
-                        vocab::rml::PROPERTY::REFERENCE.to_rcterm(),
                     ],
                     Any,
                 )
                 .flatten()
                 .next();
 
+            let constant_value_opt = get_object(
+                graph_ref,
+                subject_ref.borrow_term(),
+                vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+            )
+            .ok();
+
             if datatype_lang_opt.is_some() {
                 Ok(vocab::rml_core::CLASS::LITERAL.to_rcterm())
+            } else if let Some(term) = constant_value_opt {
+                termkind_to_rml_rcterm(term.kind())
             } else {
                 Ok(vocab::rml_core::CLASS::IRI.to_rcterm())
             }
