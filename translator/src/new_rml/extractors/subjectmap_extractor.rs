@@ -4,6 +4,7 @@ use sophia_term::RcTerm;
 use super::error::ParseError;
 use super::store::get_objects;
 use super::TermMapExtractor;
+use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, SubjectMap, TermMap,
@@ -52,10 +53,8 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
         let graph_maps = GraphMap::extract_many_from_container(
             graph_ref,
             subj_ref.borrow_term(),
-        )
-        .ok()
+        )?
         .into_iter()
-        .flatten()
         .filter(|gm| !gm.is_default_graph())
         .collect();
 
@@ -139,7 +138,7 @@ mod tests {
             subj_map.term_map.expression.get_map_type_enum()?,
             ExpressionMapTypeEnum::Template
         );
-        assert!(subj_map.classes.len() == 0);
+        assert!(subj_map.classes.is_empty());
 
         Ok(())
     }

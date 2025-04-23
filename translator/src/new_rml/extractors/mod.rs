@@ -52,9 +52,9 @@ pub trait TermMapExtractor<T: Debug> {
         TTerm: Term + Clone,
     {
         if let TermKind::BlankNode = map_const.kind() {
-            return Err(ParseError::GenericError(format!(
-                "Constant-valued term map cannot be a BlankNode"
-            ))
+            return Err(ParseError::GenericError(
+                "Constant-valued term map cannot be a BlankNode".to_string(),
+            )
             .into());
         };
 
@@ -102,15 +102,7 @@ pub trait TermMapExtractor<T: Debug> {
 
         result.extend(constant_tms);
 
-        if result.is_empty() {
-            Err(ParseError::NoTermMapFoundError(format!(
-                "0 TermMap of type {:?} found for {:?}",
-                map_preds, container_map_subj_ref
-            ))
-            .into())
-        } else {
-            Ok(result)
-        }
+        Ok(result)
     }
 
     fn get_shortcut_preds() -> Vec<RcTerm>;

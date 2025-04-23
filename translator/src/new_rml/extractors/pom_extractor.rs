@@ -20,6 +20,14 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             graph_ref,
             subject_ref.borrow_term(),
         )?;
+
+        if predicate_map_vec.is_empty() {
+            return Err(ParseError::NoTermMapFoundError(format!(
+                "PredicateObject map {:?} contains 0 predicate maps",
+                subject_ref
+            )).into());
+        }
+
         let mut object_pred_vec = ObjectMap::get_shortcut_preds();
         object_pred_vec.append(&mut ObjectMap::get_map_preds());
 
@@ -31,7 +39,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             .collect();
 
         if object_terms.is_empty() {
-            return Err(ParseError::GenericError(format!(
+            return Err(ParseError::NoTermMapFoundError(format!(
                 "PredicateObject map {:?} contains 0 object maps",
                 subject_ref
             ))
