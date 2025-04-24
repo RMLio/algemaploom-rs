@@ -23,7 +23,6 @@ pub enum TemplateSubString {
 #[derive(Debug, Clone)]
 pub struct TriplesMap {
     pub identifier:               RcTerm,
-    pub base_iri:                 String,
     pub subject_map:              SubjectMap,
     pub ref_obj_attributes:       Vec<String>,
     pub predicate_object_map_vec: Vec<PredicateObjectMap>,

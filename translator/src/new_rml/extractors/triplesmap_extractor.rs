@@ -68,7 +68,6 @@ impl Extractor<TriplesMap> for TriplesMap {
             .collect();
 
         Ok(TriplesMap {
-            base_iri: "".to_string(),
             identifier: RcTerm::from_term(subject),
             abs_logical_source,
             ref_obj_attributes,
