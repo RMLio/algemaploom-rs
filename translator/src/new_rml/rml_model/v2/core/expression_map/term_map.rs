@@ -52,29 +52,7 @@ impl TermMap {
     }
 
     pub fn get_ref_attributes(&self) -> HashSet<String> {
-        let template_attr_vec: HashSet<_> = self
-            .get_template_string_split()
-            .into_iter()
-            .filter_map(|sstring| {
-                match sstring {
-                    TemplateSubString::Attribute(str) => Some(str),
-                    TemplateSubString::NormalString(_) => None,
-                }
-            })
-            .collect();
-
-        if !template_attr_vec.is_empty() {
-            return template_attr_vec;
-        }
-
-        if let ExpressionMapTypeEnum::Reference =
-            self.expression.get_map_type_enum().unwrap()
-        {
-            let val = self.expression.get_value().unwrap();
-            HashSet::from([val.to_string()])
-        } else {
-            HashSet::new()
-        }
+        self.expression.get_ref_attributes()
     }
 
     pub fn try_get_node(&self) -> Option<RcTerm> {
@@ -191,6 +169,21 @@ pub struct ObjectMap {
     pub datatype_map: Option<ExpressionMap>,
 }
 
+impl ObjectMap {
+    pub fn get_ref_attributes(&self) -> HashSet<String> {
+        let mut term_map_attributes = self.term_map.get_ref_attributes();
+        if let Some(dtype_map) = &self.datatype_map {
+            term_map_attributes.extend(dtype_map.get_ref_attributes());
+        }
+
+        if let Some(langtype_map) = &self.language_map {
+            term_map_attributes.extend(langtype_map.get_ref_attributes());
+        }
+
+        term_map_attributes
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct GraphMap {
     pub term_map: TermMap,
@@ -198,10 +191,13 @@ pub struct GraphMap {
 
 impl GraphMap {
     pub fn is_default_graph(&self) -> bool {
-        
         if let Some(value) = self.term_map.get_constant_value() {
-            debug!("Graph map's constant iri is {:?}", value); 
-            value == format!("<{}>", vocab::rml_core::CLASS::DEFAULT_GRAPH.to_string())
+            debug!("Graph map's constant iri is {:?}", value);
+            value
+                == format!(
+                    "<{}>",
+                    vocab::rml_core::CLASS::DEFAULT_GRAPH.to_string()
+                )
         } else {
             false
         }

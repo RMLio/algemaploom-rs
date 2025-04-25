@@ -57,7 +57,7 @@ impl TriplesMap {
                 .predicate_object_map_vec
                 .iter()
                 .flat_map(|pom| pom.object_map_vec.iter())
-                .flat_map(|om| om.term_map.get_ref_attributes());
+                .flat_map(|om| om.get_ref_attributes());
             let pom_gm_references = self
                 .predicate_object_map_vec
                 .iter()

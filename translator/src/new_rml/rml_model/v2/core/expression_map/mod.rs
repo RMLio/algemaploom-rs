@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use lazy_static::lazy_static;
 use regex::Regex;
 use sophia_api::term::{Term, TermKind};
@@ -33,7 +35,7 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
         }
     }
 
-    if !current_buf.is_empty(){
+    if !current_buf.is_empty() {
         result.push(TemplateSubString::NormalString(current_buf));
     }
     result
@@ -46,6 +48,31 @@ pub struct ExpressionMap {
 }
 
 impl ExpressionMap {
+    pub fn get_ref_attributes(&self) -> HashSet<String> {
+        let template_attr_vec: HashSet<_> = self
+            .get_template_string_split()
+            .into_iter()
+            .filter_map(|sstring| {
+                match sstring {
+                    TemplateSubString::Attribute(str) => Some(str),
+                    TemplateSubString::NormalString(_) => None,
+                }
+            })
+            .collect();
+
+        if !template_attr_vec.is_empty() {
+            return template_attr_vec;
+        }
+
+        if let ExpressionMapTypeEnum::Reference =
+            self.get_map_type_enum().unwrap()
+        {
+            let val = self.get_value().unwrap();
+            HashSet::from([val.to_string()])
+        } else {
+            HashSet::new()
+        }
+    }
     pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
         if let ExpressionMapTypeEnum::Template =
             self.get_map_type_enum().unwrap()
@@ -183,12 +210,12 @@ mod tests {
 
         let expected = vec![
             TemplateSubString::NormalString("{{{ ".to_string()),
-            TemplateSubString::Attribute("$.['ISO 3166']".to_string()), 
+            TemplateSubString::Attribute("$.['ISO 3166']".to_string()),
             TemplateSubString::NormalString(" }}}".to_string()),
         ];
 
         let actual = split_template_string(test_str);
 
-        assert_eq!(expected, actual); 
+        assert_eq!(expected, actual);
     }
 }

@@ -83,7 +83,9 @@ impl OperatorTranslator for ExtendOperatorTranslator {
                 let (var, func) =
                     extend_from_term_map(store, base_iri, &om.term_map)?;
 
-                let func = extend_lang_dtype_function_for_om(store, om, func)?;
+                let func = extend_lang_dtype_function_for_om(
+                    store, base_iri, om, func,
+                )?;
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
         }
@@ -103,6 +105,7 @@ fn insert_non_constant_func(
 
 fn extend_lang_dtype_function_for_om(
     store: &SearchStore<'_>,
+    base_iri: &str,
     om: &ObjectMap,
     func: Function,
 ) -> Result<Function, NewRMLTranslationError> {
@@ -121,8 +124,11 @@ fn extend_lang_dtype_function_for_om(
                     langtype_function,
                 }
             } else if let Some(dtype_map) = &om.datatype_map {
-                let dtype_function =
-                    Some(Rc::new(extend_from_exp_map(store, dtype_map)?));
+                let dtype_function = Some(Rc::new(Function::Iri {
+                    base_iri:       Some(base_iri.to_string()),
+                    inner_function: extend_from_exp_map(store, dtype_map)?
+                        .into(),
+                }));
                 Function::Literal {
                     inner_function: inner_function.clone(),
                     dtype_function,
