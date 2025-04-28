@@ -10,14 +10,16 @@ pub fn translate_rml_field(
     field: &RMLField,
     ref_form: ReferenceFormulation,
 ) -> NewRMLTranslationResult<OperatorField> {
+    log::debug!("Translating field: {:?}", field);
     match &field.kind {
         RMLFieldKind::Iterable(rmliterable) => {
             let value = &rmliterable.iterator;
             let ref_form: ReferenceFormulation = rmliterable
                 .reference_formulation
                 .clone()
-                .unwrap()
-                .try_into()?;
+                .and_then(|rmliter_ref_form| rmliter_ref_form.try_into().ok())
+                .unwrap_or_else(|| ref_form.clone());
+
             let inner_fields =
                 translate_rml_field_vec(&field.fields, ref_form.clone())?;
             Ok(OperatorField {
@@ -25,7 +27,7 @@ pub fn translate_rml_field(
                 constant: None,
                 iterator: value.clone(),
                 //FIXME: Remove this reference value assignment and update the engine to consider
-                //this change too! 
+                //this change too!
                 reference: value.clone(),
                 reference_formulation: ref_form,
                 inner_fields,
@@ -73,17 +75,13 @@ pub fn translate_rml_field_vec(
     fields: &[RMLField],
     ref_form: ReferenceFormulation,
 ) -> NewRMLTranslationResult<Vec<OperatorField>> {
-    if ref_form != ReferenceFormulation::CSVRows {
-        fields.iter().try_fold(
-            vec![],
-            |mut acc: Vec<OperatorField>,
-             f|
-             -> NewRMLTranslationResult<Vec<OperatorField>> {
-                acc.push(translate_rml_field(f, ref_form.clone())?);
-                Ok(acc)
-            },
-        )
-    } else {
-        Ok(vec![])
-    }
+    fields.iter().try_fold(
+        vec![],
+        |mut acc: Vec<OperatorField>,
+         f|
+         -> NewRMLTranslationResult<Vec<OperatorField>> {
+            acc.push(translate_rml_field(f, ref_form.clone())?);
+            Ok(acc)
+        },
+    )
 }

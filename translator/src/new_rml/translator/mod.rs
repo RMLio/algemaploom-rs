@@ -60,6 +60,7 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
             tm.transform_to_logical_view()?;
         }
 
+        log::debug!("{:#?}", model); 
         let search_store = SearchStore::from_document(&model)?;
 
        // for tm in model.triples_maps.iter() {
