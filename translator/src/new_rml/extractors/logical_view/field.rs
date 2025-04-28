@@ -25,6 +25,7 @@ impl Extractor<RMLField> for RMLField {
             vocab::rml_lv::PROPERTY::FIELD_NAME.to_rcterm(),
         )?)
         .unwrap();
+        log::debug!("RML field name: {}", name); 
 
         let reference_opt = get_object(
             graph_ref,
@@ -41,6 +42,7 @@ impl Extractor<RMLField> for RMLField {
         .ok();
 
         let kind = if let Some(reference) = reference_opt {
+            log::debug!("Reference RML field"); 
             RMLFieldKind::Expression(ExpressionMap {
                 map_type_pred_iri: vocab::rml_core::PROPERTY::REFERENCE
                     .to_rcterm(),
@@ -49,6 +51,7 @@ impl Extractor<RMLField> for RMLField {
                 ),
             })
         }else if let Some(constant) = constant_opt {
+            log::debug!("Constant RML field"); 
             RMLFieldKind::Expression(ExpressionMap {
                 map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT
                     .to_rcterm(),
@@ -58,6 +61,7 @@ impl Extractor<RMLField> for RMLField {
             })
 
         }else {
+            log::debug!("Extracting RMLIterable"); 
             let iterable = RMLIterable::extract_self(
                 subject_ref.borrow_term(),
                 graph_ref,
@@ -65,10 +69,11 @@ impl Extractor<RMLField> for RMLField {
             RMLFieldKind::Iterable(iterable)
         };
 
+        log::debug!("RML Field kind is: {:#?}", kind); 
         let fields = get_objects(
             graph_ref,
             subject_ref,
-            &vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
+            vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
         )
         .iter()
         .filter_map(|term| Self::extract_self(term, graph_ref).ok())

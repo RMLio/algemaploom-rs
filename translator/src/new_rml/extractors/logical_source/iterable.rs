@@ -21,23 +21,23 @@ impl Extractor<RMLIterable> for RMLIterable {
             &[iter_old_pred, iter_new_pred],
         )
         .ok()
-        .map(|lit| lit.lexical_form().map(|l| l.to_string()))
-        .flatten();
+        .and_then(|lit| lit.lexical_form().map(|l| l.to_string()));
 
         let refform_old_pred =
             &vocab::rml::PROPERTY::REFERENCEFORMULATION.to_rcterm();
         let refform_new_pred =
             &vocab::rml_core::PROPERTY::REFERENCE_FORMULATION.to_rcterm();
-        let reference_formulation_subj_term = get_object_with_ps(
+        let reference_formulation_subj_term_opt = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
             &[refform_old_pred, refform_new_pred],
-        )?;
-        let reference_formulation = ReferenceFormulation::extract_self(
-            &reference_formulation_subj_term,
-            graph_ref,
         )
         .ok();
+
+        let reference_formulation = reference_formulation_subj_term_opt
+            .and_then(|ref_form| {
+                ReferenceFormulation::extract_self(&ref_form, graph_ref).ok()
+            });
 
         Ok(RMLIterable {
             iterator,
