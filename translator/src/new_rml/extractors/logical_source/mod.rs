@@ -7,7 +7,10 @@ use sophia_inmem::graph::FastGraph;
 use super::store::get_object_with_ps;
 use super::{Extractor, RcTerm};
 use crate::new_rml::extractors::FromVocab;
-use crate::new_rml::rml_model::v2::io::source::{LogicalSource, Source, SourceKind};
+use crate::new_rml::rml_model::v2::core::RMLIterable;
+use crate::new_rml::rml_model::v2::io::source::{
+    LogicalSource, Source, SourceKind,
+};
 
 mod iterable;
 pub mod ref_form;
@@ -32,21 +35,25 @@ impl Extractor<LogicalSource> for LogicalSource {
             RcTerm::Literal(literal) => {
                 let mut metadata = FastGraph::new();
                 let subj_bnode = BnodeId::<&str>::new("default").unwrap();
-                metadata.insert(
-                    subj_bnode,
-                    vocab::rml_io::PROPERTY::ROOT.to_rcterm(),
-                    vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
-                ).unwrap();
+                metadata
+                    .insert(
+                        subj_bnode,
+                        vocab::rml_io::PROPERTY::ROOT.to_rcterm(),
+                        vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
+                    )
+                    .unwrap();
 
-                metadata.insert(
-                    subj_bnode,
-                    vocab::rml_io::PROPERTY::PATH.to_rcterm(),
-                    literal,
-                ).unwrap();
+                metadata
+                    .insert(
+                        subj_bnode,
+                        vocab::rml_io::PROPERTY::PATH.to_rcterm(),
+                        literal,
+                    )
+                    .unwrap();
 
                 Source {
                     kind:         SourceKind {
-                        subj_iri: RcTerm::from_term(subj_bnode), 
+                        subj_iri: RcTerm::from_term(subj_bnode),
                         type_iri: vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
                         metadata: Rc::new(metadata),
                     },
@@ -59,6 +66,10 @@ impl Extractor<LogicalSource> for LogicalSource {
         };
 
         Ok(LogicalSource {
+            iterable: RMLIterable::extract_self(
+                subject_ref.borrow_term(),
+                graph_ref,
+            )?,
             identifier: RcTerm::from_term(subject_ref),
             source,
         })

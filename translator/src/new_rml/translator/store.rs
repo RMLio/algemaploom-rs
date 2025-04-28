@@ -12,7 +12,9 @@ use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
-use crate::new_rml::rml_model::v2::core::{AbstractLogicalSource, TriplesMap};
+use crate::new_rml::rml_model::v2::core::{
+    AbstractLogicalSource, AbstractLogicalSourceEnum, TriplesMap,
+};
 use crate::new_rml::rml_model::Document;
 
 #[derive(Debug, Clone, Default)]
@@ -22,7 +24,7 @@ pub struct SearchStore<'a> {
     pub reference_attr_map:     HashMap<String, String>,
     pub termm_id_quad_var_map:  HashMap<RcTerm, String>,
     pub tm_id_join_map:         HashMap<RcTerm, HashSet<RcTerm>>,
-    pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSource>,
+    pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSourceEnum>,
     pub ls_id_sourced_plan_map: HashMap<RcTerm, RcRefCellPlan<Processed>>,
     pub sm_search_map:          HashMap<RcTerm, &'a SubjectMap>,
     pub pm_search_map:          HashMap<RcTerm, &'a PredicateMap>,
@@ -193,7 +195,7 @@ impl SearchStore<'_> {
 
 fn create_ls_id_sourced_plan_map(
     plan: &mut Plan<Init>,
-    abs_ls_search_map: &HashMap<RcTerm, &AbstractLogicalSource>,
+    abs_ls_search_map: &HashMap<RcTerm, &AbstractLogicalSourceEnum>,
 ) -> NewRMLTranslationResult<HashMap<RcTerm, RcRefCellPlan<Processed>>> {
     let mut ls_id_sourced_plan_map = HashMap::new();
     for abs_ls in abs_ls_search_map.values().copied() {

@@ -11,7 +11,7 @@ use crate::new_rml::extractors::store::get_objects;
 use crate::new_rml::extractors::{FromVocab, TermMapExtractor};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, JoinCondition, PredicateObjectMap, TriplesMap,
+    AbstractLogicalSource, AbstractLogicalSourceEnum, JoinCondition, PredicateObjectMap, TriplesMap
 };
 
 impl Extractor<TriplesMap> for TriplesMap {
@@ -33,7 +33,7 @@ impl Extractor<TriplesMap> for TriplesMap {
             &[ls_new_pred],
         )?;
         let abs_logical_source =
-            AbstractLogicalSource::extract_self(&logical_source_subj, graph)?;
+            AbstractLogicalSourceEnum::extract_self(&logical_source_subj, graph)?;
 
         let pom = vocab::rml_core::PROPERTY::PREDICATE_OBJECT_MAP.to_rcterm();
         let po_maps_res: ExtractorResult<Vec<_>> =

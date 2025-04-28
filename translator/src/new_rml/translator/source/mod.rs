@@ -14,7 +14,7 @@ use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::{
     stringify_rcterm, ExtractorResult, FromVocab,
 };
-use crate::new_rml::rml_model::v2::core::AbstractLogicalSource;
+use crate::new_rml::rml_model::v2::core::{AbstractLogicalSource, AbstractLogicalSourceEnum};
 use crate::new_rml::rml_model::v2::io::source::Source;
 use crate::new_rml::translator::source::kind::{
     kafka_source, rdb_source, tcp_source,
@@ -52,6 +52,7 @@ fn extract_source_specific_config(
     source: &Source,
 ) -> ExtractorResult<HashMap<String, String>> {
     let kind = &source.kind;
+    log::debug!("Generating source operator for source {:#?}", source); 
     match kind.type_iri.clone() {
         value if value == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
             Ok(kafka_source::extract_kafka_source(
@@ -94,7 +95,7 @@ fn extract_source_specific_config(
 }
 
 impl OperatorTranslator for AbstractLogicalSourceTranslator {
-    type Input = AbstractLogicalSource;
+    type Input = AbstractLogicalSourceEnum;
 
     type Output = operator::Source;
 
@@ -128,7 +129,7 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
 
         let source_kind_config = extract_source_specific_config(
             &abs_ls.get_identifier(),
-            abs_ls.get_source(),
+            &abs_ls.get_source(),
         )?;
 
         config.extend(source_kind_config);

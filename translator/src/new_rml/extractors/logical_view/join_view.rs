@@ -29,7 +29,7 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
         let parent_view_term = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_lv::PROPERTY::PARENT_LOGICAL_VIEW.to_rcterm(),
+            vocab::rml_lv::PROPERTY::PARENT_LOGICAL_VIEW.to_rcterm(),
         )?;
         let parent_view =
             Rc::new(LogicalView::extract_self(&parent_view_term, graph_ref)?);
@@ -37,7 +37,7 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
         let fields = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
+            vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
         )
         .iter()
         .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, NewRMLTranslationError> {

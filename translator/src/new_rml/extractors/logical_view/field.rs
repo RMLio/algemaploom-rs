@@ -22,14 +22,21 @@ impl Extractor<RMLField> for RMLField {
         let name = stringify_rcterm(get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_lv::PROPERTY::FIELD_NAME.to_rcterm(),
+            vocab::rml_lv::PROPERTY::FIELD_NAME.to_rcterm(),
         )?)
         .unwrap();
 
         let reference_opt = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+            vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+        )
+        .ok();
+
+        let constant_opt = get_object(
+            graph_ref,
+            subject_ref.borrow_term(),
+            vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
         )
         .ok();
 
@@ -41,7 +48,16 @@ impl Extractor<RMLField> for RMLField {
                     stringify_rcterm(reference).unwrap(),
                 ),
             })
-        } else {
+        }else if let Some(constant) = constant_opt {
+            RMLFieldKind::Expression(ExpressionMap {
+                map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT
+                    .to_rcterm(),
+                kind:              ExpressionMapKind::NonFunction(
+                    stringify_rcterm(constant).unwrap(),
+                ),
+            })
+
+        }else {
             let iterable = RMLIterable::extract_self(
                 subject_ref.borrow_term(),
                 graph_ref,

@@ -3,16 +3,39 @@ use std::rc::Rc;
 use sophia_term::RcTerm;
 
 use super::core::expression_map::ExpressionMap;
-use super::core::{JoinCondition, RMLIterable};
-use super::io::source::LogicalSource;
+use super::core::{AbstractLogicalSourceEnum, JoinCondition, RMLIterable};
+use super::io::source::{LogicalSource, Source};
 
 #[derive(Debug, Clone)]
 pub struct LogicalView {
     pub identifier:           RcTerm,
-    pub view_on:              LogicalSource,
+    pub view_on:              Box<AbstractLogicalSourceEnum>,
     pub fields:               Vec<RMLField>,
     pub struct_annotations:   Vec<StructuralAnnotation>,
     pub join_kind_view_pairs: Vec<(RcTerm, LogicalViewJoin)>,
+}
+
+impl LogicalView {
+    pub fn get_iterable(&self) -> RMLIterable {
+        match *self.clone().view_on {
+            AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
+                logical_source.iterable.clone()
+            }
+            AbstractLogicalSourceEnum::LogicalView(logical_view) => {
+                logical_view.get_iterable()
+            }
+        }
+    }
+    pub fn get_source(&self) -> Source {
+        match *self.clone().view_on {
+            AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
+                logical_source.source.clone()
+            }
+            AbstractLogicalSourceEnum::LogicalView(logical_view) => {
+                logical_view.get_source()
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

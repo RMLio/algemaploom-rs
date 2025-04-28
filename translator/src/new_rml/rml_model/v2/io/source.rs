@@ -11,6 +11,7 @@ use sophia_turtle::serializer::nt::NtSerializer;
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
+use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::translator::error::TranslationError;
 
 #[derive(Debug, Clone)]
@@ -163,6 +164,7 @@ impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
 
 #[derive(Debug, Clone)]
 pub struct LogicalSource {
+    pub iterable:   RMLIterable,
     pub identifier: RcTerm,
     pub source:     Source,
 }
@@ -177,7 +179,7 @@ pub struct Source {
 
 #[derive(Clone)]
 pub struct SourceKind {
-    pub subj_iri: RcTerm, 
+    pub subj_iri: RcTerm,
     pub type_iri: RcTerm,
     pub metadata: Rc<FastGraph>,
 }
@@ -230,7 +232,9 @@ impl Debug for SourceKind {
 impl Default for SourceKind {
     fn default() -> Self {
         Self {
-            subj_iri: RcTerm::from_term(BnodeId::new_unchecked_const("default_bnode")), 
+            subj_iri: RcTerm::from_term(BnodeId::new_unchecked_const(
+                "default_bnode",
+            )),
             type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }

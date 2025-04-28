@@ -187,10 +187,9 @@ fn translate_to_operator_fields(
         .map(|nested_iter| {
             operator::Field {
                 alias:                 nested_iter.ident.clone(),
-                reference:             nested_iter
-                    .query
-                    .clone()
-                    .expect("Nested iterator needs a query string"),
+                reference:             nested_iter.query.clone(),
+                constant:              None,
+                iterator:              None,
                 reference_formulation: ref_formulation.clone(),
                 inner_fields:          translate_to_operator_fields(
                     nested_iter,
@@ -212,7 +211,9 @@ fn translate_to_flat_fields(
         parcombi::FieldType::Push | parcombi::FieldType::Normal => {
             Some(operator::Field {
                 alias:                 shex_field.ident.clone(),
-                reference:             shex_field.query.clone(),
+                reference:             Some(shex_field.query.clone()),
+                constant:              None,
+                iterator:              None,
                 reference_formulation: ref_formulation.clone(),
                 inner_fields:          vec![],
             })

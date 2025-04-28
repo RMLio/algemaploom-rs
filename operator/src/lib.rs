@@ -92,7 +92,9 @@ where
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Field {
     pub alias:                 String,
-    pub reference:             String,
+    pub reference:             Option<String>,
+    pub constant:              Option<String>, 
+    pub iterator:              Option<String>, 
     pub reference_formulation: ReferenceFormulation,
     pub inner_fields:          Vec<Field>,
 }

@@ -10,6 +10,7 @@ use sophia_api::graph::MutableGraph;
 use sophia_api::prelude::Any;
 use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
+use vocab::ToString;
 
 use super::error::ParseError;
 use super::store::{get_objects, get_subgraph_subject};
@@ -93,8 +94,12 @@ where
     TS: Term,
 {
     let type_pred = vocab::rdf::PROPERTY::TYPE.to_rcterm();
+    let source_pred = vocab::rml_io::CLASS::SOURCE.to_rcterm();
     // FIXME: There can be multiple classes defined for a single source
-    let source_type = get_object(graph, subject.borrow_term(), &type_pred)?;
+    let source_type = get_objects(graph, subject.borrow_term(), &type_pred)
+        .into_iter()
+        .find(|obj_term| *obj_term != source_pred)
+        .unwrap();
 
     let source_type_iri = match source_type {
         RcTerm::Iri(iri) => Ok(iri),
@@ -126,7 +131,7 @@ where
     );
 
     Ok(SourceKind {
-        subj_iri: RcTerm::from_term(subject), 
+        subj_iri: RcTerm::from_term(subject),
         type_iri: source_type_iri.into(),
         metadata: metadata.into(),
     })

@@ -3,7 +3,7 @@ use operator::{formats, Iterator};
 use super::fields::translate_rml_field_vec;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractSourceEnum,
+    AbstractLogicalSource, AbstractLogicalSourceEnum,
 };
 use crate::new_rml::translator::error::TranslationError;
 use crate::new_rml::translator::OperatorTranslator;
@@ -12,24 +12,24 @@ use crate::new_rml::translator::OperatorTranslator;
 pub struct IteratorTranslator {}
 
 impl OperatorTranslator for IteratorTranslator {
-    type Input = AbstractLogicalSource;
+    type Input = AbstractLogicalSourceEnum;
 
     type Output = Iterator;
 
     fn translate(
         abs_ls: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
-        let logical_view = match &abs_ls.abs_source_enum {
-            AbstractSourceEnum::IOLogicalSource(_) => {
+        let logical_view = match &abs_ls{
+            AbstractLogicalSourceEnum::LogicalSource(_) => {
                 Err(TranslationError::SourceError(
                         "RML 2's IO Logical source is unsupported for translation for iterators in source operator".to_string()
                         )
                     )
             },
-            AbstractSourceEnum::LogicalView(logical_view) => Ok(logical_view),
+            AbstractLogicalSourceEnum::LogicalView(logical_view) => Ok(logical_view),
         }?;
 
-        let rml_iterable = &abs_ls.iterable;
+        let rml_iterable = &abs_ls.get_iterable();
         let mut reference_formulation = formats::ReferenceFormulation::CSVRows;
 
         if let Some(ref_form) = &rml_iterable.reference_formulation {

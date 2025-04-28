@@ -1,10 +1,9 @@
-
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Iterator, Source};
+
 use crate::rml::parser::extractors::FromVocab;
 use crate::rml::parser::rml_model::source_target::SourceType;
 use crate::rml::parser::rml_model::TriplesMap;
-
 use crate::rml::util::extract_references_in_tm;
 use crate::OperatorTranslator;
 #[derive(Debug, Clone)]
@@ -37,7 +36,9 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             fields.extend(references.into_iter().map(|reference| {
                 Field {
                     alias:                 reference.clone(),
-                    reference:             reference.clone(),
+                    constant:              None,
+                    iterator:              None,
+                    reference:             Some(reference.clone()),
                     reference_formulation: reference_formulation.clone(),
                     inner_fields:          vec![],
                 }
