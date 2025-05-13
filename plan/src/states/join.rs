@@ -111,6 +111,7 @@ impl AliasedJoinedPlan<Processed> {
     fn add_join_op_to_plan(&mut self, join_op: Operator) -> Plan<Processed> {
         let fragment_str = &self.alias;
         let node_idx;
+        // Curly braces here are required for the block to drop the borrowed left_plan
         {
             let left_plan = self.left_plan.borrow_mut();
             let mut graph = left_plan.graph.borrow_mut();
@@ -131,11 +132,13 @@ impl AliasedJoinedPlan<Processed> {
             graph.add_edge(left_node, node_idx, left_edge);
         }
 
+        // Curly braces here are required for the block to drop the borrowed left_plan
         {
             let left_plan = self.left_plan.borrow_mut();
             let graph = &mut left_plan.graph.borrow_mut();
 
             if let Ok(plan) = self.right_plan.try_borrow_mut() {
+                // right_plan is not the same as the left_plan so it can be borrwed 
                 let right_node = plan.last_node_idx.unwrap();
                 let right_edge = PlanEdge {
                     fragment:  fragment_str.to_string(),
@@ -159,6 +162,9 @@ impl AliasedJoinedPlan<Processed> {
         let left_plan = self.left_plan.borrow_mut();
         left_plan.next_idx(Some(node_idx))
     }
+
+
+
     pub fn where_by<A>(
         &mut self,
         attributes: Vec<A>,

@@ -1,3 +1,12 @@
+//!
+//! Provides different functionalities to create an execution plan consisting
+//! of operators from the mapping algebra.
+//!
+//! The execution plan is represented as a *graph* in order to be flexible and
+//! support future expansions where the formal semantics cannot be captured as
+//! an execution *tree*.
+//!
+//!
 use std::cell::RefCell;
 use std::fs::File;
 use std::io::{BufWriter, Read, Write};
@@ -21,13 +30,24 @@ pub mod data_type;
 pub mod error;
 pub mod states;
 
+/// Represents a plan in state [T](states) with functions to transition state
+/// changes.
 #[derive(Debug, Clone)]
 pub struct Plan<T> {
-    _t:                    PhantomData<T>,
-    pub graph:             RcRefCellDiGraph,
+    _t:        PhantomData<T>,
+    /// Underlying graph data structure from [petgraph](petgraph::graph::DiGraph).
+    pub graph: RcRefCellDiGraph,
+
+    /// Node indexes of the source operators in the graph.
     pub sources:           RcRefCellVSourceIdxs,
+
+    /// Index of the previous node on which the plan is being built upon.
     pub last_node_idx:     Option<NodeIndex>,
+
+    /// Index of the previous **fragment** node on which the plan is being built upon.
     pub fragment_node_idx: Option<NodeIndex>,
+
+    /// String label of the current fragment on which the plan is being built upon.
     pub fragment_string:   Rc<String>,
 }
 
@@ -38,6 +58,7 @@ impl<T> From<Plan<T>> for RcRefCellPlan<T> {
 }
 
 impl Plan<()> {
+    /// Creates a new empty mapping plan
     pub fn new() -> Plan<Init> {
         Plan {
             _t:                PhantomData,
@@ -141,17 +162,23 @@ impl<T> Plan<T> {
         node_idx
     }
 
+    /// Update last_node_idx with given node's index to ensure that next 
+    /// operator addition on the plan continues from the given node.
     pub fn next_idx<O>(&self, idx: Option<NodeIndex>) -> Plan<O> {
         Plan {
             _t:                PhantomData,
             graph:             Rc::clone(&self.graph),
             sources:           Rc::clone(&self.sources),
             fragment_string:   Rc::clone(&self.fragment_string),
-            fragment_node_idx: self.fragment_node_idx.clone(),
+            fragment_node_idx: self.fragment_node_idx,
             last_node_idx:     idx,
         }
     }
 
+    /// Update last_node_idx with given node's index and update the fragment 
+    /// string of the plan to ensure that next 
+    /// operator addition on the plan continues from the given node, and that it 
+    /// is a part of the updated fragment.
     pub fn next_idx_fragment<O>(
         &self,
         idx: Option<NodeIndex>,
@@ -162,11 +189,13 @@ impl<T> Plan<T> {
             graph:             Rc::clone(&self.graph),
             sources:           Rc::clone(&self.sources),
             fragment_string:   Rc::new(fragment_string.to_string()),
-            fragment_node_idx: self.fragment_node_idx.clone(),
+            fragment_node_idx: self.fragment_node_idx,
             last_node_idx:     idx,
         }
     }
 
+    /// Serializes the plan with the given [dot](Dot) formatter, `fmt`, to a file 
+    /// at the given `path`.
     pub fn write_fmt(
         &mut self,
         path: PathBuf,
@@ -178,20 +207,35 @@ impl<T> Plan<T> {
         Ok(())
     }
 
+
+    /// Serializes the plan using the [Display](std::fmt::Display) trait which 
+    /// makes the serialized plan more readable and less verbose. 
     pub fn write_pretty(&mut self, path: PathBuf) -> Result<()> {
         self.write_fmt(path, &|dot| format!("{}", dot))?;
         Ok(())
     }
 
+    /// Serializes the plan using the [Debug](std::fmt::Debug) trait which 
+    /// makes the serialized plan more verbose for debugging purpose. 
     pub fn write(&mut self, path: PathBuf) -> Result<()> {
         self.write_fmt(path, &|dot| format!("{:?}", dot))?;
         Ok(())
     }
 
+    /// Serializes the plan in JSON format to a file at the given `path`. 
+    /// Delegates the actual serialization to [Plan::to_json_string()].  
     pub fn write_json(&self, path: PathBuf) -> Result<()> {
         write_string_to_file(path, self.to_json_string()?)
     }
 
+    /// Parses the mapping plan from a file at the given `path`. 
+    /// 
+    /// # Required 
+    /// The serialized plan has to be in **JSON** format parsable with [serde_json]. 
+    ///
+    /// # Error 
+    /// Returns error if there is an IO error or the given input file cannot be 
+    /// parsed with [serde_json]. 
     pub fn from_file_path(path: PathBuf) -> Result<Plan<Init>> {
         let mut file = File::open(path)?;
         let mut buf = String::new();
@@ -204,6 +248,7 @@ impl<T> Plan<T> {
         Ok(plan)
     }
 
+    #[deprecated(note="please use `to_json_string` method instead")]
     pub fn to_string(&self) -> Result<String> {
         let graph = &*self.graph.borrow();
         let json_string = serde_json::to_string(&graph).unwrap();
@@ -211,6 +256,10 @@ impl<T> Plan<T> {
         Ok(json_string)
     }
 
+    /// Serializes the plan to a [String] in **JSON** format with [serde_json].
+    ///
+    /// # Error 
+    /// Returns an error if [serde_json] fails to serialize the plan.
     pub fn to_json_string(&self) -> Result<String> {
         let graph = &*self.graph.borrow();
         let json_str = serde_json::to_string(&graph)?;
