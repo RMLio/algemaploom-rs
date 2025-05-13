@@ -60,4 +60,4 @@ crate-type = ["cdylib", "rlib"]
 
 [[bin]]
 name = "translator"
-path = "src/bin/translator/main.rs"
+path = "src/bin/translator-bin/main.rs"
