@@ -1,3 +1,7 @@
+//! 
+//! Contains functionalities to deal with IO operations for parsing/translating 
+//! [RML v1.1.2 document](https://rml.io/specs/rml/)
+//!
 use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
@@ -17,6 +21,11 @@ fn extract_base_iri(input: &str) -> Option<String> {
         .map(|e| e[0..e.len() - 1].replace(['<', '>'], "").trim().to_string())
 }
 
+
+/// Parse the input buffer to [sophia's in-memory graph](FastGraph)
+///
+/// # Error
+/// Returns an error if something goes worng with [sophia's turtle parsing](turtle::parse_bufread)
 pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
     match turtle::parse_bufread(buf_read).collect_triples() {
         Ok(it) => Ok(it),
@@ -30,6 +39,11 @@ pub fn load_graph_bread(buf_read: impl BufRead) -> ExtractorResult<FastGraph> {
     }
 }
 
+
+/// Parse the input string to [sophia's in-memory graph](FastGraph)
+///
+/// # Error
+/// Returns an error if something goes worng with [sophia's turtle parsing](turtle::parse_bufread)
 pub fn load_graph_str(input_str: &str) -> ExtractorResult<FastGraph> {
     match turtle::parse_str(input_str).collect_triples() {
         Ok(it) => Ok(it),
@@ -41,13 +55,6 @@ pub fn load_graph_str(input_str: &str) -> ExtractorResult<FastGraph> {
             .into())
         }
     }
-}
-
-pub fn parse_str(input_str: &str) -> ExtractorResult<Document> {
-    let graph = load_graph_str(input_str)?;
-    let triples_maps = extract_triples_maps(&graph)?;
-    let base_iri = input_str.split('\n').filter_map(extract_base_iri).next();
-    try_create_document(triples_maps, base_iri)
 }
 
 fn try_create_document(
@@ -67,6 +74,28 @@ fn try_create_document(
     })
 }
 
+
+/// Parses the input str representation of an RML document into the 
+/// data model [Document].
+///
+/// # Errors
+///
+/// Returns an error if something goes wrong while parsing into the data model.
+pub fn parse_str(input_str: &str) -> ExtractorResult<Document> {
+    let graph = load_graph_str(input_str)?;
+    let triples_maps = extract_triples_maps(&graph)?;
+    let base_iri = input_str.split('\n').filter_map(extract_base_iri).next();
+    try_create_document(triples_maps, base_iri)
+}
+
+/// Parses the given file of an RML document into the 
+/// data model [Document].
+///
+/// # Errors
+///
+/// Returns an error for the following cases: 
+/// 1) Data model parsing error
+/// 2) File extension is not ".ttl"
 pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
     if let Some(ext) = path.extension() {
         if ext != "ttl" {
