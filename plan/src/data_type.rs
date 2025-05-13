@@ -1,3 +1,8 @@
+//!
+//! Contains definitions of the data structs to represent a mapping plan
+//! consisting of [PlanNode] connected to each other with [PlanEdge] with
+//! a specific [EdgeDirection].  
+//!
 use std::cell::RefCell;
 use std::fmt::{Debug, Display};
 use std::rc::Rc;
@@ -11,23 +16,35 @@ use serde_json::json;
 
 use crate::Plan;
 
+/// Type alias for [DiGraph]<[PlanNode], [PlanEdge]>
 pub type DiGraphOperators = DiGraph<PlanNode, PlanEdge>;
+
+/// Type alias for [Rc]<[RefCell]<[DiGraphOperators]>>
 pub type RcRefCellDiGraph = Rc<RefCell<DiGraphOperators>>;
 
 type VSourceIdxs = Vec<NodeIndex>;
+
+// TODO: Come up with a documentation for this type alias <13-05-25, Min Oo> //
+#[doc(hidden)]
 pub type RcRefCellVSourceIdxs = Rc<RefCell<VSourceIdxs>>;
 
+/// Type alias for [Rc]<[RefCell]<[Plan<T>]>>
 pub type RcRefCellPlan<T> = Rc<RefCell<Plan<T>>>;
 
-pub const DEFAULT_FRAGMENT: &'static str = "default";
-// Plan states in unit structs
+/// Default [str] to be used as a label for default fragment.
+pub const DEFAULT_FRAGMENT: &str = "default";
 
+
+/// Edge of the mapping plan labelled with a fragment string and the direction 
+/// in which it is connecting the nodes. 
 #[derive(Clone, Serialize, Deserialize, PartialEq)]
 pub struct PlanEdge {
     pub fragment:  String,
     pub direction: EdgeDirection,
 }
 
+/// Enums for the direction of the edges connecting the nodes in the mapping plan. 
+/// Useful for handling join operators. 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum EdgeDirection {
     Left,
@@ -56,9 +73,13 @@ impl Debug for PlanEdge {
     }
 }
 
+/// Node of the mapping plan used to represent a mapping algebra [operator](Operator). 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct PlanNode {
+    /// String label identifier of the underlying mapping operator. 
     pub id:       String,
+
+    /// Algebraic mapping [operator](Operator). 
     pub operator: Operator,
 }
 
