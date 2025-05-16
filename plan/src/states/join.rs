@@ -10,6 +10,17 @@ use crate::error::PlanError;
 use crate::states::Processed;
 use crate::Plan;
 
+
+/// Joins the given two mutable plans and transitions to the state [NotAliasedJoinedPlan].
+///
+/// # Note 
+/// **Only the left_plan** will be mutated and updated such that the next call 
+/// to [Plan::apply] will use the inserted join operator as the parent node.
+///
+/// # Errors
+///
+/// // TODO: Change this function's return to not use Results
+/// Will never return an error
 pub fn join(
     left_plan: RcRefCellPlan<Processed>,
     right_plan: RcRefCellPlan<Processed>,
@@ -19,6 +30,9 @@ pub fn join(
         right_plan: Rc::clone(&right_plan),
     })
 }
+
+
+
 
 fn add_join_fragmenter(
     plan: &mut Plan<Processed>,

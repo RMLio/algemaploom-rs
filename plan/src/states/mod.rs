@@ -19,8 +19,11 @@
 //!  4) [Sunk]
 //!
 pub mod join;
+#[doc(hidden)]
 pub mod processed;
+#[doc(hidden)]
 pub mod serialized;
+#[doc(hidden)]
 pub mod start;
 
 #[derive(Debug, Clone)]

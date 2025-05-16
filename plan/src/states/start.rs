@@ -5,6 +5,11 @@ use crate::states::{Init, Processed};
 use crate::Plan;
 
 impl Plan<Init> {
+    /// Starts the plan building by inserting the given [Source] operator 
+    /// as a starting point to further build the mapping plan.
+    ///
+    /// **Note:** This **DOES NOT** clear the underlying graph data structure of all existing
+    /// nodes/edges. It just picks the next starting operator (`source`) to further build the complete mapping plan.
     pub fn source(&mut self, source: Source) -> Plan<Processed> {
         let graph = &mut *self.graph.borrow_mut();
         let source_op = Operator::SourceOp {

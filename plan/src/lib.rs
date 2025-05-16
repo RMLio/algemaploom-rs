@@ -32,6 +32,9 @@ pub mod states;
 
 /// Represents a plan in state [T](states) with functions to transition state
 /// changes.
+///
+/// The field `graph` is repeatedly modified to build up the mapping plan with 
+/// the addition of mapping algebra operators.
 #[derive(Debug, Clone)]
 pub struct Plan<T> {
     _t:        PhantomData<T>,
