@@ -315,7 +315,7 @@ fn add_join_related_ops(
                     is_parent: false,
                 }
                 .translate();
-                aliased_plan = aliased_plan.apply_left_fragment(
+                aliased_plan = aliased_plan.apply_to_left_fragment(
                     left_projection,
                     Cow::Borrowed("LeftProjection"),
                     Cow::Borrowed(&ptm_alias),
@@ -328,7 +328,7 @@ fn add_join_related_ops(
                 }
                 .translate();
 
-                aliased_plan = aliased_plan.apply_right_fragment(
+                aliased_plan = aliased_plan.apply_to_right_fragment(
                     right_projection,
                     Cow::Borrowed("RightProjection"),
                     Cow::Borrowed(&ptm_alias),

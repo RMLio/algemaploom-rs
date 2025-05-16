@@ -10,30 +10,27 @@ use crate::error::PlanError;
 use crate::states::Processed;
 use crate::Plan;
 
-
 /// Joins the given two mutable plans and transitions to the state [NotAliasedJoinedPlan].
 ///
-/// # Note 
-/// **Only the left_plan** will be mutated and updated such that the next call 
+/// # Note
+/// **Only the left_plan** will be mutated and updated such that the next call
 /// to [Plan::apply] will use the inserted join operator as the parent node.
 ///
 /// # Errors
 ///
-/// // TODO: Change this function's return to not use Results
 /// Will never return an error
 pub fn join(
     left_plan: RcRefCellPlan<Processed>,
     right_plan: RcRefCellPlan<Processed>,
 ) -> Result<NotAliasedJoinedPlan<Processed>, PlanError> {
+    // TODO: Change this function's return to not use Results
     Ok(NotAliasedJoinedPlan {
         left_plan:  Rc::clone(&left_plan),
         right_plan: Rc::clone(&right_plan),
     })
 }
 
-
-
-
+//TODO: Remove [Result] usage since it will never return an error
 fn add_join_fragmenter(
     plan: &mut Plan<Processed>,
     alias: &str,
@@ -57,10 +54,21 @@ pub struct NotAliasedJoinedPlan<T> {
     right_plan: RcRefCellPlan<T>,
 }
 impl NotAliasedJoinedPlan<Processed> {
+
+    
+
+    /// Try to add a fragment operator to both left and right plan 
+    /// that has a label with the given alias. 
+    /// 
+    ///
+    /// The addition of the aliasing fragment label ensures that if there is no
+    /// clash/overlap in the attributes in the mapping tuples from the two plans.
+    ///
     pub fn alias(
         &mut self,
         alias: &str,
     ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
+        //TODO: Remove [Result] usage since it will never return an error
         {
             let right_plan = &mut *self.right_plan.borrow_mut();
             *right_plan = add_join_fragmenter(right_plan, alias)?;
@@ -86,7 +94,14 @@ pub struct AliasedJoinedPlan<T> {
 }
 
 impl AliasedJoinedPlan<Processed> {
-    pub fn apply_right_fragment(
+    
+    /// Apply the given operator to **right plan** for the given fragment.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying [Plan::apply_to_fragment] method call
+    /// fail.
+    pub fn apply_to_right_fragment(
         self,
         operator: Operator,
         op_name: Cow<str>,
@@ -104,7 +119,13 @@ impl AliasedJoinedPlan<Processed> {
         })
     }
 
-    pub fn apply_left_fragment(
+    /// Apply the given operator to **left plan** for the given fragment.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying [Plan::apply_to_fragment] method call
+    /// fail.
+    pub fn apply_to_left_fragment(
         self,
         operator: Operator,
         op_name: Cow<str>,
@@ -152,7 +173,7 @@ impl AliasedJoinedPlan<Processed> {
             let graph = &mut left_plan.graph.borrow_mut();
 
             if let Ok(plan) = self.right_plan.try_borrow_mut() {
-                // right_plan is not the same as the left_plan so it can be borrwed 
+                // right_plan is not the same as the left_plan so it can be borrwed
                 let right_node = plan.last_node_idx.unwrap();
                 let right_edge = PlanEdge {
                     fragment:  fragment_str.to_string(),
@@ -177,8 +198,10 @@ impl AliasedJoinedPlan<Processed> {
         left_plan.next_idx(Some(node_idx))
     }
 
-
-
+    
+    /// Add the attributes from the **left plan** which will be used to check during
+    /// the join operation.
+    ///
     pub fn where_by<A>(
         &mut self,
         attributes: Vec<A>,
@@ -186,6 +209,7 @@ impl AliasedJoinedPlan<Processed> {
     where
         A: Into<String>,
     {
+        // TODO:  Remove the usage of Result since this never returns an error<16-05-25, Min Oo> //
         let left_attributes: Vec<String> =
             attributes.into_iter().map(|a| a.into()).collect();
         Ok(WhereByPlan {
@@ -194,7 +218,9 @@ impl AliasedJoinedPlan<Processed> {
         })
     }
 
+    /// Returns the cross join of this [`AliasedJoinedPlan<Processed>`].
     pub fn cross_join(&mut self) -> Result<Plan<Processed>, PlanError> {
+        // TODO:  Remove the usage of Result since this never returns an error<16-05-25, Min Oo> //
         let join_alias = &self.alias;
 
         let join_op = Operator::JoinOp {
@@ -209,7 +235,10 @@ impl AliasedJoinedPlan<Processed> {
         Ok(self.add_join_op_to_plan(join_op))
     }
 
+    /// Returns the natural join of this [`AliasedJoinedPlan<Processed>`].
+    ///
     pub fn natural_join(&mut self) -> Result<Plan<Processed>, PlanError> {
+        // TODO:  Remove the usage of Result since this never returns an error<16-05-25, Min Oo> //
         let join_op = Operator::JoinOp {
             config: Join {
                 left_right_attr_pairs: vec![],
@@ -230,6 +259,10 @@ pub struct WhereByPlan<T> {
 }
 
 impl WhereByPlan<Processed> {
+    
+    /// Add the attributes from the **right plan** which will be used to check during
+    /// the join operation and apply an equi-join operator to the plan at the end.
+    ///
     pub fn compared_to<A>(
         &mut self,
         attributes: Vec<A>,
@@ -237,6 +270,7 @@ impl WhereByPlan<Processed> {
     where
         A: Into<String>,
     {
+        // TODO:  Remove the usage of Result since this never returns an error<16-05-25, Min Oo> //
         let joined_plan = &mut self.joined_plan;
         let left_attributes = self.left_attributes.to_owned();
         let right_attributes: Vec<String> =
