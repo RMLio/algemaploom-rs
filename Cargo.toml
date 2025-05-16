@@ -40,7 +40,7 @@ thiserror.workspace = true
 clap.workspace = true
 
 operator = {path = "./operator/"}
-plangenerator = {path = "./plan/"}
+plan = {path = "./plan/"}
 translator = {path = "./translator/"}
 
 csv = "1.2.2"

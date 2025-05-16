@@ -17,7 +17,7 @@ chumsky = "0.9.3"
 
 vocab = { path = "../vocab/" }
 operator = { path = "../operator/" }
-plangenerator = { path = "../plan/" }
+plan = { path = "../plan/" }
 
 
 either.workspace = true
