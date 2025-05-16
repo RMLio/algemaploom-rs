@@ -3,8 +3,8 @@ use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
 use operator::Target;
-use plangenerator::states::Processed;
-use plangenerator::Plan;
+use plan::states::Processed;
+use plan::Plan;
 use crate::rml::parser::rml_model::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };

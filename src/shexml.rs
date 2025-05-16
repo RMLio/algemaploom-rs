@@ -1,6 +1,6 @@
-use plangenerator::error::PlanError;
-use plangenerator::states::Init;
-use plangenerator::Plan;
+use plan::error::PlanError;
+use plan::states::Init;
+use plan::Plan;
 use translator::error::TranslationError;
 use translator::shexml::error::ShExMLTranslationError;
 use translator::shexml::{parcombi, ShExMLTranslator};

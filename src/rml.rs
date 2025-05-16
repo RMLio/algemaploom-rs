@@ -1,6 +1,6 @@
 use log::{error, info, warn};
-use plangenerator::states::Init;
-use plangenerator::Plan;
+use plan::states::Init;
+use plan::Plan;
 use translator::error::TranslationError;
 use translator::new_rml::translator::NewRMLDocumentTranslator;
 use translator::rml::parser::extractors::io::{

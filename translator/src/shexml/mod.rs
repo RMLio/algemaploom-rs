@@ -9,10 +9,10 @@ use parcombi::{
     IndexedShExMLDocument, Object, PrefixNameSpace, ShExMLDocument,
     ShapeExpression, ShapeIdent, Subject,
 };
-use plangenerator::data_type::RcRefCellPlan;
-use plangenerator::error::PlanError;
-use plangenerator::states::{Processed, Serialized, Sunk};
-use plangenerator::Plan;
+use plan::data_type::RcRefCellPlan;
+use plan::error::PlanError;
+use plan::states::{Processed, Serialized, Sunk};
+use plan::Plan;
 
 use self::util::IndexVariableTerm;
 use crate::shexml::operators::source::ShExMLSourceTranslator;

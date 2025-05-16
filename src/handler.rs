@@ -1,9 +1,9 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-use plangenerator::error::PlanError;
-use plangenerator::states::Init;
-use plangenerator::Plan;
+use plan::error::PlanError;
+use plan::states::Init;
+use plan::Plan;
 use translator::error::{TranslationError, TranslationErrorKind};
 
 pub trait FileTranslatorHandler: Debug {

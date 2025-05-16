@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use plangenerator::error::PlanError;
+use plan::error::PlanError;
 
 #[derive(Debug)]
 pub enum TranslationError {

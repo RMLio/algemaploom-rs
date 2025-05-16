@@ -17,11 +17,11 @@ use operators::source::SourceOpTranslator;
 use parser::extractors::{rcterm_to_string, TermMapExtractor};
 use parser::rml_model::term_map::SubjectMap;
 use parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
-use plangenerator::data_type::RcRefCellPlan;
-use plangenerator::error::PlanError;
-use plangenerator::states::join::join;
-use plangenerator::states::Processed;
-use plangenerator::Plan;
+use plan::data_type::RcRefCellPlan;
+use plan::error::PlanError;
+use plan::states::join::join;
+use plan::states::Processed;
+use plan::Plan;
 use util::extract_tm_infos_from_sm_poms;
 
 use self::operators::extend::*;

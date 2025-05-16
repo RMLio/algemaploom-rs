@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use log::debug;
 use ltranslator::api::{process_one_file, process_one_str};
 use ltranslator::logger::init_logger;
-use plangenerator::error::PlanError;
+use plan::error::PlanError;
 use walkdir::WalkDir;
 
 pub fn main() -> Result<(), PlanError> {

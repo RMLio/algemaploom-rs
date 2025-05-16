@@ -12,8 +12,8 @@ use extend::ExtendOperatorTranslator;
 use join::JoinTranslator;
 use log::debug;
 use operator::Target;
-use plangenerator::states::Processed;
-use plangenerator::Plan;
+use plan::states::Processed;
+use plan::Plan;
 use serializer::SerializerOperatorTranslator;
 use store::SearchStore;
 

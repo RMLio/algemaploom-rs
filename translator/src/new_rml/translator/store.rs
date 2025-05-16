@@ -1,8 +1,8 @@
 use std::collections::{HashMap, HashSet};
 
-use plangenerator::data_type::RcRefCellPlan;
-use plangenerator::states::{Init, Processed};
-use plangenerator::Plan;
+use plan::data_type::RcRefCellPlan;
+use plan::states::{Init, Processed};
+use plan::Plan;
 use sophia_term::RcTerm;
 use uuid::Uuid;
 

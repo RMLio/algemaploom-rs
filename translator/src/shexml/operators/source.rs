@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use log::{debug, trace};
 use operator::formats::ReferenceFormulation;
 use operator::{IOType, Source};
-use plangenerator::error::PlanError;
+use plan::error::PlanError;
 
 use crate::shexml::error::ShExMLTranslationError;
 use crate::shexml::parcombi::{

@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use plangenerator::error::PlanError;
+use plan::error::PlanError;
 
 use super::parcombi::errors::ParseCombiError;
 

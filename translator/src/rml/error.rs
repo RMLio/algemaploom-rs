@@ -1,7 +1,7 @@
 use std::error::Error;
 use std::fmt::Display;
 
-use plangenerator::error::PlanError;
+use plan::error::PlanError;
 
 use super::parser::extractors::error::ParseError;
 

@@ -1,7 +1,7 @@
 use std::marker::PhantomData;
 
 use operator::Join;
-use plangenerator::states::join::join;
+use plan::states::join::join;
 
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;

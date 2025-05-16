@@ -1,6 +1,6 @@
 use error::TranslationError;
-use plangenerator::states::Init;
-use plangenerator::Plan;
+use plan::states::Init;
+use plan::Plan;
 
 pub mod rml;
 pub mod new_rml;

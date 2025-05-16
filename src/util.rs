@@ -2,9 +2,9 @@ use std::error::Error;
 
 use colored::Colorize;
 use log::{error, info};
-use plangenerator::error::PlanError;
-use plangenerator::states::Init;
-use plangenerator::Plan;
+use plan::error::PlanError;
+use plan::states::Init;
+use plan::Plan;
 
 pub fn pretty_print_err(err: &dyn Error) {
     error!("Error: {:#}", err);
