@@ -89,6 +89,7 @@ where
     }
 }
 
+// TODO: Turn Field and Iterator into an Enum since a field itself can be an iterator! 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Field {
     pub alias:                 String,
@@ -118,7 +119,7 @@ impl Hash for Iterator {
 pub struct Source {
     #[serde(flatten)]
     pub config:      HashMap<String, String>,
-    pub source_type: IOType,
+    pub source_type:    IOType,
     pub root_iterator:    Iterator,
 }
 
@@ -143,8 +144,7 @@ impl Hash for Source {
     }
 }
 
-// Join operators
-
+/// Enums to denote different types of joins
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum JoinType {
     LeftJoin,
@@ -154,6 +154,8 @@ pub enum JoinType {
     NaturalJoin,
 }
 
+
+/// Type of predicate function used in a θ-join operator
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum PredicateType {
     Greater,
@@ -162,6 +164,7 @@ pub enum PredicateType {
     LEqual,
     Equal,
 }
+
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Join {
