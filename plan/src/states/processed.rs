@@ -7,6 +7,18 @@ use crate::states::Serialized;
 use crate::Plan;
 
 impl Plan<Processed> {
+
+    /// Apply the given operator to the given fragment label.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error for the following cases: 
+    ///
+    /// * plan is empty.
+    /// * previous node has not been set yet (applying dangling operator).
+    /// * given fragment label does not exists in the parent fragmenter operator.
+    /// * given operator is either a [Operator::SourceOp], [Operator::FragmentOp],
+    ///   [Operator::TargetOp] or [Operator::SerializerOp].
     pub fn apply_to_fragment(
         &mut self,
         operator: &Operator,
@@ -46,11 +58,24 @@ impl Plan<Processed> {
 
         Ok(self.next_idx_fragment(Some(new_node_idx), fragment_str))
     }
+
+
+
+
+    /// .
+    ///
+    /// # Panics
+    ///
+    /// Panics if the current underlying graph has already been borrowed.
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if .
     pub fn union(
         &mut self,
         other: RcRefCellPlan<Processed>,
     ) -> Result<Plan<Processed>, PlanError> {
-        let mut graph = self.graph.borrow_mut();
+        let mut graph = self.graph.borrow_mut(); // might panic here!
         let union_node = PlanNode {
             id:       format!("Union_{}", graph.node_count()),
             operator: Operator::UnionOp,
