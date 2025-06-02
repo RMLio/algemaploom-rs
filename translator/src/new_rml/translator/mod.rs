@@ -63,9 +63,9 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
         log::debug!("{:#?}", model); 
         let search_store = SearchStore::from_document(&model)?;
 
-       // for tm in model.triples_maps.iter() {
-       //     JoinTranslator::translate_with_store(&search_store, tm)?;
-       // }
+       for tm in model.triples_maps.iter() {
+           JoinTranslator::translate_with_store(&search_store, tm)?;
+       }
 
         for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {
             let tm_vec: Vec<_> = tm_vec

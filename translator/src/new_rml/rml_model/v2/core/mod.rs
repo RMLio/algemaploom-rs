@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::hash::Hash;
 
 use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
 use expression_map::ExpressionMap;
@@ -32,9 +33,19 @@ pub struct TriplesMap {
 impl TriplesMap {
     pub fn get_parent_triples_maps_ids(
         &self,
-    ) -> HashSet<(RcTerm, JoinCondition)> {
-        // TODO: Implement a proper parent triples map ids  <23-04-25, yourname> //
-        HashSet::new()
+    ) -> HashSet<(RcTerm, Vec<JoinCondition>)> {
+        let ref_obj_maps = self
+            .predicate_object_map_vec
+            .iter()
+            .flat_map(|pom| pom.ref_object_map.iter());
+
+        let mut result = HashSet::new();
+        let iter = ref_obj_maps.map(|ref_om| {
+            (ref_om.ptm_iri.clone(), ref_om.join_condition.clone())
+        });
+
+        result.extend(iter);
+        result
     }
 
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
@@ -112,6 +123,23 @@ pub struct JoinCondition {
     pub child:  ExpressionMap,
 }
 
+impl Hash for JoinCondition{
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.parent.get_value().hash(state); 
+        self.child.get_value().hash(state);
+    }
+}
+
+impl Eq for JoinCondition{
+}
+
+impl PartialEq for JoinCondition{
+    fn eq(&self, other: &Self) -> bool {
+        self.parent.get_value() == other.parent.get_value() && self.child.get_value() == other.child.get_value()
+    }
+}
+
+
 #[derive(Debug, Clone)]
 pub struct RMLIterable {
     pub iterator:              Option<String>,
@@ -183,14 +211,13 @@ impl AbstractLogicalSourceEnum {
     }
 
     pub fn get_source(&self) -> Source {
-        match self{
+        match self {
             AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
                 logical_source.source.clone()
             }
             AbstractLogicalSourceEnum::LogicalView(logical_view) => {
                 logical_view.get_source()
             }
-
         }
     }
 

@@ -1,6 +1,3 @@
-use std::marker::PhantomData;
-
-use operator::Join;
 use plan::states::join::join;
 
 use super::OperatorTranslator;
@@ -20,48 +17,52 @@ impl OperatorTranslator for JoinTranslator {
         store: &super::store::SearchStore,
         child_trip_map: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
-        if let Some(parent_trip_map_ids) =
-            store.tm_id_join_map.get(&child_trip_map.identifier)
-        {
-            let child_logical_source_id =
-                child_trip_map.abs_logical_source.get_identifier();
-            let parent_trip_map_iter = parent_trip_map_ids
-                .iter()
-                .filter_map(|tm_id| store.tm_search_map.get(tm_id).copied())
-                .filter(|tm| {
-                    tm.abs_logical_source.get_identifier()
-                        != child_logical_source_id
-                });
-            let child_plan = store
-                .ls_id_sourced_plan_map
-                .get(&child_logical_source_id)
-                .ok_or(ParseError::GenericError(format!(
-                    "Search store cannot found the associated plan for the logical source id: {:?}",
-                    child_logical_source_id
-                )))?
-                ;
+        let parent_tms_joins = child_trip_map.get_parent_triples_maps_ids();
+        let child_logical_source_id =
+            child_trip_map.abs_logical_source.get_identifier();
 
-            for parent_trip_map in parent_trip_map_iter {
-                let parent_logical_source_id =
-                    parent_trip_map.abs_logical_source.get_identifier();
-                let parent_plan = store
+        let child_plan = store
+            .ls_id_sourced_plan_map
+            .get(&child_logical_source_id)
+            .ok_or(ParseError::GenericError(format!(
+                "Search store cannot found the associated plan for the logical source id: {:?}",
+                child_logical_source_id
+            )))?;
+
+        for (parent_tm_id, join_conditions) in parent_tms_joins {
+            let parent_tm =
+                store.tm_search_map.get(&parent_tm_id).unwrap_or_else(|| {
+                    panic!(
+                        "Given triples map id {:?} does not exist!",
+                        parent_tm_id
+                    )
+                });
+
+            let parent_logical_source_id =
+                parent_tm.abs_logical_source.get_identifier();
+
+            let parent_plan = store
                     .ls_id_sourced_plan_map
                     .get(&parent_logical_source_id)
                     .ok_or(ParseError::GenericError(format!(
                         "Search store cannot found the associated plan for the logical source id: {:?}",
                         child_logical_source_id
-                    )))?
-                    ;
+                    )))?;
+            let child_attributes = join_conditions
+                .iter()
+                .flat_map(|jc| jc.child.get_value())
+                .collect();
+            let parent_attributes = join_conditions
+                .iter()
+                .flat_map(|jc| jc.parent.get_value())
+                .collect();
 
-
-               // join(child_plan.clone(), parent_plan.clone())?
-               //     .alias("inner_join")? 
-               //     .where_by(attributes);
-            }
-
-            todo!()
-        } else {
-            Ok(())
+            // Join the plans and progress the cursur
+            let _ = join(child_plan.clone(), parent_plan.clone())?
+                .alias("inner_join")?
+                .where_by(child_attributes)?
+                .compared_to(parent_attributes)?;
         }
+        Ok(())
     }
 }
