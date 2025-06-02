@@ -54,11 +54,11 @@ python version >= 3.10 and the following packages:
 3. Run the CLI translator app from the compiled translator binary
    ```sh
    cd ./target/release/
-   ./translator  file  <RML_DOCUMENT>
+   ./translator-bin  file  <RML_DOCUMENT>
    ```
    For more information/options of CLI app:
    ```sh
-   ./translator  -h
+   ./translator-bin  -h
    ```
 4. Visualize the created mapping plan
    ```sh
