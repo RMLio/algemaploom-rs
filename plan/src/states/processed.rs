@@ -28,7 +28,7 @@ impl Plan<Processed> {
         self.non_empty_plan_check()?;
         self.target_fragment_valid(fragment_str)?;
 
-        self.last_node_idx
+        self.current_cursor_idx
             .ok_or(PlanError::DanglingApplyOperator(operator.clone()))?;
 
         //blacklist check for illegal operator argument
@@ -82,7 +82,7 @@ impl Plan<Processed> {
         };
 
         let node_idx = graph.add_node(union_node);
-        let self_node = self.last_node_idx.unwrap();
+        let self_node = self.current_cursor_idx.unwrap();
         let left_edge = PlanEdge {
             fragment:  self.fragment_string.to_string(),
             direction: EdgeDirection::Left,
@@ -90,7 +90,7 @@ impl Plan<Processed> {
         graph.add_edge(self_node, node_idx, left_edge);
 
         if let Ok(other_plan) = other.try_borrow_mut() {
-            let right_node = other_plan.last_node_idx.unwrap();
+            let right_node = other_plan.current_cursor_idx.unwrap();
             let right_edge = PlanEdge {
                 fragment:  self.fragment_string.to_string(),
                 direction: EdgeDirection::Right,
@@ -122,7 +122,7 @@ impl Plan<Processed> {
     ) -> Result<Plan<Processed>, PlanError> {
         self.non_empty_plan_check()?;
         self.target_fragment_valid(&fragmenter.from)?;
-        self.last_node_idx.ok_or(PlanError::DanglingApplyOperator(
+        self.current_cursor_idx.ok_or(PlanError::DanglingApplyOperator(
             Operator::FragmentOp {
                 config: fragmenter.clone(),
             },
@@ -155,7 +155,7 @@ impl Plan<Processed> {
     ) -> Result<Plan<Serialized>, PlanError> {
         self.non_empty_plan_check()?;
         self.target_fragment_valid(fragment_str)?;
-        self.last_node_idx.ok_or(PlanError::DanglingApplyOperator(
+        self.current_cursor_idx.ok_or(PlanError::DanglingApplyOperator(
             Operator::SerializerOp {
                 config: serializer.clone(),
             },

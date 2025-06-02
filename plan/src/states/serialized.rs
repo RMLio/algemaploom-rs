@@ -8,7 +8,7 @@ use crate::Plan;
 
 impl Plan<Serialized> {
     pub fn sink(&mut self, sink: &Target) -> Result<Plan<Sunk>, PlanError> {
-        if self.last_node_idx.is_none() {
+        if self.current_cursor_idx.is_none() {
             return Err(PlanError::EmptyPlan);
         }
 
@@ -21,7 +21,7 @@ impl Plan<Serialized> {
         };
 
         let node_idx = graph.add_node(plan_node);
-        let prev_node_idx = self.last_node_idx.unwrap();
+        let prev_node_idx = self.current_cursor_idx.unwrap();
 
         let plan_edge = PlanEdge {
             fragment: self.get_fragment_str().to_string(),

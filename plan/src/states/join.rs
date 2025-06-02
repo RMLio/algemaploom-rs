@@ -35,7 +35,7 @@ fn add_join_fragmenter(
     plan: &mut Plan<Processed>,
     alias: &str,
 ) -> Result<Plan<Processed>, PlanError> {
-    if plan.fragment_node_idx == plan.last_node_idx {
+    if plan.fragment_node_idx == plan.current_cursor_idx {
         plan.update_prev_fragment_node(alias);
         Ok(plan.clone())
     } else {
@@ -158,7 +158,7 @@ impl AliasedJoinedPlan<Processed> {
 
             node_idx = graph.add_node(join_node);
 
-            let left_node = left_plan.last_node_idx.unwrap();
+            let left_node = left_plan.current_cursor_idx.unwrap();
             let left_edge = PlanEdge {
                 fragment:  fragment_str.to_string(),
                 direction: EdgeDirection::Left,
@@ -174,7 +174,7 @@ impl AliasedJoinedPlan<Processed> {
 
             if let Ok(plan) = self.right_plan.try_borrow_mut() {
                 // right_plan is not the same as the left_plan so it can be borrwed
-                let right_node = plan.last_node_idx.unwrap();
+                let right_node = plan.current_cursor_idx.unwrap();
                 let right_edge = PlanEdge {
                     fragment:  fragment_str.to_string(),
                     direction: EdgeDirection::Right,
@@ -184,7 +184,7 @@ impl AliasedJoinedPlan<Processed> {
             } else {
                 // This case happens when left_plan and right_plan are the same
                 // (self-join situation)
-                let right_node = left_plan.last_node_idx.unwrap();
+                let right_node = left_plan.current_cursor_idx.unwrap();
                 let right_edge = PlanEdge {
                     fragment:  fragment_str.to_string(),
                     direction: EdgeDirection::Right,

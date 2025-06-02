@@ -30,9 +30,16 @@ pub mod data_type;
 pub mod error;
 pub mod states;
 
-/// Represents a plan in state [T](states) with functions to transition state
-/// changes.
+/// Represents a plan in state [T](states) with functions to transition between 
+/// different states by adding new nodes with a cursor.
 ///
+/// The [T](states) determine the API exposed from the plan to modify it. 
+/// Building the plan works with a cursor which points at the recently added 
+/// node. 
+/// Adding a new node to the plan will attach it to the node 
+/// currently pointed by the cursor of the plan. 
+/// If the cursor is pointing at nothing, the new (to-be-added) node will be  
+/// instantiated in the plan as a separate self-standing node. 
 /// The field `graph` is repeatedly modified to build up the mapping plan with 
 /// the addition of mapping algebra operators.
 #[derive(Debug, Clone)]
@@ -44,8 +51,8 @@ pub struct Plan<T> {
     /// Node indexes of the source operators in the graph.
     pub sources:           RcRefCellVSourceIdxs,
 
-    /// Index of the previous node on which the plan is being built upon.
-    pub last_node_idx:     Option<NodeIndex>,
+    /// Index of the node currently being pointed by the cursor of the plan. 
+    pub current_cursor_idx:     Option<NodeIndex>,
 
     /// Index of the previous **fragment** node on which the plan is being built upon.
     pub fragment_node_idx: Option<NodeIndex>,
@@ -69,12 +76,18 @@ impl Plan<()> {
             sources:           Rc::new(RefCell::new(Vec::new())),
             fragment_string:   Rc::new(DEFAULT_FRAGMENT.to_string()),
             fragment_node_idx: None,
-            last_node_idx:     None,
+            current_cursor_idx:     None,
         }
     }
 }
 
 impl<T> Plan<T> {
+
+
+    /// Update the previous node's fragment by adding the provided fragment string. 
+    ///
+    /// If the previous node is not a [Fragmenter] operator, 
+    /// a new [Fragmenter] operator will be added. 
     fn update_prev_fragment_node(&mut self, new_fragment: &str) {
         let mut graph = self.graph.borrow_mut();
         let fragment_node = graph
@@ -99,6 +112,8 @@ impl<T> Plan<T> {
         };
     }
 
+    /// Get the [Fragmenter] operator closest to the current cursor 
+    /// in the plan. 
     fn get_fragment_op(&self) -> Option<Fragmenter> {
         if let Some(idx) = self.fragment_node_idx {
             let graph = self.graph.borrow();
@@ -113,6 +128,11 @@ impl<T> Plan<T> {
         None
     }
 
+    /// Returns a [Result] as follows: 
+    /// * Err:  if the given fragment is either not equal to the current fragment and there aren't
+    ///   any previous fragment **or** if the given fragment isn't part of the output fragments of
+    ///   the prevoius fragmenter operator. 
+    /// * Ok: otherwise
     fn target_fragment_valid(
         &self,
         target_fragment: &str,
@@ -160,7 +180,7 @@ impl<T> Plan<T> {
         let mut graph = self.graph.borrow_mut();
 
         let node_idx = graph.add_node(plan_node);
-        let prev_node_idx = self.last_node_idx.unwrap();
+        let prev_node_idx = self.current_cursor_idx.unwrap();
         graph.add_edge(prev_node_idx, node_idx, plan_edge);
         node_idx
     }
@@ -174,7 +194,7 @@ impl<T> Plan<T> {
             sources:           Rc::clone(&self.sources),
             fragment_string:   Rc::clone(&self.fragment_string),
             fragment_node_idx: self.fragment_node_idx,
-            last_node_idx:     idx,
+            current_cursor_idx:     idx,
         }
     }
 
@@ -193,7 +213,7 @@ impl<T> Plan<T> {
             sources:           Rc::clone(&self.sources),
             fragment_string:   Rc::new(fragment_string.to_string()),
             fragment_node_idx: self.fragment_node_idx,
-            last_node_idx:     idx,
+            current_cursor_idx:     idx,
         }
     }
 
