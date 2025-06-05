@@ -24,6 +24,7 @@ pub enum TemplateSubString {
 #[derive(Debug, Clone)]
 pub struct TriplesMap {
     pub identifier:               RcTerm,
+    pub base_iri:                 String,
     pub subject_map:              SubjectMap,
     pub ref_obj_attributes:       Vec<String>,
     pub predicate_object_map_vec: Vec<PredicateObjectMap>,
@@ -31,18 +32,15 @@ pub struct TriplesMap {
 }
 
 impl TriplesMap {
-    pub fn get_parent_triples_maps_ids(
-        &self,
-    ) -> HashSet<(RcTerm, Vec<JoinCondition>)> {
+    pub fn get_parent_tms_refobjmaps(&self) -> HashSet<(RcTerm, RefObjectMap)> {
         let ref_obj_maps = self
             .predicate_object_map_vec
             .iter()
             .flat_map(|pom| pom.ref_object_map.iter());
 
         let mut result = HashSet::new();
-        let iter = ref_obj_maps.map(|ref_om| {
-            (ref_om.ptm_iri.clone(), ref_om.join_condition.clone())
-        });
+        let iter =
+            ref_obj_maps.map(|ref_om| (ref_om.ptm_iri.clone(), ref_om.clone()));
 
         result.extend(iter);
         result
@@ -111,7 +109,7 @@ pub struct PredicateObjectMap {
     pub graph_map_vec:     Vec<GraphMap>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct RefObjectMap {
     pub ptm_iri:        RcTerm,
     pub join_condition: Vec<JoinCondition>,
@@ -123,22 +121,22 @@ pub struct JoinCondition {
     pub child:  ExpressionMap,
 }
 
-impl Hash for JoinCondition{
+impl Eq for JoinCondition{
+}
+
+impl Hash for JoinCondition {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.parent.get_value().hash(state); 
+        self.parent.get_value().hash(state);
         self.child.get_value().hash(state);
     }
 }
 
-impl Eq for JoinCondition{
-}
-
-impl PartialEq for JoinCondition{
+impl PartialEq for JoinCondition {
     fn eq(&self, other: &Self) -> bool {
-        self.parent.get_value() == other.parent.get_value() && self.child.get_value() == other.child.get_value()
+        self.parent.get_value() == other.parent.get_value()
+            && self.child.get_value() == other.child.get_value()
     }
 }
-
 
 #[derive(Debug, Clone)]
 pub struct RMLIterable {

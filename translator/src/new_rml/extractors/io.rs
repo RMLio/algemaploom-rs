@@ -2,7 +2,6 @@ use std::fs::File;
 use std::io::{BufRead, BufReader, Read};
 use std::path::PathBuf;
 
-use log::debug;
 use sophia_api::graph::CollectibleGraph;
 use sophia_inmem::graph::FastGraph;
 use sophia_turtle::parser::turtle;
@@ -53,11 +52,14 @@ pub fn load_graph_str(input_str: &str) -> ExtractorResult<FastGraph> {
 pub fn parse_str(input_str: &str) -> ExtractorResult<Document> {
     let graph = load_graph_str(input_str)?;
     let triples_maps = extract_triples_maps(&graph)?;
+    if triples_maps.is_empty() {
+        return Err(ParseError::GenericError(
+            "No Triples maps extracted for the input RML document".to_string(),
+        )
+        .into());
+    }
     let base_iri = input_str.split('\n').filter_map(extract_base_iri).next();
-    Ok(Document {
-        default_base_iri: base_iri,
-        triples_maps,
-    })
+    Ok(Document::new(base_iri, triples_maps))
 }
 
 pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
@@ -70,30 +72,14 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
             .into());
         }
 
-        let buf_read = BufReader::new(File::open(path.clone())?);
-        let triples_maps = extract_triples_maps(&load_graph_bread(buf_read)?)?;
-        if triples_maps.is_empty() {
-            return Err(ParseError::GenericError(format!(
-                "No Triples maps exected for the input RML document: {:?}",
-                path
-            )).into());
-        }
-
-        // TODO: Refactor extraction of base iri from RML file <02-08-24, SMO> //
-        let mut buf_read = BufReader::new(File::open(path)?);
-        let mut input_string = String::default();
-        buf_read.read_to_string(&mut input_string)?;
-        let base_iri =
-            input_string.split('\n').filter_map(extract_base_iri).next();
-
-        return Ok(Document {
-            triples_maps,
-            default_base_iri: base_iri,
-        });
+        let mut buf_read = BufReader::new(File::open(path.clone())?);
+        let mut input_str = String::new();
+        buf_read.read_to_string(&mut input_str)?;
+        return parse_str(&input_str); 
     }
 
     Err(ParseError::IOErrorStr(format!(
-        "File can't be read {}",
+        "File extention can't be determined for file: {}",
         path.to_str().unwrap()
     ))
     .into())

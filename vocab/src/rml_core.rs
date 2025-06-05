@@ -45,6 +45,7 @@ pub mod PROPERTY {
     pub const SUBJECT_MAP: PAIR = (IRI, "subjectMap");
     pub const PREDICATE_OBJECT_MAP: PAIR = (IRI, "predicateObjectMap");
     pub const LOGICAL_SOURCE: PAIR = (IRI, "logicalSource");
+    pub const BASE_IRI: PAIR = (IRI, "baseIRI"); 
 
     // From Abstract Logical Source
     pub const ITERATOR: PAIR = (IRI, "iterator");

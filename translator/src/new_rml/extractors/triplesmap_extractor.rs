@@ -5,14 +5,16 @@ use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use vocab::ToString;
 
-use super::store::{get_object_with_ps, get_subjects};
+use super::store::{get_object, get_object_with_ps, get_subjects};
 use super::{Extractor, ExtractorResult, RcTerm};
 use crate::new_rml::extractors::store::get_objects;
 use crate::new_rml::extractors::{FromVocab, TermMapExtractor};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractLogicalSourceEnum, JoinCondition, PredicateObjectMap, TriplesMap
+    AbstractLogicalSource, AbstractLogicalSourceEnum, JoinCondition,
+    PredicateObjectMap, TriplesMap,
 };
+use crate::rml::parser::extractors::rcterm_to_string;
 
 impl Extractor<TriplesMap> for TriplesMap {
     fn extract_self<TTerm>(
@@ -27,13 +29,12 @@ impl Extractor<TriplesMap> for TriplesMap {
 
         let ls_new_pred =
             &vocab::rml_core::PROPERTY::LOGICAL_SOURCE.to_rcterm();
-        let logical_source_subj = get_object_with_ps(
+        let logical_source_subj =
+            get_object_with_ps(graph, subject.borrow_term(), &[ls_new_pred])?;
+        let abs_logical_source = AbstractLogicalSourceEnum::extract_self(
+            &logical_source_subj,
             graph,
-            subject.borrow_term(),
-            &[ls_new_pred],
         )?;
-        let abs_logical_source =
-            AbstractLogicalSourceEnum::extract_self(&logical_source_subj, graph)?;
 
         let pom = vocab::rml_core::PROPERTY::PREDICATE_OBJECT_MAP.to_rcterm();
         let po_maps_res: ExtractorResult<Vec<_>> =
@@ -67,11 +68,21 @@ impl Extractor<TriplesMap> for TriplesMap {
             .flat_map(|jc| jc.parent.get_value().cloned())
             .collect();
 
+        let base_iri = get_object(
+            graph,
+            subject.borrow_term(),
+            vocab::rml_core::PROPERTY::BASE_IRI.to_rcterm(),
+        )
+        .ok()
+        .map(|base_iri_rcterm| rcterm_to_string(&base_iri_rcterm))
+        .unwrap_or_default();
+
         Ok(TriplesMap {
             identifier: RcTerm::from_term(subject),
             abs_logical_source,
             ref_obj_attributes,
             subject_map,
+            base_iri,
             predicate_object_map_vec: po_maps,
         })
     }
