@@ -233,12 +233,18 @@ impl Hash for Projection {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rename {
+    pub alias: Option<String>, 
     #[serde(flatten)]
     pub rename_pairs: HashMap<String, String>,
 }
 
 impl PrettyDisplay for Rename {
     fn pretty_string(&self) -> Result<String> {
+        let alias_string = match &self.alias {
+            Some(inner) => format!("{}\n", inner),
+            None => "".to_string(),
+        }; 
+
         let pairs_string = self
             .rename_pairs
             .iter()
@@ -246,7 +252,7 @@ impl PrettyDisplay for Rename {
             .collect::<Vec<String>>()
             .join("\n");
 
-        Ok(format!("Renaming pairs:\n {}", pairs_string))
+        Ok(format!("Renaming pairs:\n {}{}", alias_string, pairs_string))
     }
 }
 
