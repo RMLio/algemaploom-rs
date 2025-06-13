@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::hash::Hash;
 
 use log::debug;
 use sophia_api::prelude::Iri;
@@ -105,6 +106,22 @@ impl TermMap {
     }
 }
 
+impl Eq for TermMap {}
+
+impl PartialEq for TermMap {
+    fn eq(&self, other: &Self) -> bool {
+        self.identifier == other.identifier && self.term_type == other.term_type
+    }
+}
+
+impl Hash for TermMap {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.identifier.hash(state);
+        self.term_type.hash(state);
+        self.expression.hash(state);
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum RMLTermTypeKind {
     BlankNode,
@@ -157,7 +174,7 @@ pub struct SubjectMap {
     pub graph_maps: Vec<GraphMap>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct PredicateMap {
     pub term_map: TermMap,
 }

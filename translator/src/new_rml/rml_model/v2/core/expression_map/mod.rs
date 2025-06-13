@@ -1,7 +1,5 @@
 use std::collections::HashSet;
 
-use lazy_static::lazy_static;
-use regex::Regex;
 use sophia_api::term::{Term, TermKind};
 use sophia_term::RcTerm;
 
@@ -41,7 +39,7 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
     result
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub struct ExpressionMap {
     pub map_type_pred_iri: RcTerm,
     pub kind:              ExpressionMapKind,
@@ -173,7 +171,7 @@ impl ExpressionMap {
         self.kind.try_get_non_function_value()
     }
 }
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash)]
 pub enum ExpressionMapKind {
     FunctionExecution {
         execution: FunctionExecution,
@@ -181,6 +179,7 @@ pub enum ExpressionMapKind {
     },
     NonFunction(String),
 }
+
 
 impl ExpressionMapKind {
     pub fn try_get_non_function_value(&self) -> Option<&String> {

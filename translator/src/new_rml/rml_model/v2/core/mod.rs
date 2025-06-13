@@ -32,15 +32,23 @@ pub struct TriplesMap {
 }
 
 impl TriplesMap {
-    pub fn get_parent_tms_refobjmaps(&self) -> HashSet<(RcTerm, RefObjectMap)> {
-        let ref_obj_maps = self
+    pub fn get_parent_tms_pred_refom_pairs(
+        &self,
+    ) -> HashSet<(RcTerm, (Vec<PredicateMap>, RefObjectMap))> {
+        let pred_refom_pairs = self
             .predicate_object_map_vec
             .iter()
-            .flat_map(|pom| pom.ref_object_map.iter());
+            .filter(|pom| !pom.ref_object_map.is_empty())
+            .map(|pom| {
+                (pom.predicate_map_vec.clone(), pom.ref_object_map.iter())
+            });
 
         let mut result = HashSet::new();
-        let iter =
-            ref_obj_maps.map(|ref_om| (ref_om.ptm_iri.clone(), ref_om.clone()));
+        let iter = pred_refom_pairs.flat_map(|(pred_vec, ref_om_iter)| {
+            ref_om_iter.map(move |ref_om| {
+                (ref_om.ptm_iri.clone(), (pred_vec.clone(), ref_om.clone()))
+            })
+        });
 
         result.extend(iter);
         result
@@ -121,8 +129,7 @@ pub struct JoinCondition {
     pub child:  ExpressionMap,
 }
 
-impl Eq for JoinCondition{
-}
+impl Eq for JoinCondition {}
 
 impl Hash for JoinCondition {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
