@@ -117,7 +117,7 @@ fn extend_lang_dtype_function_for_om(
         } => {
             if let Some(lang_map) = &om.language_map {
                 let langtype_function =
-                    Some(Rc::new(extend_from_exp_map(store, lang_map)?));
+                    Some(Rc::new(extension_func_from_exp_map(store, lang_map)?));
                 Function::Literal {
                     inner_function: inner_function.clone(),
                     dtype_function: None,
@@ -126,7 +126,7 @@ fn extend_lang_dtype_function_for_om(
             } else if let Some(dtype_map) = &om.datatype_map {
                 let dtype_function = Some(Rc::new(Function::Iri {
                     base_iri:       Some(base_iri.to_string()),
-                    inner_function: extend_from_exp_map(store, dtype_map)?
+                    inner_function: extension_func_from_exp_map(store, dtype_map)?
                         .into(),
                 }));
                 Function::Literal {
@@ -142,12 +142,12 @@ fn extend_lang_dtype_function_for_om(
     })
 }
 
-fn extend_from_term_map(
+pub fn extend_from_term_map(
     store: &SearchStore,
     base_iri: &str,
     term_map: &TermMap,
 ) -> NewRMLTranslationResult<(String, Function)> {
-    let inner_func = extend_from_exp_map(store, &term_map.expression)?;
+    let inner_func = extension_func_from_exp_map(store, &term_map.expression)?;
 
     let function = match term_map.try_get_term_type_enum()? {
         RMLTermTypeKind::BlankNode => {
@@ -185,7 +185,7 @@ fn extend_from_term_map(
     Ok((var, function))
 }
 
-fn extend_from_exp_map(
+pub fn extension_func_from_exp_map(
     store: &SearchStore,
     exp_map: &ExpressionMap,
 ) -> NewRMLTranslationResult<Function> {
@@ -219,7 +219,7 @@ fn fno_input_extend_function(
 ) -> NewRMLTranslationResult<(String, Rc<Function>)> {
     let param = stringify_rcterm(input_map.parameter.clone()).unwrap();
 
-    let function = extend_from_exp_map(store, &input_map.value_map.expression)?;
+    let function = extension_func_from_exp_map(store, &input_map.value_map.expression)?;
 
     Ok((param, function.into()))
 }

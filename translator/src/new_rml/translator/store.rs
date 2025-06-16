@@ -84,7 +84,7 @@ impl SearchStore<'_> {
             let tm_id = &tm.identifier;
             tm_search_map.insert(tm_id.clone(), tm);
             tm_id_join_map
-                .insert(tm_id.clone(), tm.get_parent_triples_maps_ids());
+                .insert(tm_id.clone(), tm.get_parent_tms_pred_refom_pairs());
 
             let sm = &tm.subject_map;
             let sm_ident = sm.term_map.identifier.clone();

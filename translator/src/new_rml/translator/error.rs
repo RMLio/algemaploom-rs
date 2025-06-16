@@ -6,6 +6,7 @@ use plan::error::PlanError;
 pub enum TranslationError {
     SourceError(String),
     ExtendError(String),
+    JoinError(String),
     PlanError(PlanError),
     Infallible,
 }
@@ -21,6 +22,7 @@ impl Display for TranslationError {
         match self{
             TranslationError::SourceError(msg) => write!(f, "error while translating for source operator with msg: {}", msg),
             TranslationError::ExtendError(msg) => write!(f, "error while translating for extend operator with msg: {}", msg),
+            TranslationError::JoinError(msg) => write!(f, "error while translating for join oeprator with msg: {}", msg), 
             TranslationError::PlanError(_) => write!(f, "error while generating the plan"),
             TranslationError::Infallible => write!(f, "something messed up happened and failed when it isn't supposed to!"),
         }
