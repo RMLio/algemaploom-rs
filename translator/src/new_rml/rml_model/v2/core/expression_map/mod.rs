@@ -7,6 +7,7 @@ use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::fnml::FunctionExecution;
+use crate::new_rml::rml_model::v2::AttributeAliaser;
 
 pub mod term_map;
 
@@ -43,6 +44,51 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
 pub struct ExpressionMap {
     pub map_type_pred_iri: RcTerm,
     pub kind:              ExpressionMapKind,
+}
+
+impl AttributeAliaser for ExpressionMap {
+    fn alias_attribute(&self, alias: &str) -> Self {
+        let aliased_kind = match self.get_map_type_enum().unwrap() {
+            ExpressionMapTypeEnum::Template => {
+                let template_split =
+                    self.get_template_string_split().alias_attribute(alias);
+                template_split.into()
+            }
+            ExpressionMapTypeEnum::Constant => self.kind.clone(),
+            _ => self.kind.alias_attribute(alias),
+        };
+
+        Self {
+            map_type_pred_iri: self.map_type_pred_iri.clone(),
+            kind:              aliased_kind,
+        }
+    }
+}
+
+impl From<Vec<TemplateSubString>> for ExpressionMapKind {
+    fn from(value: Vec<TemplateSubString>) -> Self {
+        let template_string: String =
+            value.into_iter().map(|val| val.to_string()).collect();
+        ExpressionMapKind::NonFunction(template_string)
+    }
+}
+
+impl AttributeAliaser for Vec<TemplateSubString> {
+    fn alias_attribute(&self, alias: &str) -> Self {
+        self.iter()
+            .map(|val| {
+                match val {
+                    TemplateSubString::Attribute(attr) => {
+                        TemplateSubString::Attribute(format!(
+                            "{}.{}",
+                            alias, attr
+                        ))
+                    }
+                    _ => val.clone(),
+                }
+            })
+            .collect()
+    }
 }
 
 impl ExpressionMap {
@@ -180,6 +226,21 @@ pub enum ExpressionMapKind {
     NonFunction(String),
 }
 
+impl AttributeAliaser for ExpressionMapKind {
+    fn alias_attribute(&self, alias: &str) -> Self {
+        match self {
+            ExpressionMapKind::FunctionExecution { execution, returns } => {
+                ExpressionMapKind::FunctionExecution {
+                    execution: execution.alias_attribute(alias),
+                    returns:   returns.clone(),
+                }
+            }
+            ExpressionMapKind::NonFunction(inner) => {
+                ExpressionMapKind::NonFunction(format!("{}.{}", alias, inner))
+            }
+        }
+    }
+}
 
 impl ExpressionMapKind {
     pub fn try_get_non_function_value(&self) -> Option<&String> {

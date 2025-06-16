@@ -21,6 +21,15 @@ pub enum TemplateSubString {
     NormalString(String),
 }
 
+impl ToString for TemplateSubString {
+    fn to_string(&self) -> String {
+        match &self {
+            TemplateSubString::Attribute(inner) => inner.clone(),
+            TemplateSubString::NormalString(inner) => inner.clone(),
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct TriplesMap {
     pub identifier:               RcTerm,

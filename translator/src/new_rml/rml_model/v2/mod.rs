@@ -1,4 +1,8 @@
-pub mod core; 
+pub mod core;
+pub mod fnml;
 pub mod io;
 pub mod lv;
-pub mod fnml; 
+
+pub trait AttributeAliaser {
+    fn alias_attribute(&self, alias: &str) -> Self;
+}

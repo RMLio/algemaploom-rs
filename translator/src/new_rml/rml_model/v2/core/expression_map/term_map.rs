@@ -12,6 +12,7 @@ use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
+use crate::new_rml::rml_model::v2::AttributeAliaser;
 
 #[derive(Debug, Clone)]
 pub struct TermMap {
@@ -19,6 +20,17 @@ pub struct TermMap {
     pub term_type:       RcTerm,
     pub expression:      ExpressionMap,
     pub logical_targets: Vec<LogicalTarget>,
+}
+
+impl AttributeAliaser for TermMap{
+    fn alias_attribute(&self, alias: &str) -> Self {
+        Self{
+            identifier: self.identifier.clone(),
+            term_type: self.term_type.clone(),
+            expression: self.expression.alias_attribute(alias),
+            logical_targets: self.logical_targets.clone(),
+        }
+    }
 }
 
 impl TermMap {
