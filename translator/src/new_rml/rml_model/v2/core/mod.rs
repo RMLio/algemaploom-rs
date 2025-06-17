@@ -43,19 +43,21 @@ pub struct TriplesMap {
 impl TriplesMap {
     pub fn get_parent_tms_pred_refom_pairs(
         &self,
-    ) -> HashSet<(RcTerm, (Vec<PredicateMap>, RefObjectMap))> {
-        let pred_refom_pairs = self
+    ) -> HashSet<(RcTerm, (Vec<PredicateMap>, RefObjectMap, Vec<GraphMap> ))> {
+        let pred_refom_graph_tuples = self
             .predicate_object_map_vec
             .iter()
             .filter(|pom| !pom.ref_object_map.is_empty())
             .map(|pom| {
-                (pom.predicate_map_vec.clone(), pom.ref_object_map.iter())
+                (&pom.predicate_map_vec, pom.ref_object_map.iter(), &pom.graph_map_vec)
             });
 
         let mut result = HashSet::new();
-        let iter = pred_refom_pairs.flat_map(|(pred_vec, ref_om_iter)| {
+        let iter = pred_refom_graph_tuples.flat_map(|(pred_vec, ref_om_iter, graph_vec)| {
             ref_om_iter.map(move |ref_om| {
-                (ref_om.ptm_iri.clone(), (pred_vec.clone(), ref_om.clone()))
+                let mut graph_vec = graph_vec.clone(); 
+                graph_vec.extend(self.subject_map.graph_maps.clone()); 
+                (ref_om.ptm_iri.clone(), (pred_vec.clone(), ref_om.clone(), graph_vec))
             })
         });
 

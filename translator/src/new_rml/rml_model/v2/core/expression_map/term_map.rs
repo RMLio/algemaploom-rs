@@ -213,7 +213,7 @@ impl ObjectMap {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct GraphMap {
     pub term_map: TermMap,
 }

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use operator::{Extend, Operator, Rename};
+use operator::{Extend, Operator, Rename, Serializer, Target};
 use plan::states::join::join;
 
 use super::store::SearchStore;
@@ -8,7 +8,7 @@ use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    PredicateMap, SubjectMap,
+    GraphMap, PredicateMap, SubjectMap,
 };
 use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
 use crate::new_rml::rml_model::v2::AttributeAliaser;
@@ -40,7 +40,7 @@ impl OperatorTranslator for JoinTranslator {
                 child_logical_source_id
             )))?;
 
-        for (parent_tm_id, (pred_vec, ref_om)) in parent_tms_refoms {
+        for (parent_tm_id, (pred_vec, ref_om, graph_vec)) in parent_tms_refoms {
             let parent_tm =
                 store.tm_search_map.get(&parent_tm_id).unwrap_or_else(|| {
                     panic!(
@@ -97,11 +97,22 @@ impl OperatorTranslator for JoinTranslator {
                 &ref_om,
                 &pred_vec,
                 &child_trip_map.base_iri,
+                &graph_vec,
                 alias,
                 store,
             )?;
 
-            let _ = joined.apply(&extend_op, "ExtendOp")?;
+            let mut extended_plan = joined.apply(&extend_op, "ExtendOp")?;
+
+            let serializer = Serializer {
+                template: todo!(),
+                options:  None,
+                format:   todo!(),
+            };
+
+            extended_plan
+                .serialize(serializer)?
+                .sink(&Target::default())?;
         }
         Ok(())
     }
@@ -112,6 +123,7 @@ pub fn extend_op_from_join(
     ref_objmap: &RefObjectMap,
     pred_vec: &[PredicateMap],
     child_base_iri: &str,
+    graph_maps: &[GraphMap],
     alias: &str,
     store: &SearchStore,
 ) -> NewRMLTranslationResult<Operator> {
@@ -125,15 +137,23 @@ pub fn extend_op_from_join(
             .collect();
     let extension_func_predicates = extension_func_predicates_res?;
 
+    let extension_func_graphs_res: NewRMLTranslationResult<Vec<_>> = graph_maps
+        .iter()
+        .map(|gm| extend_from_term_map(store, child_base_iri, &gm.term_map))
+        .collect();
+    let extension_func_graphs = extension_func_graphs_res?;
+
     let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).ok_or(
         TranslationError::JoinError(
             "Reference object map's parent triples maps IRI cannot be found/searched"
                 .to_string(),
         ),
     )?;
-    let aliased_ptm_subj_term_map = ptm.subject_map.term_map.alias_attribute(alias); 
+    let aliased_ptm_subj_term_map =
+        ptm.subject_map.term_map.alias_attribute(alias);
     let extension_func_refoms_subj =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
+
 
     let mut extend_pairs = HashMap::new();
     extend_pairs.insert(extension_func_subj.0, extension_func_subj.1);
@@ -145,6 +165,10 @@ pub fn extend_op_from_join(
         .for_each(|(attr, func)| {
             extend_pairs.insert(attr, func);
         });
+
+    extension_func_graphs.into_iter().for_each(|(attr, func)| {
+        extend_pairs.insert(attr, func);
+    });
 
     let extend = Extend { extend_pairs };
     Ok(Operator::ExtendOp { config: extend })
