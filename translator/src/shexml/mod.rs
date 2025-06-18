@@ -200,7 +200,7 @@ fn add_rename_extend_op_from_quads(
             // Add rename operator to the extended plan
             debug!("Adding rename operator since it is not empty");
             let rename_op = operator::Operator::RenameOp {
-                config: Rename { rename_pairs },
+                config: Rename { rename_pairs, alias: None },
             };
 
             Rc::new(
