@@ -220,7 +220,7 @@ fn process_object_map(
             .unwrap()
             .where_by(join_condition_pairs.iter().map(|p| p.0).collect())
             .unwrap()
-            .compared_to(join_condition_pairs.iter().map(|p| p.1).collect())
+            .equal_to(join_condition_pairs.iter().map(|p| p.1).collect())
             .unwrap();
 
         let ptm_subj_ref = termref_to_subjref(ptm.as_ref())?;

@@ -263,7 +263,7 @@ impl WhereByPlan<Processed> {
     /// Add the attributes from the **right plan** which will be used to check during
     /// the join operation and apply an equi-join operator to the plan at the end.
     ///
-    pub fn compared_to<A>(
+    pub fn equal_to<A>(
         &mut self,
         attributes: Vec<A>,
     ) -> Result<Plan<Processed>, PlanError>

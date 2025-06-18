@@ -339,7 +339,7 @@ fn add_join_related_ops(
 
                 joined_plan = aliased_plan
                     .where_by(child_attributes.clone())?
-                    .compared_to(parent_attributes.clone())?;
+                    .equal_to(parent_attributes.clone())?;
             } else if tm.logical_source == ptm.logical_source {
                 // Sources are the same, so a natural join operator will be added
                 // instead.

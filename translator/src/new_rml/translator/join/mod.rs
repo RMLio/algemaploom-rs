@@ -92,7 +92,7 @@ impl OperatorTranslator for JoinTranslator {
 
             let mut joined = aliased_plan
                 .where_by(child_attributes)?
-                .compared_to(parent_attributes)?;
+                .equal_to(parent_attributes)?;
 
             let extend_op = extend_op_from_join(
                 &child_trip_map.subject_map,
