@@ -171,7 +171,6 @@ pub struct Join {
     pub left_right_attr_pairs: Vec<(String, String)>,
     pub join_type:             JoinType,
     pub predicate_type:        PredicateType,
-    pub join_alias:            String,
 }
 
 impl Default for Join {
@@ -180,7 +179,6 @@ impl Default for Join {
             left_right_attr_pairs: Default::default(),
             join_type:             JoinType::InnerJoin,
             predicate_type:        PredicateType::Equal,
-            join_alias:            "pseudo_other".to_string(),
         }
     }
 }
@@ -196,11 +194,10 @@ impl Hash for Join {
 impl PrettyDisplay for Join {
     fn pretty_string(&self) -> Result<String> {
         let result = format!(
-            "type: {:?}\npredicate_type: {:?}\nattribute_pairs: {}\nptm_alias: {}",
+            "type: {:?}\npredicate_type: {:?}\nattribute_pairs: {}\n",
             self.join_type,
             self.predicate_type,
             serde_json::to_string_pretty(&self.left_right_attr_pairs)?, 
-            self.join_alias
         );
 
         Ok(result)

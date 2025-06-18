@@ -54,12 +54,9 @@ pub struct NotAliasedJoinedPlan<T> {
     right_plan: RcRefCellPlan<T>,
 }
 impl NotAliasedJoinedPlan<Processed> {
-
-    
-
-    /// Try to add a fragment operator to both left and right plan 
-    /// that has a label with the given alias. 
-    /// 
+    /// Try to add a fragment operator to both left and right plan
+    /// that has a label with the given alias.
+    ///
     ///
     /// The addition of the aliasing fragment label ensures that if there is no
     /// clash/overlap in the attributes in the mapping tuples from the two plans.
@@ -94,7 +91,6 @@ pub struct AliasedJoinedPlan<T> {
 }
 
 impl AliasedJoinedPlan<Processed> {
-    
     /// Apply the given operator to **right plan** for the given fragment.
     ///
     /// # Errors
@@ -198,7 +194,6 @@ impl AliasedJoinedPlan<Processed> {
         left_plan.next_idx(Some(node_idx))
     }
 
-    
     /// Add the attributes from the **left plan** which will be used to check during
     /// the join operation.
     ///
@@ -221,14 +216,12 @@ impl AliasedJoinedPlan<Processed> {
     /// Returns the cross join of this [`AliasedJoinedPlan<Processed>`].
     pub fn cross_join(&mut self) -> Result<Plan<Processed>, PlanError> {
         // TODO:  Remove the usage of Result since this never returns an error<16-05-25, Min Oo> //
-        let join_alias = &self.alias;
 
         let join_op = Operator::JoinOp {
             config: Join {
                 left_right_attr_pairs: vec![],
                 join_type:             operator::JoinType::CrossJoin,
                 predicate_type:        operator::PredicateType::Equal,
-                join_alias:            join_alias.to_string(),
             },
         };
 
@@ -244,7 +237,6 @@ impl AliasedJoinedPlan<Processed> {
                 left_right_attr_pairs: vec![],
                 join_type:             operator::JoinType::NaturalJoin,
                 predicate_type:        operator::PredicateType::Equal,
-                join_alias:            self.alias.clone(),
             },
         };
 
@@ -259,7 +251,6 @@ pub struct WhereByPlan<T> {
 }
 
 impl WhereByPlan<Processed> {
-    
     /// Add the attributes from the **right plan** which will be used to check during
     /// the join operation and apply an equi-join operator to the plan at the end.
     ///
@@ -285,7 +276,6 @@ impl WhereByPlan<Processed> {
         // TODO: Enable specification of join type and predicate type  <12-03-24, yourname> //
         let join_op = Operator::JoinOp {
             config: Join {
-                join_alias: joined_plan.alias.clone(),
                 left_right_attr_pairs,
                 join_type: operator::JoinType::InnerJoin,
                 predicate_type: operator::PredicateType::Equal,
