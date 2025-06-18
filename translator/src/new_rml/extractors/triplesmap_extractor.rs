@@ -91,13 +91,11 @@ impl Extractor<TriplesMap> for TriplesMap {
 pub fn extract_triples_maps(
     graph: &FastGraph,
 ) -> ExtractorResult<Vec<TriplesMap>> {
-    let rml_core_subject_map_vec = [
-        vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm(),
-        vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),
-    ];
-
-    let rml_core_tm_iter =
-        graph.triples_matching(Any, rml_core_subject_map_vec, Any);
+    let rml_core_tm_iter = graph.triples_matching(
+        Any,
+        [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
+        [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
+    );
 
     rml_core_tm_iter
         .filter_map(|triple| triple.ok())

@@ -98,7 +98,10 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                 ))
                 .into())
             } else {
-                sms.pop().ok_or(ParseError::Infallible.into())
+                sms.pop().ok_or(ParseError::NoTermMapFoundError(format!(
+                    "No subject map found for the triples map {:?}",
+                    container_map_subj_ref
+                )).into())
             }
         })
     }
