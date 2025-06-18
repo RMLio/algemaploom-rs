@@ -7,7 +7,9 @@ use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::GraphMap;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
+    GraphMap, TermMap,
+};
 use crate::new_rml::rml_model::v2::core::{PredicateObjectMap, TriplesMap};
 
 #[derive(Debug, Clone)]
@@ -125,31 +127,34 @@ fn cproduct_pm_om_vars<'a>(
     store: &'a SearchStore,
     pom: &'a PredicateObjectMap,
 ) -> impl Iterator<Item = (String, String)> + 'a {
-    let pm_var_iter = pom.predicate_map_vec.iter().map(|pm| {
-        let pm_var = store
-            .termm_id_quad_var_map
-            .get(&pm.term_map.identifier)
-            .map(|var| format_var(var))
-            .unwrap();
-        pm.term_map
-            .get_constant_value()
-            .unwrap_or_else(|| pm_var.to_string())
-    });
+    let pm_var_iter = pom
+        .predicate_map_vec
+        .iter()
+        .map(|pm| get_var_or_constant(store, &pm.term_map));
 
-    let om_var_iter = pom.object_map_vec.iter().map(|om| {
-        let om_var = store
-            .termm_id_quad_var_map
-            .get(&om.term_map.identifier)
-            .map(|var| format_var(var))
-            .unwrap();
-        om.term_map
-            .get_constant_value()
-            .unwrap_or_else(|| om_var.to_string())
-    });
+    let om_var_iter = pom
+        .object_map_vec
+        .iter()
+        .map(|om| get_var_or_constant(store, &om.term_map));
 
     pm_var_iter.flat_map(move |pm_var| {
         om_var_iter
             .clone()
             .map(move |om_var| (pm_var.clone(), om_var))
     })
+}
+
+pub fn get_var_or_constant(
+    store: &SearchStore<'_>,
+    term_map: &TermMap,
+) -> String {
+    let var = store
+        .termm_id_quad_var_map
+        .get(&term_map.identifier)
+        .map(|var| format_var(var))
+        .unwrap();
+
+    term_map
+        .get_constant_value()
+        .unwrap_or_else(|| var.to_string())
 }

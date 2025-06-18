@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use operator::{Extend, Operator, Rename, Serializer, Target};
 use plan::states::join::join;
 
+use super::extend::insert_non_constant_func;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
@@ -14,6 +15,7 @@ use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
 use crate::new_rml::rml_model::v2::AttributeAliaser;
 use crate::new_rml::translator::error::TranslationError;
 use crate::new_rml::translator::extend::extend_from_term_map;
+use crate::new_rml::translator::serializer::get_var_or_constant;
 
 #[derive(Debug, Clone)]
 pub struct JoinTranslator {}
@@ -105,9 +107,15 @@ impl OperatorTranslator for JoinTranslator {
             let mut extended_plan = joined.apply(&extend_op, "ExtendOp")?;
 
             let serializer = Serializer {
-                template: todo!(),
+                template: serializer_template_from_join(
+                    &child_trip_map.subject_map,
+                    &pred_vec,
+                    &ref_om,
+                    &graph_vec,
+                    store,
+                ),
                 options:  None,
-                format:   todo!(),
+                format:   operator::formats::DataFormat::NQuads,
             };
 
             extended_plan
@@ -127,7 +135,7 @@ pub fn extend_op_from_join(
     alias: &str,
     store: &SearchStore,
 ) -> NewRMLTranslationResult<Operator> {
-    let extension_func_subj =
+    let (subj_var, subj_func) =
         extend_from_term_map(store, child_base_iri, &child_subj_map.term_map)?;
 
     let extension_func_predicates_res: NewRMLTranslationResult<Vec<_>> =
@@ -151,25 +159,59 @@ pub fn extend_op_from_join(
     )?;
     let aliased_ptm_subj_term_map =
         ptm.subject_map.term_map.alias_attribute(alias);
-    let extension_func_refoms_subj =
+    let (ptm_subj_var, ptm_subj_func) =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
 
-
     let mut extend_pairs = HashMap::new();
-    extend_pairs.insert(extension_func_subj.0, extension_func_subj.1);
-    extend_pairs
-        .insert(extension_func_refoms_subj.0, extension_func_refoms_subj.1);
+
+    insert_non_constant_func(&mut extend_pairs, subj_var, subj_func);
+    insert_non_constant_func(&mut extend_pairs, ptm_subj_var, ptm_subj_func);
 
     extension_func_predicates
         .into_iter()
-        .for_each(|(attr, func)| {
-            extend_pairs.insert(attr, func);
+        .for_each(|(var, func)| {
+            insert_non_constant_func(&mut extend_pairs, var, func);
         });
 
-    extension_func_graphs.into_iter().for_each(|(attr, func)| {
-        extend_pairs.insert(attr, func);
+    extension_func_graphs.into_iter().for_each(|(var, func)| {
+        insert_non_constant_func(&mut extend_pairs, var, func);
     });
 
     let extend = Extend { extend_pairs };
     Ok(Operator::ExtendOp { config: extend })
+}
+
+pub fn serializer_template_from_join(
+    subj_map: &SubjectMap,
+    pred_vec: &[PredicateMap],
+    ref_objmap: &RefObjectMap,
+    graph_vec: &[GraphMap],
+    store: &SearchStore,
+) -> String {
+    let subj_pattern = get_var_or_constant(store, &subj_map.term_map);
+    let pred_patterns = pred_vec
+        .iter()
+        .map(|pm| get_var_or_constant(store, &pm.term_map));
+    let mut graph_patterns = graph_vec
+        .iter()
+        .map(|gm| get_var_or_constant(store, &gm.term_map));
+
+    let ptm_sm = store.sm_search_map.get(&ref_objmap.ptm_iri).unwrap();
+    let ptm_sm_var = get_var_or_constant(store, &ptm_sm.term_map);
+
+    let mut statement_patterns: Vec<_> = pred_patterns
+        .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))
+        .collect();
+
+    while let Some(graph_var) = graph_patterns.next() {
+        statement_patterns.iter_mut().for_each(|pattern| {
+            *pattern = format!("{} {}", pattern, graph_var)
+        });
+    }
+
+    statement_patterns
+        .iter_mut()
+        .for_each(|pattern| pattern.push_str(" ."));
+
+    statement_patterns.join("\n")
 }

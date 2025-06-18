@@ -93,7 +93,7 @@ impl OperatorTranslator for ExtendOperatorTranslator {
     }
 }
 
-fn insert_non_constant_func(
+pub fn insert_non_constant_func(
     extend_pairs: &mut HashMap<String, Function>,
     var: String,
     func: Function,
