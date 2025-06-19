@@ -64,7 +64,7 @@ impl OperatorTranslator for JoinTranslator {
             let alias = "join_alias";
             // Join the plans and progress the cursur
             let mut aliased_plan =
-                join(child_plan.clone(), parent_plan.clone())?.alias("")?;
+                join(child_plan.clone(), parent_plan.clone())?.alias(alias)?;
 
             let ptm_rename_op = Rename {
                 alias:        Some(alias.to_string()),
@@ -196,14 +196,15 @@ pub fn serializer_template_from_join(
         .iter()
         .map(|gm| get_var_or_constant(store, &gm.term_map));
 
-    let ptm_sm = store.sm_search_map.get(&ref_objmap.ptm_iri).unwrap();
+    let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).unwrap(); 
+    let ptm_sm = store.sm_search_map.get(&ptm.subject_map.term_map.identifier).unwrap();
     let ptm_sm_var = get_var_or_constant(store, &ptm_sm.term_map);
 
     let mut statement_patterns: Vec<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))
         .collect();
 
-    while let Some(graph_var) = graph_patterns.next() {
+    for graph_var in graph_patterns {
         statement_patterns.iter_mut().for_each(|pattern| {
             *pattern = format!("{} {}", pattern, graph_var)
         });
