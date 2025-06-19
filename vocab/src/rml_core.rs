@@ -67,4 +67,10 @@ pub mod CLASS {
     pub const BLANKNODE: PAIR = (SUPER_IRI, "BlankNode");
     pub const LITERAL: PAIR = (SUPER_IRI, "Literal");
     pub const DEFAULT_GRAPH: PAIR = (SUPER_IRI, "defaultGraph");
+
+
+
+    pub const URI : PAIR = (SUPER_IRI, "URI");
+    pub const UNSAFE_IRI : PAIR = (SUPER_IRI, "UnsafeIRI");
+    pub const UNSAFE_URI : PAIR = (SUPER_IRI, "UnsafeURI");
 }
