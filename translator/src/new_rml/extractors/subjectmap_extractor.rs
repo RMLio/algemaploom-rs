@@ -40,7 +40,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
 
         if term_map.term_type == vocab::rml_core::CLASS::LITERAL.to_rcterm() {
             return Err(ParseError::GenericError(
-                    "SubjectMap can only have rr:Iri or rr:BlankNode as rr:termType!"
+                    "SubjectMap can only have rml:IRI rml:UnsafeIRI, rml:URI, rml:UnsafeURI or rml:BlankNode as rml:termType!"
                         .to_string(),
                 ).into());
         }

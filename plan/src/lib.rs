@@ -105,11 +105,14 @@ impl<T> Plan<T> {
             }
         };
 
-        update_fragment.to.push(new_fragment.to_string());
+        if !update_fragment.to.contains(&new_fragment.to_string()){
 
-        fragment_node.operator = Operator::FragmentOp {
-            config: update_fragment,
-        };
+            update_fragment.to.push(new_fragment.to_string());
+
+            fragment_node.operator = Operator::FragmentOp {
+                config: update_fragment,
+            };
+        }
     }
 
     /// Get the [Fragmenter] operator closest to the current cursor 
@@ -326,6 +329,7 @@ mod tests {
         };
         let rename_op = Operator::RenameOp {
             config: Rename {
+                alias: None, 
                 rename_pairs: HashMap::from([(
                     "first".to_string(),
                     "last".to_string(),
