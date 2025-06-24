@@ -46,8 +46,7 @@ impl TermMap {
                     }
                     RMLTermTypeKind::BlankNode => {
                         self.expression.get_value().cloned()
-                    }
-                    RMLTermTypeKind::Literal => {
+                    } RMLTermTypeKind::Literal => {
                         self.expression
                             .get_value()
                             .cloned()
@@ -89,6 +88,9 @@ impl TermMap {
     pub fn is_iri_term_type(&self) -> bool {
         self.term_type == vocab::rml_core::CLASS::IRI.to_rcterm()
             || self.term_type == vocab::r2rml::CLASS::IRI.to_rcterm()
+            || self.term_type == vocab::rml_core::CLASS::UNSAFE_IRI.to_rcterm()
+            || self.term_type == vocab::rml_core::CLASS::UNSAFE_URI.to_rcterm()
+            || self.term_type == vocab::rml_core::CLASS::URI.to_rcterm()
     }
 
     pub fn is_bnode_term_type(&self) -> bool {
