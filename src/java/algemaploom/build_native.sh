@@ -16,20 +16,22 @@ rm -rf target
 
 # Compile Rust library
 echo "==> Building Rust library for Linux x86..."
+echo "==> Check target/x86_64-unknown-linux-gnu/log.txt for errors!"
 mkdir -p target/x86_64-unknown-linux-gnu
-cargo build --lib --release --features=jni --target=x86_64-unknown-linux-gnu > target/x86_64-unknown-linux-gnu/log.txt 2>&1
+cargo build --lib --release --features=jni --target=x86_64-unknown-linux-gnu >target/x86_64-unknown-linux-gnu/log.txt 2>&1
 
 echo "==> Building Rust library for Windows x86..."
+echo "==> Check target/x86_64-pc-windows-gnu/log.txt for errors!"
 mkdir -p target/x86_64-pc-windows-gnu
-cargo build --lib --release --features=jni --target=x86_64-pc-windows-gnu > target/x86_64-pc-windows-gnu/log.txt 2>&1
+cargo build --lib --release --features=jni --target=x86_64-pc-windows-gnu >target/x86_64-pc-windows-gnu/log.txt 2>&1
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	echo "==> Building Rust library for Apple x86..."
 	mkdir -p target/x86_64-apple-darwin
-	cargo build --lib --release --features=jni --target=x86_64-apple-darwin > target/x86_64-apple-darwin/log.txt 2>&1
+	cargo build --lib --release --features=jni --target=x86_64-apple-darwin >target/x86_64-apple-darwin/log.txt 2>&1
 	echo "==> Building Rust library for Apple aarch64..."
 	mkdir -p target/aarch64-apple-darwin
-	cargo build --lib --release --features=jni --target=aarch64-apple-darwin > target/aarch64-apple-darwin/log.txt 2>&1
+	cargo build --lib --release --features=jni --target=aarch64-apple-darwin >target/aarch64-apple-darwin/log.txt 2>&1
 else
 	echo "==> Building Rust library for Apple x86/aarch64 skipped, only supported on native Apple due to license issues."
 fi
