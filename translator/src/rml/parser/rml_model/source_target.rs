@@ -141,6 +141,7 @@ pub enum SourceType {
     RDB,
     Kafka,
     TCP,
+    HTML,
 }
 
 impl Display for SourceType {
@@ -151,6 +152,7 @@ impl Display for SourceType {
             SourceType::RDB => write!(f, "RDataBase"),
             SourceType::Kafka => write!(f, "Kafka Stream"),
             SourceType::TCP => write!(f, "Websocket"),
+            SourceType::HTML => write!(f, "HTML"),
         }
     }
 }

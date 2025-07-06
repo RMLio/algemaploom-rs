@@ -11,6 +11,7 @@ pub enum ReferenceFormulation {
     XMLQuery,
     SQLQuery,
     SPARQL,
+    CSS3,
 }
 
 #[derive(

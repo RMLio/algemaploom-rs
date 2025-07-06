@@ -72,6 +72,11 @@ impl TryFrom<&ReferenceFormulation>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath)
                     }
+                    value
+                        if value == vocab::query::CLASS::HTML.to_rcterm() =>
+                    {
+                        Ok(formats::ReferenceFormulation::CSS3)
+                    }
                     value => {
                         Err(TranslationError::SourceError(format!(
                             "Unsupported reference formulation: {}",
@@ -125,6 +130,7 @@ pub enum RMLReferenceFormulationTypeKind {
     JSONPath,
     CSVRows,
     XPath,
+    CSS3,
     Parent,
     XPathNamespace { prefix: String, uri: String },
 }
@@ -150,6 +156,9 @@ impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
             }
             value if value == vocab::query::CLASS::XPATH.to_rcterm() => {
                 Ok(RMLReferenceFormulationTypeKind::XPath)
+            }
+            value if value == vocab::query::CLASS::HTML.to_rcterm() => {
+                Ok(RMLReferenceFormulationTypeKind::CSS3)
             }
             _ => {
                 Err(ParseError::GenericError(format!(
