@@ -44,12 +44,22 @@ pub fn default_file_output(path: String) -> Output {
     }
 }
 
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LdesInformation{
+    pub identifier: String, 
+    pub ldes_eventstream: HashMap<String, String>,
+    pub ldes_base_iri: Iri,
+    pub ldes_generate_immutable_iri: bool
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LogicalTarget {
     pub identifier:    String,
     pub compression:   Option<RcTerm>,
     pub serialization: RcTerm,
     pub output_type:   IOType,
+    pub ldes: Option<LdesInformation>,
     pub config:        HashMap<String, String>,
 }
 
@@ -62,6 +72,7 @@ impl Default for LogicalTarget {
                 vocab::formats::CLASS::NQUADS.to_string(),
             )),
             output_type:   Default::default(),
+            ldes:          None,
             config:        Default::default(),
         }
     }

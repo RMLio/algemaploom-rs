@@ -139,4 +139,25 @@ mod tests {
 
         Ok(())
     }
+    #[test]
+    fn ldes_subjectmap_test() -> ExtractorResult<()> {
+        //TODO fix this test
+        let graph = load_graph!("rmlmapper-custom/rml-ldes/RMLLDES0001a/base.rml.ttl")
+       
+        let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
+        let triple = graph
+            .triples_matching(Any, [sub_pred], Any)
+            .next()
+            .unwrap()
+            .unwrap();
+        let sub_ref = triple.o();
+        let subj_map =
+            SubjectMap::create_term_map(&RcTerm::from_term(sub_ref), &graph)?;
+
+        assert_eq!(subj_map.tm_info.term_map_type, TermMapType::Template);
+        assert!(subj_map.classes.len() == 0);
+
+        Ok(())
+    }
 }
+
