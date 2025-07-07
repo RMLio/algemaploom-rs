@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use operator::IOType;
+use sophia_api::term::FromTerm;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
@@ -23,7 +23,7 @@ impl Extractor<LdesInformation> for LdesInformation {
         
         let ldes_base_iri_term = get_object(graph, subject, &ldes_baseiri_pred)?;
         let ldes_base_iri_string = rcterm_to_string(&ldes_base_iri_term);
-        let ldes_base_iri = sophia_api::prelude::Iri::new_unchecked(ldes_base_iri_string);
+        let ldes_base_iri = RcTerm::from_term(sophia_api::prelude::Iri::new_unchecked(ldes_base_iri_string));
         
         let ldes_generate_immutable_iri = get_object(graph, subject, &ldes_generate_immutable_pred)
             .ok()

@@ -77,3 +77,69 @@ impl Extractor<LogicalTarget> for LogicalTarget {
         })
     }
 }
+
+
+
+#[cfg(test)]
+mod tests {
+    use std::fs::File;
+    use std::io::BufReader;
+    use std::path::PathBuf;
+
+    use sophia_api::graph::Graph;
+    use sophia_api::prelude::Any;
+    use sophia_api::term::FromTerm;
+    use sophia_api::triple::Triple;
+    use sophia_term::RcTerm;
+
+    use crate::rml::parser::extractors::io::load_graph_bread;
+    use crate::rml::parser::extractors::{
+        ExtractorResult, FromVocab, TermMapExtractor,
+    };
+    use crate::rml::parser::rml_model::term_map::{SubjectMap, TermMapType};
+    use crate::{load_graph, test_case};
+
+    #[test]
+    fn extract_logical_target_ldes() -> ExtractorResult<()> {
+        use crate::rml::parser::rml_model::source_target::LogicalTarget;
+        use super::Extractor;
+        
+        let graph = load_graph!("rmlmapper-custom/rml-ldes/bluebike/base.rml.ttl")?;
+        
+        let ldes_target_ref = RcTerm::from_term(
+            sophia_api::prelude::Iri::new_unchecked("http://example.com/rules/#LDESLogicalTarget")
+        );
+        
+        let logical_target = LogicalTarget::extract_self(&ldes_target_ref, &graph)?;
+        
+        assert!(logical_target.ldes.is_some());
+        let ldes_info = logical_target.ldes.as_ref().unwrap();
+        
+        let expected_base_iri = RcTerm::from_term(
+            sophia_api::prelude::Iri::new_unchecked("https://blue-bike.be/ldes.ttl")
+        );
+        assert_eq!(ldes_info.ldes_base_iri, expected_base_iri);
+        assert_eq!(ldes_info.ldes_generate_immutable_iri, false);
+        
+        assert!(ldes_info.ldes_eventstream.contains_key("timestampPath"));
+        assert_eq!(
+            ldes_info.ldes_eventstream.get("timestampPath").unwrap(),
+            "http://purl.org/dc/terms/created"
+        );
+        
+        assert!(ldes_info.ldes_eventstream.contains_key("versionOfPath"));
+        assert_eq!(
+            ldes_info.ldes_eventstream.get("versionOfPath").unwrap(),
+            "http://purl.org/dc/terms/isVersionOf"
+        );
+        
+        assert!(ldes_info.ldes_eventstream.contains_key("treeShape"));
+        assert_eq!(
+            ldes_info.ldes_eventstream.get("treeShape").unwrap(),
+            "https://blue-bike.be/shape.ttl"
+        );
+
+        Ok(())
+    }
+}
+

@@ -49,7 +49,7 @@ pub fn default_file_output(path: String) -> Output {
 pub struct LdesInformation{
     pub identifier: String, 
     pub ldes_eventstream: HashMap<String, String>,
-    pub ldes_base_iri: Iri,
+    pub ldes_base_iri: RcTerm,
     pub ldes_generate_immutable_iri: bool
 }
 
