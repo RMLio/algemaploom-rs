@@ -38,7 +38,7 @@
         void:dataDump <file://./output-base.nq>;
     ];
     rmlt:serialization formats:N-Quads;
-    rmlt:ldes [ a ldes:EventStream;
+    rmlt:ldes [ a ldes:EvenStream;
       ldes:timestampPath dct:created;
       ldes:versionOfPath dct:isVersionOf;
       tree:shape <https://blue-bike.be/shape.ttl>;
@@ -178,7 +178,6 @@
   rr:predicateObjectMap <#BlueBikeStationPropertyName>;
   rr:predicateObjectMap <#BlueBikeStationPropertyID>;
   rr:predicateObjectMap <#BlueBikeStationPropertyAvailableBikes>;
-  rr:predicateObjectMap <#BlueBikeStationPropertyMaximumCapacity>;
   rr:predicateObjectMap <#BlueBikeStationPropertyLatitude>;
   rr:predicateObjectMap <#BlueBikeStationPropertyLongitude>;
   rr:predicateObjectMap <#BlueBikeStationPropertyCreated>;
@@ -224,7 +223,6 @@
   rr:predicateObjectMap <#BlueBikeStationPropertyName>;
   rr:predicateObjectMap <#BlueBikeStationPropertyID>;
   rr:predicateObjectMap <#BlueBikeStationPropertyAvailableBikes>;
-  rr:predicateObjectMap <#BlueBikeStationPropertyMaximumCapacity>;
   rr:predicateObjectMap <#BlueBikeStationPropertyLatitude>;
   rr:predicateObjectMap <#BlueBikeStationPropertyLongitude>;
   rr:predicateObjectMap <#BlueBikeStationPropertyCreated>;

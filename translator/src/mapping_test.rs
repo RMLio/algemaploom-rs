@@ -5,7 +5,7 @@ use crate::rml::parser::extractors::io::parse_file as parse_rml_file;
 use crate::rml::OptimizedRMLDocumentTranslator;
 use crate::LanguageTranslator;
 
-/// Execute mapping from RML file and return the operator plan as string
+/// Execute mapping from RML file and return the operator plan as JSON string
 pub fn execute_mapping(mapping_file_path: &str) -> Result<String, Box<dyn std::error::Error>> {
     println!("🔄 Executing mapping: {}", mapping_file_path);
     
@@ -23,33 +23,39 @@ pub fn execute_mapping(mapping_file_path: &str) -> Result<String, Box<dyn std::e
             format!("Translation error: {:?}", e)
         })?;
     
-    Ok(format!("{:#?}", plan))
+    let plan_json = plan.to_json_string()
+        .map_err(|e| format!("JSON serialization failed: {:?}", e))?;
+    
+    println!("\n📋 Generated Mapping Plan (JSON):");
+    println!("{}", plan_json);
+    
+    Ok(plan_json)
 }
 
-pub fn parse_expected_output(output_file_path: &str) -> Result<String, Box<dyn std::error::Error>> {
-    println!("📄 Reading expected output: {}", output_file_path);
+pub fn parse_expected_mapping(mapping_file_path: &str) -> Result<String, Box<dyn std::error::Error>> {
+    println!("📄 Reading expected mapping: {}", mapping_file_path);
     
-    if !Path::new(output_file_path).exists() {
-        return Err(format!("Output file not found: {}", output_file_path).into());
+    if !Path::new(mapping_file_path).exists() {
+        return Err(format!("Expected mapping file not found: {}", mapping_file_path).into());
     }
     
-    let content = fs::read_to_string(output_file_path)?;
+    let content = fs::read_to_string(mapping_file_path)?;
     Ok(content)
 }
 
 pub fn integration_test(
     mapping_file: &str, 
-    expected_output_file: &str
+    expected_mapping_file: &str
 ) -> Result<bool, Box<dyn std::error::Error>> {
     println!("\n🧪 Running integration test:");
     println!("📋 Mapping: {}", mapping_file);
-    println!("📄 Expected output: {}", expected_output_file);
+    println!("📄 Expected mapping: {}", expected_mapping_file);
     
     let start_time = std::time::Instant::now();
     
     let actual_output = execute_mapping(mapping_file)?;
     
-    let expected_output = parse_expected_output(expected_output_file)?;
+    let expected_output = parse_expected_mapping(expected_mapping_file)?;
     
     let duration = start_time.elapsed();
     
@@ -61,10 +67,22 @@ pub fn integration_test(
     println!("  - Expected output length: {} chars", expected_output.len());
     println!("  - Execution time: {:?}", duration);
     
-    let success = has_actual && has_expected;
+    // Parse both JSONs for comparison
+    let actual_json: serde_json::Value = serde_json::from_str(&actual_output)
+        .map_err(|e| format!("Failed to parse actual output as JSON: {:?}", e))?;
+    
+    let expected_json: serde_json::Value = serde_json::from_str(&expected_output)
+        .map_err(|e| format!("Failed to parse expected output as JSON: {:?}", e))?;
+    
+    let jsons_match = actual_json == expected_json;
+    
+    println!("\n📄 Final Mapping Plan Output:");
+    println!("{}", actual_output);
+    
+    let success = has_actual && has_expected && jsons_match;
     
     if success {
-        println!("✅ Integration test PASSED");
+        println!("✅ Integration test PASSED - JSON mappings match!");
     } else {
         println!("❌ Integration test FAILED");
         if !has_actual {
@@ -72,6 +90,10 @@ pub fn integration_test(
         }
         if !has_expected {
             println!("  - No expected output found");
+        }
+        if has_actual && has_expected && !jsons_match {
+            println!("  - JSON mappings do not match");
+            println!("  - Expected JSON structure differs from actual");
         }
     }
     
@@ -86,9 +108,9 @@ mod tests {
     #[ignore] // Use `cargo test -- --ignored` to run
     fn test_ldes_bluebike_case() {
         let mapping_file = "resources/test/rmlmapper-custom/rml-ldes/bluebike/base.rml.ttl";
-        let output_file = "resources/test/rmlmapper-custom/rml-ldes/bluebike/output-base.nq";
+        let expected_mapping_file = "resources/test/rmlmapper-custom/rml-ldes/bluebike/expected_mapping.json";
         
-        match integration_test(mapping_file, output_file) {
+        match integration_test(mapping_file, expected_mapping_file) {
             Ok(success) => {
                 assert!(success, "LDES BlueBike test should pass");
                 println!("✅ LDES BlueBike test completed successfully");

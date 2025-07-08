@@ -83,6 +83,17 @@ impl Extractor<TermMapInfo> for TermMapInfo {
 
         let mut term_type = None;
 
+
+        //Implicit term type derivation for constant-valued term maps
+        if term_map_type == TermMapType::Constant {
+            term_type = match term_value {
+                RcTerm::Iri(_) => Some(TermKind::Iri),
+                RcTerm::BlankNode(_) => Some(TermKind::BlankNode),
+                RcTerm::Literal(_) => Some(TermKind::Literal),
+                _ => None,
+            };
+        }
+        
         //Explicit term type casting trough rr:termtype predicate
         if let Ok(term_type_soph) =
             get_object(graph_ref, subj_ref, &term_type_pred)
@@ -105,15 +116,6 @@ impl Extractor<TermMapInfo> for TermMapInfo {
             };
         }
 
-        //Implicit term type derivation for constant-valued term maps
-        if term_map_type == TermMapType::Constant {
-            term_type = match term_value {
-                RcTerm::Iri(_) => Some(TermKind::Iri),
-                RcTerm::BlankNode(_) => Some(TermKind::BlankNode),
-                RcTerm::Literal(_) => Some(TermKind::Literal),
-                _ => None,
-            };
-        }
 
         let logical_target_iris = get_objects(
             graph_ref,
