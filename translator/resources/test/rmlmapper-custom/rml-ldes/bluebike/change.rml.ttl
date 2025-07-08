@@ -38,7 +38,7 @@
         void:dataDump <file://./output-change.nq>;
     ];
     rmlt:serialization formats:N-Quads;
-    rmlt:ldes [ a ldes:EvenStream;
+    rmlt:ldes [ a ldes:EventStream;
       ldes:timestampPath dct:created;
       ldes:versionOfPath dct:isVersionOf;
       tree:shape <https://blue-bike.be/shape.ttl>;

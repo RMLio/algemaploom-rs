@@ -118,6 +118,7 @@ mod tests {
         let expected_base_iri = RcTerm::from_term(
             sophia_api::prelude::Iri::new_unchecked("https://blue-bike.be/ldes.ttl")
         );
+        println!("ldes_info: {:?}", ldes_info);
         assert_eq!(ldes_info.ldes_base_iri, expected_base_iri);
         assert_eq!(ldes_info.ldes_generate_immutable_iri, false);
         
