@@ -7,6 +7,7 @@ pub mod new_rml;
 pub mod shexml;
 pub mod normalized_rml; 
 pub mod error; 
+pub mod mapping_test;
 
 #[cfg(test)]
 mod test_macro;

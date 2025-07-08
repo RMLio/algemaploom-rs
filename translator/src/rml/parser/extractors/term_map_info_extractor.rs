@@ -91,6 +91,12 @@ impl Extractor<TermMapInfo> for TermMapInfo {
             let iri_class = vocab::r2rml::CLASS::IRI.to_rcterm();
             let bnode_class = vocab::r2rml::CLASS::BLANKNODE.to_rcterm();
 
+            // Debug: print both the value and its type for diagnosis
+            println!(
+                "term_type_soph: {:?}, iri_class: {:?}, lit_class: {:?}, bnode_class: {:?}",
+                term_type_soph, iri_class, lit_class, bnode_class
+            );
+
             term_type = match term_type_soph {
                 iri if iri == iri_class => Some(TermKind::Iri),
                 iri if iri == bnode_class => Some(TermKind::BlankNode),

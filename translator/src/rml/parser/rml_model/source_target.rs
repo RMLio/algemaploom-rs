@@ -124,6 +124,27 @@ impl From<&LogicalTarget> for operator::Target {
         }
         configuration.extend(val.config.clone());
 
+        if let Some(ldes_info) = &val.ldes {
+            configuration.insert(
+                "ldes_base_iri".to_string(),
+                rcterm_to_string(&ldes_info.ldes_base_iri),
+            );
+            
+            configuration.insert(
+                "ldes_generate_immutable_iri".to_string(),
+                ldes_info.ldes_generate_immutable_iri.to_string(),
+            );
+            
+            if !ldes_info.ldes_eventstream.is_empty() {
+                let ldes_eventstream_json = serde_json::to_string(&ldes_info.ldes_eventstream)
+                    .unwrap_or_else(|_| "{}".to_string());
+                configuration.insert(
+                    "ldes_eventstream".to_string(),
+                    ldes_eventstream_json,
+                );
+            }
+        }
+
         let data_format = serialization_to_dataformat(&val.serialization);
         Target {
             configuration,
