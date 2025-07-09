@@ -15,4 +15,7 @@ pub mod PROPERTY {
     pub const TARGET: PAIR = (IRI, "target");
     pub const SERIALIZATION: PAIR = (IRI, "serialization");
     pub const COMPRESSION: PAIR = (IRI, "compression");
+    pub const LDES: PAIR = (IRI, "ldes");
+    pub const LDESBASE: PAIR = (IRI, "ldesBaseIRI");  
+    pub const LDESIMMUTABLE: PAIR = (IRI, "ldesGenerateImmutableIRI");
 }

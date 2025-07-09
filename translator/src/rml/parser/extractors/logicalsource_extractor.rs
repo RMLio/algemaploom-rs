@@ -135,4 +135,23 @@ mod tests {
         assert!(logical_source.iterator.is_none());
         Ok(())
     }
+
+    #[test]
+    fn html_logical_source_test() -> ExtractorResult<()> {
+        let graph: FastGraph =
+            load_graph!("rmlmapper-custom/test-cases-HTML/RMLTC0001a-HTML/mapping.ttl")?;
+        let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let triple = graph.triples_matching(Any, [sub_pred], Any).next().unwrap().unwrap();
+
+        let sub_ref = triple.o();
+        let logical_source = LogicalSource::extract_self(&RcTerm::from_term(sub_ref), &graph)?;
+
+        assert_eq!(
+            logical_source.reference_formulation,
+            vocab::query::CLASS::HTML.to_rcterm()
+        );
+        assert_eq!(logical_source.iterator.unwrap(), "table tbody tr");
+        Ok(())
+    }
+
 }

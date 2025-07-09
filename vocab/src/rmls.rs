@@ -5,7 +5,7 @@ pub mod CLASS {
     use crate::PAIR;
     pub const KAFKASTREAM: PAIR = (IRI, "KafkaStream");
     pub const TCPSOCKETSTREAM: PAIR = (IRI, "TcpSocketStream");
-
+    pub const HTML: PAIR = (IRI, "HTML");
 }
 
 pub mod PROPERTY {

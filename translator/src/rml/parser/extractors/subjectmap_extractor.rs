@@ -37,6 +37,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
             Some(ttype)
                 if ttype != TermKind::Iri && ttype != TermKind::BlankNode =>
             {
+                // Print more data about the tm_info for debugging
                 return Err(ParseError::GenericError(
                     "SubjectMap can only have rr:Iri or rr:BlankNode as rr:termType!"
                         .to_string(),
@@ -138,5 +139,6 @@ mod tests {
         assert!(subj_map.classes.len() == 0);
 
         Ok(())
-    }
+    } 
 }
+

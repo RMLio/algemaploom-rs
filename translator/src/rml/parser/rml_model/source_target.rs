@@ -44,12 +44,22 @@ pub fn default_file_output(path: String) -> Output {
     }
 }
 
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LdesInformation{
+    pub identifier: String, 
+    pub ldes_eventstream: HashMap<String, String>,
+    pub ldes_base_iri: RcTerm,
+    pub ldes_generate_immutable_iri: bool
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LogicalTarget {
     pub identifier:    String,
     pub compression:   Option<RcTerm>,
     pub serialization: RcTerm,
     pub output_type:   IOType,
+    pub ldes: Option<LdesInformation>,
     pub config:        HashMap<String, String>,
 }
 
@@ -62,6 +72,7 @@ impl Default for LogicalTarget {
                 vocab::formats::CLASS::NQUADS.to_string(),
             )),
             output_type:   Default::default(),
+            ldes:          None,
             config:        Default::default(),
         }
     }
@@ -113,6 +124,27 @@ impl From<&LogicalTarget> for operator::Target {
         }
         configuration.extend(val.config.clone());
 
+        if let Some(ldes_info) = &val.ldes {
+            configuration.insert(
+                "ldes_base_iri".to_string(),
+                rcterm_to_string(&ldes_info.ldes_base_iri),
+            );
+            
+            configuration.insert(
+                "ldes_generate_immutable_iri".to_string(),
+                ldes_info.ldes_generate_immutable_iri.to_string(),
+            );
+            
+            if !ldes_info.ldes_eventstream.is_empty() {
+                let ldes_eventstream_json = serde_json::to_string(&ldes_info.ldes_eventstream)
+                    .unwrap_or_else(|_| "{}".to_string());
+                configuration.insert(
+                    "ldes_eventstream".to_string(),
+                    ldes_eventstream_json,
+                );
+            }
+        }
+
         let data_format = serialization_to_dataformat(&val.serialization);
         Target {
             configuration,
@@ -141,6 +173,7 @@ pub enum SourceType {
     RDB,
     Kafka,
     TCP,
+    HTML,
 }
 
 impl Display for SourceType {
@@ -151,6 +184,7 @@ impl Display for SourceType {
             SourceType::RDB => write!(f, "RDataBase"),
             SourceType::Kafka => write!(f, "Kafka Stream"),
             SourceType::TCP => write!(f, "Websocket"),
+            SourceType::HTML => write!(f, "HTML"),
         }
     }
 }

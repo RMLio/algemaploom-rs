@@ -20,6 +20,7 @@ pub mod error;
 mod functionmap_extractor;
 mod graphmap_extractor;
 pub mod io;
+mod ldes_extractor;
 mod logicalsource_extractor;
 mod logicaltarget_extractor;
 mod objectmap_extractor;

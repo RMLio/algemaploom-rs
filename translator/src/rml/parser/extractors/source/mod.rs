@@ -3,6 +3,7 @@ mod file_source;
 mod rdb_source;
 mod kafka_source;
 mod tcp_source;
+mod html_source;
 
 use std::collections::HashMap;
 
@@ -78,6 +79,10 @@ fn extract_typed_source(
 
         iri_string if iri_string == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
             tcp_source::extract_tcp_source(subject, graph)
+        }
+
+        iri_string if iri_string == vocab::rmls::CLASS::HTML.to_rcterm() => {
+            html_source::extract_html_source(subject, graph)
         }
 
         invalid_iri => {

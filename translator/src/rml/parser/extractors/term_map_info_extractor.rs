@@ -83,21 +83,6 @@ impl Extractor<TermMapInfo> for TermMapInfo {
 
         let mut term_type = None;
 
-        //Explicit term type casting trough rr:termtype predicate
-        if let Ok(term_type_soph) =
-            get_object(graph_ref, subj_ref, &term_type_pred)
-        {
-            let lit_class = vocab::r2rml::CLASS::LITERAL.to_rcterm();
-            let iri_class = vocab::r2rml::CLASS::IRI.to_rcterm();
-            let bnode_class = vocab::r2rml::CLASS::BLANKNODE.to_rcterm();
-
-            term_type = match term_type_soph {
-                iri if iri == iri_class => Some(TermKind::Iri),
-                iri if iri == bnode_class => Some(TermKind::BlankNode),
-                iri if iri == lit_class => Some(TermKind::Literal),
-                _ => None,
-            };
-        }
 
         //Implicit term type derivation for constant-valued term maps
         if term_map_type == TermMapType::Constant {
@@ -108,6 +93,29 @@ impl Extractor<TermMapInfo> for TermMapInfo {
                 _ => None,
             };
         }
+        
+        //Explicit term type casting trough rr:termtype predicate
+        if let Ok(term_type_soph) =
+            get_object(graph_ref, subj_ref, &term_type_pred)
+        {
+            let lit_class = vocab::r2rml::CLASS::LITERAL.to_rcterm();
+            let iri_class = vocab::r2rml::CLASS::IRI.to_rcterm();
+            let bnode_class = vocab::r2rml::CLASS::BLANKNODE.to_rcterm();
+
+            // Debug: print both the value and its type for diagnosis
+            println!(
+                "term_type_soph: {:?}, iri_class: {:?}, lit_class: {:?}, bnode_class: {:?}",
+                term_type_soph, iri_class, lit_class, bnode_class
+            );
+
+            term_type = match term_type_soph {
+                iri if iri == iri_class => Some(TermKind::Iri),
+                iri if iri == bnode_class => Some(TermKind::BlankNode),
+                iri if iri == lit_class => Some(TermKind::Literal),
+                _ => None,
+            };
+        }
+
 
         let logical_target_iris = get_objects(
             graph_ref,

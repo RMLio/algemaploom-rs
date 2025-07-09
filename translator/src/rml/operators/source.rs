@@ -59,6 +59,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             SourceType::RDB => operator::IOType::RDB,
             SourceType::TCP => operator::IOType::Websocket,
             SourceType::Kafka => operator::IOType::Kafka,
+            SourceType::HTML => operator::IOType::File,
         };
 
         Source {
