@@ -1,3 +1,4 @@
+use log::debug;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
@@ -62,6 +63,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
     where
         TTerm: Term + Clone,
     {
+        debug!("Object map is extracting for subj ref: {:?}", subj_ref);
         let datatype_map = extract_sub_expr_maps(
             subj_ref.borrow_term(),
             graph_ref,
@@ -87,6 +89,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 
         let term_map =
             TermMap::extract_self(subj_ref.borrow_term(), graph_ref)?;
+        debug!("Object map is extracting with term map: {:?}", term_map);
 
         Ok(ObjectMap {
             term_map,
