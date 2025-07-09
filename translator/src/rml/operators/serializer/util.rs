@@ -17,7 +17,7 @@ pub fn get_triples_strings(
 
     let cls_templates = sm.classes.iter().map(|cls| {
         format!(
-            "{} <{}> {}",
+            "{} <{}> <{}>",
             sm_var,
             vocab::rdf::PROPERTY::TYPE.to_string(),
             rcterm_to_string(cls)
