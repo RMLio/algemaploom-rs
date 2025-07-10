@@ -9,6 +9,7 @@ pub mod PROPERTY {
     pub const GATHER_AS: PAIR = (IRI, "gatherAs");
     pub const STRATEGY: PAIR = (IRI, "strategy");
     pub const CARTESIAN_PRODUCT: PAIR = (IRI, "cartesianProduct"); 
+    pub const ALLOW_EMPTY: PAIR = (IRI, "allowEmptyListAndContainer"); 
     pub const APPEND: PAIR = (IRI, "append"); 
 }
 
