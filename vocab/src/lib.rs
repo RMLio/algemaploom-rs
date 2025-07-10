@@ -9,6 +9,7 @@
 //! # Example 
 //! ```
 //! use vocab::rml_core;
+//! use vocab::ToString; 
 //! 
 //! let rml_triples_map = rml_core::CLASS::TRIPLES_MAP;
 //! 
