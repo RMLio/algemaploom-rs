@@ -14,4 +14,7 @@ pub mod CLASS {
 
     pub const RDF_OBJECT: PAIR = (IRI, "Object");
     pub const RDF_LIST: PAIR = (IRI, "List");
+    pub const RDF_ALT: PAIR = (IRI, "Alt");
+    pub const RDF_BAG: PAIR = (IRI, "Bag");
+    pub const RDF_SEQ: PAIR = (IRI, "Seq");
 }

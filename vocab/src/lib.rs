@@ -9,6 +9,7 @@
 //! # Example 
 //! ```
 //! use vocab::rml_core;
+//! use vocab::ToString; 
 //! 
 //! let rml_triples_map = rml_core::CLASS::TRIPLES_MAP;
 //! 
@@ -41,6 +42,7 @@ pub mod void;
 pub mod xsd;
 pub mod rml_lv;
 pub mod rml_fnml;
+pub mod rml_cc; 
 
 pub type PAIR<'a> = (&'a str, &'a str);
 
