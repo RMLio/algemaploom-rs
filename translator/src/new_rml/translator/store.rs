@@ -87,7 +87,7 @@ impl SearchStore<'_> {
                 .insert(tm_id.clone(), tm.get_parent_tms_pred_refom_pairs());
 
             let sm = &tm.subject_map;
-            let sm_ident = sm.term_map.identifier.clone();
+            let sm_ident = sm.term_map_info.identifier.clone();
             sm_search_map.insert(sm_ident.clone(), sm);
 
             termm_id_quad_var_map
@@ -96,7 +96,7 @@ impl SearchStore<'_> {
             let sm_gms: Vec<_> = sm
                 .graph_maps
                 .iter()
-                .map(|gm| (gm.term_map.identifier.clone(), gm))
+                .map(|gm| (gm.term_map_info.identifier.clone(), gm))
                 .collect();
 
             termm_id_quad_var_map.extend(sm_gms.iter().enumerate().map(
@@ -112,7 +112,7 @@ impl SearchStore<'_> {
                 let pom_gms: Vec<_> = pom
                     .graph_map_vec
                     .iter()
-                    .map(|gm| (gm.term_map.identifier.clone(), gm))
+                    .map(|gm| (gm.term_map_info.identifier.clone(), gm))
                     .collect();
                 let pom_gms_var_iter = pom_gms.iter().enumerate().map(
                     |(gm_idx, (gm_ident, _))| {
@@ -132,13 +132,13 @@ impl SearchStore<'_> {
                 pm_search_map = pom
                     .predicate_map_vec
                     .iter()
-                    .map(|pm| (pm.term_map.identifier.clone(), pm))
+                    .map(|pm| (pm.term_map_info.identifier.clone(), pm))
                     .collect();
 
                 let pm_var_iter = pom.predicate_map_vec.iter().enumerate().map(
                     |(pm_idx, pm)| {
                         (
-                            pm.term_map.identifier.clone(),
+                            pm.term_map_info.identifier.clone(),
                             format!(
                                 "pom_{}_{}_pm_{}",
                                 tm_count, pom_idx, pm_idx
@@ -150,12 +150,12 @@ impl SearchStore<'_> {
                 om_search_map = pom
                     .object_map_vec
                     .iter()
-                    .map(|om| (om.term_map.identifier.clone(), om))
+                    .map(|om| (om.term_map_info.identifier.clone(), om))
                     .collect();
                 let om_var_iter = pom.object_map_vec.iter().enumerate().map(
                     |(om_idx, om)| {
                         (
-                            om.term_map.identifier.clone(),
+                            om.term_map_info.identifier.clone(),
                             format!(
                                 "pom_{}_{}_om_{}",
                                 tm_count, pom_idx, om_idx

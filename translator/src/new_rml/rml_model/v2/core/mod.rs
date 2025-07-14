@@ -68,18 +68,18 @@ impl TriplesMap {
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
         let abs_ls = &self.abs_logical_source;
         if let AbstractLogicalSourceEnum::LogicalSource(ls) = &abs_ls {
-            let mut references = self.subject_map.term_map.get_ref_attributes();
+            let mut references = self.subject_map.term_map_info.get_ref_attributes();
             let sm_gm_references = self
                 .subject_map
                 .graph_maps
                 .iter()
-                .flat_map(|gm| gm.term_map.get_ref_attributes());
+                .flat_map(|gm| gm.term_map_info.get_ref_attributes());
 
             let pm_references = self
                 .predicate_object_map_vec
                 .iter()
                 .flat_map(|pom| pom.predicate_map_vec.iter())
-                .flat_map(|pm| pm.term_map.get_ref_attributes());
+                .flat_map(|pm| pm.term_map_info.get_ref_attributes());
             let om_references = self
                 .predicate_object_map_vec
                 .iter()
@@ -89,7 +89,7 @@ impl TriplesMap {
                 .predicate_object_map_vec
                 .iter()
                 .flat_map(|pom| pom.graph_map_vec.iter())
-                .flat_map(|gm| gm.term_map.get_ref_attributes());
+                .flat_map(|gm| gm.term_map_info.get_ref_attributes());
 
             references.extend(sm_gm_references);
             references.extend(pom_gm_references);
