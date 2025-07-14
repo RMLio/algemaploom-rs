@@ -13,6 +13,7 @@ use super::io::source::{
 use super::lv::{LogicalView, RMLField};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::ExtractorResult;
+use crate::new_rml::rml_model::v2::TermMapEnum;
 
 pub mod expression_map;
 
@@ -35,7 +36,7 @@ impl Display for TemplateSubString {
 pub struct TriplesMap {
     pub identifier:               RcTerm,
     pub base_iri:                 String,
-    pub subject_map:              SubjectMap,
+    pub subject_map:              TermMapEnum,
     pub ref_obj_attributes:       Vec<String>,
     pub predicate_object_map_vec: Vec<PredicateObjectMap>,
     pub abs_logical_source:       AbstractLogicalSourceEnum,
@@ -134,10 +135,10 @@ impl TriplesMap {
 
 #[derive(Debug, Clone)]
 pub struct PredicateObjectMap {
-    pub predicate_map_vec: Vec<PredicateMap>,
-    pub object_map_vec:    Vec<ObjectMap>,
+    pub predicate_map_vec: Vec<TermMapEnum>,
+    pub object_map_vec:    Vec<TermMapEnum>,
     pub ref_object_map:    Vec<RefObjectMap>,
-    pub graph_map_vec:     Vec<GraphMap>,
+    pub graph_map_vec:     Vec<TermMapEnum>,
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
