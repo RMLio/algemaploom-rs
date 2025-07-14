@@ -6,11 +6,11 @@ use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{GraphMap, CommonTermMapInfo};
 
 impl TermMapExtractor<GraphMap> for GraphMap {
-    fn create_shortcut_map(term_map: CommonTermMapInfo) -> GraphMap {
-        if term_map.is_literal_term_type() {
+    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> GraphMap {
+        if term_map_info.is_literal_term_type() {
             panic!("Constant-valued GraphMap has to be either an IRI or a BlankNode");
         }
-        Self { term_map }
+        Self { term_map_info }
     }
 
     fn create_term_map<TTerm>(
@@ -20,11 +20,11 @@ impl TermMapExtractor<GraphMap> for GraphMap {
     where
         TTerm: Term + Clone,
     {
-        let term_map = CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
-        if term_map.is_literal_term_type() {
+        let term_map_info = CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
+        if term_map_info.is_literal_term_type() {
             Err(ParseError::GenericError("GraphMap has to have a term type of either an IRI, UnsafeIRI, URI, UnsafeURI or a BlankNode".to_string()).into())
         } else {
-            Ok(GraphMap { term_map })
+            Ok(GraphMap { term_map_info })
         }
     }
 

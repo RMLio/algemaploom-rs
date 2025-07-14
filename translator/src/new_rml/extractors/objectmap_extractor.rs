@@ -50,7 +50,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         }
 
         Self {
-            term_map,
+            term_map_info: term_map,
             language_map: None,
             datatype_map: None,
         }
@@ -87,12 +87,12 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
             ],
         );
 
-        let term_map =
+        let term_map_info =
             CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
-        debug!("Object map is extracting with term map: {:?}", term_map);
+        debug!("Object map is extracting with term map info: {:?}", term_map_info);
 
         Ok(ObjectMap {
-            term_map,
+            term_map_info,
             language_map,
             datatype_map,
         })

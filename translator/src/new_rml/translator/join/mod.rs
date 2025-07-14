@@ -136,18 +136,18 @@ pub fn extend_op_from_join(
     store: &SearchStore,
 ) -> NewRMLTranslationResult<Operator> {
     let (subj_var, subj_func) =
-        extend_from_term_map(store, child_base_iri, &child_subj_map.term_map)?;
+        extend_from_term_map(store, child_base_iri, &child_subj_map.term_map_info)?;
 
     let extension_func_predicates_res: NewRMLTranslationResult<Vec<_>> =
         pred_vec
             .iter()
-            .map(|pm| extend_from_term_map(store, child_base_iri, &pm.term_map))
+            .map(|pm| extend_from_term_map(store, child_base_iri, &pm.term_map_info))
             .collect();
     let extension_func_predicates = extension_func_predicates_res?;
 
     let extension_func_graphs_res: NewRMLTranslationResult<Vec<_>> = graph_maps
         .iter()
-        .map(|gm| extend_from_term_map(store, child_base_iri, &gm.term_map))
+        .map(|gm| extend_from_term_map(store, child_base_iri, &gm.term_map_info))
         .collect();
     let extension_func_graphs = extension_func_graphs_res?;
 
@@ -158,7 +158,7 @@ pub fn extend_op_from_join(
         ),
     )?;
     let aliased_ptm_subj_term_map =
-        ptm.subject_map.term_map.alias_attribute(alias);
+        ptm.subject_map.term_map_info.alias_attribute(alias);
     let (ptm_subj_var, ptm_subj_func) =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
 
@@ -188,17 +188,17 @@ pub fn serializer_template_from_join(
     graph_vec: &[GraphMap],
     store: &SearchStore,
 ) -> String {
-    let subj_pattern = get_var_or_constant(store, &subj_map.term_map);
+    let subj_pattern = get_var_or_constant(store, &subj_map.term_map_info);
     let pred_patterns = pred_vec
         .iter()
-        .map(|pm| get_var_or_constant(store, &pm.term_map));
+        .map(|pm| get_var_or_constant(store, &pm.term_map_info));
     let mut graph_patterns = graph_vec
         .iter()
-        .map(|gm| get_var_or_constant(store, &gm.term_map));
+        .map(|gm| get_var_or_constant(store, &gm.term_map_info));
 
     let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).unwrap(); 
-    let ptm_sm = store.sm_search_map.get(&ptm.subject_map.term_map.identifier).unwrap();
-    let ptm_sm_var = get_var_or_constant(store, &ptm_sm.term_map);
+    let ptm_sm = store.sm_search_map.get(&ptm.subject_map.term_map_info.identifier).unwrap();
+    let ptm_sm_var = get_var_or_constant(store, &ptm_sm.term_map_info);
 
     let mut statement_patterns: Vec<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))

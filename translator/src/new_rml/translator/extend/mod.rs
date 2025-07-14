@@ -9,7 +9,7 @@ use super::OperatorTranslator;
 use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
 use crate::new_rml::extractors::stringify_rcterm;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    ObjectMap, RMLTermTypeKind, CommonTermMapInfo,
+    CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind, ExpressionMapTypeEnum,
@@ -54,14 +54,17 @@ impl OperatorTranslator for ExtendOperatorTranslator {
         let mut extend_pairs: HashMap<String, Function> = HashMap::new();
 
         // Extend function for the subject map
-        let (var, func) =
-            extend_from_term_map(store, base_iri, &tm.subject_map.term_map)?;
+        let (var, func) = extend_from_term_map(
+            store,
+            base_iri,
+            &tm.subject_map.term_map_info,
+        )?;
         insert_non_constant_func(&mut extend_pairs, var, func);
 
         // Extend functions for each graph map of a subject map
         for gm in &tm.subject_map.graph_maps {
             let (var, func) =
-                extend_from_term_map(store, base_iri, &gm.term_map)?;
+                extend_from_term_map(store, base_iri, &gm.term_map_info)?;
             insert_non_constant_func(&mut extend_pairs, var, func);
         }
 
@@ -69,19 +72,19 @@ impl OperatorTranslator for ExtendOperatorTranslator {
         for pom in &tm.predicate_object_map_vec {
             for gm in &pom.graph_map_vec {
                 let (var, func) =
-                    extend_from_term_map(store, base_iri, &gm.term_map)?;
+                    extend_from_term_map(store, base_iri, &gm.term_map_info)?;
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
 
             for pm in &pom.predicate_map_vec {
                 let (var, func) =
-                    extend_from_term_map(store, base_iri, &pm.term_map)?;
+                    extend_from_term_map(store, base_iri, &pm.term_map_info)?;
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
 
             for om in &pom.object_map_vec {
                 let (var, func) =
-                    extend_from_term_map(store, base_iri, &om.term_map)?;
+                    extend_from_term_map(store, base_iri, &om.term_map_info)?;
 
                 let func = extend_lang_dtype_function_for_om(
                     store, base_iri, om, func,
@@ -116,8 +119,9 @@ fn extend_lang_dtype_function_for_om(
             langtype_function: _,
         } => {
             if let Some(lang_map) = &om.language_map {
-                let langtype_function =
-                    Some(Rc::new(extension_func_from_exp_map(store, lang_map)?));
+                let langtype_function = Some(Rc::new(
+                    extension_func_from_exp_map(store, lang_map)?,
+                ));
                 Function::Literal {
                     inner_function: inner_function.clone(),
                     dtype_function: None,
@@ -126,8 +130,10 @@ fn extend_lang_dtype_function_for_om(
             } else if let Some(dtype_map) = &om.datatype_map {
                 let dtype_function = Some(Rc::new(Function::Iri {
                     base_iri:       Some(base_iri.to_string()),
-                    inner_function: extension_func_from_exp_map(store, dtype_map)?
-                        .into(),
+                    inner_function: extension_func_from_exp_map(
+                        store, dtype_map,
+                    )?
+                    .into(),
                 }));
                 Function::Literal {
                     inner_function: inner_function.clone(),
@@ -145,11 +151,12 @@ fn extend_lang_dtype_function_for_om(
 pub fn extend_from_term_map(
     store: &SearchStore,
     base_iri: &str,
-    term_map: &CommonTermMapInfo,
+    term_map_info: &CommonTermMapInfo,
 ) -> NewRMLTranslationResult<(String, Function)> {
-    let inner_func = extension_func_from_exp_map(store, &term_map.expression)?;
+    let inner_func =
+        extension_func_from_exp_map(store, &term_map_info.expression)?;
 
-    let function = match term_map.try_get_term_type_enum()? {
+    let function = match term_map_info.try_get_term_type_enum()? {
         RMLTermTypeKind::BlankNode => {
             Ok(Function::BlankNode {
                 inner_function: inner_func.into(),
@@ -172,14 +179,14 @@ pub fn extend_from_term_map(
         _ => {
             Err(TranslationError::ExtendError(format!(
                 "Given term type is unsupported: {:?}",
-                stringify_rcterm(term_map.term_type.clone())
+                stringify_rcterm(term_map_info.term_type.clone())
             )))
         }
     }?;
 
     let var = store
         .termm_id_quad_var_map
-        .get(&term_map.identifier)
+        .get(&term_map_info.identifier)
         .unwrap()
         .to_string();
     Ok((var, function))
@@ -219,7 +226,8 @@ fn fno_input_extend_function(
 ) -> NewRMLTranslationResult<(String, Rc<Function>)> {
     let param = stringify_rcterm(input_map.parameter.clone()).unwrap();
 
-    let function = extension_func_from_exp_map(store, &input_map.value_map.expression)?;
+    let function =
+        extension_func_from_exp_map(store, &input_map.value_map.expression)?;
 
     Ok((param, function.into()))
 }

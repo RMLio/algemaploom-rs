@@ -9,11 +9,11 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
 };
 
 impl TermMapExtractor<PredicateMap> for PredicateMap {
-    fn create_shortcut_map(term_map: CommonTermMapInfo) -> PredicateMap {
-        if !term_map.is_iri_term_type() {
+    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> PredicateMap {
+        if !term_map_info.is_iri_term_type() {
             panic!("Constant-valued PredicateMap has to have an IRI as value");
         }
-        PredicateMap { term_map }
+        PredicateMap { term_map_info }
     }
 
     fn create_term_map<TS>(
@@ -23,8 +23,8 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
     where
         TS: Term + Clone,
     {
-        let term_map = CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
-        Ok(PredicateMap { term_map })
+        let term_map_info = CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
+        Ok(PredicateMap { term_map_info })
     }
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
@@ -73,10 +73,10 @@ mod tests {
 
         let _ = pms.iter().try_for_each(|pm| {
             assert_eq!(
-                pm.term_map.expression.get_map_type_enum()?,
+                pm.term_map_info.expression.get_map_type_enum()?,
                 ExpressionMapTypeEnum::Constant
             );
-            assert!(pm.term_map.is_iri_term_type());
+            assert!(pm.term_map_info.is_iri_term_type());
             Ok::<(), NewRMLTranslationError>(())
         });
 

@@ -15,7 +15,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
         match tm.term_type {
             ref term if *term == vocab::rml_core::CLASS::IRI.to_rcterm() => {
                 SubjectMap {
-                    term_map:   tm,
+                    term_map_info:   tm,
                     classes:    vec![],
                     graph_maps: vec![],
                 }
@@ -35,10 +35,10 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
     where
         TS: Term + Clone,
     {
-        let term_map =
+        let term_map_info =
             CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
 
-        if term_map.term_type == vocab::rml_core::CLASS::LITERAL.to_rcterm() {
+        if term_map_info.term_type == vocab::rml_core::CLASS::LITERAL.to_rcterm() {
             return Err(ParseError::GenericError(
                     "SubjectMap can only have rml:IRI rml:UnsafeIRI, rml:URI, rml:UnsafeURI or rml:BlankNode as rml:termType!"
                         .to_string(),
@@ -59,7 +59,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
         .collect();
 
         Ok(SubjectMap {
-            term_map,
+            term_map_info,
             classes,
             graph_maps,
         })
@@ -138,7 +138,7 @@ mod tests {
         let subj_map = SubjectMap::create_term_map(sub_ref, &graph)?;
 
         assert_eq!(
-            subj_map.term_map.expression.get_map_type_enum()?,
+            subj_map.term_map_info.expression.get_map_type_enum()?,
             ExpressionMapTypeEnum::Template
         );
         assert!(subj_map.classes.is_empty());

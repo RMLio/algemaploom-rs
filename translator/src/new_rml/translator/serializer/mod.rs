@@ -36,13 +36,13 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
 
             let sm_var = store
                 .termm_id_quad_var_map
-                .get(&tm.subject_map.term_map.identifier)
+                .get(&tm.subject_map.term_map_info.identifier)
                 .map(|var| format_var(var))
                 .unwrap();
 
             let sm = tm
                 .subject_map
-                .term_map
+                .term_map_info
                 .get_constant_value()
                 .unwrap_or_else(|| sm_var.to_string());
 
@@ -108,10 +108,10 @@ fn add_graph_to_triple(
     graph_map_vec: &[GraphMap],
 ) {
     for gm in graph_map_vec.iter().filter(|gm| !gm.is_default_graph()) {
-        let gm_part = gm.term_map.get_constant_value().unwrap_or_else(|| {
+        let gm_part = gm.term_map_info.get_constant_value().unwrap_or_else(|| {
             store
                 .termm_id_quad_var_map
-                .get(&gm.term_map.identifier)
+                .get(&gm.term_map_info.identifier)
                 .map(|var| format_var(var))
                 .unwrap()
                 .to_string()
@@ -130,12 +130,12 @@ fn cproduct_pm_om_vars<'a>(
     let pm_var_iter = pom
         .predicate_map_vec
         .iter()
-        .map(|pm| get_var_or_constant(store, &pm.term_map));
+        .map(|pm| get_var_or_constant(store, &pm.term_map_info));
 
     let om_var_iter = pom
         .object_map_vec
         .iter()
-        .map(|om| get_var_or_constant(store, &om.term_map));
+        .map(|om| get_var_or_constant(store, &om.term_map_info));
 
     pm_var_iter.flat_map(move |pm_var| {
         om_var_iter
@@ -146,15 +146,15 @@ fn cproduct_pm_om_vars<'a>(
 
 pub fn get_var_or_constant(
     store: &SearchStore<'_>,
-    term_map: &CommonTermMapInfo,
+    term_map_info: &CommonTermMapInfo,
 ) -> String {
     let var = store
         .termm_id_quad_var_map
-        .get(&term_map.identifier)
+        .get(&term_map_info.identifier)
         .map(|var| format_var(var))
         .unwrap();
 
-    term_map
+    term_map_info
         .get_constant_value()
         .unwrap_or_else(|| var.to_string())
 }

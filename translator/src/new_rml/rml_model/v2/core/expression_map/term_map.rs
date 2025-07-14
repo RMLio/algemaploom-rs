@@ -22,12 +22,12 @@ pub struct CommonTermMapInfo {
     pub logical_targets: Vec<LogicalTarget>,
 }
 
-impl AttributeAliaser for CommonTermMapInfo{
+impl AttributeAliaser for CommonTermMapInfo {
     fn alias_attribute(&self, alias: &str) -> Self {
-        Self{
-            identifier: self.identifier.clone(),
-            term_type: self.term_type.clone(),
-            expression: self.expression.alias_attribute(alias),
+        Self {
+            identifier:      self.identifier.clone(),
+            term_type:       self.term_type.clone(),
+            expression:      self.expression.alias_attribute(alias),
             logical_targets: self.logical_targets.clone(),
         }
     }
@@ -46,7 +46,8 @@ impl CommonTermMapInfo {
                     }
                     RMLTermTypeKind::BlankNode => {
                         self.expression.get_value().cloned()
-                    } RMLTermTypeKind::Literal => {
+                    }
+                    RMLTermTypeKind::Literal => {
                         self.expression
                             .get_value()
                             .cloned()
@@ -183,26 +184,26 @@ impl From<TermKind> for RMLTermTypeKind {
 
 #[derive(Debug, Clone)]
 pub struct SubjectMap {
-    pub term_map:   CommonTermMapInfo,
-    pub classes:    Vec<RcTerm>,
-    pub graph_maps: Vec<GraphMap>,
+    pub term_map_info: CommonTermMapInfo,
+    pub classes:       Vec<RcTerm>,
+    pub graph_maps:    Vec<GraphMap>,
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct PredicateMap {
-    pub term_map: CommonTermMapInfo,
+    pub term_map_info: CommonTermMapInfo,
 }
 
 #[derive(Debug, Clone)]
 pub struct ObjectMap {
-    pub term_map:     CommonTermMapInfo,
-    pub language_map: Option<ExpressionMap>,
-    pub datatype_map: Option<ExpressionMap>,
+    pub term_map_info: CommonTermMapInfo,
+    pub language_map:  Option<ExpressionMap>,
+    pub datatype_map:  Option<ExpressionMap>,
 }
 
 impl ObjectMap {
     pub fn get_ref_attributes(&self) -> HashSet<String> {
-        let mut term_map_attributes = self.term_map.get_ref_attributes();
+        let mut term_map_attributes = self.term_map_info.get_ref_attributes();
         if let Some(dtype_map) = &self.datatype_map {
             term_map_attributes.extend(dtype_map.get_ref_attributes());
         }
@@ -217,12 +218,12 @@ impl ObjectMap {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct GraphMap {
-    pub term_map: CommonTermMapInfo,
+    pub term_map_info: CommonTermMapInfo,
 }
 
 impl GraphMap {
     pub fn is_default_graph(&self) -> bool {
-        if let Some(value) = self.term_map.get_constant_value() {
+        if let Some(value) = self.term_map_info.get_constant_value() {
             debug!("Graph map's constant iri is {:?}", value);
             value
                 == format!(
@@ -238,7 +239,7 @@ impl GraphMap {
 impl Default for GraphMap {
     fn default() -> Self {
         Self {
-            term_map: CommonTermMapInfo {
+            term_map_info: CommonTermMapInfo {
                 identifier:      RcTerm::from_term(BnodeId::new_unchecked(
                     uuid::Uuid::new_v4().to_string(),
                 )),
