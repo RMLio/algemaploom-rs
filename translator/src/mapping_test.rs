@@ -104,4 +104,38 @@ mod tests {
             }
         }
     }
+    #[test]
+    #[ignore]
+    fn test_kafka_mapping() {
+        let mapping_file = "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/mapping.ttl";
+        let expected_mapping_file = "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/expected_mapping.json";
+        
+        match integration_test(mapping_file, expected_mapping_file) {
+            Ok(success) => {
+                assert!(success, "Kafka mapping test should pass");
+                println!("✅ Kafka mapping test completed successfully");
+            }
+            Err(e) => {
+                println!("❌ Kafka mapping test failed: {}", e);
+                panic!("Kafka mapping test failed: {}", e);
+            }
+        }
+    }
+    #[test]
+    #[ignore]
+    fn test_2a(){
+        let mapping_file = "resources/test/csv-testcases/RMLTC0002a-CSV/mapping.ttl";
+        let expected_mapping_file = "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/expected_mapping.json";
+        
+        match integration_test(mapping_file, expected_mapping_file) {
+            Ok(success) => {
+                assert!(success, "LDES BlueBike test should pass");
+                println!("✅ LDES BlueBike test completed successfully");
+            }
+            Err(e) => {
+                println!("❌ Kafka mapping test failed: {}", e);
+                panic!("Kafka mapping test failed: {}", e);
+            }
+        }
+    }
 } 
