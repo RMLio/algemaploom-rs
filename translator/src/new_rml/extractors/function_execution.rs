@@ -3,7 +3,7 @@ use sophia_api::term::Term;
 use super::store::{get_objects, get_objects_with_ps};
 use super::term_map_extractor::term_map_from_constant_term;
 use super::{Extractor, FromVocab};
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::fnml::{FunctionExecution, InputMap};
 
 impl Extractor<FunctionExecution> for FunctionExecution {
@@ -29,7 +29,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             &[&vocab::rml_fnml::PROPERTY::FUNCTION_MAP.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|term| TermMap::extract_self(term, graph_ref).ok())
+        .filter_map(|term| CommonTermMapInfo::extract_self(term, graph_ref).ok())
         .filter_map(|tm| tm.try_get_node());
 
         let function = function.chain(function_maps).next().unwrap();

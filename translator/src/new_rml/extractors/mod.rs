@@ -10,7 +10,7 @@ use vocab::{ToString, PAIR};
 use self::error::ParseError;
 use super::error::NewRMLTranslationError;
 use crate::new_rml::extractors::store::get_objects;
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 
 mod abstract_logical_source_extractor;
 pub mod error;
@@ -38,7 +38,7 @@ mod util;
 pub type ExtractorResult<T> = Result<T, NewRMLTranslationError>;
 
 pub trait TermMapExtractor<T: Debug> {
-    fn create_shortcut_map(tm: TermMap) -> T;
+    fn create_shortcut_map(tm: CommonTermMapInfo) -> T;
 
     fn create_term_map<TTerm>(
         subj_ref: TTerm,

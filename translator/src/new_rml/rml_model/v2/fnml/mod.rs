@@ -1,6 +1,6 @@
 use sophia_term::RcTerm;
 
-use super::{core::expression_map::term_map::TermMap, AttributeAliaser};
+use super::{core::expression_map::term_map::CommonTermMapInfo, AttributeAliaser};
 
 #[derive(Debug, Clone, Hash)]
 pub struct FunctionExecution {
@@ -20,7 +20,7 @@ impl AttributeAliaser for FunctionExecution{
 #[derive(Debug, Clone, Hash)]
 pub struct InputMap {
     pub parameter: RcTerm,
-    pub value_map: TermMap,
+    pub value_map: CommonTermMapInfo,
 }
 
 impl AttributeAliaser for InputMap{

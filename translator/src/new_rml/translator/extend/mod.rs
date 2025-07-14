@@ -9,7 +9,7 @@ use super::OperatorTranslator;
 use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
 use crate::new_rml::extractors::stringify_rcterm;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    ObjectMap, RMLTermTypeKind, TermMap,
+    ObjectMap, RMLTermTypeKind, CommonTermMapInfo,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind, ExpressionMapTypeEnum,
@@ -145,7 +145,7 @@ fn extend_lang_dtype_function_for_om(
 pub fn extend_from_term_map(
     store: &SearchStore,
     base_iri: &str,
-    term_map: &TermMap,
+    term_map: &CommonTermMapInfo,
 ) -> NewRMLTranslationResult<(String, Function)> {
     let inner_func = extension_func_from_exp_map(store, &term_map.expression)?;
 

@@ -13,7 +13,7 @@ use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::extractors::store::{get_object, get_object_with_ps};
 use crate::new_rml::extractors::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    termkind_to_rml_rcterm, TermMap,
+    termkind_to_rml_rcterm, CommonTermMapInfo,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMap;
 use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapKind::NonFunction;
@@ -21,7 +21,7 @@ use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
 
 pub fn term_map_from_constant_term<TTerm>(
     term: TTerm,
-) -> ExtractorResult<TermMap>
+) -> ExtractorResult<CommonTermMapInfo>
 where
     TTerm: Term,
 {
@@ -42,7 +42,7 @@ where
         _ => RcTerm::from_term(term.borrow_term()),
     };
 
-    Ok(TermMap {
+    Ok(CommonTermMapInfo {
         identifier,
         term_type: termkind_to_rml_rcterm(term.kind())?,
         expression: ExpressionMap {
@@ -53,11 +53,11 @@ where
     })
 }
 
-impl Extractor<TermMap> for TermMap {
+impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<TermMap>
+    ) -> super::ExtractorResult<CommonTermMapInfo>
     where
         TTerm: Term + Clone,
     {
@@ -104,7 +104,7 @@ impl Extractor<TermMap> for TermMap {
             infer_term_type(subject_ref.borrow_term(), graph_ref)
         }?;
 
-        Ok(TermMap {
+        Ok(CommonTermMapInfo {
             identifier: RcTerm::from_term(subject_ref),
             term_type,
             expression,

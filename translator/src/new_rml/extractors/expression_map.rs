@@ -11,7 +11,7 @@ use super::store::get_objects_with_ps;
 use super::term_map_extractor::term_map_from_constant_term;
 use super::{stringify_rcterm, Extractor};
 use crate::new_rml::extractors::FromVocab;
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind,
 };
@@ -46,7 +46,7 @@ impl Extractor<ExpressionMap> for ExpressionMap {
                 &[&vocab::rml_fnml::PROPERTY::RETURN_MAP.to_rcterm()],
             )
             .iter()
-            .filter_map(|term| TermMap::extract_self(term, graph_ref).ok())
+            .filter_map(|term| CommonTermMapInfo::extract_self(term, graph_ref).ok())
             .filter_map(|tm| tm.try_get_node())
             .collect();
 
