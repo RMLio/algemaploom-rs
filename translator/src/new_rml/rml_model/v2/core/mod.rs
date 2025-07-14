@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::fmt::Display;
 use std::hash::Hash;
 
 use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
@@ -21,11 +22,11 @@ pub enum TemplateSubString {
     NormalString(String),
 }
 
-impl ToString for TemplateSubString {
-    fn to_string(&self) -> String {
+impl Display for TemplateSubString {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
-            TemplateSubString::Attribute(inner) => inner.clone(),
-            TemplateSubString::NormalString(inner) => inner.clone(),
+            TemplateSubString::Attribute(inner) => write!(f, "{}", inner),
+            TemplateSubString::NormalString(inner) => write!(f, "{}", inner),
         }
     }
 }
@@ -43,23 +44,33 @@ pub struct TriplesMap {
 impl TriplesMap {
     pub fn get_parent_tms_pred_refom_pairs(
         &self,
-    ) -> HashSet<(RcTerm, (Vec<PredicateMap>, RefObjectMap, Vec<GraphMap> ))> {
+    ) -> HashSet<(RcTerm, (Vec<PredicateMap>, RefObjectMap, Vec<GraphMap>))>
+    {
         let pred_refom_graph_tuples = self
             .predicate_object_map_vec
             .iter()
             .filter(|pom| !pom.ref_object_map.is_empty())
             .map(|pom| {
-                (&pom.predicate_map_vec, pom.ref_object_map.iter(), &pom.graph_map_vec)
+                (
+                    &pom.predicate_map_vec,
+                    pom.ref_object_map.iter(),
+                    &pom.graph_map_vec,
+                )
             });
 
         let mut result = HashSet::new();
-        let iter = pred_refom_graph_tuples.flat_map(|(pred_vec, ref_om_iter, graph_vec)| {
-            ref_om_iter.map(move |ref_om| {
-                let mut graph_vec = graph_vec.clone(); 
-                graph_vec.extend(self.subject_map.graph_maps.clone()); 
-                (ref_om.ptm_iri.clone(), (pred_vec.clone(), ref_om.clone(), graph_vec))
-            })
-        });
+        let iter = pred_refom_graph_tuples.flat_map(
+            |(pred_vec, ref_om_iter, graph_vec)| {
+                ref_om_iter.map(move |ref_om| {
+                    let mut graph_vec = graph_vec.clone();
+                    graph_vec.extend(self.subject_map.graph_maps.clone());
+                    (
+                        ref_om.ptm_iri.clone(),
+                        (pred_vec.clone(), ref_om.clone(), graph_vec),
+                    )
+                })
+            },
+        );
 
         result.extend(iter);
         result
@@ -68,7 +79,8 @@ impl TriplesMap {
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
         let abs_ls = &self.abs_logical_source;
         if let AbstractLogicalSourceEnum::LogicalSource(ls) = &abs_ls {
-            let mut references = self.subject_map.term_map_info.get_ref_attributes();
+            let mut references =
+                self.subject_map.term_map_info.get_ref_attributes();
             let sm_gm_references = self
                 .subject_map
                 .graph_maps
