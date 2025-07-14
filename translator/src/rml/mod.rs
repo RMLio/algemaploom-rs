@@ -239,6 +239,7 @@ fn add_non_join_related_ops(
             quads,
             serialize_format,
             variable_map,
+            &[sm],
         );
 
         let _ = next_plan
@@ -395,6 +396,7 @@ fn add_join_related_ops(
                     quads,
                     &target.data_format,
                     variable_map,
+                    &[sm],
                 );
 
                 extended_plan.serialize(serializer_op)?.sink(target)?;

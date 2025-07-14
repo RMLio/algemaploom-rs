@@ -7,6 +7,7 @@ use vocab::ToString as _;
 use super::SerializeTranslator;
 use crate::rml::operators::serializer::util::get_triples_strings;
 use crate::rml::types::Quad;
+use crate::rml::parser::rml_model::term_map::SubjectMap;
 
 #[derive(Debug, Clone)]
 pub struct NQuadsSerializer {}
@@ -19,8 +20,10 @@ impl SerializeTranslator for NQuadsSerializer {
     fn generate_template(
         quads: &HashSet<Quad>,
         variable_map: &std::collections::HashMap<String, String>,
+        subject_maps: &[&SubjectMap],
     ) -> HashSet<String> {
         let mut quad_strings: HashSet<String> = HashSet::new();
+        
         for quad in quads {
             let mut unterminated_triples =
                 get_triples_strings(quad, variable_map).into_iter();
@@ -58,6 +61,27 @@ impl SerializeTranslator for NQuadsSerializer {
                 quad_strings.extend(quads_with_gm);
             }
         }
+        
+        // Handle cases where no subjectmappings exist, but there are classes (for example kafka: 0007e-XML)
+        if quads.is_empty() {
+            for sm in subject_maps {
+                if !sm.classes.is_empty() {
+                    let sm_var = variable_map.get(&sm.tm_info.identifier);
+                    if let Some(sm_var) = sm_var {
+                        let class_templates = sm.classes.iter().map(|cls| {
+                            format!(
+                                "{} <{}> <{}> .",
+                                sm_var,
+                                vocab::rdf::PROPERTY::TYPE.to_string(),
+                                crate::rml::parser::extractors::rcterm_to_string(cls)
+                            )
+                        });
+                        quad_strings.extend(class_templates);
+                    }
+                }
+            }
+        }
+        
         debug!("{:#?}", quad_strings);
         quad_strings
     }
