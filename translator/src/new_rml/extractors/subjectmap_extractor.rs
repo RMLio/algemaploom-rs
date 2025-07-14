@@ -7,11 +7,11 @@ use super::TermMapExtractor;
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, SubjectMap, TermMap,
+    GraphMap, SubjectMap, CommonTermMapInfo,
 };
 
 impl TermMapExtractor<SubjectMap> for SubjectMap {
-    fn create_shortcut_map(tm: TermMap) -> SubjectMap {
+    fn create_shortcut_map(tm: CommonTermMapInfo) -> SubjectMap {
         match tm.term_type {
             ref term if *term == vocab::rml_core::CLASS::IRI.to_rcterm() => {
                 SubjectMap {
@@ -36,7 +36,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
         TS: Term + Clone,
     {
         let term_map =
-            TermMap::extract_self(subj_ref.borrow_term(), graph_ref)?;
+            CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
 
         if term_map.term_type == vocab::rml_core::CLASS::LITERAL.to_rcterm() {
             return Err(ParseError::GenericError(

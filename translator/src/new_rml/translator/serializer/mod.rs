@@ -8,7 +8,7 @@ use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, TermMap,
+    GraphMap, CommonTermMapInfo,
 };
 use crate::new_rml::rml_model::v2::core::{PredicateObjectMap, TriplesMap};
 
@@ -146,7 +146,7 @@ fn cproduct_pm_om_vars<'a>(
 
 pub fn get_var_or_constant(
     store: &SearchStore<'_>,
-    term_map: &TermMap,
+    term_map: &CommonTermMapInfo,
 ) -> String {
     let var = store
         .termm_id_quad_var_map

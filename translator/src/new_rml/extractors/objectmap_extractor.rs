@@ -7,7 +7,7 @@ use super::{stringify_rcterm, TermMapExtractor};
 use crate::new_rml::extractors::store::get_object_with_ps;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    ObjectMap, TermMap,
+    ObjectMap, CommonTermMapInfo,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind,
@@ -44,7 +44,7 @@ where
 }
 
 impl TermMapExtractor<ObjectMap> for ObjectMap {
-    fn create_shortcut_map(term_map: TermMap) -> ObjectMap {
+    fn create_shortcut_map(term_map: CommonTermMapInfo) -> ObjectMap {
         if term_map.is_bnode_term_type() {
             panic!("Constant-valued ObjectMap has to have an IRI or a Literal as value");
         }
@@ -88,7 +88,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         );
 
         let term_map =
-            TermMap::extract_self(subj_ref.borrow_term(), graph_ref)?;
+            CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
         debug!("Object map is extracting with term map: {:?}", term_map);
 
         Ok(ObjectMap {

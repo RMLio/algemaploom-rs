@@ -4,7 +4,7 @@ use super::error::ParseError;
 use super::store::get_object_with_ps;
 use super::term_map_extractor::term_map_from_constant_term;
 use super::{Extractor, FromVocab};
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::TermMap;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::fnml::InputMap;
 
 impl Extractor<InputMap> for InputMap {
@@ -30,7 +30,7 @@ impl Extractor<InputMap> for InputMap {
             &[&vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|iri| TermMap::extract_self(iri, graph_ref).ok())
+        .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok())
         .filter_map(|tm| tm.try_get_node());
 
         let parameter = parameter.chain(parameter_maps).next().ok_or(
@@ -54,7 +54,7 @@ impl Extractor<InputMap> for InputMap {
             &[&vocab::rml_fnml::PROPERTY::INPUT_VALUE_MAP.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|iri| TermMap::extract_self(iri, graph_ref).ok());
+        .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok());
 
         let value_map =
             value

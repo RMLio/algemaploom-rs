@@ -15,14 +15,14 @@ use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
 use crate::new_rml::rml_model::v2::AttributeAliaser;
 
 #[derive(Debug, Clone)]
-pub struct TermMap {
+pub struct CommonTermMapInfo {
     pub identifier:      RcTerm,
     pub term_type:       RcTerm,
     pub expression:      ExpressionMap,
     pub logical_targets: Vec<LogicalTarget>,
 }
 
-impl AttributeAliaser for TermMap{
+impl AttributeAliaser for CommonTermMapInfo{
     fn alias_attribute(&self, alias: &str) -> Self {
         Self{
             identifier: self.identifier.clone(),
@@ -33,7 +33,7 @@ impl AttributeAliaser for TermMap{
     }
 }
 
-impl TermMap {
+impl CommonTermMapInfo {
     pub fn get_constant_value(&self) -> Option<String> {
         match self.expression.get_map_type_enum().unwrap() {
             ExpressionMapTypeEnum::Constant => {
@@ -120,15 +120,15 @@ impl TermMap {
     }
 }
 
-impl Eq for TermMap {}
+impl Eq for CommonTermMapInfo {}
 
-impl PartialEq for TermMap {
+impl PartialEq for CommonTermMapInfo {
     fn eq(&self, other: &Self) -> bool {
         self.identifier == other.identifier && self.term_type == other.term_type
     }
 }
 
-impl Hash for TermMap {
+impl Hash for CommonTermMapInfo {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.identifier.hash(state);
         self.term_type.hash(state);
@@ -183,19 +183,19 @@ impl From<TermKind> for RMLTermTypeKind {
 
 #[derive(Debug, Clone)]
 pub struct SubjectMap {
-    pub term_map:   TermMap,
+    pub term_map:   CommonTermMapInfo,
     pub classes:    Vec<RcTerm>,
     pub graph_maps: Vec<GraphMap>,
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct PredicateMap {
-    pub term_map: TermMap,
+    pub term_map: CommonTermMapInfo,
 }
 
 #[derive(Debug, Clone)]
 pub struct ObjectMap {
-    pub term_map:     TermMap,
+    pub term_map:     CommonTermMapInfo,
     pub language_map: Option<ExpressionMap>,
     pub datatype_map: Option<ExpressionMap>,
 }
@@ -217,7 +217,7 @@ impl ObjectMap {
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct GraphMap {
-    pub term_map: TermMap,
+    pub term_map: CommonTermMapInfo,
 }
 
 impl GraphMap {
@@ -238,7 +238,7 @@ impl GraphMap {
 impl Default for GraphMap {
     fn default() -> Self {
         Self {
-            term_map: TermMap {
+            term_map: CommonTermMapInfo {
                 identifier:      RcTerm::from_term(BnodeId::new_unchecked(
                     uuid::Uuid::new_v4().to_string(),
                 )),

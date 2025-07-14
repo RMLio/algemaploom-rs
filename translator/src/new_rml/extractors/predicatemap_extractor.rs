@@ -5,11 +5,11 @@ use sophia_term::RcTerm;
 use super::{Extractor, TermMapExtractor};
 use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    PredicateMap, TermMap,
+    PredicateMap, CommonTermMapInfo,
 };
 
 impl TermMapExtractor<PredicateMap> for PredicateMap {
-    fn create_shortcut_map(term_map: TermMap) -> PredicateMap {
+    fn create_shortcut_map(term_map: CommonTermMapInfo) -> PredicateMap {
         if !term_map.is_iri_term_type() {
             panic!("Constant-valued PredicateMap has to have an IRI as value");
         }
@@ -23,7 +23,7 @@ impl TermMapExtractor<PredicateMap> for PredicateMap {
     where
         TS: Term + Clone,
     {
-        let term_map = TermMap::extract_self(subj_ref, graph_ref)?;
+        let term_map = CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
         Ok(PredicateMap { term_map })
     }
 
