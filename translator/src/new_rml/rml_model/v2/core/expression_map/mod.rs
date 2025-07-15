@@ -40,7 +40,7 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
     result
 }
 
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct ExpressionMap {
     pub map_type_pred_iri: RcTerm,
     pub kind:              ExpressionMapKind,
@@ -217,7 +217,7 @@ impl ExpressionMap {
         self.kind.try_get_non_function_value()
     }
 }
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub enum ExpressionMapKind {
     FunctionExecution {
         execution: FunctionExecution,

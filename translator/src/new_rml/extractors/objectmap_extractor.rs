@@ -7,11 +7,12 @@ use super::{stringify_rcterm, TermMapExtractor};
 use crate::new_rml::extractors::store::get_object_with_ps;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    ObjectMap, CommonTermMapInfo,
+    CommonTermMapInfo, ObjectMap,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
     ExpressionMap, ExpressionMapKind,
 };
+use crate::new_rml::rml_model::v2::TermMapEnum;
 
 fn extract_sub_expr_maps<TS, TCP, TMP>(
     subj_ref: TS,
@@ -43,23 +44,23 @@ where
         })
 }
 
-impl TermMapExtractor<ObjectMap> for ObjectMap {
-    fn create_shortcut_map(term_map: CommonTermMapInfo) -> ObjectMap {
+impl TermMapExtractor<TermMapEnum> for ObjectMap {
+    fn create_shortcut_map(term_map: CommonTermMapInfo) -> TermMapEnum {
         if term_map.is_bnode_term_type() {
             panic!("Constant-valued ObjectMap has to have an IRI or a Literal as value");
         }
 
-        Self {
+        TermMapEnum::ObjectMap(Self {
             term_map_info: term_map,
-            language_map: None,
-            datatype_map: None,
-        }
+            language_map:  None,
+            datatype_map:  None,
+        })
     }
 
     fn create_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<ObjectMap>
+    ) -> super::ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {
@@ -89,13 +90,16 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 
         let term_map_info =
             CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
-        debug!("Object map is extracting with term map info: {:?}", term_map_info);
+        debug!(
+            "Object map is extracting with term map info: {:?}",
+            term_map_info
+        );
 
-        Ok(ObjectMap {
+        Ok(TermMapEnum::ObjectMap(ObjectMap {
             term_map_info,
             language_map,
             datatype_map,
-        })
+        }))
     }
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
@@ -112,4 +116,3 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         ]
     }
 }
-

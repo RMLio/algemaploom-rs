@@ -8,9 +8,10 @@ use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, CommonTermMapInfo,
+    CommonTermMapInfo, GraphMap,
 };
 use crate::new_rml::rml_model::v2::core::{PredicateObjectMap, TriplesMap};
+use crate::new_rml::rml_model::v2::TermMapEnum;
 
 #[derive(Debug, Clone)]
 pub struct SerializerOperatorTranslator<'a> {
@@ -36,29 +37,33 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
 
             let sm_var = store
                 .termm_id_quad_var_map
-                .get(&tm.subject_map.term_map_info.identifier)
+                .get(&tm.subject_map.as_ref().identifier)
                 .map(|var| format_var(var))
                 .unwrap();
 
             let sm = tm
                 .subject_map
-                .term_map_info
+                .as_ref()
                 .get_constant_value()
                 .unwrap_or_else(|| sm_var.to_string());
 
-            let class_triples_iter =
-                tm.subject_map.classes.iter().map(|class_iri| {
-                    format!(
-                        "{} <{}> <{}>",
-                        sm,
-                        vocab::rdf::PROPERTY::TYPE.to_string(),
-                        stringify_rcterm(class_iri).unwrap()
-                    )
-                });
+            if tm.subject_map.is_subject_map() {
+                let class_triples_iter =
+                    tm.subject_map.unwrap_subject_map_ref().classes.iter().map(
+                        |class_iri| {
+                            format!(
+                                "{} <{}> <{}>",
+                                sm,
+                                vocab::rdf::PROPERTY::TYPE.to_string(),
+                                stringify_rcterm(class_iri).unwrap()
+                            )
+                        },
+                    );
 
-            triples.extend(class_triples_iter);
+                triples.extend(class_triples_iter);
+            }
 
-            let mut is_part_of_graph = !tm.subject_map.graph_maps.is_empty();
+            let mut is_part_of_graph = false;
             for pom in &tm.predicate_object_map_vec {
                 // TODO: Handles reference object maps too <15-04-25, Min Oo> //
 
@@ -80,17 +85,22 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
                 );
             }
 
+            if let Ok(sm) = tm.subject_map.try_unwrap_subject_map_ref() {
+                add_graph_to_triple(
+                    store,
+                    &mut graph_pattern,
+                    &triples,
+                    &sm.graph_maps,
+                );
+                if !sm.graph_maps.is_empty() {
+                    is_part_of_graph = true;
+                }
+            }
+
             if !is_part_of_graph {
                 graph_pattern
                     .extend(triples.iter().map(|trip| format!("{} .", trip)));
             }
-
-            add_graph_to_triple(
-                store,
-                &mut graph_pattern,
-                &triples,
-                &tm.subject_map.graph_maps,
-            );
         }
 
         Ok(Serializer {
@@ -105,18 +115,18 @@ fn add_graph_to_triple(
     store: &SearchStore,
     graph_pattern: &mut Vec<String>,
     triples: &[String],
-    graph_map_vec: &[GraphMap],
+    graph_map_vec: &[TermMapEnum],
 ) {
-    for gm in graph_map_vec.iter().filter(|gm| !gm.is_default_graph()) {
-        let gm_part = gm.term_map_info.get_constant_value().unwrap_or_else(|| {
-            store
-                .termm_id_quad_var_map
-                .get(&gm.term_map_info.identifier)
-                .map(|var| format_var(var))
-                .unwrap()
-                .to_string()
-        });
-
+    for gm_enum in graph_map_vec {
+        let mut gm_part = store
+            .termm_id_quad_var_map
+            .get(&gm_enum.as_ref().identifier)
+            .map(|var| format_var(var))
+            .unwrap()
+            .to_string();
+        if let Ok(gm) = gm_enum.try_unwrap_graph_map_ref() {
+            gm_part = gm.term_map_info.get_constant_value().unwrap_or(gm_part);
+        }
         for triple in triples {
             graph_pattern.push(format!("{} {} .", triple, gm_part));
         }
@@ -130,12 +140,12 @@ fn cproduct_pm_om_vars<'a>(
     let pm_var_iter = pom
         .predicate_map_vec
         .iter()
-        .map(|pm| get_var_or_constant(store, &pm.term_map_info));
+        .map(|pm| get_var_or_constant(store, pm.as_ref()));
 
     let om_var_iter = pom
         .object_map_vec
         .iter()
-        .map(|om| get_var_or_constant(store, &om.term_map_info));
+        .map(|om| get_var_or_constant(store, om.as_ref()));
 
     pm_var_iter.flat_map(move |pm_var| {
         om_var_iter
