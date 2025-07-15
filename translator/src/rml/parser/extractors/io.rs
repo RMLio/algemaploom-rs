@@ -106,16 +106,20 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
             .into());
         }
 
-        let buf_read = BufReader::new(File::open(path.clone())?);
-        let triples_maps = extract_triples_maps(&load_graph_bread(buf_read)?)?;
 
-        // TODO: Refactor extraction of base iri from RML file <02-08-24, SMO> //
-        let mut buf_read = BufReader::new(File::open(path)?);
         let mut input_string = String::default();
-        buf_read.read_to_string(&mut input_string)?;
-        let base_iri =
-            input_string.split('\n').filter_map(extract_base_iri).next();
+        BufReader::new(File::open(path.clone())?).read_to_string(&mut input_string)?;
+        
+        // Add default @base if none present
+        if !input_string.contains("@base") {
+            input_string = format!("@base <http://example.com/base/> .\n{}", input_string);
+        }
+        
+        let graph = load_graph_str(&input_string)?;
+        let triples_maps = extract_triples_maps(&graph)?;
+        let base_iri = input_string.split('\n').filter_map(extract_base_iri).next();
 
+        println!("base_iri: {:?}", base_iri);
         return try_create_document(triples_maps, base_iri);
     }
 
