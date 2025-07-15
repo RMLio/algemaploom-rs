@@ -203,6 +203,12 @@ impl ExpressionMap {
             {
                 Ok(ExpressionMapTypeEnum::Reference)
             }
+            value
+                if value == vocab::rml_fnml::PROPERTY::FUNCTION_EXECUTION.to_rcterm() =>
+            {
+                Ok(ExpressionMapTypeEnum::FunctionExecution)
+            }
+
 
             _ => {
                 Err(ParseError::GenericError(format!(
@@ -258,6 +264,8 @@ pub enum ExpressionMapTypeEnum {
     Template,
     Constant,
     Reference,
+    Star,
+    FunctionExecution,
 }
 
 #[cfg(test)]

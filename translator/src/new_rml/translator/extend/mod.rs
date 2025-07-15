@@ -191,6 +191,8 @@ pub fn extension_func_from_exp_map(
 ) -> NewRMLTranslationResult<Function> {
     let function: Function = match exp_map.get_map_type_enum()? {
         ExpressionMapTypeEnum::Function => fno_extend_function(store, exp_map)?,
+        ExpressionMapTypeEnum::FunctionExecution => fno_extend_function(store, exp_map)?,
+        ExpressionMapTypeEnum::Star => star_extend_function(exp_map),
         ExpressionMapTypeEnum::Template => template_extend_function(exp_map),
         ExpressionMapTypeEnum::Constant => {
             Function::Constant {
@@ -272,4 +274,11 @@ fn template_extend_function(exp_map: &ExpressionMap) -> Function {
         };
     }
     template_function
+}
+
+fn star_extend_function(exp_map: &ExpressionMap) -> Function {
+    let mut star_function = Function::Star { };
+    // TODO: Implement star extend function
+    // 
+    star_function
 }
