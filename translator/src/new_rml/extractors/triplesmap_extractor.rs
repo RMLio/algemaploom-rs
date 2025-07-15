@@ -91,16 +91,66 @@ impl Extractor<TriplesMap> for TriplesMap {
 pub fn extract_triples_maps(
     graph: &FastGraph,
 ) -> ExtractorResult<Vec<TriplesMap>> {
+    // There are 3 different ways triples maps are defined: 
+    // 1. Regular RML:TRIPLES_MAP 
+    // 2. Special triples maps used with RMLStar, for example AssertedTriplesMap and NonAssertedTriplesMap
+    // 3. Implicit triples maps, used in the fnml tests. Here a subjectmap / logicalsource is given but it is not explicitly defined a triplesmap. 
+    
+    // Case 1: Regular RML:TRIPLES_MAP
     let rml_core_tm_iter = graph.triples_matching(
         Any,
         [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
         [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
     );
 
-    rml_core_tm_iter
+    let explicit_tms: ExtractorResult<Vec<TriplesMap>> = rml_core_tm_iter
         .filter_map(|triple| triple.ok())
         .map(|triple| {
             TriplesMap::extract_self(RcTerm::from_term(triple.s()), graph)
         })
-        .collect()
+        .collect();
+
+    // TODO: Case 2
+    
+    // Case 3: Implicit defined triplesmaps 
+    // First collect all explicitly defined triplesmap subjects, to filter these triplesmaps out of the implicit ones.
+    let explicit_tm_subjects: std::collections::HashSet<_> = graph.triples_matching(
+        Any,
+        [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
+        [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
+    )
+    .filter_map(|triple| triple.ok())
+    .map(|triple| RcTerm::from_term(triple.s()))
+    .collect();
+
+    let logical_source_pred = vocab::rml_core::PROPERTY::LOGICAL_SOURCE.to_rcterm();
+    let subject_map_pred = vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm();
+    let mut implicit_tm_subjects = std::collections::HashSet::new();
+
+    for triple in graph.triples_matching(Any, [logical_source_pred.clone()], Any) {
+        if let Ok(triple) = triple {
+            let subj = RcTerm::from_term(triple.s());
+            // Check if this subject also has a subject map
+            let has_subject_map = graph.triples_matching(
+                [subj.clone()],
+                [subject_map_pred.clone()],
+                Any,
+            ).next().is_some();
+
+            if has_subject_map && !explicit_tm_subjects.contains(&subj) {
+                implicit_tm_subjects.insert(subj);
+            }
+        }
+    }
+
+    // Combine explicit and implicit triplesmaps
+    let mut all_tms = explicit_tms?;
+    let implicit_tms: ExtractorResult<Vec<TriplesMap>> = implicit_tm_subjects
+        .into_iter()
+        .map(|subj| TriplesMap::extract_self(subj, graph))
+        .collect();
+    all_tms.extend(implicit_tms?);
+    
+    Ok(all_tms)
+    
 }
