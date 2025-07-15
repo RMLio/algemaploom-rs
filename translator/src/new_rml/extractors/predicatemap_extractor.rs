@@ -5,26 +5,28 @@ use sophia_term::RcTerm;
 use super::{Extractor, TermMapExtractor};
 use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    PredicateMap, CommonTermMapInfo,
+    CommonTermMapInfo, PredicateMap,
 };
+use crate::new_rml::rml_model::v2::TermMapEnum;
 
-impl TermMapExtractor<PredicateMap> for PredicateMap {
-    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> PredicateMap {
+impl TermMapExtractor<TermMapEnum> for PredicateMap {
+    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> TermMapEnum {
         if !term_map_info.is_iri_term_type() {
             panic!("Constant-valued PredicateMap has to have an IRI as value");
         }
-        PredicateMap { term_map_info }
+        TermMapEnum::PredicateMap(PredicateMap { term_map_info })
     }
 
     fn create_term_map<TS>(
         subj_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<PredicateMap>
+    ) -> super::ExtractorResult<TermMapEnum>
     where
         TS: Term + Clone,
     {
-        let term_map_info = CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
-        Ok(PredicateMap { term_map_info })
+        let term_map_info =
+            CommonTermMapInfo::extract_self(subj_ref, graph_ref)?;
+        Ok(TermMapEnum::PredicateMap(PredicateMap { term_map_info }))
     }
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
@@ -50,9 +52,9 @@ mod tests {
     use sophia_api::triple::Triple;
 
     use super::*;
+    use crate::import_test_mods;
     use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
-    use crate::import_test_mods;
     use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
 
     import_test_mods!(new_rml);
@@ -63,7 +65,7 @@ mod tests {
         let pm_const_pred = vocab::r2rml::PROPERTY::PREDICATE.to_rcterm();
         let triples = graph.triples_matching(Any, [pm_const_pred], Any);
         let values = triples.flatten().map(|trip| trip.o().to_owned());
-        let pms: Vec<PredicateMap> = values
+        let pms: Vec<TermMapEnum> = values
             .map(|map_const| {
                 PredicateMap::extract_constant_term_map(&map_const)
             })
@@ -73,10 +75,10 @@ mod tests {
 
         let _ = pms.iter().try_for_each(|pm| {
             assert_eq!(
-                pm.term_map_info.expression.get_map_type_enum()?,
+                pm.as_ref().expression.get_map_type_enum()?,
                 ExpressionMapTypeEnum::Constant
             );
-            assert!(pm.term_map_info.is_iri_term_type());
+            assert!(pm.as_ref().is_iri_term_type());
             Ok::<(), NewRMLTranslationError>(())
         });
 

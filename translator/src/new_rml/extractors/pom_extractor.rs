@@ -102,7 +102,8 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
                 .ok()
                 .into_iter()
                 .flatten()
-                .filter(|gm| !gm.is_default_graph())
+                .filter(|gm| gm.is_graph_map())
+                .filter(|gm| !gm.unwrap_graph_map_ref().is_default_graph())
                 .collect();
 
         Ok(PredicateObjectMap {

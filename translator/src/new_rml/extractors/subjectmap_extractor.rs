@@ -7,18 +7,19 @@ use super::TermMapExtractor;
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, SubjectMap, CommonTermMapInfo,
+    CommonTermMapInfo, GraphMap, SubjectMap,
 };
+use crate::new_rml::rml_model::v2::TermMapEnum;
 
-impl TermMapExtractor<SubjectMap> for SubjectMap {
-    fn create_shortcut_map(tm: CommonTermMapInfo) -> SubjectMap {
+impl TermMapExtractor<TermMapEnum> for SubjectMap {
+    fn create_shortcut_map(tm: CommonTermMapInfo) -> TermMapEnum {
         match tm.term_type {
             ref term if *term == vocab::rml_core::CLASS::IRI.to_rcterm() => {
-                SubjectMap {
-                    term_map_info:   tm,
-                    classes:    vec![],
-                    graph_maps: vec![],
-                }
+                TermMapEnum::SubjectMap(SubjectMap {
+                    term_map_info: tm,
+                    classes:       vec![],
+                    graph_maps:    vec![],
+                })
             }
             _ => {
                 panic!(
@@ -31,14 +32,16 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
     fn create_term_map<TS>(
         subj_ref: TS,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<SubjectMap>
+    ) -> super::ExtractorResult<TermMapEnum>
     where
         TS: Term + Clone,
     {
         let term_map_info =
             CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
 
-        if term_map_info.term_type == vocab::rml_core::CLASS::LITERAL.to_rcterm() {
+        if term_map_info.term_type
+            == vocab::rml_core::CLASS::LITERAL.to_rcterm()
+        {
             return Err(ParseError::GenericError(
                     "SubjectMap can only have rml:IRI rml:UnsafeIRI, rml:URI, rml:UnsafeURI or rml:BlankNode as rml:termType!"
                         .to_string(),
@@ -55,14 +58,15 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
             subj_ref.borrow_term(),
         )?
         .into_iter()
-        .filter(|gm| !gm.is_default_graph())
+        .filter(|gm| gm.is_graph_map())
+        .filter(|gm| !gm.unwrap_graph_map_ref().is_default_graph())
         .collect();
 
-        Ok(SubjectMap {
+        Ok(TermMapEnum::SubjectMap(SubjectMap {
             term_map_info,
             classes,
             graph_maps,
-        })
+        }))
     }
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
@@ -82,7 +86,7 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
     fn extract_from_container<TTerm>(
         graph_ref: &sophia_inmem::graph::FastGraph,
         container_map_subj_ref: TTerm,
-    ) -> super::ExtractorResult<SubjectMap>
+    ) -> super::ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {
@@ -98,10 +102,13 @@ impl TermMapExtractor<SubjectMap> for SubjectMap {
                 ))
                 .into())
             } else {
-                sms.pop().ok_or(ParseError::NoTermMapFoundError(format!(
-                    "No subject map found for the triples map {:?}",
-                    container_map_subj_ref
-                )).into())
+                sms.pop().ok_or(
+                    ParseError::NoTermMapFoundError(format!(
+                        "No subject map found for the triples map {:?}",
+                        container_map_subj_ref
+                    ))
+                    .into(),
+                )
             }
         })
     }
@@ -138,10 +145,10 @@ mod tests {
         let subj_map = SubjectMap::create_term_map(sub_ref, &graph)?;
 
         assert_eq!(
-            subj_map.term_map_info.expression.get_map_type_enum()?,
+            subj_map.as_ref().expression.get_map_type_enum()?,
             ExpressionMapTypeEnum::Template
         );
-        assert!(subj_map.classes.is_empty());
+        assert!(subj_map.unwrap_subject_map().classes.is_empty());
 
         Ok(())
     }

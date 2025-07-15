@@ -2,7 +2,7 @@ use sophia_term::RcTerm;
 
 use super::{core::expression_map::term_map::CommonTermMapInfo, AttributeAliaser};
 
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct FunctionExecution {
     pub function: RcTerm,
     pub input:    Vec<InputMap>,
@@ -17,7 +17,7 @@ impl AttributeAliaser for FunctionExecution{
     }
 }
 
-#[derive(Debug, Clone, Hash)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct InputMap {
     pub parameter: RcTerm,
     pub value_map: CommonTermMapInfo,

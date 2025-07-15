@@ -42,11 +42,13 @@ pub struct TriplesMap {
     pub abs_logical_source:       AbstractLogicalSourceEnum,
 }
 
+pub type PredicateRefObjGraphTuple =
+    (Vec<TermMapEnum>, RefObjectMap, Vec<TermMapEnum>);
+
 impl TriplesMap {
     pub fn get_parent_tms_pred_refom_pairs(
         &self,
-    ) -> HashSet<(RcTerm, (Vec<PredicateMap>, RefObjectMap, Vec<GraphMap>))>
-    {
+    ) -> HashSet<(RcTerm, PredicateRefObjGraphTuple)> {
         let pred_refom_graph_tuples = self
             .predicate_object_map_vec
             .iter()
@@ -60,11 +62,16 @@ impl TriplesMap {
             });
 
         let mut result = HashSet::new();
+        let mut subject_map_graph_maps = Vec::new();
+        if let Ok(sm) = self.subject_map.try_unwrap_subject_map_ref() {
+            subject_map_graph_maps = sm.graph_maps.clone();
+        }
+
         let iter = pred_refom_graph_tuples.flat_map(
             |(pred_vec, ref_om_iter, graph_vec)| {
-                ref_om_iter.map(move |ref_om| {
+                ref_om_iter.map(|ref_om| {
                     let mut graph_vec = graph_vec.clone();
-                    graph_vec.extend(self.subject_map.graph_maps.clone());
+                    graph_vec.extend(subject_map_graph_maps.clone());
                     (
                         ref_om.ptm_iri.clone(),
                         (pred_vec.clone(), ref_om.clone(), graph_vec),
@@ -80,31 +87,38 @@ impl TriplesMap {
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
         let abs_ls = &self.abs_logical_source;
         if let AbstractLogicalSourceEnum::LogicalSource(ls) = &abs_ls {
-            let mut references =
-                self.subject_map.term_map_info.get_ref_attributes();
-            let sm_gm_references = self
-                .subject_map
-                .graph_maps
-                .iter()
-                .flat_map(|gm| gm.term_map_info.get_ref_attributes());
+            let mut references = self.subject_map.as_ref().get_ref_attributes();
+            if let Ok(sm) = self.subject_map.try_unwrap_subject_map_ref() {
+                let sm_gm_references = sm
+                    .graph_maps
+                    .iter()
+                    .flat_map(|gm| gm.as_ref().get_ref_attributes());
+                references.extend(sm_gm_references);
+            }
 
             let pm_references = self
                 .predicate_object_map_vec
                 .iter()
                 .flat_map(|pom| pom.predicate_map_vec.iter())
-                .flat_map(|pm| pm.term_map_info.get_ref_attributes());
+                .flat_map(|pm| pm.as_ref().get_ref_attributes());
             let om_references = self
                 .predicate_object_map_vec
                 .iter()
                 .flat_map(|pom| pom.object_map_vec.iter())
-                .flat_map(|om| om.get_ref_attributes());
+                .flat_map(|om_enum| {
+                    if let Ok(om) = om_enum.try_unwrap_object_map_ref() {
+                        om.get_ref_attributes()
+                    } else {
+                        om_enum.as_ref().get_ref_attributes()
+                    }
+                });
+
             let pom_gm_references = self
                 .predicate_object_map_vec
                 .iter()
                 .flat_map(|pom| pom.graph_map_vec.iter())
-                .flat_map(|gm| gm.term_map_info.get_ref_attributes());
+                .flat_map(|gm_enum| gm_enum.as_ref().get_ref_attributes());
 
-            references.extend(sm_gm_references);
             references.extend(pom_gm_references);
             references.extend(pm_references);
             references.extend(om_references);

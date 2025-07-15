@@ -15,6 +15,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
 use crate::new_rml::rml_model::v2::core::{
     AbstractLogicalSource, AbstractLogicalSourceEnum, TriplesMap,
 };
+use crate::new_rml::rml_model::v2::TermMapEnum;
 use crate::new_rml::rml_model::Document;
 
 #[derive(Debug, Clone, Default)]
@@ -26,10 +27,10 @@ pub struct SearchStore<'a> {
     pub tm_id_join_map:         HashMap<RcTerm, HashSet<RcTerm>>,
     pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSourceEnum>,
     pub ls_id_sourced_plan_map: HashMap<RcTerm, RcRefCellPlan<Processed>>,
-    pub sm_search_map:          HashMap<RcTerm, &'a SubjectMap>,
-    pub pm_search_map:          HashMap<RcTerm, &'a PredicateMap>,
-    pub om_search_map:          HashMap<RcTerm, &'a ObjectMap>,
-    pub gm_search_map:          HashMap<RcTerm, &'a GraphMap>,
+    pub sm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+    pub pm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+    pub om_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+    pub gm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
     pub tm_search_map:          HashMap<RcTerm, &'a TriplesMap>,
 }
 
@@ -87,32 +88,37 @@ impl SearchStore<'_> {
                 .insert(tm_id.clone(), tm.get_parent_tms_pred_refom_pairs());
 
             let sm = &tm.subject_map;
-            let sm_ident = sm.term_map_info.identifier.clone();
+            let sm_ident = sm.as_ref().identifier.clone();
             sm_search_map.insert(sm_ident.clone(), sm);
 
             termm_id_quad_var_map
                 .insert(sm_ident.clone(), format!("sm_{}", tm_count));
 
-            let sm_gms: Vec<_> = sm
-                .graph_maps
-                .iter()
-                .map(|gm| (gm.term_map_info.identifier.clone(), gm))
-                .collect();
+            if sm.is_subject_map() {
+                let sm_gms: Vec<_> = sm
+                    .unwrap_subject_map_ref()
+                    .graph_maps
+                    .iter()
+                    .map(|gm| (gm.as_ref().identifier.clone(), gm))
+                    .collect();
 
-            termm_id_quad_var_map.extend(sm_gms.iter().enumerate().map(
-                |(gm_idx, (gm_ident, _))| {
-                    (gm_ident.clone(), format!("sm_{}_gm_{}", tm_count, gm_idx))
-                },
-            ));
-
-            gm_search_map.extend(sm_gms);
+                termm_id_quad_var_map.extend(sm_gms.iter().enumerate().map(
+                    |(gm_idx, (gm_ident, _))| {
+                        (
+                            gm_ident.clone(),
+                            format!("sm_{}_gm_{}", tm_count, gm_idx),
+                        )
+                    },
+                ));
+                gm_search_map.extend(sm_gms);
+            }
 
             for (pom_idx, pom) in tm.predicate_object_map_vec.iter().enumerate()
             {
                 let pom_gms: Vec<_> = pom
                     .graph_map_vec
                     .iter()
-                    .map(|gm| (gm.term_map_info.identifier.clone(), gm))
+                    .map(|gm| (gm.as_ref().identifier.clone(), gm))
                     .collect();
                 let pom_gms_var_iter = pom_gms.iter().enumerate().map(
                     |(gm_idx, (gm_ident, _))| {
@@ -132,13 +138,13 @@ impl SearchStore<'_> {
                 pm_search_map = pom
                     .predicate_map_vec
                     .iter()
-                    .map(|pm| (pm.term_map_info.identifier.clone(), pm))
+                    .map(|pm| (pm.as_ref().identifier.clone(), pm))
                     .collect();
 
                 let pm_var_iter = pom.predicate_map_vec.iter().enumerate().map(
                     |(pm_idx, pm)| {
                         (
-                            pm.term_map_info.identifier.clone(),
+                            pm.as_ref().identifier.clone(),
                             format!(
                                 "pom_{}_{}_pm_{}",
                                 tm_count, pom_idx, pm_idx
@@ -150,12 +156,12 @@ impl SearchStore<'_> {
                 om_search_map = pom
                     .object_map_vec
                     .iter()
-                    .map(|om| (om.term_map_info.identifier.clone(), om))
+                    .map(|om| (om.as_ref().identifier.clone(), om))
                     .collect();
                 let om_var_iter = pom.object_map_vec.iter().enumerate().map(
                     |(om_idx, om)| {
                         (
-                            om.term_map_info.identifier.clone(),
+                            om.as_ref().identifier.clone(),
                             format!(
                                 "pom_{}_{}_om_{}",
                                 tm_count, pom_idx, om_idx

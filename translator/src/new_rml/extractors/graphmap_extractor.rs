@@ -4,19 +4,20 @@ use sophia_term::RcTerm;
 use super::{Extractor, FromVocab, TermMapExtractor};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{GraphMap, CommonTermMapInfo};
+use crate::new_rml::rml_model::v2::TermMapEnum;
 
-impl TermMapExtractor<GraphMap> for GraphMap {
-    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> GraphMap {
+impl TermMapExtractor<TermMapEnum> for GraphMap {
+    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> TermMapEnum {
         if term_map_info.is_literal_term_type() {
             panic!("Constant-valued GraphMap has to be either an IRI or a BlankNode");
         }
-        Self { term_map_info }
+        TermMapEnum::GraphMap(Self { term_map_info })
     }
 
     fn create_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<GraphMap>
+    ) -> super::ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {
@@ -24,7 +25,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
         if term_map_info.is_literal_term_type() {
             Err(ParseError::GenericError("GraphMap has to have a term type of either an IRI, UnsafeIRI, URI, UnsafeURI or a BlankNode".to_string()).into())
         } else {
-            Ok(GraphMap { term_map_info })
+            Ok(TermMapEnum::GraphMap(GraphMap { term_map_info }))
         }
     }
 

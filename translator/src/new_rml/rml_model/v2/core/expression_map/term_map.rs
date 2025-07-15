@@ -12,7 +12,7 @@ use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
-use crate::new_rml::rml_model::v2::AttributeAliaser;
+use crate::new_rml::rml_model::v2::{AttributeAliaser, TermMapEnum};
 
 #[derive(Debug, Clone)]
 pub struct CommonTermMapInfo {
@@ -182,11 +182,11 @@ impl From<TermKind> for RMLTermTypeKind {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct SubjectMap {
     pub term_map_info: CommonTermMapInfo,
     pub classes:       Vec<RcTerm>,
-    pub graph_maps:    Vec<GraphMap>,
+    pub graph_maps:    Vec<TermMapEnum>,
 }
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
@@ -194,7 +194,7 @@ pub struct PredicateMap {
     pub term_map_info: CommonTermMapInfo,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct ObjectMap {
     pub term_map_info: CommonTermMapInfo,
     pub language_map:  Option<ExpressionMap>,

@@ -54,41 +54,42 @@ impl OperatorTranslator for ExtendOperatorTranslator {
         let mut extend_pairs: HashMap<String, Function> = HashMap::new();
 
         // Extend function for the subject map
-        let (var, func) = extend_from_term_map(
-            store,
-            base_iri,
-            &tm.subject_map.term_map_info,
-        )?;
+        let (var, func) =
+            extend_from_term_map(store, base_iri, tm.subject_map.as_ref())?;
         insert_non_constant_func(&mut extend_pairs, var, func);
 
         // Extend functions for each graph map of a subject map
-        for gm in &tm.subject_map.graph_maps {
-            let (var, func) =
-                extend_from_term_map(store, base_iri, &gm.term_map_info)?;
-            insert_non_constant_func(&mut extend_pairs, var, func);
+        if let Ok(sm) = tm.subject_map.try_unwrap_subject_map_ref() {
+            for gm in &sm.graph_maps {
+                let (var, func) =
+                    extend_from_term_map(store, base_iri, gm.as_ref())?;
+                insert_non_constant_func(&mut extend_pairs, var, func);
+            }
         }
 
         // Extend functions for each predicate object map of the given triples map
         for pom in &tm.predicate_object_map_vec {
             for gm in &pom.graph_map_vec {
                 let (var, func) =
-                    extend_from_term_map(store, base_iri, &gm.term_map_info)?;
+                    extend_from_term_map(store, base_iri, gm.as_ref())?;
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
 
             for pm in &pom.predicate_map_vec {
                 let (var, func) =
-                    extend_from_term_map(store, base_iri, &pm.term_map_info)?;
+                    extend_from_term_map(store, base_iri, pm.as_ref())?;
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
 
-            for om in &pom.object_map_vec {
-                let (var, func) =
-                    extend_from_term_map(store, base_iri, &om.term_map_info)?;
+            for om_enum in &pom.object_map_vec {
+                let (var, mut func) =
+                    extend_from_term_map(store, base_iri, om_enum.as_ref())?;
 
-                let func = extend_lang_dtype_function_for_om(
-                    store, base_iri, om, func,
-                )?;
+                if let Ok(om) = om_enum.try_unwrap_object_map_ref() {
+                    func = extend_lang_dtype_function_for_om(
+                        store, base_iri, om, func,
+                    )?;
+                }
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
         }

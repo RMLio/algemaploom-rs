@@ -12,10 +12,11 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, PredicateMap, SubjectMap,
 };
 use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
-use crate::new_rml::rml_model::v2::AttributeAliaser;
+use crate::new_rml::rml_model::v2::{AttributeAliaser, TermMapEnum};
 use crate::new_rml::translator::error::TranslationError;
 use crate::new_rml::translator::extend::extend_from_term_map;
 use crate::new_rml::translator::serializer::get_var_or_constant;
+use crate::normalized_rml::SUBJECT_ATTR;
 
 #[derive(Debug, Clone)]
 pub struct JoinTranslator {}
@@ -127,27 +128,27 @@ impl OperatorTranslator for JoinTranslator {
 }
 
 pub fn extend_op_from_join(
-    child_subj_map: &SubjectMap,
+    child_subj_map: &TermMapEnum,
     ref_objmap: &RefObjectMap,
-    pred_vec: &[PredicateMap],
+    pred_vec: &[TermMapEnum],
     child_base_iri: &str,
-    graph_maps: &[GraphMap],
+    graph_maps: &[TermMapEnum],
     alias: &str,
     store: &SearchStore,
 ) -> NewRMLTranslationResult<Operator> {
     let (subj_var, subj_func) =
-        extend_from_term_map(store, child_base_iri, &child_subj_map.term_map_info)?;
+        extend_from_term_map(store, child_base_iri, child_subj_map.as_ref())?;
 
     let extension_func_predicates_res: NewRMLTranslationResult<Vec<_>> =
         pred_vec
             .iter()
-            .map(|pm| extend_from_term_map(store, child_base_iri, &pm.term_map_info))
+            .map(|pm| extend_from_term_map(store, child_base_iri, pm.as_ref()))
             .collect();
     let extension_func_predicates = extension_func_predicates_res?;
 
     let extension_func_graphs_res: NewRMLTranslationResult<Vec<_>> = graph_maps
         .iter()
-        .map(|gm| extend_from_term_map(store, child_base_iri, &gm.term_map_info))
+        .map(|gm| extend_from_term_map(store, child_base_iri, gm.as_ref()))
         .collect();
     let extension_func_graphs = extension_func_graphs_res?;
 
@@ -158,7 +159,7 @@ pub fn extend_op_from_join(
         ),
     )?;
     let aliased_ptm_subj_term_map =
-        ptm.subject_map.term_map_info.alias_attribute(alias);
+        ptm.subject_map.as_ref().alias_attribute(alias);
     let (ptm_subj_var, ptm_subj_func) =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
 
@@ -182,23 +183,26 @@ pub fn extend_op_from_join(
 }
 
 pub fn serializer_template_from_join(
-    subj_map: &SubjectMap,
-    pred_vec: &[PredicateMap],
+    subj_map: &TermMapEnum,
+    pred_vec: &[TermMapEnum],
     ref_objmap: &RefObjectMap,
-    graph_vec: &[GraphMap],
+    graph_vec: &[TermMapEnum],
     store: &SearchStore,
 ) -> String {
-    let subj_pattern = get_var_or_constant(store, &subj_map.term_map_info);
+    let subj_pattern = get_var_or_constant(store, subj_map.as_ref());
     let pred_patterns = pred_vec
         .iter()
-        .map(|pm| get_var_or_constant(store, &pm.term_map_info));
+        .map(|pm| get_var_or_constant(store, pm.as_ref()));
     let mut graph_patterns = graph_vec
         .iter()
-        .map(|gm| get_var_or_constant(store, &gm.term_map_info));
+        .map(|gm| get_var_or_constant(store, gm.as_ref()));
 
-    let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).unwrap(); 
-    let ptm_sm = store.sm_search_map.get(&ptm.subject_map.term_map_info.identifier).unwrap();
-    let ptm_sm_var = get_var_or_constant(store, &ptm_sm.term_map_info);
+    let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).unwrap();
+    let ptm_sm = store
+        .sm_search_map
+        .get(&ptm.subject_map.as_ref().identifier)
+        .unwrap();
+    let ptm_sm_var = get_var_or_constant(store, ptm_sm.as_ref());
 
     let mut statement_patterns: Vec<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))
