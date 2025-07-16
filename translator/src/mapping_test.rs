@@ -1,85 +1,64 @@
-use std::fs;
+// Tests for during development to debug potential issues
+
 use std::path::Path;
 
 use crate::rml::parser::extractors::io::parse_file as parse_rml_file;
 use crate::rml::OptimizedRMLDocumentTranslator;
+use crate::new_rml::extractors::io::parse_file as parse_new_rml_file;
+use crate::new_rml::translator::NewRMLDocumentTranslator;
 use crate::LanguageTranslator;
 
-/// Execute mapping from RML file and return the operator plan as JSON string
-pub fn execute_mapping(mapping_file_path: &str) -> Result<String, Box<dyn std::error::Error>> {
-    println!("🔄 Executing mapping: {}", mapping_file_path);
-    
-    let document = match parse_rml_file(mapping_file_path.into()) {
-        Ok(doc) => doc,
-        Err(e) => {
-            println!("💥 Detailed parsing error: {:?}", e);
-            return Err(format!("RML parsing failed: {:?}", e).into());
-        }
-    };
-    
-    let plan = OptimizedRMLDocumentTranslator::translate_to_plan(document)
-        .map_err(|e| {
-            println!("💥 Detailed translation error: {:?}", e);
-            format!("Translation error: {:?}", e)
-        })?;
-    
-    let plan_json = plan.to_json_string()
-        .map_err(|e| format!("JSON serialization failed: {:?}", e))?;
-    
-    println!("\n📋 Generated Mapping Plan (JSON):");
-    println!("{}", plan_json);
-    
-    Ok(plan_json)
-}
+// This is a testing file for debugging and finding out issues during development.
 
-pub fn parse_expected_mapping(mapping_file_path: &str) -> Result<String, Box<dyn std::error::Error>> {
-    println!("📄 Reading expected mapping: {}", mapping_file_path);
+pub fn execute_mapping(mapping_name: &str, mapping_file_path: &str, use_new_rml: bool) -> Result<String, Box<dyn std::error::Error>> {
+    let rml_type = if use_new_rml { "New RML" } else { "RML" };
+    println!("🔄 Executing {} mapping ({}): {}", rml_type, mapping_name, mapping_file_path);
     
     if !Path::new(mapping_file_path).exists() {
-        return Err(format!("Expected mapping file not found: {}", mapping_file_path).into());
+        return Err(format!("Mapping file not found: {}", mapping_file_path).into());
     }
     
-    let content = fs::read_to_string(mapping_file_path)?;
-    Ok(content)
-}
+    let plan_json = if use_new_rml {
+        let document = parse_new_rml_file(mapping_file_path.into())
+            .map_err(|e| format!("New RML parsing failed: {:?}", e))?;
+    
+        let plan = NewRMLDocumentTranslator::translate_to_plan(document)
+            .map_err(|e| format!("New RML translation error: {:?}", e))?;
+        
+        plan.to_json_string()
+            .map_err(|e| format!("JSON serialization failed: {:?}", e))?
+    } else {
+        let document = parse_rml_file(mapping_file_path.into())
+            .map_err(|e| format!("RML parsing failed: {:?}", e))?;
+    
+        let plan = OptimizedRMLDocumentTranslator::translate_to_plan(document)
+            .map_err(|e| format!("Translation error: {:?}", e))?;
+        
+        plan.to_json_string()
+            .map_err(|e| format!("JSON serialization failed: {:?}", e))?
+    };
+    
+    println!("✅ {} mapping ({}) executed successfully", rml_type, mapping_name);
+    
+    // Print the final mapping JSON in a structured way
+    println!("\n📋 Final Mapping Plan JSON for {} ({}):", rml_type, mapping_name);
+    println!("{}", "=".repeat(80));
+    
+    // Try to pretty-print the JSON, fall back to raw if parsing fails
+    match serde_json::from_str::<serde_json::Value>(&plan_json) {
+        Ok(parsed) => {
+            match serde_json::to_string_pretty(&parsed) {
+                Ok(pretty) => println!("{}", pretty),
+                Err(_) => println!("{}", plan_json),
+            }
+        },
+        Err(_) => println!("{}", plan_json),
+    }
+    
+    println!("{}", "=".repeat(80));
+    println!();
 
-pub fn integration_test(
-    mapping_file: &str, 
-    expected_mapping_file: &str
-) -> Result<bool, Box<dyn std::error::Error>> {
-    println!("\n🧪 Running integration test:");
-    println!("📋 Mapping: {}", mapping_file);
-    println!("📄 Expected mapping: {}", expected_mapping_file);
-    
-    let start_time = std::time::Instant::now();
-    
-    let actual_output = execute_mapping(mapping_file)?;
-    
-    let expected_output = parse_expected_mapping(expected_mapping_file)?;
-    
-    let duration = start_time.elapsed();
-    
-    let has_actual = !actual_output.trim().is_empty();
-    let has_expected = !expected_output.trim().is_empty();
-    
-    println!("📊 Results:");
-    println!("  - Actual output length: {} chars", actual_output.len());
-    println!("  - Expected output length: {} chars", expected_output.len());
-    println!("  - Execution time: {:?}", duration);
-    
-    // Parse both JSONs for comparison
-    let actual_json: serde_json::Value = serde_json::from_str(&actual_output)
-        .map_err(|e| format!("Failed to parse actual output as JSON: {:?}", e))?;
-    
-    let expected_json: serde_json::Value = serde_json::from_str(&expected_output)
-        .map_err(|e| format!("Failed to parse expected output as JSON: {:?}", e))?;
-    
-    let jsons_match = actual_json == expected_json;
-    
-    println!("\n📄 Final Mapping Plan Output:");
-    println!("{}", actual_output);
-
-    Ok(true)
+    Ok(plan_json)
 }
 
 #[cfg(test)]
@@ -87,55 +66,38 @@ mod tests {
     use super::*;
 
     #[test]
-    #[ignore] // Ignored because currently it always passes when the mapping succeeds.
+    #[ignore]
     fn test_ldes_bluebike_case() {
-        //TODO: Have a simpler test that just tests the LDES, not using such a huge mapping file.
-        let mapping_file = "resources/test/rmlmapper-custom/rml-ldes/bluebike/base.rml.ttl";
-        let expected_mapping_file = "resources/test/rmlmapper-custom/rml-ldes/bluebike/expected_mapping.json";
-        
-        match integration_test(mapping_file, expected_mapping_file) {
-            Ok(success) => {
-                assert!(success, "LDES BlueBike test should pass");
-                println!("✅ LDES BlueBike test completed successfully");
+        execute_mapping("LDES BlueBike", "resources/test/rmlmapper-custom/rml-ldes/bluebike/base.rml.ttl", false).unwrap();
             }
-            Err(e) => {
-                println!("❌ LDES test failed: {}", e);
-                panic!("LDES integration test failed: {}", e);
-            }
-        }
-    }
+
     #[test]
     #[ignore]
     fn test_kafka_mapping() {
-        let mapping_file = "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/mapping.ttl";
-        let expected_mapping_file = "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/expected_mapping.json";
-        
-        match integration_test(mapping_file, expected_mapping_file) {
-            Ok(success) => {
-                assert!(success, "Kafka mapping test should pass");
-                println!("✅ Kafka mapping test completed successfully");
-            }
-            Err(e) => {
-                println!("❌ Kafka mapping test failed: {}", e);
-                panic!("Kafka mapping test failed: {}", e);
-            }
-        }
+        execute_mapping("Kafka", "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/mapping.ttl", false).unwrap();
     }
+
     #[test]
     #[ignore]
-    fn test_2a(){
-        let mapping_file = "resources/test/csv-testcases/RMLTC0002a-CSV/mapping.ttl";
-        let expected_mapping_file = "resources/test/rmlstreamer/RMLTC0007e-XML-STREAM-KAFKA/expected_mapping.json";
-        
-        match integration_test(mapping_file, expected_mapping_file) {
-            Ok(success) => {
-                assert!(success, "LDES BlueBike test should pass");
-                println!("✅ LDES BlueBike test completed successfully");
-            }
-            Err(e) => {
-                println!("❌ Kafka mapping test failed: {}", e);
-                panic!("Kafka mapping test failed: {}", e);
-            }
-        }
+    fn test_csv_2a() {
+        execute_mapping("CSV 2a", "resources/test/csv-testcases/RMLTC0002a-CSV/mapping.ttl", false).unwrap();
     }
-} 
+
+    #[test]
+    #[ignore]
+    fn test_function_mapping() {
+        execute_mapping("Function", "resources/test/rml/function_mapping.ttl", false).unwrap();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_new_rmlfnml() {
+        execute_mapping("RMLFNML", "resources/test/rmlfnml/RMLFNMLTC0001-CSV/mapping.ttl", true).unwrap();
+    }
+
+    #[test]
+    #[ignore]
+    fn test_new_rmlstar() {
+        execute_mapping("RMLStar", "resources/test/rmlstar/RMLSTARTC001b/mapping.ttl", true).unwrap();
+            }
+}

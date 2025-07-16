@@ -362,6 +362,9 @@ pub enum Function {
         fno_identifier:   String,
         parameters: HashMap<String, RcExtendFunction>,
     },
+    Star {
+       // TODO: Implement star function
+    }
 }
 
 // Post-mapping operators
