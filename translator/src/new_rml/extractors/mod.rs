@@ -32,6 +32,7 @@ pub mod store;
 mod subjectmap_extractor;
 mod target;
 mod term_map_extractor;
+pub mod tests;
 pub mod triplesmap_extractor;
 mod util;
 
