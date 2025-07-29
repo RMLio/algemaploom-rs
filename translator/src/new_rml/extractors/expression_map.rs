@@ -13,20 +13,20 @@ use super::{stringify_rcterm, Extractor};
 use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMap, ExpressionMapKind,
+    ExpressionMapEnum, ExpressionMapKind,
 };
 use crate::new_rml::rml_model::v2::fnml::FunctionExecution;
 
-impl Extractor<ExpressionMap> for ExpressionMap {
+impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<ExpressionMap>
+    ) -> super::ExtractorResult<ExpressionMapEnum>
     where
         TTerm: Term + Clone,
     {
         let (value_pred, value_term) =
-            ExpressionMap::extract_self(subject_ref.borrow_term(), graph_ref)?;
+            ExpressionMapEnum::extract_self(subject_ref.borrow_term(), graph_ref)?;
         let kind = if value_pred
             == vocab::rml_fnml::PROPERTY::FUNCTION_EXECUTION.to_rcterm()
         {
@@ -65,14 +65,14 @@ impl Extractor<ExpressionMap> for ExpressionMap {
             )
         };
 
-        Ok(ExpressionMap {
+        Ok(ExpressionMapEnum {
             map_type_pred_iri: value_pred,
             kind,
         })
     }
 }
 
-impl Extractor<(RcTerm, RcTerm)> for ExpressionMap {
+impl Extractor<(RcTerm, RcTerm)> for ExpressionMapEnum {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,

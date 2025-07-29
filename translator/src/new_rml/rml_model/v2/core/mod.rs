@@ -3,7 +3,7 @@ use std::fmt::Display;
 use std::hash::Hash;
 
 use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
-use expression_map::ExpressionMap;
+use expression_map::ExpressionMapEnum;
 use sophia_term::RcTerm;
 
 use super::io::source::{
@@ -163,8 +163,8 @@ pub struct RefObjectMap {
 
 #[derive(Debug, Clone)]
 pub struct JoinCondition {
-    pub parent: ExpressionMap,
-    pub child:  ExpressionMap,
+    pub parent: ExpressionMapEnum,
+    pub child:  ExpressionMapEnum,
 }
 
 impl Eq for JoinCondition {}

@@ -10,7 +10,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMap, ExpressionMapKind,
+    ExpressionMapEnum, ExpressionMapKind,
 };
 use crate::new_rml::rml_model::v2::TermMapEnum;
 
@@ -19,7 +19,7 @@ fn extract_sub_expr_maps<TS, TCP, TMP>(
     graph_ref: &FastGraph,
     const_preds: &[TCP],
     map_preds: &[TMP],
-) -> Option<ExpressionMap>
+) -> Option<ExpressionMapEnum>
 where
     TS: Term,
     TMP: Term,
@@ -29,7 +29,7 @@ where
         get_object_with_ps(graph_ref, subj_ref.borrow_term(), const_preds).ok();
 
     if let Some(datatype_iri) = datatype_const_opt {
-        return Some(ExpressionMap {
+        return Some(ExpressionMapEnum {
             map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
             kind:              ExpressionMapKind::NonFunction(
                 stringify_rcterm(datatype_iri).unwrap(),
@@ -40,7 +40,7 @@ where
     get_object_with_ps(graph_ref, subj_ref.borrow_term(), map_preds)
         .ok()
         .and_then(|dtype_map_iri| {
-            ExpressionMap::extract_self(&dtype_map_iri, graph_ref).ok()
+            ExpressionMapEnum::extract_self(&dtype_map_iri, graph_ref).ok()
         })
 }
 

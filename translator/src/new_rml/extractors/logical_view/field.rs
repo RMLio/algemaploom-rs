@@ -6,7 +6,7 @@ use crate::new_rml::extractors::{
     stringify_rcterm, Extractor, ExtractorResult, FromVocab,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMap, ExpressionMapKind,
+    ExpressionMapEnum, ExpressionMapKind,
 };
 use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::rml_model::v2::lv::{RMLField, RMLFieldKind};
@@ -43,7 +43,7 @@ impl Extractor<RMLField> for RMLField {
 
         let kind = if let Some(reference) = reference_opt {
             log::debug!("Reference RML field"); 
-            RMLFieldKind::Expression(ExpressionMap {
+            RMLFieldKind::Expression(ExpressionMapEnum {
                 map_type_pred_iri: vocab::rml_core::PROPERTY::REFERENCE
                     .to_rcterm(),
                 kind:              ExpressionMapKind::NonFunction(
@@ -52,7 +52,7 @@ impl Extractor<RMLField> for RMLField {
             })
         }else if let Some(constant) = constant_opt {
             log::debug!("Constant RML field"); 
-            RMLFieldKind::Expression(ExpressionMap {
+            RMLFieldKind::Expression(ExpressionMapEnum {
                 map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT
                     .to_rcterm(),
                 kind:              ExpressionMapKind::NonFunction(

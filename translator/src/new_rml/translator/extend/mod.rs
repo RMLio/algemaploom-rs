@@ -12,7 +12,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMap, ExpressionMapKind, ExpressionMapTypeEnum,
+    ExpressionMapEnum, ExpressionMapKind, ExpressionMapTypeEnum,
 };
 use crate::new_rml::rml_model::v2::core::{TemplateSubString, TriplesMap};
 use crate::new_rml::rml_model::v2::fnml::InputMap;
@@ -195,7 +195,7 @@ pub fn extend_from_term_map(
 
 pub fn extension_func_from_exp_map(
     store: &SearchStore,
-    exp_map: &ExpressionMap,
+    exp_map: &ExpressionMapEnum,
 ) -> NewRMLTranslationResult<Function> {
     let function: Function = match exp_map.get_map_type_enum()? {
         ExpressionMapTypeEnum::Function => fno_extend_function(store, exp_map)?,
@@ -237,7 +237,7 @@ fn fno_input_extend_function(
 
 fn fno_extend_function(
     store: &SearchStore,
-    exp_map: &ExpressionMap,
+    exp_map: &ExpressionMapEnum,
 ) -> NewRMLTranslationResult<Function> {
     if let ExpressionMapKind::FunctionExecution { execution, returns } =
         &exp_map.kind
@@ -258,7 +258,7 @@ fn fno_extend_function(
     }
 }
 
-fn template_extend_function(exp_map: &ExpressionMap) -> Function {
+fn template_extend_function(exp_map: &ExpressionMapEnum) -> Function {
     let template_splits = exp_map.get_template_string_split();
     let mut template_function = Function::Nop;
 
@@ -285,7 +285,7 @@ fn template_extend_function(exp_map: &ExpressionMap) -> Function {
     template_function
 }
 
-fn star_extend_function(exp_map: &ExpressionMap) -> Function {
+fn star_extend_function(exp_map: &ExpressionMapEnum) -> Function {
     let mut star_function = Function::Star { };
     // TODO: Implement star extend function
     // 

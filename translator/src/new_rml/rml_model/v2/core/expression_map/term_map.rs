@@ -7,7 +7,7 @@ use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
 use sophia_term::RcTerm;
 use vocab::ToString;
 
-use super::{ExpressionMap, ExpressionMapTypeEnum};
+use super::{ExpressionMapEnum, ExpressionMapTypeEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
@@ -18,7 +18,7 @@ use crate::new_rml::rml_model::v2::{AttributeAliaser, TermMapEnum};
 pub struct CommonTermMapInfo {
     pub identifier:      RcTerm,
     pub term_type:       RcTerm,
-    pub expression:      ExpressionMap,
+    pub expression:      ExpressionMapEnum,
     pub logical_targets: Vec<LogicalTarget>,
 }
 
@@ -197,8 +197,8 @@ pub struct PredicateMap {
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct ObjectMap {
     pub term_map_info: CommonTermMapInfo,
-    pub language_map:  Option<ExpressionMap>,
-    pub datatype_map:  Option<ExpressionMap>,
+    pub language_map:  Option<ExpressionMapEnum>,
+    pub datatype_map:  Option<ExpressionMapEnum>,
 }
 
 impl ObjectMap {
@@ -244,7 +244,7 @@ impl Default for GraphMap {
                     uuid::Uuid::new_v4().to_string(),
                 )),
                 term_type:       vocab::rml_core::CLASS::IRI.to_rcterm(),
-                expression:      ExpressionMap::try_new(
+                expression:      ExpressionMapEnum::try_new_unknown(
                     vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
                     "<defaultGraph>".to_string(),
                 )

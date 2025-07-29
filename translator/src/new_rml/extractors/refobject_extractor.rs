@@ -4,7 +4,7 @@ use sophia_inmem::graph::FastGraph;
 use super::store::{get_object_with_ps, get_objects_with_ps};
 use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMap, ExpressionMapKind,
+    ExpressionMapEnum, ExpressionMapKind,
 };
 use crate::new_rml::rml_model::v2::core::{JoinCondition, RefObjectMap};
 
@@ -12,21 +12,21 @@ fn parent_child_extract<TS, TP>(
     subject_ref: TS,
     graph_ref: &FastGraph,
     preds: &[TP],
-) -> ExtractorResult<ExpressionMap>
+) -> ExtractorResult<ExpressionMapEnum>
 where
     TS: Term,
     TP: Term,
 {
     let term = get_object_with_ps(graph_ref, subject_ref, preds)?;
     if term.kind() == TermKind::Literal {
-        Ok(ExpressionMap {
+        Ok(ExpressionMapEnum {
             map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
             kind:              ExpressionMapKind::NonFunction(
                 stringify_rcterm(term).unwrap(),
             ),
         })
     } else {
-        ExpressionMap::extract_self(&term, graph_ref)
+        ExpressionMapEnum::extract_self(&term, graph_ref)
     }
 }
 

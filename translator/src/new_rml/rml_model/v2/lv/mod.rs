@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use sophia_term::RcTerm;
 
-use super::core::expression_map::ExpressionMap;
+use super::core::expression_map::ExpressionMapEnum;
 use super::core::{AbstractLogicalSourceEnum, JoinCondition, RMLIterable};
 use super::io::source::{LogicalSource, Source};
 
@@ -49,7 +49,7 @@ impl RMLField {
     pub fn from_ref_str(ref_str: &str) -> RMLField {
         RMLField {
             name:   ref_str.to_string(),
-            kind:   RMLFieldKind::Expression(ExpressionMap::from_ref_str(
+            kind:   RMLFieldKind::Expression(ExpressionMapEnum::from_ref_str(
                 ref_str,
             )),
             fields: vec![],
@@ -60,7 +60,7 @@ impl RMLField {
 #[derive(Debug, Clone)]
 pub enum RMLFieldKind {
     Iterable(RMLIterable),
-    Expression(ExpressionMap),
+    Expression(ExpressionMapEnum),
 }
 
 #[derive(Debug, Clone)]
