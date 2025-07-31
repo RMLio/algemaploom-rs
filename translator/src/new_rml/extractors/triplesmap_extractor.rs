@@ -65,7 +65,9 @@ impl Extractor<TriplesMap> for TriplesMap {
 
         let ref_obj_attributes = join_conditions
             .flat_map(|jc| JoinCondition::extract_self(jc, graph))
-            .flat_map(|jc| jc.parent.get_value().cloned())
+            //FIXME: Change jc.parent.get_value() to actually retrieve the reference attributes
+            //instead of just returning the value
+            .map(|jc| "".to_string())
             .collect();
 
         let base_iri = get_object(

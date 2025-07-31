@@ -10,7 +10,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMapEnum, ExpressionMapKind,
+    BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapKind,
 };
 use crate::new_rml::rml_model::v2::TermMapEnum;
 
@@ -29,12 +29,7 @@ where
         get_object_with_ps(graph_ref, subj_ref.borrow_term(), const_preds).ok();
 
     if let Some(datatype_iri) = datatype_const_opt {
-        return Some(ExpressionMapEnum {
-            map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
-            kind:              ExpressionMapKind::NonFunction(
-                stringify_rcterm(datatype_iri).unwrap(),
-            ),
-        });
+        return Some(ExpressionMapEnum::new_constant_term(datatype_iri));
     }
 
     get_object_with_ps(graph_ref, subj_ref.borrow_term(), map_preds)

@@ -55,7 +55,9 @@ mod tests {
     use crate::import_test_mods;
     use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
-    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
+    use crate::new_rml::rml_model::v2::core::expression_map::{
+        BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapTypeEnum,
+    };
 
     import_test_mods!(new_rml);
 
@@ -74,10 +76,20 @@ mod tests {
         assert_eq!(pms.len(), 2);
 
         let _ = pms.iter().try_for_each(|pm| {
-            assert_eq!(
-                pm.as_ref().expression.get_map_type_enum()?,
-                ExpressionMapTypeEnum::Constant
-            );
+            match &pm.as_ref().expression {
+                ExpressionMapEnum::BaseExpressionMap(base_expr) => {
+                    match base_expr {
+                        BaseExpressionMapEnum::Constant(_) => {}
+                        _ => {
+                            panic!(
+                                "Predicate map is not a constant term map {:?}",
+                                pm
+                            )
+                        }
+                    }
+                }
+                _ => panic!("Predicate map's expression map is not an expression map defined in RML-Core {:?}", pm.as_ref().expression),
+            }
             assert!(pm.as_ref().is_iri_term_type());
             Ok::<(), NewRMLTranslationError>(())
         });

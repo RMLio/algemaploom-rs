@@ -129,7 +129,9 @@ mod tests {
         ExtractorResult, FromVocab, TermMapExtractor,
     };
     use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
-    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
+    use crate::new_rml::rml_model::v2::core::expression_map::{
+        BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapTypeEnum,
+    };
     use crate::{load_graph, test_case};
 
     #[test]
@@ -144,10 +146,16 @@ mod tests {
         let sub_ref = triple.o();
         let subj_map = SubjectMap::create_term_map(sub_ref, &graph)?;
 
-        assert_eq!(
-            subj_map.as_ref().expression.get_map_type_enum()?,
-            ExpressionMapTypeEnum::Template
-        );
+        match &subj_map.as_ref().expression {
+            ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
+                match base_expression_map_enum {
+                    BaseExpressionMapEnum::Template(_) => {},
+                    _ => {
+                        panic!("Subject map is expected to be a template term map {:?}", subj_map)
+                    }
+                }
+            }
+        };
         assert!(subj_map.unwrap_subject_map().classes.is_empty());
 
         Ok(())

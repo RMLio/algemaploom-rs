@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::{collections::HashSet, ops::Deref};
 
 use derive_more::{IsVariant, TryUnwrap, Unwrap};
 
@@ -36,4 +36,7 @@ impl AsRef<CommonTermMapInfo> for TermMapEnum {
 
 pub trait AttributeAliaser {
     fn alias_attribute(&self, alias: &str) -> Self;
+}
+pub trait RefAttributeGetter {
+    fn get_ref_attributes(&self) -> HashSet<String>;
 }

@@ -1,0 +1,51 @@
+use sophia_api::term::Term;
+use sophia_inmem::graph::FastGraph;
+
+use crate::new_rml::extractors::error::ParseError;
+use crate::new_rml::extractors::expression_map::get_expr_value_enum;
+use crate::new_rml::extractors::{
+    stringify_rcterm, Extractor, ExtractorResult, FromVocab,
+};
+use crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
+
+impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
+    fn extract_self<TTerm>(
+        subject_ref: TTerm,
+        graph_ref: &FastGraph,
+    ) -> ExtractorResult<BaseExpressionMapEnum>
+    where
+        TTerm: Term + Clone,
+    {
+        if let Some((_, obj)) = get_expr_value_enum(
+            subject_ref.borrow_term(),
+            graph_ref,
+            &[&vocab::rml_core::PROPERTY::TEMPLATE.to_rcterm()],
+        ) {
+            Ok(BaseExpressionMapEnum::Template(
+                stringify_rcterm(obj).unwrap(),
+            ))
+        } else if let Some((_, obj)) = get_expr_value_enum(
+            subject_ref.borrow_term(),
+            graph_ref,
+            &[&vocab::rml_core::PROPERTY::REFERENCE.to_rcterm()],
+        ) {
+            Ok(BaseExpressionMapEnum::Reference(
+                stringify_rcterm(obj).unwrap(),
+            ))
+        } else if let Some((_, obj)) = get_expr_value_enum(
+            subject_ref.borrow_term(),
+            graph_ref,
+            &[&vocab::rml_core::PROPERTY::CONSTANT.to_rcterm()],
+        ) {
+            Ok(BaseExpressionMapEnum::Constant(
+                stringify_rcterm(obj).unwrap(),
+            ))
+        } else {
+            Err(ParseError::GenericError(format!(
+                "Expression map {:?} is not a base expression map",
+                subject_ref
+            ))
+            .into())
+        }
+    }
+}

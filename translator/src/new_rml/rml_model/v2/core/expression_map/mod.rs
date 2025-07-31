@@ -5,11 +5,13 @@ use sophia_api::term::{Term, TermKind};
 use sophia_term::RcTerm;
 
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::{ExtractorResult, FromVocab};
+use crate::new_rml::extractors::stringify_rcterm;
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::fnml::FunctionExecution;
-use crate::new_rml::rml_model::v2::AttributeAliaser;
+use crate::new_rml::rml_model::v2::{AttributeAliaser, RefAttributeGetter};
 
+mod base_expr;
+pub use base_expr::BaseExpressionMapEnum;
 pub mod term_map;
 
 fn split_template_string(template: &str) -> Vec<TemplateSubString> {
@@ -41,77 +43,11 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
     result
 }
 
-pub trait RefAttributeGetter {
-    fn get_ref_attributes(&self) -> HashSet<String>;
-}
-
-#[derive(Debug, Clone, Hash, Eq, PartialEq)]
-pub enum BaseExpressionMapEnum {
-    Template(String),
-    Reference(String),
-    Constant(String),
-    Unknown { type_iri: RcTerm, term_val: RcTerm },
-}
-impl BaseExpressionMapEnum {
-    pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
-        match self {
-            BaseExpressionMapEnum::Template(template) => {
-                split_template_string(&template)
-            }
-            _ => Vec::new(),
-        }
-    }
-}
-
-impl RefAttributeGetter for BaseExpressionMapEnum {
-    fn get_ref_attributes(&self) -> HashSet<String> {
-        let template_attr_vec: HashSet<_> = self
-            .get_template_string_split()
-            .into_iter()
-            .filter_map(|sstring| {
-                match sstring {
-                    TemplateSubString::Attribute(str) => Some(str),
-                    TemplateSubString::NormalString(_) => None,
-                }
-            })
-            .collect();
-
-        if !template_attr_vec.is_empty() {
-            return template_attr_vec;
-        }
-
-        match self {
-            BaseExpressionMapEnum::Reference(ref_val) => {
-                HashSet::from([ref_val.to_string()])
-            }
-            _ => HashSet::new(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Hash, Eq, PartialEq, TryUnwrap, Unwrap)]
-#[unwrap(ref)]
-#[try_unwrap(ref)]
-pub enum ExpressionMapEnum {
-    BaseExpressionMap(BaseExpressionMapEnum),
-    //FunctionExpressionMap(FunctionExpressionMap),
-    // pub map_type_pred_iri: RcTerm,
-    // pub kind:              ExpressionMapKind,
-}
-
-impl AsRef<BaseExpressionMapEnum> for ExpressionMapEnum {
-    fn as_ref(&self) -> &BaseExpressionMapEnum {
-        todo!()
-    }
-}
-
-impl From<Vec<TemplateSubString>> for ExpressionMapEnum {
+impl From<Vec<TemplateSubString>> for BaseExpressionMapEnum {
     fn from(value: Vec<TemplateSubString>) -> Self {
         let template_string: String =
             value.into_iter().map(|val| val.to_string()).collect();
-        ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Template(
-            template_string,
-        ))
+        BaseExpressionMapEnum::Template(template_string)
     }
 }
 
@@ -133,20 +69,70 @@ impl AttributeAliaser for Vec<TemplateSubString> {
     }
 }
 
+#[derive(Debug, Clone, Hash, Eq, PartialEq, TryUnwrap, Unwrap)]
+#[unwrap(ref)]
+#[try_unwrap(ref)]
+pub enum ExpressionMapEnum {
+    BaseExpressionMap(BaseExpressionMapEnum),
+    //FunctionExpressionMap(FunctionExpressionMap),
+    // pub map_type_pred_iri: RcTerm,
+    // pub kind:              ExpressionMapKind,
+}
+
 impl ExpressionMapEnum {
-    pub fn from_template_str(template: &str) -> ExpressionMapEnum {
+    pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
+        if let Ok(base_expr_enum) = self.try_unwrap_base_expression_map_ref() {
+            match base_expr_enum {
+                BaseExpressionMapEnum::Template(template) => {
+                    split_template_string(&template)
+                }
+                _ => vec![],
+            }
+        } else {
+            vec![]
+        }
+    }
+
+    pub fn new_template_term<T>(term: T) -> ExpressionMapEnum
+    where
+        T: Term,
+    {
+        ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Template(
+            stringify_rcterm(term).unwrap(),
+        ))
+    }
+
+    pub fn new_reference_term<T>(term: T) -> ExpressionMapEnum
+    where
+        T: Term,
+    {
+        ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Reference(
+            stringify_rcterm(term).unwrap(),
+        ))
+    }
+
+    pub fn new_constant_term<T>(term: T) -> ExpressionMapEnum
+    where
+        T: Term,
+    {
+        ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Constant(
+            stringify_rcterm(term).unwrap(),
+        ))
+    }
+
+    pub fn new_template_str(template: &str) -> ExpressionMapEnum {
         let template_expr =
             BaseExpressionMapEnum::Template(template.to_string());
         Self::BaseExpressionMap(template_expr)
     }
 
-    pub fn from_const_str(const_str: &str) -> ExpressionMapEnum {
+    pub fn new_const_str(const_str: &str) -> ExpressionMapEnum {
         Self::BaseExpressionMap(BaseExpressionMapEnum::Constant(
             const_str.to_string(),
         ))
     }
 
-    pub fn from_ref_str(ref_str: &str) -> ExpressionMapEnum {
+    pub fn new_ref_str(ref_str: &str) -> ExpressionMapEnum {
         Self::BaseExpressionMap(BaseExpressionMapEnum::Reference(
             ref_str.to_string(),
         ))
@@ -169,21 +155,24 @@ impl ExpressionMapEnum {
     }
 }
 
+impl RefAttributeGetter for ExpressionMapEnum {
+    fn get_ref_attributes(&self) -> HashSet<String> {
+        match self {
+            ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
+                base_expression_map_enum.get_ref_attributes()
+            }
+        }
+    }
+}
+
 impl AttributeAliaser for ExpressionMapEnum {
     fn alias_attribute(&self, alias: &str) -> Self {
-        let aliased_kind = match self.get_map_type_enum().unwrap() {
-            ExpressionMapTypeEnum::Template => {
-                let template_split =
-                    self.get_template_string_split().alias_attribute(alias);
-                template_split.into()
+        match self {
+            ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
+                Self::BaseExpressionMap(
+                    base_expression_map_enum.alias_attribute(alias),
+                )
             }
-            ExpressionMapTypeEnum::Constant => self.kind.clone(),
-            _ => self.kind.alias_attribute(alias),
-        };
-
-        Self {
-            map_type_pred_iri: self.map_type_pred_iri.clone(),
-            kind:              aliased_kind,
         }
     }
 }

@@ -34,39 +34,41 @@ pub fn translate_rml_field(
             })
         }
         RMLFieldKind::Expression(expression_map) => {
-            let value = expression_map.get_value().cloned();
-            let inner_fields =
-                translate_rml_field_vec(&field.fields, ref_form.clone())?;
+            todo!()
+            
+           // let value = expression_map.get_value().cloned();
+           // let inner_fields =
+           //     translate_rml_field_vec(&field.fields, ref_form.clone())?;
 
-            match expression_map.get_map_type_enum()? {
-                ExpressionMapTypeEnum::Constant => {
-                    Ok(OperatorField {
-                        alias: field.name.clone(),
-                        constant: value,
-                        iterator: None,
-                        reference: None,
-                        reference_formulation: ref_form,
-                        inner_fields,
-                    })
-                }
-                ExpressionMapTypeEnum::Reference => {
-                    Ok(OperatorField {
-                        alias: field.name.clone(),
-                        constant: None,
-                        iterator: None,
-                        reference: value,
-                        reference_formulation: ref_form,
-                        inner_fields,
-                    })
-                }
-                field_type => {
-                    Err(TranslationError::SourceError(format!(
-                        "Expression Field {:?} cannot be of type {:?}",
-                        field.name, field_type
-                    ))
-                    .into())
-                }
-            }
+           // match expression_map.get_map_type_enum()? {
+           //     ExpressionMapTypeEnum::Constant => {
+           //         Ok(OperatorField {
+           //             alias: field.name.clone(),
+           //             constant: value,
+           //             iterator: None,
+           //             reference: None,
+           //             reference_formulation: ref_form,
+           //             inner_fields,
+           //         })
+           //     }
+           //     ExpressionMapTypeEnum::Reference => {
+           //         Ok(OperatorField {
+           //             alias: field.name.clone(),
+           //             constant: None,
+           //             iterator: None,
+           //             reference: value,
+           //             reference_formulation: ref_form,
+           //             inner_fields,
+           //         })
+           //     }
+           //     field_type => {
+           //         Err(TranslationError::SourceError(format!(
+           //             "Expression Field {:?} cannot be of type {:?}",
+           //             field.name, field_type
+           //         ))
+           //         .into())
+           //     }
+           // }
         }
     }
 }

@@ -161,26 +161,10 @@ pub struct RefObjectMap {
     pub join_condition: Vec<JoinCondition>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct JoinCondition {
     pub parent: ExpressionMapEnum,
     pub child:  ExpressionMapEnum,
-}
-
-impl Eq for JoinCondition {}
-
-impl Hash for JoinCondition {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.parent.get_value().hash(state);
-        self.child.get_value().hash(state);
-    }
-}
-
-impl PartialEq for JoinCondition {
-    fn eq(&self, other: &Self) -> bool {
-        self.parent.get_value() == other.parent.get_value()
-            && self.child.get_value() == other.child.get_value()
-    }
 }
 
 #[derive(Debug, Clone)]

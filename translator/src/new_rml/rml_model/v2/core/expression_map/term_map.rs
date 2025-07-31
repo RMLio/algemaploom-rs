@@ -3,16 +3,20 @@ use std::hash::Hash;
 
 use log::debug;
 use sophia_api::prelude::Iri;
-use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
+use sophia_api::term::{
+    BnodeId, FromTerm, IriRef, LanguageTag, SimpleTerm, TermKind,
+};
 use sophia_term::RcTerm;
 use vocab::ToString;
 
-use super::{ExpressionMapEnum, ExpressionMapTypeEnum};
+use super::{BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapTypeEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
-use crate::new_rml::rml_model::v2::{AttributeAliaser, TermMapEnum};
+use crate::new_rml::rml_model::v2::{
+    AttributeAliaser, RefAttributeGetter, TermMapEnum,
+};
 
 #[derive(Debug, Clone)]
 pub struct CommonTermMapInfo {
@@ -35,28 +39,24 @@ impl AttributeAliaser for CommonTermMapInfo {
 
 impl CommonTermMapInfo {
     pub fn get_constant_value(&self) -> Option<String> {
-        match self.expression.get_map_type_enum().unwrap() {
-            ExpressionMapTypeEnum::Constant => {
-                match self.try_get_term_type_enum().unwrap() {
-                    RMLTermTypeKind::IRI => {
-                        Some(format!(
-                            "<{}>",
-                            self.expression.get_value().unwrap()
-                        ))
+        if let Some(base_expr_enum) =
+            self.expression.try_unwrap_base_expression_map_ref().ok()
+        {
+            match base_expr_enum {
+                BaseExpressionMapEnum::Constant(val) => {
+                    match self.try_get_term_type_enum().unwrap() {
+                        RMLTermTypeKind::IRI => Some(format!("<{}>", val)),
+                        RMLTermTypeKind::BlankNode => Some(val.to_string()),
+                        RMLTermTypeKind::Literal => {
+                            Some(format!("\"{}\"", val))
+                        }
+                        _ => None,
                     }
-                    RMLTermTypeKind::BlankNode => {
-                        self.expression.get_value().cloned()
-                    }
-                    RMLTermTypeKind::Literal => {
-                        self.expression
-                            .get_value()
-                            .cloned()
-                            .map(|e| format!("\"{}\"", e))
-                    }
-                    _ => None,
                 }
+                _ => None,
             }
-            _ => None,
+        } else {
+            None
         }
     }
 
@@ -69,22 +69,29 @@ impl CommonTermMapInfo {
     }
 
     pub fn try_get_node(&self) -> Option<RcTerm> {
-        if let super::ExpressionMapKind::NonFunction(val) =
-            &self.expression.kind
-        {
-            if self.is_iri_term_type() {
-                Some(RcTerm::from_term(Iri::new_unchecked(val.as_str())))
-            } else if self.is_bnode_term_type() {
-                Some(RcTerm::from_term(BnodeId::new_unchecked(val.as_str())))
-            } else {
-                Some(RcTerm::from_term(SimpleTerm::LiteralLanguage(
-                    val.as_str().into(),
-                    LanguageTag::new_unchecked("en".into()),
-                )))
+        match &self.expression {
+            ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
+                todo!()
             }
-        } else {
-            None
+            _ => None,
         }
+
+        //if let super::ExpressionMapKind::NonFunction(val) =
+        //    &self.expression.kind
+        //{
+        //    if self.is_iri_term_type() {
+        //        Some(RcTerm::from_term(Iri::new_unchecked(val.as_str())))
+        //    } else if self.is_bnode_term_type() {
+        //        Some(RcTerm::from_term(BnodeId::new_unchecked(val.as_str())))
+        //    } else {
+        //        Some(RcTerm::from_term(SimpleTerm::LiteralLanguage(
+        //            val.as_str().into(),
+        //            LanguageTag::new_unchecked("en".into()),
+        //        )))
+        //    }
+        //} else {
+        //    None
+        //}
     }
     pub fn is_iri_term_type(&self) -> bool {
         self.term_type == vocab::rml_core::CLASS::IRI.to_rcterm()
@@ -246,7 +253,7 @@ impl Default for GraphMap {
                 term_type:       vocab::rml_core::CLASS::IRI.to_rcterm(),
                 expression:      ExpressionMapEnum::try_new_unknown(
                     vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
-                    "<defaultGraph>".to_string(),
+                    RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
                 )
                 .unwrap(),
                 logical_targets: Vec::new(),

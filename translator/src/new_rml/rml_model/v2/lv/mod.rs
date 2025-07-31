@@ -49,7 +49,7 @@ impl RMLField {
     pub fn from_ref_str(ref_str: &str) -> RMLField {
         RMLField {
             name:   ref_str.to_string(),
-            kind:   RMLFieldKind::Expression(ExpressionMapEnum::from_ref_str(
+            kind:   RMLFieldKind::Expression(ExpressionMapEnum::new_ref_str(
                 ref_str,
             )),
             fields: vec![],
