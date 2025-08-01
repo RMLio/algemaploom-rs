@@ -171,3 +171,27 @@ pub fn expect_subject_map_contains_class(class_uri: &str) -> Box<dyn Expectation
     })
 }
 
+pub fn expect_object_constant_from_pom(index: usize, expected: &str) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = format!("Object Constant from POM {}", index);
+    
+    Box::new(Expect {
+        extractor: move |triplesmap: &TriplesMap| -> Result<String, String> {
+            extract_object_constant_from_pom(triplesmap, index)
+        },
+        expected: expected_str,
+        name,
+    })
+}
+
+pub fn expect_subject_map_constant(expected: &str) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = "Subject Map Constant".to_string();
+    
+    Box::new(Expect {
+        extractor: extract_subject_map_constant,
+        expected: expected_str,
+        name,
+    })
+}
+

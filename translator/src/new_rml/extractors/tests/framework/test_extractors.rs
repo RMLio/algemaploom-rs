@@ -120,6 +120,15 @@ pub fn extract_object_term_type_from_pom(triplesmap: &TriplesMap, index: usize) 
     stringify_rcterm(&om.as_ref().term_type)
 }
 
+pub fn extract_object_constant_from_pom(triplesmap: &TriplesMap, index: usize) -> Result<String, String> {
+    extract_object_reference_from_pom(triplesmap, index)
+}
+
+pub fn extract_subject_map_constant(triplesmap: &TriplesMap) -> Result<String, String> {
+    let subject_map = get_subject_map(triplesmap)?;
+    get_expression_value_from_expression_map(&subject_map.term_map_info.expression)
+}
+
 pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
     let source = get_source(triplesmap)?;
     let path_predicate = vocab::rml_io::PROPERTY::PATH.to_rcterm();
