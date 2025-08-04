@@ -7,6 +7,7 @@ use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
+use super::error::ParseError;
 use super::{stringify_rcterm, Extractor};
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
@@ -27,7 +28,7 @@ impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
         {
             Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum))
         } else {
-            todo!()
+            Err(ParseError::GenericError("Function expression map extraction not implemented yet!".to_string()).into())
         }
     }
 }
