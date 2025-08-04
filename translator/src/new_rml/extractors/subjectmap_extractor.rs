@@ -29,7 +29,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
         }
     }
 
-    fn create_term_map<TS>(
+    fn extract_self_term_map<TS>(
         subj_ref: TS,
         graph_ref: &sophia_inmem::graph::FastGraph,
     ) -> super::ExtractorResult<TermMapEnum>

@@ -14,7 +14,7 @@ impl TermMapExtractor<TermMapEnum> for GraphMap {
         TermMapEnum::GraphMap(Self { term_map_info })
     }
 
-    fn create_term_map<TTerm>(
+    fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
     ) -> super::ExtractorResult<TermMapEnum>

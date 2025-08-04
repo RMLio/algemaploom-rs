@@ -63,7 +63,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
                 .is_ok()
             });
 
-        let ref_object_map: Vec<_> = ref_obj_map_terms
+        let ref_object_map_vec: Vec<_> = ref_obj_map_terms
             .into_iter()
             .filter_map(|term| RefObjectMap::extract_self(term, graph_ref).ok())
             .collect();
@@ -72,14 +72,13 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
             "Starting object map extraction for predicates: {:?}",
             predicate_map_vec
         );
-        let object_map_vec = ObjectMap::extract_many_from_container(
-            graph_ref,
-            subject_ref.borrow_term(),
-        )
-        .ok()
-        .unwrap_or(vec![]);
 
-        if object_map_vec.is_empty() && ref_object_map.is_empty() {
+        let object_map_vec: Vec<_> = obj_map_terms
+            .into_iter()
+            .flat_map(|term| ObjectMap::extract_self_term_map(term, graph_ref))
+            .collect();
+
+        if object_map_vec.is_empty() && ref_object_map_vec.is_empty() {
             let subject = get_subject(
                 graph_ref,
                 &vocab::rml_core::PROPERTY::PREDICATE_OBJECT_MAP.to_rcterm(),
@@ -109,7 +108,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
         Ok(PredicateObjectMap {
             predicate_map_vec,
             object_map_vec,
-            ref_object_map,
+            ref_object_map: ref_object_map_vec,
             graph_map_vec,
         })
     }

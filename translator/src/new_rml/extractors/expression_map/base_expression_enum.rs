@@ -1,8 +1,12 @@
+use sophia_api::graph::Graph;
+use sophia_api::serializer::{QuadSerializer, Stringifier};
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
+use sophia_turtle::serializer::nq::NqSerializer;
 
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::expression_map::get_expr_value_enum;
+use crate::new_rml::extractors::store::get_subgraph_subject;
 use crate::new_rml::extractors::{
     stringify_rcterm, Extractor, ExtractorResult, FromVocab,
 };
@@ -41,6 +45,18 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
                 stringify_rcterm(obj).unwrap(),
             ))
         } else {
+            let sub_graph =
+                get_subgraph_subject(graph_ref, subject_ref.clone())?;
+            let mut serializer = NqSerializer::new_stringifier();
+            let result = serializer
+                .serialize_dataset(&sub_graph.as_dataset())
+                .unwrap();
+
+            panic!(
+                "Panica for term map: {:?} with triples: {:?}",
+                subject_ref, result.as_str()
+            );
+
             Err(ParseError::GenericError(format!(
                 "Expression map {:?} is not a base expression map",
                 subject_ref

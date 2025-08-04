@@ -22,8 +22,8 @@ impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
     where
         TTerm: Term + Clone,
     {
-        if let Some(base_expr_enum) =
-            BaseExpressionMapEnum::extract_self(subject_ref, graph_ref).ok()
+        if let Ok(base_expr_enum) =
+            BaseExpressionMapEnum::extract_self(subject_ref, graph_ref)
         {
             Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum))
         } else {

@@ -40,7 +40,7 @@ pub type ExtractorResult<T> = Result<T, NewRMLTranslationError>;
 pub trait TermMapExtractor<T: Debug> {
     fn create_shortcut_map(tm: CommonTermMapInfo) -> T;
 
-    fn create_term_map<TTerm>(
+    fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &FastGraph,
     ) -> ExtractorResult<T>
@@ -91,7 +91,7 @@ pub trait TermMapExtractor<T: Debug> {
         });
 
         let mut result: Vec<_> = map_subj_vec
-            .map(|map_subj| Self::create_term_map(&map_subj, graph_ref))
+            .map(|map_subj| Self::extract_self_term_map(&map_subj, graph_ref))
             .collect::<ExtractorResult<_>>()?;
 
         let constant_tms = map_const_obj_vec

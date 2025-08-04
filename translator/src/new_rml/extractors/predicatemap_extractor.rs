@@ -17,7 +17,7 @@ impl TermMapExtractor<TermMapEnum> for PredicateMap {
         TermMapEnum::PredicateMap(PredicateMap { term_map_info })
     }
 
-    fn create_term_map<TS>(
+    fn extract_self_term_map<TS>(
         subj_ref: TS,
         graph_ref: &FastGraph,
     ) -> super::ExtractorResult<TermMapEnum>
