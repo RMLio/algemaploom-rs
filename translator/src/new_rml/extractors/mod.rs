@@ -4,7 +4,6 @@ use sophia_api::prelude::Iri;
 use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
-use term_map_extractor::term_map_from_constant_term;
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
@@ -59,7 +58,7 @@ pub trait TermMapExtractor<T: Debug> {
             .into());
         };
 
-        let tm_info = term_map_from_constant_term(map_const)?;
+        let tm_info = CommonTermMapInfo::from_constant_value(map_const)?;
 
         Ok(Self::create_shortcut_map(tm_info))
     }

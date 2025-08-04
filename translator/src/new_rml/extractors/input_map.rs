@@ -2,7 +2,6 @@ use sophia_api::term::Term;
 
 use super::error::ParseError;
 use super::store::get_object_with_ps;
-use super::term_map_extractor::term_map_from_constant_term;
 use super::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::fnml::InputMap;
