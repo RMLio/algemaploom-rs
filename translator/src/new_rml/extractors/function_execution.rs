@@ -19,8 +19,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             &[&vocab::rml_fnml::PROPERTY::FUNCTION.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|term| CommonTermMapInfo::from_constant_value(term).ok())
-        .filter_map(|tm| tm.try_get_node());
+        .filter_map(|term| CommonTermMapInfo::from_constant_value(term).ok()); 
 
         let function_maps = get_objects_with_ps(
             graph_ref,
@@ -30,8 +29,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         .into_iter()
         .filter_map(|term| {
             CommonTermMapInfo::extract_self(term, graph_ref).ok()
-        })
-        .filter_map(|tm| tm.try_get_node());
+        }); 
 
         let function = function.chain(function_maps).next().unwrap();
 

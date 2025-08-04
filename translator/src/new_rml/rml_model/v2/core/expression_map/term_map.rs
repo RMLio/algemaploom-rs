@@ -103,31 +103,6 @@ impl CommonTermMapInfo {
         self.expression.get_ref_attributes()
     }
 
-    pub fn try_get_node(&self) -> Option<RcTerm> {
-        match &self.expression {
-            ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
-                todo!()
-            }
-            _ => None,
-        }
-
-        //if let super::ExpressionMapKind::NonFunction(val) =
-        //    &self.expression.kind
-        //{
-        //    if self.is_iri_term_type() {
-        //        Some(RcTerm::from_term(Iri::new_unchecked(val.as_str())))
-        //    } else if self.is_bnode_term_type() {
-        //        Some(RcTerm::from_term(BnodeId::new_unchecked(val.as_str())))
-        //    } else {
-        //        Some(RcTerm::from_term(SimpleTerm::LiteralLanguage(
-        //            val.as_str().into(),
-        //            LanguageTag::new_unchecked("en".into()),
-        //        )))
-        //    }
-        //} else {
-        //    None
-        //}
-    }
     pub fn is_iri_term_type(&self) -> bool {
         self.term_type == vocab::rml_core::CLASS::IRI.to_rcterm()
             || self.term_type == vocab::r2rml::CLASS::IRI.to_rcterm()
@@ -162,8 +137,6 @@ impl CommonTermMapInfo {
         }
     }
 }
-
-
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum RMLTermTypeKind {
