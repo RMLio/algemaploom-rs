@@ -14,6 +14,7 @@ use crate::new_rml::rml_model::v2::core::{
     AbstractLogicalSource, AbstractLogicalSourceEnum, JoinCondition,
     PredicateObjectMap, TriplesMap,
 };
+use crate::new_rml::rml_model::v2::RefAttributeGetter;
 use crate::rml::parser::extractors::rcterm_to_string;
 
 impl Extractor<TriplesMap> for TriplesMap {
@@ -65,9 +66,7 @@ impl Extractor<TriplesMap> for TriplesMap {
 
         let ref_obj_attributes = join_conditions
             .flat_map(|jc| JoinCondition::extract_self(jc, graph))
-            //FIXME: Change jc.parent.get_value() to actually retrieve the reference attributes
-            //instead of just returning the value
-            .map(|jc| "".to_string())
+            .flat_map(|jc| jc.parent.get_ref_attributes())
             .collect();
 
         let base_iri = get_object(
