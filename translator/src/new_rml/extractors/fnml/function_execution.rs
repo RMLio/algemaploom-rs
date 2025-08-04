@@ -1,7 +1,7 @@
 use sophia_api::term::Term;
 
-use super::store::{get_objects, get_objects_with_ps};
-use super::{Extractor, FromVocab};
+use crate::new_rml::extractors::store::{get_objects, get_objects_with_ps};
+use crate::new_rml::extractors::{Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::fnml::{FunctionExecution, InputMap};
 
@@ -9,7 +9,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<FunctionExecution>
+    ) -> ExtractorResult<FunctionExecution>
     where
         TTerm: Term,
     {
@@ -19,7 +19,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             &[&vocab::rml_fnml::PROPERTY::FUNCTION.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|term| CommonTermMapInfo::from_constant_value(term).ok()); 
+        .filter_map(|term| CommonTermMapInfo::from_constant_value(term).ok());
 
         let function_maps = get_objects_with_ps(
             graph_ref,
@@ -29,7 +29,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         .into_iter()
         .filter_map(|term| {
             CommonTermMapInfo::extract_self(term, graph_ref).ok()
-        }); 
+        });
 
         let function = function.chain(function_maps).next().unwrap();
 

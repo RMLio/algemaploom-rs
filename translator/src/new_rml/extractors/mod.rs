@@ -14,7 +14,6 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMap
 mod abstract_logical_source_extractor;
 pub mod error;
 mod expression_map;
-mod function_execution;
 mod graphmap_extractor;
 mod input_map;
 pub mod io;
@@ -25,6 +24,7 @@ mod objectmap_extractor;
 mod pom_extractor;
 mod predicatemap_extractor;
 //mod rdb_logicalsource;
+mod fnml;
 mod refobject_extractor;
 mod source;
 pub mod store;

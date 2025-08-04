@@ -74,8 +74,7 @@ impl CommonTermMapInfo {
         })
     }
     pub fn get_constant_value(&self) -> Option<String> {
-        if let Some(base_expr_enum) =
-            self.expression.try_unwrap_base_expression_map_ref().ok()
+        if let Ok(base_expr_enum) = self.expression.try_unwrap_base_expression_map_ref()
         {
             match base_expr_enum {
                 BaseExpressionMapEnum::Constant(val) => {

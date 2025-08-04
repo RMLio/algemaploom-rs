@@ -84,7 +84,7 @@ impl ExpressionMapEnum {
         if let Ok(base_expr_enum) = self.try_unwrap_base_expression_map_ref() {
             match base_expr_enum {
                 BaseExpressionMapEnum::Template(template) => {
-                    split_template_string(&template)
+                    split_template_string(template)
                 }
                 _ => vec![],
             }
