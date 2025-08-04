@@ -29,7 +29,9 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             &[&vocab::rml_fnml::PROPERTY::FUNCTION_MAP.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|term| CommonTermMapInfo::extract_self(term, graph_ref).ok())
+        .filter_map(|term| {
+            CommonTermMapInfo::extract_self(term, graph_ref).ok()
+        })
         .filter_map(|tm| tm.try_get_node());
 
         let function = function.chain(function_maps).next().unwrap();
@@ -43,6 +45,9 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         .filter_map(|term| InputMap::extract_self(term, graph_ref).ok())
         .collect();
 
-        Ok(FunctionExecution { function, input })
+        Ok(FunctionExecution {
+            function_map: todo!(),
+            input,
+        })
     }
 }

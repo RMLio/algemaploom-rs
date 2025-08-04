@@ -4,7 +4,7 @@ use sophia_inmem::graph::FastGraph;
 use super::store::{get_object_with_ps, get_objects_with_ps};
 use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapKind,
+    BaseExpressionMapEnum, ExpressionMapEnum
 };
 use crate::new_rml::rml_model::v2::core::{JoinCondition, RefObjectMap};
 

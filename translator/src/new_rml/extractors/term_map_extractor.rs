@@ -15,7 +15,6 @@ use crate::new_rml::extractors::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     termkind_to_rml_rcterm, CommonTermMapInfo,
 };
-use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapKind::NonFunction;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
 };

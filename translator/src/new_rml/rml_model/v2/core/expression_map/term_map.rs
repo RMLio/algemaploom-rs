@@ -1,15 +1,16 @@
 use std::collections::HashSet;
+use std::fmt::Debug;
 use std::hash::Hash;
 
 use log::debug;
 use sophia_api::prelude::Iri;
 use sophia_api::term::{
-    BnodeId, FromTerm, IriRef, LanguageTag, SimpleTerm, TermKind,
+    BnodeId, FromTerm, IriRef, LanguageTag, SimpleTerm, Term, TermKind,
 };
 use sophia_term::RcTerm;
 use vocab::ToString;
 
-use super::{BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapTypeEnum};
+use super::{BaseExpressionMapEnum, ExpressionMapEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
@@ -18,7 +19,7 @@ use crate::new_rml::rml_model::v2::{
     AttributeAliaser, RefAttributeGetter, TermMapEnum,
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct CommonTermMapInfo {
     pub identifier:      RcTerm,
     pub term_type:       RcTerm,
@@ -38,6 +39,40 @@ impl AttributeAliaser for CommonTermMapInfo {
 }
 
 impl CommonTermMapInfo {
+    pub fn from_constant_value<TTerm>(term: TTerm) -> ExtractorResult<Self>
+    where
+        TTerm: Term + Debug,
+    {
+        let identifier: RcTerm = match term.kind() {
+            TermKind::Literal => {
+                RcTerm::from_term(BnodeId::new_unchecked(format!(
+                    "{}-{}",
+                    term.lexical_form().unwrap(),
+                    uuid::Uuid::new_v4()
+                )))
+            }
+            TermKind::Triple => {
+                return Err(ParseError::GenericError(
+                    "Triple term map type not supported!".to_string(),
+                )
+                .into())
+            }
+            TermKind::Variable => {
+                return Err(ParseError::GenericError(
+                    "Variable term map type not supported!".to_string(),
+                )
+                .into())
+            }
+            _ => RcTerm::from_term(term.borrow_term()),
+        };
+
+        Ok(Self {
+            identifier,
+            term_type: termkind_to_rml_rcterm(term.kind())?,
+            expression: ExpressionMapEnum::new_constant_term(term),
+            logical_targets: Vec::new(),
+        })
+    }
     pub fn get_constant_value(&self) -> Option<String> {
         if let Some(base_expr_enum) =
             self.expression.try_unwrap_base_expression_map_ref().ok()
@@ -128,21 +163,7 @@ impl CommonTermMapInfo {
     }
 }
 
-impl Eq for CommonTermMapInfo {}
 
-impl PartialEq for CommonTermMapInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.identifier == other.identifier && self.term_type == other.term_type
-    }
-}
-
-impl Hash for CommonTermMapInfo {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.identifier.hash(state);
-        self.term_type.hash(state);
-        self.expression.hash(state);
-    }
-}
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub enum RMLTermTypeKind {

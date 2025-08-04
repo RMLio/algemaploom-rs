@@ -56,7 +56,7 @@ mod tests {
     use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
     use crate::new_rml::rml_model::v2::core::expression_map::{
-        BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapTypeEnum,
+        BaseExpressionMapEnum, ExpressionMapEnum
     };
 
     import_test_mods!(new_rml);

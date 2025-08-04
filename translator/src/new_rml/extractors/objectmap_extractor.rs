@@ -10,7 +10,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapKind,
+    BaseExpressionMapEnum, ExpressionMapEnum
 };
 use crate::new_rml::rml_model::v2::TermMapEnum;
 

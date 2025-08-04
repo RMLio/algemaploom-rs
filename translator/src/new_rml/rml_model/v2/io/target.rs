@@ -1,4 +1,5 @@
 use std::fmt::Debug;
+use std::hash::Hash;
 use std::rc::Rc;
 
 use sophia_api::serializer::*;
@@ -8,13 +9,13 @@ use sophia_turtle::serializer::nt::NtSerializer;
 
 use crate::new_rml::extractors::FromVocab;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Hash, Eq, PartialEq)]
 pub struct LogicalTarget {
     pub target:     Target,
     pub ser_format: Option<RcTerm>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Hash, Eq, PartialEq)]
 pub struct Target {
     pub encoding:    Option<RcTerm>,
     pub compression: Option<RcTerm>,
@@ -26,6 +27,22 @@ pub struct Target {
 pub struct TargetKind {
     pub type_iri: RcTerm,
     pub metadata: Rc<FastGraph>,
+}
+
+impl Hash for TargetKind {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.type_iri.hash(state);
+        todo!()
+    }
+}
+
+impl Eq for TargetKind {}
+
+impl PartialEq for TargetKind {
+    fn eq(&self, other: &Self) -> bool {
+        todo!()
+        //self.type_iri == other.type_iri && self.metadata == other.metadata
+    }
 }
 
 impl Debug for TargetKind {

@@ -7,7 +7,9 @@ use sophia_term::RcTerm;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::stringify_rcterm;
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
-use crate::new_rml::rml_model::v2::fnml::FunctionExecution;
+use crate::new_rml::rml_model::v2::fnml::{
+    FunctionExecution, FunctionExpressionMap,
+};
 use crate::new_rml::rml_model::v2::{AttributeAliaser, RefAttributeGetter};
 
 mod base_expr;
@@ -74,9 +76,7 @@ impl AttributeAliaser for Vec<TemplateSubString> {
 #[try_unwrap(ref)]
 pub enum ExpressionMapEnum {
     BaseExpressionMap(BaseExpressionMapEnum),
-    //FunctionExpressionMap(FunctionExpressionMap),
-    // pub map_type_pred_iri: RcTerm,
-    // pub kind:              ExpressionMapKind,
+    FunctionExpressionMap(FunctionExpressionMap),
 }
 
 impl ExpressionMapEnum {
@@ -161,6 +161,9 @@ impl RefAttributeGetter for ExpressionMapEnum {
             ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
                 base_expression_map_enum.get_ref_attributes()
             }
+            ExpressionMapEnum::FunctionExpressionMap(
+                function_expression_map,
+            ) => function_expression_map.get_ref_attributes(),
         }
     }
 }
@@ -173,53 +176,15 @@ impl AttributeAliaser for ExpressionMapEnum {
                     base_expression_map_enum.alias_attribute(alias),
                 )
             }
-        }
-    }
-}
-
-#[derive(Debug, Clone, Hash, Eq, PartialEq)]
-pub enum ExpressionMapKind {
-    FunctionExecution {
-        execution: FunctionExecution,
-        returns:   Vec<RcTerm>,
-    },
-    NonFunction(String),
-}
-
-impl AttributeAliaser for ExpressionMapKind {
-    fn alias_attribute(&self, alias: &str) -> Self {
-        match self {
-            ExpressionMapKind::FunctionExecution { execution, returns } => {
-                ExpressionMapKind::FunctionExecution {
-                    execution: execution.alias_attribute(alias),
-                    returns:   returns.clone(),
-                }
-            }
-            ExpressionMapKind::NonFunction(inner) => {
-                ExpressionMapKind::NonFunction(format!("{}.{}", alias, inner))
+            ExpressionMapEnum::FunctionExpressionMap(
+                function_expression_map,
+            ) => {
+                Self::FunctionExpressionMap(
+                    function_expression_map.alias_attribute(alias),
+                )
             }
         }
     }
-}
-
-impl ExpressionMapKind {
-    pub fn try_get_non_function_value(&self) -> Option<&String> {
-        if let ExpressionMapKind::NonFunction(val) = self {
-            Some(val)
-        } else {
-            None
-        }
-    }
-}
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub enum ExpressionMapTypeEnum {
-    Function,
-    Template,
-    Constant,
-    Reference,
-    Star,
-    FunctionExecution,
 }
 
 #[cfg(test)]

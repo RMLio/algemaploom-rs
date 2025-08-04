@@ -12,7 +12,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMapEnum, ExpressionMapKind, ExpressionMapTypeEnum,
+    ExpressionMapEnum, 
 };
 use crate::new_rml::rml_model::v2::core::{TemplateSubString, TriplesMap};
 use crate::new_rml::rml_model::v2::fnml::InputMap;
@@ -229,12 +229,13 @@ fn fno_input_extend_function(
     store: &SearchStore,
     input_map: &InputMap,
 ) -> NewRMLTranslationResult<(String, Rc<Function>)> {
-    let param = stringify_rcterm(input_map.parameter.clone()).unwrap();
+    todo!()
+    //let param = stringify_rcterm(input_map.parameter.clone()).unwrap();
 
-    let function =
-        extension_func_from_exp_map(store, &input_map.value_map.expression)?;
+    //let function =
+    //    extension_func_from_exp_map(store, &input_map.value_map.expression)?;
 
-    Ok((param, function.into()))
+    //Ok((param, function.into()))
 }
 
 fn fno_extend_function(

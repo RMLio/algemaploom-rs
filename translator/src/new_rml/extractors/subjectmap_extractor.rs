@@ -130,7 +130,7 @@ mod tests {
     };
     use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
     use crate::new_rml::rml_model::v2::core::expression_map::{
-        BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapTypeEnum,
+        BaseExpressionMapEnum, ExpressionMapEnum,
     };
     use crate::{load_graph, test_case};
 
@@ -155,6 +155,7 @@ mod tests {
                     }
                 }
             }
+            _ =>  panic!("Subject map is expected to be a template term map not FunctionMap {:?}", subj_map)
         };
         assert!(subj_map.unwrap_subject_map().classes.is_empty());
 

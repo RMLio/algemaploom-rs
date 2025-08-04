@@ -6,7 +6,7 @@ use crate::new_rml::extractors::{
     stringify_rcterm, Extractor, ExtractorResult, FromVocab,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum, ExpressionMapKind,
+    BaseExpressionMapEnum, ExpressionMapEnum
 };
 use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::rml_model::v2::lv::{RMLField, RMLFieldKind};

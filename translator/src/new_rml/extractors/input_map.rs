@@ -21,8 +21,7 @@ impl Extractor<InputMap> for InputMap {
             &[&vocab::rml_fnml::PROPERTY::PARAMETER.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|iri| term_map_from_constant_term(iri).ok())
-        .filter_map(|tm| tm.try_get_node());
+        .filter_map(|iri| CommonTermMapInfo::from_constant_value(iri).ok());
 
         let parameter_maps = get_object_with_ps(
             graph_ref,
@@ -30,10 +29,9 @@ impl Extractor<InputMap> for InputMap {
             &[&vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok())
-        .filter_map(|tm| tm.try_get_node());
+        .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok());
 
-        let parameter = parameter.chain(parameter_maps).next().ok_or(
+        let parameter_map = parameter.chain(parameter_maps).next().ok_or(
             ParseError::GenericError(format!(
                 "No parameters detected for FNML input map {:?}",
                 subject_ref.borrow_term()
@@ -46,7 +44,7 @@ impl Extractor<InputMap> for InputMap {
             &[&vocab::rml_fnml::PROPERTY::INPUT_VALUE.to_rcterm()],
         )
         .into_iter()
-        .filter_map(|iri| term_map_from_constant_term(iri).ok());
+        .filter_map(|iri| CommonTermMapInfo::from_constant_value(iri).ok());
 
         let value_map = get_object_with_ps(
             graph_ref,
@@ -56,7 +54,7 @@ impl Extractor<InputMap> for InputMap {
         .into_iter()
         .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok());
 
-        let value_map =
+        let input_value_map =
             value
                 .chain(value_map)
                 .next()
@@ -66,8 +64,8 @@ impl Extractor<InputMap> for InputMap {
                 )))?;
 
         Ok(InputMap {
-            parameter,
-            value_map,
+            parameter_map,
+            input_value_map,
         })
     }
 }

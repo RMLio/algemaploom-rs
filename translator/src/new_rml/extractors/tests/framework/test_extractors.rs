@@ -52,6 +52,9 @@ fn get_expression_value(
                 base_expression_map_enum,
             )
         }
+        ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
+            todo!()
+        }
     }
 }
 
