@@ -11,9 +11,7 @@ use crate::new_rml::extractors::stringify_rcterm;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
-use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMapEnum, 
-};
+use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::new_rml::rml_model::v2::core::{TemplateSubString, TriplesMap};
 use crate::new_rml::rml_model::v2::fnml::InputMap;
 
@@ -292,8 +290,7 @@ fn template_extend_function(exp_map: &ExpressionMapEnum) -> Function {
 }
 
 fn star_extend_function(exp_map: &ExpressionMapEnum) -> Function {
-    let mut star_function = Function::Star {};
+    todo!()
     // TODO: Implement star extend function
     //
-    star_function
 }
