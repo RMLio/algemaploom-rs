@@ -4,15 +4,13 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::store::get_subject;
-use super::{stringify_rcterm, TermMapExtractor};
-use crate::new_rml::extractors::store::{get_object, get_object_with_ps};
+use super::TermMapExtractor;
+use crate::new_rml::extractors::store::get_object_with_ps;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap,
 };
-use crate::new_rml::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum,
-};
+use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::new_rml::rml_model::v2::TermMapEnum;
 
 fn extract_sub_expr_maps<TS, TCP, TMP>(

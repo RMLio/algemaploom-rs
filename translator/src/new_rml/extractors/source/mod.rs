@@ -10,7 +10,6 @@ use sophia_api::graph::MutableGraph;
 use sophia_api::prelude::Any;
 use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
-use vocab::ToString;
 
 use super::error::ParseError;
 use super::store::{get_objects, get_subgraph_subject};

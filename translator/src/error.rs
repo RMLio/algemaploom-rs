@@ -127,7 +127,7 @@ impl std::error::Error for TranslationErrorKind {
                 error.source()
             }
             TranslationErrorKind::IoError(error) => error.source(),
-            TranslationErrorKind::FileMsgError { file, msg } => None,
+            TranslationErrorKind::FileMsgError { file:_, msg:_ } => None,
         }
     }
 }
@@ -167,7 +167,7 @@ impl Display for LanguageErrorKind {
                 _shexml_translation_error,
             ) => write!(f, "error while translating a ShExML document"),
             LanguageErrorKind::NewRMLTranslationError(
-                new_rmltranslation_error,
+                _new_rmltranslation_error,
             ) => write!(f, "error while translating RML v2.0 document"),
         }
     }

@@ -31,20 +31,21 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             CommonTermMapInfo::extract_self(term, graph_ref).ok()
         });
 
-        let function = function.chain(function_maps).next().unwrap();
+        let _function = function.chain(function_maps).next().unwrap();
 
-        let input = get_objects(
+        let _input: Vec<_> = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_fnml::PROPERTY::INPUT.to_rcterm(),
+            vocab::rml_fnml::PROPERTY::INPUT.to_rcterm(),
         )
         .iter()
         .filter_map(|term| InputMap::extract_self(term, graph_ref).ok())
         .collect();
 
-        Ok(FunctionExecution {
-            function_map: todo!(),
-            input,
-        })
+        todo!()
+        //Ok(FunctionExecution {
+        //    function_map: todo!(),
+        //    input: todo!(),
+        //})
     }
 }

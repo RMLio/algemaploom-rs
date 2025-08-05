@@ -50,16 +50,12 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
             let mut serializer = NqSerializer::new_stringifier();
             let result = serializer
                 .serialize_dataset(&sub_graph.as_dataset())
-                .unwrap();
-
-            panic!(
-                "Panica for term map: {:?} with triples: {:?}",
-                subject_ref, result.as_str()
-            );
-
+                .unwrap()
+                .as_str();
             Err(ParseError::GenericError(format!(
-                "Expression map {:?} is not a base expression map",
-                subject_ref
+                "Expression map {:?} is not a base expression map with triples subgraph: \n {:?}",
+                subject_ref,
+                result
             ))
             .into())
         }

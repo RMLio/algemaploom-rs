@@ -8,7 +8,7 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::error::ParseError;
-use super::{stringify_rcterm, Extractor};
+use super::Extractor;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
 };

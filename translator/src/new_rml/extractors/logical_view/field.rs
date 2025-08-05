@@ -5,9 +5,7 @@ use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{
     stringify_rcterm, Extractor, ExtractorResult, FromVocab,
 };
-use crate::new_rml::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum
-};
+use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::rml_model::v2::lv::{RMLField, RMLFieldKind};
 
@@ -48,7 +46,9 @@ impl Extractor<RMLField> for RMLField {
             ))
         } else if let Some(constant) = constant_opt {
             log::debug!("Constant RML field");
-            RMLFieldKind::Expression(ExpressionMapEnum::new_constant_term(constant))
+            RMLFieldKind::Expression(ExpressionMapEnum::new_constant_term(
+                constant,
+            ))
         } else {
             log::debug!("Extracting RMLIterable");
             let iterable = RMLIterable::extract_self(

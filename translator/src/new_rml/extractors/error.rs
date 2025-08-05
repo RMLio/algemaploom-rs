@@ -38,10 +38,10 @@ impl Display for ParseError {
             ParseError::IOErrorStr(msg) => {
                 write!(f, "IO error occurred while parsing with msg: {}", msg)
             }
-            ParseError::IOError(error) => {
+            ParseError::IOError(_error) => {
                 write!(f, "IO error occurred while parsing")
             }
-            ParseError::SerdeError(error) => {
+            ParseError::SerdeError(_error) => {
                 write!(f, "JSON serde error occurred while parsing")
             }
             ParseError::GenericError(msg) => {

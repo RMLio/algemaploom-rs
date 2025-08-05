@@ -5,9 +5,7 @@ use sophia_inmem::graph::FastGraph;
 use super::store::get_object;
 use super::Extractor;
 use crate::new_rml::extractors::FromVocab;
-use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractLogicalSourceEnum, RMLIterable,
-};
+use crate::new_rml::rml_model::v2::core::AbstractLogicalSourceEnum;
 use crate::new_rml::rml_model::v2::io::source::LogicalSource;
 use crate::new_rml::rml_model::v2::lv::LogicalView;
 

@@ -74,16 +74,15 @@ pub fn create_extend_function(
 
         for s_i in split_template {
             let (is_query, extracted_string) = get_is_query_str_pair(&s_i);
-            let function: Function;
-            if is_query {
+            let function = if is_query {
                 let value = query_attr_map.get(extracted_string).unwrap().to_string();
-                function = Function::Reference { value };
+                Function::Reference { value }
             } else {
-                function = Function::TypedConstant {
+                Function::TypedConstant {
                     value: extracted_string.to_string(),
                     term_type: TermType::Literal,
-                };
-            }
+                }
+            };
 
             result = Function::Concatenate {
                 left_value: Rc::new(result),
