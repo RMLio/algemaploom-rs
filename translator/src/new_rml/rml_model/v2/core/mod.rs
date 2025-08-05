@@ -11,6 +11,7 @@ use super::io::source::{
     Source,
 };
 use super::lv::{LogicalView, RMLField};
+use super::RefAttributeGetter;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::ExtractorResult;
 use crate::new_rml::rml_model::v2::TermMapEnum;
@@ -86,63 +87,64 @@ impl TriplesMap {
 
     pub fn transform_to_logical_view(&mut self) -> ExtractorResult<()> {
         let abs_ls = &self.abs_logical_source;
-        if let AbstractLogicalSourceEnum::LogicalSource(ls) = &abs_ls {
-            let mut references = self.subject_map.as_ref().get_ref_attributes();
-            if let Ok(sm) = self.subject_map.try_unwrap_subject_map_ref() {
-                let sm_gm_references = sm
-                    .graph_maps
-                    .iter()
-                    .flat_map(|gm| gm.as_ref().get_ref_attributes());
-                references.extend(sm_gm_references);
-            }
 
-            let pm_references = self
-                .predicate_object_map_vec
-                .iter()
-                .flat_map(|pom| pom.predicate_map_vec.iter())
-                .flat_map(|pm| pm.as_ref().get_ref_attributes());
-            let om_references = self
-                .predicate_object_map_vec
-                .iter()
-                .flat_map(|pom| pom.object_map_vec.iter())
-                .flat_map(|om_enum| {
-                    if let Ok(om) = om_enum.try_unwrap_object_map_ref() {
-                        om.get_ref_attributes()
-                    } else {
-                        om_enum.as_ref().get_ref_attributes()
-                    }
-                });
-
-            let pom_gm_references = self
-                .predicate_object_map_vec
-                .iter()
-                .flat_map(|pom| pom.graph_map_vec.iter())
-                .flat_map(|gm_enum| gm_enum.as_ref().get_ref_attributes());
-
-            references.extend(pom_gm_references);
-            references.extend(pm_references);
-            references.extend(om_references);
-            references.extend(self.ref_obj_attributes.iter().cloned());
-
-            let fields = references
-                .iter()
-                .map(|ref_val| RMLField::from_ref_str(ref_val))
-                .collect();
-
-            let lv = LogicalView {
-                identifier: ls.identifier.clone(),
-                view_on: Box::new(AbstractLogicalSourceEnum::LogicalSource(
-                    ls.clone(),
-                )),
-                fields,
-                struct_annotations: vec![],
-                join_kind_view_pairs: vec![],
-            };
-
-            //modify the old IOLogicalSource to logical views
-            self.abs_logical_source =
-                AbstractLogicalSourceEnum::LogicalView(lv);
+        if let AbstractLogicalSourceEnum::LogicalView(_) = &abs_ls {
+            return Ok(());
         }
+
+        let mut references = self.subject_map.as_ref().get_ref_attributes();
+        if let Ok(sm) = self.subject_map.try_unwrap_subject_map_ref() {
+            let sm_gm_references = sm
+                .graph_maps
+                .iter()
+                .flat_map(|gm| gm.as_ref().get_ref_attributes());
+            references.extend(sm_gm_references);
+        }
+
+        let pm_references = self
+            .predicate_object_map_vec
+            .iter()
+            .flat_map(|pom| pom.predicate_map_vec.iter())
+            .flat_map(|pm| pm.as_ref().get_ref_attributes());
+        let om_references = self
+            .predicate_object_map_vec
+            .iter()
+            .flat_map(|pom| pom.object_map_vec.iter())
+            .flat_map(|om_enum| om_enum.as_ref().get_ref_attributes());
+
+        let pom_gm_references = self
+            .predicate_object_map_vec
+            .iter()
+            .flat_map(|pom| pom.graph_map_vec.iter())
+            .flat_map(|gm_enum| gm_enum.as_ref().get_ref_attributes());
+
+        let ref_om_child_references = self
+            .predicate_object_map_vec
+            .iter()
+            .flat_map(|pom| pom.ref_object_map.iter())
+            .flat_map(|ref_om| ref_om.get_child_reference_attributes());
+
+        references.extend(pom_gm_references);
+        references.extend(pm_references);
+        references.extend(om_references);
+        references.extend(ref_om_child_references);
+        references.extend(self.ref_obj_attributes.iter().cloned());
+
+        let fields = references
+            .iter()
+            .map(|ref_val| RMLField::from_ref_str(ref_val))
+            .collect();
+
+        let lv = LogicalView {
+            identifier: abs_ls.get_identifier(),
+            view_on: Box::new(abs_ls.clone()),
+            fields,
+            struct_annotations: vec![],
+            join_kind_view_pairs: vec![],
+        };
+
+        //modify the old IOLogicalSource to logical views
+        self.abs_logical_source = AbstractLogicalSourceEnum::LogicalView(lv);
         Ok(())
     }
 }
@@ -159,6 +161,21 @@ pub struct PredicateObjectMap {
 pub struct RefObjectMap {
     pub ptm_iri:        RcTerm,
     pub join_condition: Vec<JoinCondition>,
+}
+
+impl RefObjectMap {
+    pub fn get_parent_reference_attributes(&self) -> HashSet<String> {
+        self.join_condition
+            .iter()
+            .flat_map(|jc| jc.parent.get_ref_attributes())
+            .collect()
+    }
+    pub fn get_child_reference_attributes(&self) -> HashSet<String> {
+        self.join_condition
+            .iter()
+            .flat_map(|jc| jc.child.get_ref_attributes())
+            .collect()
+    }
 }
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]
