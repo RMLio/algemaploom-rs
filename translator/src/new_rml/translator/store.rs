@@ -35,11 +35,10 @@ pub struct SearchStore<'a> {
 }
 
 impl SearchStore<'_> {
-    /// Returns a vector containing pairs where the left value is the identifier of the
-    /// [`AbstractLogicalSource`]
+    /// Returns a vector containing pairs where the left value
+    /// is the identifier of the [`AbstractLogicalSource`]
     /// and the right value is a vector of the associated
-    /// [`TriplesMap`]'s
-    /// identifiers [`SearchStore`].
+    /// [`TriplesMap`]'s identifiers.
     ///
     pub fn partition_lsid_tmid(&self) -> Vec<(RcTerm, Vec<RcTerm>)> {
         let mut result: HashMap<RcTerm, Vec<RcTerm>> = HashMap::new();

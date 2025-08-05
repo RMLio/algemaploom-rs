@@ -10,7 +10,6 @@ use std::path::Path;
 
 use extend::ExtendOperatorTranslator;
 use join::JoinTranslator;
-use log::debug;
 use operator::Target;
 use plan::states::Processed;
 use plan::Plan;
