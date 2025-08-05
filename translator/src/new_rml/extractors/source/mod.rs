@@ -21,7 +21,7 @@ use crate::new_rml::rml_model::v2::io::source::{Source, SourceKind};
 pub fn extract_parse_config(
     dialect_subject: &RcTerm,
     graph: &FastGraph,
-    predicates: &Vec<(String, RcTerm)>,
+    predicates: &[(String, RcTerm)],
 ) -> ExtractorResult<HashMap<String, String>> {
     let mut result = HashMap::new();
     let _ = predicates.iter().try_for_each(
@@ -70,8 +70,7 @@ impl Extractor<Source> for Source {
         let nullable_vec =
             get_objects(graph_ref, subject_ref.borrow_term(), &nullable_pred)
                 .into_iter()
-                .map(|lit| lit.lexical_form().map(|i| i.to_string()))
-                .flatten()
+                .filter_map(|lit| lit.lexical_form().map(|i| i.to_string()))
                 .collect();
 
         let kind = extract_typed_source(subject_ref, graph_ref)?;
@@ -113,17 +112,17 @@ where
         get_subgraph_subject(graph, subject.borrow_term())?;
 
     // Remove the properties that have been saved previously in Source struct
-    metadata.remove_matching(
+    let _ = metadata.remove_matching(
         [subject.borrow_term()],
         [vocab::rml_io::PROPERTY::ENCODING.to_rcterm()],
         Any,
     );
-    metadata.remove_matching(
+    let _ = metadata.remove_matching(
         [subject.borrow_term()],
         [vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm()],
         Any,
     );
-    metadata.remove_matching(
+    let _ = metadata.remove_matching(
         [subject.borrow_term()],
         [vocab::rml_io::PROPERTY::NULL.to_rcterm()],
         Any,
