@@ -1,24 +1,29 @@
 use std::collections::HashSet;
+use std::fmt::Debug;
 use std::hash::Hash;
 
 use log::debug;
 use sophia_api::prelude::Iri;
-use sophia_api::term::{BnodeId, FromTerm, LanguageTag, SimpleTerm, TermKind};
+use sophia_api::term::{
+    BnodeId, FromTerm, IriRef, LanguageTag, SimpleTerm, Term, TermKind,
+};
 use sophia_term::RcTerm;
 use vocab::ToString;
 
-use super::{ExpressionMap, ExpressionMapTypeEnum};
+use super::{BaseExpressionMapEnum, ExpressionMapEnum};
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
-use crate::new_rml::rml_model::v2::{AttributeAliaser, TermMapEnum};
+use crate::new_rml::rml_model::v2::{
+    AttributeAliaser, RefAttributeGetter, TermMapEnum,
+};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct CommonTermMapInfo {
     pub identifier:      RcTerm,
     pub term_type:       RcTerm,
-    pub expression:      ExpressionMap,
+    pub expression:      ExpressionMapEnum,
     pub logical_targets: Vec<LogicalTarget>,
 }
 
@@ -34,29 +39,58 @@ impl AttributeAliaser for CommonTermMapInfo {
 }
 
 impl CommonTermMapInfo {
-    pub fn get_constant_value(&self) -> Option<String> {
-        match self.expression.get_map_type_enum().unwrap() {
-            ExpressionMapTypeEnum::Constant => {
-                match self.try_get_term_type_enum().unwrap() {
-                    RMLTermTypeKind::IRI => {
-                        Some(format!(
-                            "<{}>",
-                            self.expression.get_value().unwrap()
-                        ))
-                    }
-                    RMLTermTypeKind::BlankNode => {
-                        self.expression.get_value().cloned()
-                    }
-                    RMLTermTypeKind::Literal => {
-                        self.expression
-                            .get_value()
-                            .cloned()
-                            .map(|e| format!("\"{}\"", e))
-                    }
-                    _ => None,
-                }
+    pub fn from_constant_value<TTerm>(term: TTerm) -> ExtractorResult<Self>
+    where
+        TTerm: Term + Debug,
+    {
+        let identifier: RcTerm = match term.kind() {
+            TermKind::Literal => {
+                RcTerm::from_term(BnodeId::new_unchecked(format!(
+                    "{}-{}",
+                    term.lexical_form().unwrap(),
+                    uuid::Uuid::new_v4()
+                )))
             }
-            _ => None,
+            TermKind::Triple => {
+                return Err(ParseError::GenericError(
+                    "Triple term map type not supported!".to_string(),
+                )
+                .into())
+            }
+            TermKind::Variable => {
+                return Err(ParseError::GenericError(
+                    "Variable term map type not supported!".to_string(),
+                )
+                .into())
+            }
+            _ => RcTerm::from_term(term.borrow_term()),
+        };
+
+        Ok(Self {
+            identifier,
+            term_type: termkind_to_rml_rcterm(term.kind())?,
+            expression: ExpressionMapEnum::new_constant_term(term),
+            logical_targets: Vec::new(),
+        })
+    }
+    pub fn get_constant_value(&self) -> Option<String> {
+        if let Ok(base_expr_enum) = self.expression.try_unwrap_base_expression_map_ref()
+        {
+            match base_expr_enum {
+                BaseExpressionMapEnum::Constant(val) => {
+                    match self.try_get_term_type_enum().unwrap() {
+                        RMLTermTypeKind::IRI => Some(format!("<{}>", val)),
+                        RMLTermTypeKind::BlankNode => Some(val.to_string()),
+                        RMLTermTypeKind::Literal => {
+                            Some(format!("\"{}\"", val))
+                        }
+                        _ => None,
+                    }
+                }
+                _ => None,
+            }
+        } else {
+            None
         }
     }
 
@@ -68,24 +102,6 @@ impl CommonTermMapInfo {
         self.expression.get_ref_attributes()
     }
 
-    pub fn try_get_node(&self) -> Option<RcTerm> {
-        if let super::ExpressionMapKind::NonFunction(val) =
-            &self.expression.kind
-        {
-            if self.is_iri_term_type() {
-                Some(RcTerm::from_term(Iri::new_unchecked(val.as_str())))
-            } else if self.is_bnode_term_type() {
-                Some(RcTerm::from_term(BnodeId::new_unchecked(val.as_str())))
-            } else {
-                Some(RcTerm::from_term(SimpleTerm::LiteralLanguage(
-                    val.as_str().into(),
-                    LanguageTag::new_unchecked("en".into()),
-                )))
-            }
-        } else {
-            None
-        }
-    }
     pub fn is_iri_term_type(&self) -> bool {
         self.term_type == vocab::rml_core::CLASS::IRI.to_rcterm()
             || self.term_type == vocab::r2rml::CLASS::IRI.to_rcterm()
@@ -118,22 +134,6 @@ impl CommonTermMapInfo {
             ))
             .into())
         }
-    }
-}
-
-impl Eq for CommonTermMapInfo {}
-
-impl PartialEq for CommonTermMapInfo {
-    fn eq(&self, other: &Self) -> bool {
-        self.identifier == other.identifier && self.term_type == other.term_type
-    }
-}
-
-impl Hash for CommonTermMapInfo {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.identifier.hash(state);
-        self.term_type.hash(state);
-        self.expression.hash(state);
     }
 }
 
@@ -197,8 +197,8 @@ pub struct PredicateMap {
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
 pub struct ObjectMap {
     pub term_map_info: CommonTermMapInfo,
-    pub language_map:  Option<ExpressionMap>,
-    pub datatype_map:  Option<ExpressionMap>,
+    pub language_map:  Option<ExpressionMapEnum>,
+    pub datatype_map:  Option<ExpressionMapEnum>,
 }
 
 impl ObjectMap {
@@ -244,9 +244,9 @@ impl Default for GraphMap {
                     uuid::Uuid::new_v4().to_string(),
                 )),
                 term_type:       vocab::rml_core::CLASS::IRI.to_rcterm(),
-                expression:      ExpressionMap::try_new(
+                expression:      ExpressionMapEnum::try_new_unknown(
                     vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
-                    "<defaultGraph>".to_string(),
+                    RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
                 )
                 .unwrap(),
                 logical_targets: Vec::new(),

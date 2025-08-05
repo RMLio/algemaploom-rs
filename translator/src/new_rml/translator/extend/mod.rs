@@ -12,10 +12,10 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
-    ExpressionMap, ExpressionMapKind, ExpressionMapTypeEnum,
+    BaseExpressionMapEnum, ExpressionMapEnum,
 };
 use crate::new_rml::rml_model::v2::core::{TemplateSubString, TriplesMap};
-use crate::new_rml::rml_model::v2::fnml::InputMap;
+use crate::new_rml::rml_model::v2::fnml::{FunctionExpressionMap, InputMap};
 
 pub fn func_is_not_constant(func: &Function) -> bool {
     match func {
@@ -195,70 +195,70 @@ pub fn extend_from_term_map(
 
 pub fn extension_func_from_exp_map(
     store: &SearchStore,
-    exp_map: &ExpressionMap,
+    exp_map: &ExpressionMapEnum,
 ) -> NewRMLTranslationResult<Function> {
-    let function: Function = match exp_map.get_map_type_enum()? {
-        ExpressionMapTypeEnum::Function => fno_extend_function(store, exp_map)?,
-        ExpressionMapTypeEnum::FunctionExecution => fno_extend_function(store, exp_map)?,
-        ExpressionMapTypeEnum::Star => star_extend_function(exp_map),
-        ExpressionMapTypeEnum::Template => template_extend_function(exp_map),
-        ExpressionMapTypeEnum::Constant => {
-            Function::Constant {
-                value: exp_map
-                    .try_get_non_function_value()
-                    .unwrap()
-                    .to_string(),
-            }
+    //FIXME: Implement extension function translation from expression maps
+    match exp_map {
+        ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
+            extend_func_from_base_expr_map(base_expression_map_enum)
         }
-        ExpressionMapTypeEnum::Reference => {
-            Function::Reference {
-                value: exp_map
-                    .try_get_non_function_value()
-                    .unwrap()
-                    .to_string(),
-            }
+        ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
+            extend_func_from_func_expr_map(store, function_expression_map)
         }
-    };
+    }
 
-    Ok(function)
 }
-
-fn fno_input_extend_function(
-    store: &SearchStore,
-    input_map: &InputMap,
-) -> NewRMLTranslationResult<(String, Rc<Function>)> {
-    let param = stringify_rcterm(input_map.parameter.clone()).unwrap();
-
-    let function =
-        extension_func_from_exp_map(store, &input_map.value_map.expression)?;
-
-    Ok((param, function.into()))
-}
-
-fn fno_extend_function(
-    store: &SearchStore,
-    exp_map: &ExpressionMap,
+fn extend_func_from_base_expr_map(
+    base_expr_map: &BaseExpressionMapEnum,
 ) -> NewRMLTranslationResult<Function> {
-    if let ExpressionMapKind::FunctionExecution { execution, returns } =
-        &exp_map.kind
-    {
-        let mut parameters = HashMap::with_capacity(execution.input.capacity());
-        for input in &execution.input {
-            let (param, func) = fno_input_extend_function(store, input)?;
-            parameters.insert(param, func);
+    match base_expr_map {
+        BaseExpressionMapEnum::Template(_) => {
+            Ok(template_extend_function(base_expr_map))
         }
-
-        Ok(Function::FnO {
-            fno_identifier: stringify_rcterm(execution.function.clone())
-                .unwrap(),
-            parameters,
-        })
-    } else {
-        Err(TranslationError::Infallible.into())
+        BaseExpressionMapEnum::Reference(reference) => {
+            Ok(Function::Reference {
+                value: reference.to_string(),
+            })
+        }
+        BaseExpressionMapEnum::Constant(constant) => {
+            Ok(Function::Constant {
+                value: constant.to_string(),
+            })
+        }
+        BaseExpressionMapEnum::Unknown { type_iri, term_val } => 
+            Err(TranslationError::ExtendError(
+                format!("Cannot translate extension function for expression map with type: {:?} and value {:?}", type_iri, term_val)
+                ).into()),
     }
 }
 
-fn template_extend_function(exp_map: &ExpressionMap) -> Function {
+fn extend_func_from_func_expr_map(
+    store: &SearchStore,
+    func_exp_map: &FunctionExpressionMap,
+) -> NewRMLTranslationResult<Function> {
+    //FIXME: Implement FnO function translation to extend functions from expression maps
+
+    todo!()
+    // if let ExpressionMapKind::FunctionExecution { execution, returns } =
+    //     &exp_map.kind
+    // {
+    //     let mut parameters = HashMap::with_capacity(execution.input.capacity());
+    //     for input in &execution.input {
+    //         let (param, func) = fno_input_extend_function(store, input)?;
+    //         parameters.insert(param, func);
+    //     }
+
+    //     Ok(Function::FnO {
+    //         fno_identifier: stringify_rcterm(execution.function.clone())
+    //             .unwrap(),
+    //         parameters,
+    //     })
+    // } else {
+    //     Err(TranslationError::Infallible.into())
+    // }
+}
+
+fn template_extend_function(exp_map: &BaseExpressionMapEnum) -> Function {
     let template_splits = exp_map.get_template_string_split();
     let mut template_function = Function::Nop;
 
@@ -285,9 +285,8 @@ fn template_extend_function(exp_map: &ExpressionMap) -> Function {
     template_function
 }
 
-fn star_extend_function(exp_map: &ExpressionMap) -> Function {
-    let mut star_function = Function::Star { };
+fn star_extend_function(exp_map: &ExpressionMapEnum) -> Function {
+    todo!()
     // TODO: Implement star extend function
-    // 
-    star_function
+    //
 }

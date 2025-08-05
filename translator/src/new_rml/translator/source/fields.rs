@@ -1,8 +1,8 @@
 use operator::formats::ReferenceFormulation;
 use operator::Field as OperatorField;
 
-use crate::new_rml::error::NewRMLTranslationResult;
-use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
+use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
+use crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 use crate::new_rml::rml_model::v2::lv::{RMLField, RMLFieldKind};
 use crate::new_rml::translator::error::TranslationError;
 
@@ -26,46 +26,50 @@ pub fn translate_rml_field(
                 alias: field.name.clone(),
                 constant: None,
                 iterator: value.clone(),
-                //FIXME: Remove this reference value assignment and update the engine to consider
-                //this change too!
-                reference: value.clone(),
+                reference: None,
                 reference_formulation: ref_form,
                 inner_fields,
             })
         }
         RMLFieldKind::Expression(expression_map) => {
-            let value = expression_map.get_value().cloned();
-            let inner_fields =
-                translate_rml_field_vec(&field.fields, ref_form.clone())?;
-
-            match expression_map.get_map_type_enum()? {
-                ExpressionMapTypeEnum::Constant => {
-                    Ok(OperatorField {
-                        alias: field.name.clone(),
-                        constant: value,
-                        iterator: None,
-                        reference: None,
-                        reference_formulation: ref_form,
-                        inner_fields,
-                    })
+            if let Ok(base_expr_enum) =
+                expression_map.try_unwrap_base_expression_map_ref()
+            {
+                match base_expr_enum {
+                    BaseExpressionMapEnum::Reference(reference) => {
+                        Ok(OperatorField {
+                            alias:                 field.name.clone(),
+                            reference:             Some(reference.clone()),
+                            constant:              None,
+                            iterator:              None,
+                            reference_formulation: ref_form,
+                            inner_fields:          vec![],
+                        })
+                    }
+                    BaseExpressionMapEnum::Constant(constant) => {
+                        Ok(OperatorField {
+                            alias:                 field.name.clone(),
+                            reference:             None,
+                            constant:              Some(constant.clone()),
+                            iterator:              None,
+                            reference_formulation: ref_form,
+                            inner_fields:          vec![],
+                        })
+                    }
+                    BaseExpressionMapEnum::Template(template) => {
+                        Err(TranslationError::SourceError(
+                                format!("Translating template expression maps as part of RML field straight away is not supported!
+                                    Expression field: {:?} with value {:?}", field.name, template)).into())
+                    },
+                    BaseExpressionMapEnum::Unknown { type_iri, term_val } => {
+                        Err(TranslationError::SourceError(
+                                format!("RML expression field has an unknown type {:?} with value {:?}
+                                    Expression field: {:?}", type_iri, term_val, field.name)).into())
+                    }
                 }
-                ExpressionMapTypeEnum::Reference => {
-                    Ok(OperatorField {
-                        alias: field.name.clone(),
-                        constant: None,
-                        iterator: None,
-                        reference: value,
-                        reference_formulation: ref_form,
-                        inner_fields,
-                    })
-                }
-                field_type => {
-                    Err(TranslationError::SourceError(format!(
-                        "Expression Field {:?} cannot be of type {:?}",
-                        field.name, field_type
-                    ))
-                    .into())
-                }
+            } else {
+                //FIXME: Also consider function expression maps in logical views!!!
+                Err(TranslationError::SourceError("Using FNML function expression maps in RML fields is not supported yet!".to_string()).into())
             }
         }
     }

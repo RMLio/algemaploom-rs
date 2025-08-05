@@ -1,9 +1,13 @@
+use std::collections::HashSet;
 use std::ops::Deref;
 
 use derive_more::{IsVariant, TryUnwrap, Unwrap};
 
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, GraphMap, ObjectMap, PredicateMap, SubjectMap,
+};
+use crate::new_rml::rml_model::v2::fnml::{
+    FunctionMap,
 };
 
 pub mod core;
@@ -19,6 +23,7 @@ pub enum TermMapEnum {
     PredicateMap(PredicateMap),
     ObjectMap(ObjectMap),
     GraphMap(GraphMap),
+    FunctionMap(FunctionMap),
 }
 
 impl AsRef<CommonTermMapInfo> for TermMapEnum {
@@ -30,10 +35,16 @@ impl AsRef<CommonTermMapInfo> for TermMapEnum {
             }
             TermMapEnum::ObjectMap(object_map) => &object_map.term_map_info,
             TermMapEnum::GraphMap(graph_map) => &graph_map.term_map_info,
+            TermMapEnum::FunctionMap(function_map) => {
+                &function_map.term_map_info
+            }
         }
     }
 }
 
 pub trait AttributeAliaser {
     fn alias_attribute(&self, alias: &str) -> Self;
+}
+pub trait RefAttributeGetter {
+    fn get_ref_attributes(&self) -> HashSet<String>;
 }

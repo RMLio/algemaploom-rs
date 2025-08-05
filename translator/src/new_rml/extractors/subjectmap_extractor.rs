@@ -29,7 +29,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
         }
     }
 
-    fn create_term_map<TS>(
+    fn extract_self_term_map<TS>(
         subj_ref: TS,
         graph_ref: &sophia_inmem::graph::FastGraph,
     ) -> super::ExtractorResult<TermMapEnum>
@@ -114,42 +114,3 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use std::fs::File;
-    use std::io::BufReader;
-    use std::path::PathBuf;
-
-    use sophia_api::graph::Graph;
-    use sophia_api::prelude::Any;
-    use sophia_api::triple::Triple;
-
-    use crate::new_rml::extractors::io::load_graph_bread;
-    use crate::new_rml::extractors::{
-        ExtractorResult, FromVocab, TermMapExtractor,
-    };
-    use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
-    use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapTypeEnum;
-    use crate::{load_graph, test_case};
-
-    #[test]
-    fn create_subjectmap_test() -> ExtractorResult<()> {
-        let graph = load_graph!("rml/sample_mapping.ttl")?;
-        let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
-        let triple = graph
-            .triples_matching(Any, [sub_pred], Any)
-            .next()
-            .unwrap()
-            .unwrap();
-        let sub_ref = triple.o();
-        let subj_map = SubjectMap::create_term_map(sub_ref, &graph)?;
-
-        assert_eq!(
-            subj_map.as_ref().expression.get_map_type_enum()?,
-            ExpressionMapTypeEnum::Template
-        );
-        assert!(subj_map.unwrap_subject_map().classes.is_empty());
-
-        Ok(())
-    }
-}

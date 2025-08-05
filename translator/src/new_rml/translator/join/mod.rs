@@ -12,7 +12,9 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, PredicateMap, SubjectMap,
 };
 use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
-use crate::new_rml::rml_model::v2::{AttributeAliaser, TermMapEnum};
+use crate::new_rml::rml_model::v2::{
+    AttributeAliaser, RefAttributeGetter, TermMapEnum,
+};
 use crate::new_rml::translator::error::TranslationError;
 use crate::new_rml::translator::extend::extend_from_term_map;
 use crate::new_rml::translator::serializer::get_var_or_constant;
@@ -83,11 +85,11 @@ impl OperatorTranslator for JoinTranslator {
             let join_conditions = &ref_om.join_condition;
             let child_attributes = join_conditions
                 .iter()
-                .flat_map(|jc| jc.child.get_value())
+                .flat_map(|jc| jc.child.get_ref_attributes())
                 .collect();
             let parent_attributes = join_conditions
                 .iter()
-                .flat_map(|jc| jc.parent.get_value())
+                .flat_map(|jc| jc.parent.get_ref_attributes())
                 .map(|val| format!("{}.{}", alias, val))
                 .collect();
 

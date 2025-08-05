@@ -9,49 +9,16 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::store::get_objects_with_ps;
-use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
+use super::{Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::extractors::store::{get_object, get_object_with_ps};
 use crate::new_rml::extractors::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     termkind_to_rml_rcterm, CommonTermMapInfo,
 };
-use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMap;
-use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapKind::NonFunction;
+use crate::new_rml::rml_model::v2::core::expression_map::{
+    BaseExpressionMapEnum, ExpressionMapEnum,
+};
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
-
-pub fn term_map_from_constant_term<TTerm>(
-    term: TTerm,
-) -> ExtractorResult<CommonTermMapInfo>
-where
-    TTerm: Term,
-{
-    let identifier: RcTerm = match term.kind() {
-        TermKind::Literal => {
-            RcTerm::from_term(BnodeId::new_unchecked(format!(
-                "{}-{}",
-                term.lexical_form().unwrap(),
-                uuid::Uuid::new_v4()
-            )))
-        }
-        TermKind::Triple => {
-            panic!("Triple not supported to create term map from yet!")
-        }
-        TermKind::Variable => {
-            panic!("Variable not supported to create term map from yet!")
-        }
-        _ => RcTerm::from_term(term.borrow_term()),
-    };
-
-    Ok(CommonTermMapInfo {
-        identifier,
-        term_type: termkind_to_rml_rcterm(term.kind())?,
-        expression: ExpressionMap {
-            map_type_pred_iri: vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
-            kind:              NonFunction(stringify_rcterm(term).unwrap()),
-        },
-        logical_targets: Vec::new(),
-    })
-}
 
 impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
     fn extract_self<TTerm>(
@@ -80,8 +47,10 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
             logical_targets.push(LogicalTarget::default());
         }
 
-        let expression =
-            ExpressionMap::extract_self(subject_ref.borrow_term(), graph_ref)?;
+        let expression = ExpressionMapEnum::extract_self(
+            subject_ref.borrow_term(),
+            graph_ref,
+        )?;
 
         let ttype_old_pred = &vocab::r2rml::PROPERTY::TERMTYPE.to_rcterm();
         let ttype_pred = &vocab::rml_core::PROPERTY::TERMTYPE.to_rcterm();

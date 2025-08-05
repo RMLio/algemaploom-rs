@@ -3,7 +3,7 @@ use std::fmt::Display;
 use std::hash::Hash;
 
 use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
-use expression_map::ExpressionMap;
+use expression_map::ExpressionMapEnum;
 use sophia_term::RcTerm;
 
 use super::io::source::{
@@ -161,26 +161,10 @@ pub struct RefObjectMap {
     pub join_condition: Vec<JoinCondition>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Hash, PartialEq, Eq)]
 pub struct JoinCondition {
-    pub parent: ExpressionMap,
-    pub child:  ExpressionMap,
-}
-
-impl Eq for JoinCondition {}
-
-impl Hash for JoinCondition {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.parent.get_value().hash(state);
-        self.child.get_value().hash(state);
-    }
-}
-
-impl PartialEq for JoinCondition {
-    fn eq(&self, other: &Self) -> bool {
-        self.parent.get_value() == other.parent.get_value()
-            && self.child.get_value() == other.child.get_value()
-    }
+    pub parent: ExpressionMapEnum,
+    pub child:  ExpressionMapEnum,
 }
 
 #[derive(Debug, Clone)]
