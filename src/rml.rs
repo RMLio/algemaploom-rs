@@ -22,12 +22,12 @@ impl FileTranslatorHandler for RMLFileHandler {
         &self,
         file_path: &dyn AsRef<str>,
     ) -> Result<Plan<Init>, TranslationError> {
-        info!("Trying to translate file {} with old RML spec translator https://rml.io/specs/rml/", file_path.as_ref());
+        info!("Trying to translate file {} with RML v1 (old) spec translator https://rml.io/specs/rml/", file_path.as_ref());
         if let Ok(document) = old_parse_file(file_path.as_ref().into()) {
             OptimizedRMLDocumentTranslator::translate_to_plan(document)
         } else {
-            warn!("Failed extracting with old RML spec translator");
-            info!("Trying again with the new RML spec translator https://kg-construct.github.io/rml-resources/portal/");
+            warn!("Failed extracting with RML v1 (old) spec translator");
+            info!("Trying again with the RML v2 (new) spec translator https://kg-construct.github.io/rml-resources/portal/");
             let document = translator::new_rml::extractors::io::parse_file(
                 file_path.as_ref().into(),
             )?;
