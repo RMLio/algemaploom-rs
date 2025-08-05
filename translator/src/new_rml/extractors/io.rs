@@ -85,22 +85,3 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
     .into())
 }
 
-#[cfg(test)]
-mod tests {
-
-    use super::*;
-    use crate::test_case;
-
-    #[test]
-    fn one_tm_test() -> ExtractorResult<()> {
-        let path = PathBuf::from(test_case!(
-            "rml-core-tests/RMLTC0000-JSON/mapping.ttl"
-        ));
-        let parsed_res = parse_file(path)?;
-
-        // One TriplesMap should be parsed
-        assert!(parsed_res.triples_maps.len() == 1);
-
-        Ok(())
-    }
-}

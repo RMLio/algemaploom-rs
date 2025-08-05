@@ -27,7 +27,7 @@ fn get_pom(
         .ok_or(format!("No predicate-object map at index {}", index))
 }
 
-fn get_expression_value_from_base_expression_map(
+fn get_value_from_base_expression_map(
     base_expression_map: &BaseExpressionMapEnum,
 ) -> Result<String, String> {
     match base_expression_map {
@@ -48,7 +48,7 @@ fn get_expression_value(
 ) -> Result<String, String> {
     match expression_map {
         ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
-            get_expression_value_from_base_expression_map(
+            get_value_from_base_expression_map(
                 base_expression_map_enum,
             )
         }
@@ -188,6 +188,15 @@ pub fn extract_object_term_type_from_pom(
     let pom = get_pom(triplesmap, index)?;
     let om = pom.object_map_vec.first().ok_or("No object maps")?;
     stringify_rcterm(&om.as_ref().term_type)
+}
+
+pub fn extract_object_constant_from_pom(triplesmap: &TriplesMap, index: usize) -> Result<String, String> {
+    extract_object_reference_from_pom(triplesmap, index)
+}
+
+pub fn extract_subject_map_constant(triplesmap: &TriplesMap) -> Result<String, String> {
+    let subject_map = get_subject_map(triplesmap)?;
+    get_expression_value(&subject_map.term_map_info.expression)
 }
 
 pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
