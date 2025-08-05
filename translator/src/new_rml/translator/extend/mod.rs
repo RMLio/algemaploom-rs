@@ -197,7 +197,6 @@ pub fn extension_func_from_exp_map(
     store: &SearchStore,
     exp_map: &ExpressionMapEnum,
 ) -> NewRMLTranslationResult<Function> {
-    //FIXME: Implement extension function translation from expression maps
     match exp_map {
         ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
             extend_func_from_base_expr_map(base_expression_map_enum)

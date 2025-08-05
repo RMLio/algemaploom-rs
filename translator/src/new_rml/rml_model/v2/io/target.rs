@@ -2,6 +2,7 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::rc::Rc;
 
+use sophia_api::graph::Graph;
 use sophia_api::serializer::*;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
@@ -31,8 +32,8 @@ pub struct TargetKind {
 
 impl Hash for TargetKind {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        //FIXME: FIND A BETTER WAY TO HASH TARGET KIND!
         self.type_iri.hash(state);
-        todo!()
     }
 }
 
@@ -40,8 +41,8 @@ impl Eq for TargetKind {}
 
 impl PartialEq for TargetKind {
     fn eq(&self, other: &Self) -> bool {
-        todo!()
-        //self.type_iri == other.type_iri && self.metadata == other.metadata
+        //FIXME: FIND A BETTER WAY TO CMP TARGET KIND!
+        self.type_iri == other.type_iri
     }
 }
 
