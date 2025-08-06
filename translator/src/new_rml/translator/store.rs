@@ -20,7 +20,6 @@ use crate::new_rml::rml_model::Document;
 
 #[derive(Debug, Clone, Default)]
 pub struct SearchStore<'a> {
-    pub base_iri:               String,
     pub root_plan:              Option<Plan<Init>>,
     pub reference_attr_map:     HashMap<String, String>,
     pub termm_id_quad_var_map:  HashMap<RcTerm, String>,
@@ -179,10 +178,6 @@ impl SearchStore<'_> {
             create_ls_id_sourced_plan_map(&mut root_plan, &abs_ls_search_map)?;
 
         Ok(SearchStore {
-            base_iri: document
-                .default_base_iri
-                .clone()
-                .unwrap_or("http://example.com/base/".to_string()),
             termm_id_quad_var_map,
             sm_search_map,
             pm_search_map,

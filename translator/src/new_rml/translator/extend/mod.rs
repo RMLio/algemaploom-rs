@@ -50,7 +50,7 @@ impl OperatorTranslator for ExtendOperatorTranslator {
         store: &SearchStore,
         tm: &Self::Input,
     ) -> crate::new_rml::error::NewRMLTranslationResult<Self::Output> {
-        let base_iri = &store.base_iri;
+        let base_iri = &tm.base_iri;
         let mut extend_pairs: HashMap<String, Function> = HashMap::new();
 
         // Extend function for the subject map
