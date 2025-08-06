@@ -77,6 +77,7 @@ impl Extractor<TriplesMap> for TriplesMap {
         .map(|base_iri_rcterm| rcterm_to_string(&base_iri_rcterm))
         .unwrap_or_default();
 
+        log::debug!("Base IRI for TriplesMap {:?} is: {:?}", subject, base_iri); 
         Ok(TriplesMap {
             identifier: RcTerm::from_term(subject),
             abs_logical_source,
