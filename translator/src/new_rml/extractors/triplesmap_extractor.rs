@@ -3,7 +3,6 @@ use sophia_api::prelude::Any;
 use sophia_api::term::{FromTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
-use vocab::ToString;
 
 use super::store::{get_object, get_object_with_ps, get_subjects};
 use super::{Extractor, ExtractorResult, RcTerm};
@@ -11,7 +10,7 @@ use crate::new_rml::extractors::store::get_objects;
 use crate::new_rml::extractors::{FromVocab, TermMapExtractor};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractLogicalSourceEnum, JoinCondition,
+    AbstractLogicalSourceEnum, JoinCondition,
     PredicateObjectMap, TriplesMap,
 };
 use crate::new_rml::rml_model::v2::RefAttributeGetter;
