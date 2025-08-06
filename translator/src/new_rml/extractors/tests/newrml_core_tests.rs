@@ -1,11 +1,8 @@
-use super::framework::test_core::test_triplesmaps;
-use super::framework::test_expectations::*;
-use crate::new_rml::extractors::tests::framework::test_core::expect_parse_fail;
 
 #[cfg(test)]    
 mod rml_core_tests {
-    use super::*;
-
+    use crate::new_rml::extractors::tests::framework::test_core::*; 
+    use crate::new_rml::extractors::tests::framework::test_expectations::*;
     #[test]
     fn test_rmltc0000_json_mapping() {
         test_triplesmaps(
@@ -561,6 +558,29 @@ mod rml_core_tests {
                 ]),
             ]
         );
+    }
+
+
+
+    #[test]
+    fn test_rmltc0027a_base_iri(){
+        test_triplesmaps(
+            "rml-core-tests/RMLTC0027a-JSON.ttl",
+            vec![
+                ("http://example.com/base/TriplesMap1", vec![
+                    expect_predicate_from_pom(0, "http://example.com/amount"),
+                    expect_object_reference_from_pom(0, "$.amount"),
+                    expect_logical_source_iterator("$.persons[*]"),
+                    expect_logical_source_reference_formulation("http://w3id.org/rml/JSONPath"),
+                    expect_source_type("http://w3id.org/rml/RelativePathSource"),
+                    expect_source_root("http://w3id.org/rml/MappingDirectory"),
+                    expect_source_path("persons.json"),
+                    expect_subject_map_template("{$.fname}"),
+                    expect_triples_map_base_iri("http://example.com/"), 
+                ]),
+            ]
+        );
+
     }
 
 
