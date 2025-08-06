@@ -23,7 +23,6 @@ mod logical_view;
 mod objectmap_extractor;
 mod pom_extractor;
 mod predicatemap_extractor;
-//mod rdb_logicalsource;
 mod fnml;
 mod refobject_extractor;
 mod source;
@@ -32,7 +31,7 @@ mod subjectmap_extractor;
 mod target;
 mod term_map_extractor;
 pub mod tests;
-pub mod triplesmap_extractor;
+mod triplesmap_extractor;
 mod util;
 
 pub type ExtractorResult<T> = Result<T, NewRMLTranslationError>;
