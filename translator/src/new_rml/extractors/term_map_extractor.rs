@@ -68,6 +68,13 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
                     subject_ref, ttype_iri
                 )).into());
             }
+            if let Ok(BaseExpressionMapEnum::Constant(val)) =
+                expression.try_unwrap_base_expression_map_ref()
+            {
+                return Err(ParseError::GenericError(
+                        format!("Term type is explicity defined for node {:?} even though it is a constant term map with value {:?}", 
+                            subject_ref, val)).into());
+            }
             Ok(ttype_iri)
         } else {
             infer_term_type(subject_ref.borrow_term(), graph_ref)
