@@ -160,8 +160,10 @@ pub fn extend_op_from_join(
                 .to_string(),
         ),
     )?;
+    log::debug!("Before alias parent triples map's subject term map is {:#?}", ptm.subject_map); 
     let aliased_ptm_subj_term_map =
         ptm.subject_map.as_ref().alias_attribute(alias);
+    log::debug!("Aliased parent triples map's subject term map is {:#?}", aliased_ptm_subj_term_map); 
     let (ptm_subj_var, ptm_subj_func) =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
 

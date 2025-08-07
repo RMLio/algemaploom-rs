@@ -30,7 +30,7 @@ impl AttributeAliaser for BaseExpressionMapEnum {
     fn alias_attribute(&self, alias: &str) -> Self {
         match self {
             BaseExpressionMapEnum::Template(v) => {
-                let template_substring_vec = split_template_string(&v);
+                let template_substring_vec = split_template_string(v);
                 template_substring_vec.alias_attribute(alias).into()
             }
             BaseExpressionMapEnum::Reference(v) => {

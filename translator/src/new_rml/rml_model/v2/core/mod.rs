@@ -27,7 +27,7 @@ pub enum TemplateSubString {
 impl Display for TemplateSubString {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self {
-            TemplateSubString::Attribute(inner) => write!(f, "{}", inner),
+            TemplateSubString::Attribute(inner) => write!(f, "{{{}}}", inner),
             TemplateSubString::NormalString(inner) => write!(f, "{}", inner),
         }
     }
