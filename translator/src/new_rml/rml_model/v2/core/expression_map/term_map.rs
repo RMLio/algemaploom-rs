@@ -74,11 +74,12 @@ impl CommonTermMapInfo {
         })
     }
     pub fn get_constant_value(&self) -> Option<String> {
-        if let Ok(base_expr_enum) = self.expression.try_unwrap_base_expression_map_ref()
+        if let Ok(base_expr_enum) =
+            self.expression.try_unwrap_base_expression_map_ref()
         {
             match base_expr_enum {
                 BaseExpressionMapEnum::Constant(val) => {
-                    match self.try_get_term_type_enum().unwrap() {
+                    match self.get_term_type_enum() {
                         RMLTermTypeKind::IRI => Some(format!("<{}>", val)),
                         RMLTermTypeKind::BlankNode => Some(val.to_string()),
                         RMLTermTypeKind::Literal => {
@@ -120,19 +121,15 @@ impl CommonTermMapInfo {
             || self.term_type == vocab::r2rml::CLASS::LITERAL.to_rcterm()
     }
 
-    pub fn try_get_term_type_enum(&self) -> ExtractorResult<RMLTermTypeKind> {
+    pub fn get_term_type_enum(&self) -> RMLTermTypeKind {
         if self.is_literal_term_type() {
-            Ok(RMLTermTypeKind::Literal)
+            RMLTermTypeKind::Literal
         } else if self.is_bnode_term_type() {
-            Ok(RMLTermTypeKind::BlankNode)
+            RMLTermTypeKind::BlankNode
         } else if self.is_iri_term_type() {
-            Ok(RMLTermTypeKind::IRI)
+            RMLTermTypeKind::IRI
         } else {
-            Err(ParseError::GenericError(format!(
-                "Term type is not supported yet: {:?}",
-                self.term_type
-            ))
-            .into())
+            RMLTermTypeKind::UnknownT(self.term_type.clone())
         }
     }
 }
