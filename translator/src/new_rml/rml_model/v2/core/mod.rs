@@ -118,11 +118,19 @@ impl TriplesMap {
             .flat_map(|pom| pom.graph_map_vec.iter())
             .flat_map(|gm_enum| gm_enum.as_ref().get_ref_attributes());
 
-        let ref_om_child_references = self
+        let ref_om_child_references: Vec<_> = self
             .predicate_object_map_vec
             .iter()
+            .filter(|pom| !pom.ref_object_map.is_empty())
             .flat_map(|pom| pom.ref_object_map.iter())
-            .flat_map(|ref_om| ref_om.get_child_reference_attributes());
+            .flat_map(|ref_om| ref_om.get_child_reference_attributes())
+            .collect();
+
+        log::debug!(
+            "Triples Map <{:?}> has child references {:?}",
+            self.identifier,
+            ref_om_child_references
+        );
 
         references.extend(pom_gm_references);
         references.extend(pm_references);
