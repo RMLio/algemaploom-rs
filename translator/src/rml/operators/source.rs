@@ -15,6 +15,7 @@ pub struct SourceOpTranslator<'a> {
 impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
     fn translate(&self) -> Source {
         let tm = self.tm;
+        log::debug!("Translating source operator for triples map {:#?}", tm);
         let reference_formulation =
             match &tm.logical_source.reference_formulation {
                 iri if *iri == vocab::query::CLASS::CSV.to_rcterm() => {
@@ -29,22 +30,22 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
                 _ => ReferenceFormulation::CSVRows,
             };
 
+        log::debug!("Reference formulation is {:?}", reference_formulation);
         let mut fields = Vec::new();
-        if reference_formulation != ReferenceFormulation::CSVRows {
-            let references = extract_references_in_tm(tm, &self.other_tms);
+        let references = extract_references_in_tm(tm, &self.other_tms);
 
-            fields.extend(references.into_iter().map(|reference| {
-                Field {
-                    alias:                 reference.clone(),
-                    constant:              None,
-                    iterator:              None,
-                    reference:             Some(reference.clone()),
-                    reference_formulation: reference_formulation.clone(),
-                    inner_fields:          vec![],
-                }
-            }));
-        }
+        fields.extend(references.into_iter().map(|reference| {
+            Field {
+                alias:                 reference.clone(),
+                constant:              None,
+                iterator:              None,
+                reference:             Some(reference.clone()),
+                reference_formulation: reference_formulation.clone(),
+                inner_fields:          vec![],
+            }
+        }));
 
+        log::debug!("RML fields for the source: {:#?}", fields);
         let root_iterator = Iterator {
             reference: tm.logical_source.iterator.clone(),
             reference_formulation,
