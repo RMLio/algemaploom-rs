@@ -110,7 +110,8 @@ impl TriplesMap {
             .predicate_object_map_vec
             .iter()
             .flat_map(|pom| pom.object_map_vec.iter())
-            .flat_map(|om_enum| om_enum.as_ref().get_ref_attributes());
+            .flat_map(|om_enum| om_enum.try_unwrap_object_map_ref() )
+            .flat_map(|om| om.get_ref_attributes()); 
 
         let pom_gm_references = self
             .predicate_object_map_vec
