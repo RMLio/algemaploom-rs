@@ -9,7 +9,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0000() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0000-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0000-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -24,7 +24,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0001a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0001a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0001a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -39,7 +39,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0001b() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0001b-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0001b-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -55,7 +55,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0002a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0002a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0002a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(2),
@@ -73,7 +73,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0002b() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0002b-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0002b-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -89,7 +89,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0002c() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0002c-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0002c-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://example.com/id"),
@@ -104,7 +104,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0002e() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0002e-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0002e-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://example.com/id"),
@@ -119,7 +119,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0003c() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0003c-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0003c-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -132,7 +132,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0004a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0004a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0004a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -152,13 +152,13 @@ mod csv_testcases {
 
     #[test]
     fn test_rmltc0004b() {
-        expect_parse_fail("csv-testcases/RMLTC0004b-CSV/mapping.ttl");
+        expect_parse_fail("csv-testcases/RMLTC0004b-CSV.ttl");
     }
 
     #[test]
     fn test_rmltc0005a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0005a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0005a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://example.com/owes"),
@@ -173,7 +173,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0006a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0006a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0006a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(1),
@@ -187,7 +187,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0007a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0007a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0007a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -201,7 +201,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0008a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0008a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0008a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(4),
@@ -222,7 +222,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0009a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0009a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0009a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(2),
@@ -249,7 +249,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0010a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0010a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0010a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://example.com/name"),
@@ -262,7 +262,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0012a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0012a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0012a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(2),
@@ -276,7 +276,7 @@ mod csv_testcases {
     #[test]
     fn test_rmltc0015a() {
         test_triplesmaps(
-            "csv-testcases/RMLTC0015a-CSV/mapping.ttl",
+            "csv-testcases/RMLTC0015a-CSV.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://www.w3.org/2000/01/rdf-schema#label"),
