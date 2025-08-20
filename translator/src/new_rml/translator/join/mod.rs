@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use chumsky::primitive::Container;
 use operator::{Extend, Operator, Rename, Serializer, Target};
 use plan::states::join::join;
 
@@ -9,9 +8,6 @@ use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, PredicateMap, SubjectMap,
-};
 use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
 use crate::new_rml::rml_model::v2::{
     AttributeAliaser, RefAttributeGetter, TermMapEnum,
@@ -19,7 +15,6 @@ use crate::new_rml::rml_model::v2::{
 use crate::new_rml::translator::error::TranslationError;
 use crate::new_rml::translator::extend::extend_from_term_map;
 use crate::new_rml::translator::serializer::get_var_or_constant;
-use crate::normalized_rml::SUBJECT_ATTR;
 
 #[derive(Debug, Clone)]
 pub struct JoinTranslator {}
