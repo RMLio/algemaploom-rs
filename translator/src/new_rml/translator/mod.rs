@@ -59,12 +59,12 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
             tm.transform_to_logical_view()?;
         }
 
-        log::debug!("{:#?}", model); 
+        log::debug!("{:#?}", model);
         let search_store = SearchStore::from_document(&model)?;
 
-       for tm in model.triples_maps.iter() {
-           JoinTranslator::translate_with_store(&search_store, tm)?;
-       }
+        for tm in model.triples_maps.iter() {
+            JoinTranslator::translate_with_store(&search_store, tm)?;
+        }
 
         for (abs_ls_id, tm_vec) in search_store.partition_lsid_tmid() {
             let tm_vec: Vec<_> = tm_vec
@@ -72,7 +72,14 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
                 .flat_map(|tm_id| {
                     search_store.tm_search_map.get(tm_id).copied()
                 })
+                .filter(|tm| tm.generates_triples_without_joins())
                 .collect();
+
+            // No triples maps detected which can generate triples without joins
+            // so continue onto the next source
+            if tm_vec.is_empty(){
+                continue;
+            }
 
             let mut plan = search_store
                 .ls_id_sourced_plan_map

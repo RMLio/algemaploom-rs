@@ -47,6 +47,21 @@ pub type PredicateRefObjGraphTuple =
     (Vec<TermMapEnum>, RefObjectMap, Vec<TermMapEnum>);
 
 impl TriplesMap {
+    pub fn generates_triples_without_joins(&self) -> bool {
+        let subject_map =
+            self.subject_map.try_unwrap_subject_map_ref().unwrap();
+
+        if !subject_map.classes.is_empty() {
+            return true;
+        }
+
+        let mut poms = self
+            .predicate_object_map_vec
+            .iter()
+            .filter(|pom| !pom.object_map_vec.is_empty());
+
+        poms.next().is_some()
+    }
     pub fn get_parent_tms_pred_refom_pairs(
         &self,
     ) -> HashSet<(RcTerm, PredicateRefObjGraphTuple)> {
@@ -110,8 +125,8 @@ impl TriplesMap {
             .predicate_object_map_vec
             .iter()
             .flat_map(|pom| pom.object_map_vec.iter())
-            .flat_map(|om_enum| om_enum.try_unwrap_object_map_ref() )
-            .flat_map(|om| om.get_ref_attributes()); 
+            .flat_map(|om_enum| om_enum.try_unwrap_object_map_ref())
+            .flat_map(|om| om.get_ref_attributes());
 
         let pom_gm_references = self
             .predicate_object_map_vec

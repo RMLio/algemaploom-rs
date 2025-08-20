@@ -8,6 +8,7 @@ use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::error::ParseError;
+use crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
 use crate::new_rml::rml_model::v2::{
     AttributeAliaser, RefAttributeGetter, TermMapEnum,
@@ -18,6 +19,8 @@ use crate::new_rml::translator::serializer::get_var_or_constant;
 
 #[derive(Debug, Clone)]
 pub struct JoinTranslator {}
+
+const PTM_SUBJ_SUFFIX: &str = "_obj";
 
 impl OperatorTranslator for JoinTranslator {
     type Input = TriplesMap;
@@ -170,8 +173,11 @@ pub fn extend_op_from_join(
         "Aliased parent triples map's subject term map is {:#?}",
         aliased_ptm_subj_term_map
     );
-    let (ptm_subj_var, ptm_subj_func) =
+    let (mut ptm_subj_var, ptm_subj_func) =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
+    // Require renaming variable to ensure there is no conflict when both
+    // child and parent triples maps are the same
+    ptm_subj_var = format!("{}{}", ptm_subj_var, PTM_SUBJ_SUFFIX);
 
     let mut extend_pairs = HashMap::new();
 
@@ -209,7 +215,21 @@ pub fn serializer_template_from_join(
         .sm_search_map
         .get(&ptm.subject_map.as_ref().identifier)
         .unwrap();
-    let ptm_sm_var = get_var_or_constant(store, ptm_sm.as_ref());
+    let ptm_tm_info = &ptm_sm
+        .try_unwrap_subject_map_ref()
+        .unwrap()
+        .term_map_info
+        .expression;
+
+    let mut ptm_sm_var = get_var_or_constant(store, ptm_sm.as_ref());
+    // Only prefix the variable of the subject map of parent triples map's
+    // if it is not a constant-valued term map.
+    match ptm_tm_info.try_unwrap_base_expression_map_ref() {
+        Ok(BaseExpressionMapEnum::Constant(_)) => {}
+        _ => {
+            ptm_sm_var = format!("{}{}", ptm_sm_var, PTM_SUBJ_SUFFIX);
+        }
+    }
 
     let mut statement_patterns: Vec<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))
