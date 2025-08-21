@@ -74,8 +74,7 @@ impl SearchStore<'_> {
         let mut termm_id_quad_var_map = HashMap::new();
         let mut tm_id_join_map = HashMap::new();
 
-        for tm in document.triples_maps.iter() {
-            let tm_count: u32 = 0;
+        for (tm_count, tm) in document.triples_maps.iter().enumerate(){
             abs_ls_search_map.insert(
                 tm.abs_logical_source.get_identifier(),
                 &tm.abs_logical_source,

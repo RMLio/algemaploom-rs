@@ -153,6 +153,7 @@ pub fn extend_op_from_join(
         .map(|gm| extend_from_term_map(store, child_base_iri, gm.as_ref()))
         .collect();
     let extension_func_graphs = extension_func_graphs_res?;
+    log::debug!("Subject map varible search map: {:#?}", store.termm_id_quad_var_map);
 
     let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).ok_or(
         TranslationError::JoinError(
