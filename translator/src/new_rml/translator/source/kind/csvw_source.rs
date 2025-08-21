@@ -7,7 +7,7 @@ use sophia_term::{ArcTerm, RcTerm};
 use crate::new_rml::translator::source::extract_parse_config;
 use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::{
-    stringify_rcterm, ExtractorResult, FromVocab,
+    stringify_term, ExtractorResult, FromVocab,
 };
 
 lazy_static! {
@@ -72,7 +72,7 @@ pub fn extract_csvw_source(
     graph: &FastGraph,
 ) -> ExtractorResult<HashMap<String, String>> {
     let url_pred = vocab::csvw::PROPERTY::URL.to_arcterm();
-    let url = stringify_rcterm(get_object(graph, subject, &url_pred)?).unwrap();
+    let url = stringify_term(get_object(graph, subject, &url_pred)?).unwrap();
     let dialect_pred = vocab::csvw::PROPERTY::DIALECT.to_arcterm();
     let dialect_iri = get_object(graph, subject, &dialect_pred)?;
     let mut config =

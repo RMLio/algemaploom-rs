@@ -5,7 +5,7 @@ use sophia_api::term::{Term, TermKind};
 use sophia_term::RcTerm;
 
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::stringify_rcterm;
+use crate::new_rml::extractors::stringify_term;
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::fnml::{
     FunctionExecution, FunctionExpressionMap,
@@ -98,7 +98,7 @@ impl ExpressionMapEnum {
         T: Term,
     {
         ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Template(
-            stringify_rcterm(term).unwrap(),
+            stringify_term(term).unwrap(),
         ))
     }
 
@@ -107,7 +107,7 @@ impl ExpressionMapEnum {
         T: Term,
     {
         ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Reference(
-            stringify_rcterm(term).unwrap(),
+            stringify_term(term).unwrap(),
         ))
     }
 
@@ -116,7 +116,7 @@ impl ExpressionMapEnum {
         T: Term,
     {
         ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Constant(
-            stringify_rcterm(term).unwrap(),
+            stringify_term(term).unwrap(),
         ))
     }
 

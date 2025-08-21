@@ -80,7 +80,7 @@ fn get_source(tm: &TriplesMap) -> Result<&Source, String> {
 fn stringify_rcterm<T: sophia_api::prelude::Term + Clone>(
     term: &T,
 ) -> Result<String, String> {
-    crate::new_rml::extractors::stringify_rcterm(term.clone())
+    crate::new_rml::extractors::stringify_term(term.clone())
         .ok_or("Failed to stringify term".to_string())
 }
 
@@ -118,7 +118,7 @@ pub fn extract_logical_source_reference_formulation(
     ls.iterable
         .reference_formulation
         .as_ref()
-        .and_then(|rf| crate::new_rml::extractors::stringify_rcterm(&rf.iri))
+        .and_then(|rf| crate::new_rml::extractors::stringify_term(&rf.iri))
         .ok_or("No reference formulation defined".to_string())
 }
 
@@ -209,7 +209,7 @@ pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
         &path_predicate,
     ) {
         Ok(path_term) => {
-            crate::new_rml::extractors::stringify_rcterm(path_term)
+            crate::new_rml::extractors::stringify_term(path_term)
                 .ok_or("Failed to stringify path".to_string())
         }
         Err(e) => {
@@ -228,7 +228,7 @@ pub fn extract_source_root(triplesmap: &TriplesMap) -> Result<String, String> {
         &root_predicate,
     ) {
         Ok(root_term) => {
-            crate::new_rml::extractors::stringify_rcterm(root_term)
+            crate::new_rml::extractors::stringify_term(root_term)
                 .ok_or("Failed to stringify root".to_string())
         }
         Err(e) => {

@@ -138,7 +138,7 @@ impl<'a> FromVocab for PAIR<'a> {
     }
 }
 
-pub fn stringify_rcterm<T>(term: T) -> Option<String>
+pub fn stringify_term<T>(term: T) -> Option<String>
 where
     T: Term,
 {

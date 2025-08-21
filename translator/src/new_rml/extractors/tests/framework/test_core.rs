@@ -13,7 +13,7 @@ pub fn extract_triplesmaps_from_test(filename: &str) -> ExtractorResult<Vec<Trip
 }
 
 pub fn get_triplemap_identifier(tm: &TriplesMap) -> String {
-    crate::new_rml::extractors::stringify_rcterm(&tm.identifier)
+    crate::new_rml::extractors::stringify_term(&tm.identifier)
         .unwrap_or_else(|| "<unnamed>".to_string())
 }
 

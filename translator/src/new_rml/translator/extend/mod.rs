@@ -7,7 +7,7 @@ use super::error::TranslationError;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
-use crate::new_rml::extractors::stringify_rcterm;
+use crate::new_rml::extractors::stringify_term;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     termkind_to_rml_rcterm, CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
@@ -187,7 +187,7 @@ pub fn extend_from_term_map(
         _ => {
             Err(TranslationError::ExtendError(format!(
                 "Given term type is unsupported: {:?}",
-                stringify_rcterm(term_map_info.term_type.clone())
+                stringify_term(term_map_info.term_type.clone())
             )))
         }
     }?;

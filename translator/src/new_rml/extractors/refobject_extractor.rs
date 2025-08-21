@@ -2,7 +2,7 @@ use sophia_api::term::{Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 
 use super::store::{get_object_with_ps, get_objects_with_ps};
-use super::{stringify_rcterm, Extractor, ExtractorResult, FromVocab};
+use super::{stringify_term, Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
 };
@@ -20,7 +20,7 @@ where
     let term = get_object_with_ps(graph_ref, subject_ref, preds)?;
     if term.kind() == TermKind::Literal {
         Ok(ExpressionMapEnum::new_ref_str(
-            stringify_rcterm(term).as_ref().unwrap(),
+            stringify_term(term).as_ref().unwrap(),
         ))
     } else {
         ExpressionMapEnum::extract_self(&term, graph_ref)

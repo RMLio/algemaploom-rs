@@ -10,7 +10,7 @@ use sophia_turtle::serializer::nt::NtSerializer;
 
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
+use crate::new_rml::extractors::{stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::translator::error::TranslationError;
 
@@ -80,7 +80,7 @@ impl TryFrom<&ReferenceFormulation>
                     value => {
                         Err(TranslationError::SourceError(format!(
                             "Unsupported reference formulation: {}",
-                            stringify_rcterm(value).unwrap()
+                            stringify_term(value).unwrap()
                         )))
                     }
                 }
@@ -216,7 +216,7 @@ impl TryFrom<&SourceKind> for IOType {
         } else {
             Err(TranslationError::SourceError(format!(
                 "Input format {} not not supported to convert to IOType",
-                stringify_rcterm(value.type_iri.clone()).unwrap()
+                stringify_term(value.type_iri.clone()).unwrap()
             )))
         }
     }
