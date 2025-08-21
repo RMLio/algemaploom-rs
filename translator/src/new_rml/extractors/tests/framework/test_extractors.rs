@@ -1,5 +1,5 @@
 use crate::new_rml::extractors::store::get_object;
-use crate::new_rml::extractors::FromVocab;
+use crate::new_rml::extractors::{turtle_stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
@@ -32,8 +32,13 @@ fn get_value_from_base_expression_map(
 ) -> Result<String, String> {
     match base_expression_map {
         BaseExpressionMapEnum::Template(v)
-        | BaseExpressionMapEnum::Reference(v)
-        | BaseExpressionMapEnum::Constant(v) => Ok(v.to_string()),
+        | BaseExpressionMapEnum::Reference(v) => Ok(v.to_string()),
+        BaseExpressionMapEnum::Constant(v) => {
+            turtle_stringify_term(v).ok_or(format!(
+                "Constant value term {:?} cannot be retrieved into string",
+                v
+            ))
+        }
         BaseExpressionMapEnum::Unknown { type_iri, term_val } => {
             Err(format!(
                 "Unknown expression map detected with type {:?} and value {:?}",
@@ -48,9 +53,7 @@ fn get_expression_value(
 ) -> Result<String, String> {
     match expression_map {
         ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
-            get_value_from_base_expression_map(
-                base_expression_map_enum,
-            )
+            get_value_from_base_expression_map(base_expression_map_enum)
         }
         ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
             todo!()
@@ -190,11 +193,16 @@ pub fn extract_object_term_type_from_pom(
     stringify_rcterm(&om.as_ref().term_type)
 }
 
-pub fn extract_object_constant_from_pom(triplesmap: &TriplesMap, index: usize) -> Result<String, String> {
+pub fn extract_object_constant_from_pom(
+    triplesmap: &TriplesMap,
+    index: usize,
+) -> Result<String, String> {
     extract_object_reference_from_pom(triplesmap, index)
 }
 
-pub fn extract_subject_map_constant(triplesmap: &TriplesMap) -> Result<String, String> {
+pub fn extract_subject_map_constant(
+    triplesmap: &TriplesMap,
+) -> Result<String, String> {
     let subject_map = get_subject_map(triplesmap)?;
     get_expression_value(&subject_map.term_map_info.expression)
 }

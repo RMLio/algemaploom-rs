@@ -1,11 +1,13 @@
 use std::collections::HashSet;
+use std::rc::Rc;
 
 use derive_more::{TryUnwrap, Unwrap};
-use sophia_api::term::{Term, TermKind};
-use sophia_term::RcTerm;
+use sophia_api::ns::{xsd, IriRef};
+use sophia_api::term::{FromTerm, Term, TermKind};
+use sophia_term::{GenericLiteral, RcTerm};
 
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::stringify_term;
+use crate::new_rml::extractors::{stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::fnml::{
     FunctionExecution, FunctionExpressionMap,
@@ -116,7 +118,7 @@ impl ExpressionMapEnum {
         T: Term,
     {
         ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Constant(
-            stringify_term(term).unwrap(),
+            RcTerm::from_term(term),
         ))
     }
 
@@ -128,7 +130,12 @@ impl ExpressionMapEnum {
 
     pub fn new_const_str(const_str: &str) -> ExpressionMapEnum {
         Self::BaseExpressionMap(BaseExpressionMapEnum::Constant(
-            const_str.to_string(),
+            RcTerm::Literal(GenericLiteral::Typed(
+                const_str.into(),
+                xsd::string
+                    .iriref()
+                    .map_unchecked(|mown_str| mown_str.as_ref().into()),
+            )),
         ))
     }
 

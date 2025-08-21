@@ -139,13 +139,15 @@ impl FromVocab for PAIR<'_> {
     }
 }
 
-pub fn turtle_stringify_term<T>(term: T) -> String
+pub fn turtle_stringify_term<T>(term: T) -> Option<String>
 where
     T: Term,
 {
     let mut buffer = Vec::new();
-    nt::write_term(&mut buffer, term).unwrap();
-    String::from_utf8(buffer).unwrap()
+    if nt::write_term(&mut buffer, term).is_ok() {
+        return String::from_utf8(buffer).ok();
+    }
+    None
 }
 
 pub fn stringify_term<T>(term: T) -> Option<String>

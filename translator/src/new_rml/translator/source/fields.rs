@@ -3,6 +3,7 @@ use operator::Field as OperatorField;
 use sophia_turtle::serializer::nt;
 
 use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
+use crate::new_rml::extractors::turtle_stringify_term;
 use crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 use crate::new_rml::rml_model::v2::lv::{RMLField, RMLFieldKind};
 use crate::new_rml::translator::error::TranslationError;
@@ -51,7 +52,7 @@ pub fn translate_rml_field(
                         Ok(OperatorField {
                             alias:                 field.name.clone(),
                             reference:             None,
-                            constant:              Some(constant.clone()),
+                            constant:              turtle_stringify_term(constant), 
                             iterator:              None,
                             reference_formulation: ref_form,
                             inner_fields:          vec![],

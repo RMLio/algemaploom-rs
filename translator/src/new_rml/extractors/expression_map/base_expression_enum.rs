@@ -41,9 +41,7 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
             graph_ref,
             &[&vocab::rml_core::PROPERTY::CONSTANT.to_rcterm()],
         ) {
-            Ok(BaseExpressionMapEnum::Constant(
-                stringify_term(obj).unwrap(),
-            ))
+            Ok(BaseExpressionMapEnum::Constant(obj))
         } else {
             let sub_graph =
                 get_subgraph_subject(graph_ref, subject_ref.clone())?;
