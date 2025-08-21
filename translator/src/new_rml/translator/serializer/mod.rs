@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::marker::{PhantomData, PhantomPinned};
 
 use operator::Serializer;
@@ -31,7 +32,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
         store: &SearchStore,
         tm_vec: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
-        let mut graph_pattern: Vec<String> = vec![];
+        let mut graph_pattern: HashSet<String> = HashSet::new();
         for tm in tm_vec {
             let mut triples: Vec<String> = vec![];
 
@@ -104,7 +105,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
         }
 
         Ok(Serializer {
-            template: graph_pattern.join("\n"),
+            template: graph_pattern.into_iter().collect::<Vec<_>>().join("\n"),
             options:  None,
             format:   operator::formats::DataFormat::NQuads,
         })
@@ -113,7 +114,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
 
 fn add_graph_to_triple(
     store: &SearchStore,
-    graph_pattern: &mut Vec<String>,
+    graph_pattern: &mut HashSet<String>,
     triples: &[String],
     graph_map_vec: &[TermMapEnum],
 ) {
@@ -128,7 +129,7 @@ fn add_graph_to_triple(
             gm_part = gm.term_map_info.get_constant_value().unwrap_or(gm_part);
         }
         for triple in triples {
-            graph_pattern.push(format!("{} {} .", triple, gm_part));
+            graph_pattern.insert(format!("{} {} .", triple, gm_part));
         }
     }
 }

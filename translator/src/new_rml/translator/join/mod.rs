@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use chumsky::primitive::Container;
 use operator::{Extend, Operator, Rename, Serializer, Target};
@@ -216,7 +216,7 @@ pub fn serializer_template_from_join(
         .unwrap();
     let ptm_sm_var = get_var_or_constant(store, ptm_sm.as_ref());
 
-    let mut statement_patterns: Vec<_> = pred_patterns
+    let mut statement_patterns: HashSet<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))
         .collect();
 
@@ -235,9 +235,10 @@ pub fn serializer_template_from_join(
             .collect();
     }
 
-    statement_patterns
-        .iter_mut()
-        .for_each(|pattern| pattern.push_str(" ."));
+    let statement_patterns: Vec<_> = statement_patterns
+        .iter()
+        .map(|pattern| format!("{} .", pattern))
+        .collect();
 
     statement_patterns.join("\n")
 }
