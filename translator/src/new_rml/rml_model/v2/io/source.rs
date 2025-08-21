@@ -72,9 +72,7 @@ impl TryFrom<&ReferenceFormulation>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath)
                     }
-                    value
-                        if value == vocab::query::CLASS::HTML.to_rcterm() =>
-                    {
+                    value if value == vocab::query::CLASS::HTML.to_rcterm() => {
                         Ok(formats::ReferenceFormulation::CSS3)
                     }
                     value => {
@@ -207,6 +205,7 @@ impl TryFrom<&SourceKind> for IOType {
             || value.type_iri == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
             || value.type_iri
                 == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE.to_rcterm()
+            || value.type_iri == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()
         {
             Ok(IOType::File)
         } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm()

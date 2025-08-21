@@ -78,7 +78,8 @@ fn extract_source_specific_config(
                 || value
                     == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE
                         .to_rcterm()
-                || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() =>
+                || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() 
+                || value == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()=>
         {
             Ok(file_source::extract_file_source(
                 &kind.subj_iri,
@@ -87,8 +88,9 @@ fn extract_source_specific_config(
         }
         _ => {
             Err(TranslationError::SourceError(format!(
-                "Cannot generate config hash maps for the given source : {:?}",
-                source
+                "Cannot generate config hash maps for the given source : {:?} \n It has an unsupported source kind: {:?}",
+                source, 
+                kind
             ))
             .into())
         }
