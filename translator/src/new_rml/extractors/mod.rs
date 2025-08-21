@@ -14,6 +14,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMap
 mod abstract_logical_source_extractor;
 pub mod error;
 mod expression_map;
+mod fnml;
 mod graphmap_extractor;
 mod input_map;
 pub mod io;
@@ -23,7 +24,6 @@ mod logical_view;
 mod objectmap_extractor;
 mod pom_extractor;
 mod predicatemap_extractor;
-mod fnml;
 mod refobject_extractor;
 mod source;
 pub mod store;
@@ -129,7 +129,7 @@ pub trait FromVocab {
     fn to_arcterm(&self) -> ArcTerm;
 }
 
-impl<'a> FromVocab for PAIR<'a> {
+impl FromVocab for PAIR<'_> {
     fn to_rcterm(&self) -> RcTerm {
         RcTerm::from_term(Iri::new_unchecked(format!("{}{}", self.0, self.1)))
     }
