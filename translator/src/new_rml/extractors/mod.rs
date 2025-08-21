@@ -4,6 +4,7 @@ use sophia_api::prelude::Iri;
 use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
+use sophia_turtle::serializer::nt;
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
@@ -136,6 +137,15 @@ impl FromVocab for PAIR<'_> {
     fn to_arcterm(&self) -> ArcTerm {
         ArcTerm::from_term(Iri::new_unchecked(format!("{}{}", self.0, self.1)))
     }
+}
+
+pub fn turtle_stringify_term<T>(term: T) -> String
+where
+    T: Term,
+{
+    let mut buffer = Vec::new();
+    nt::write_term(&mut buffer, term).unwrap();
+    String::from_utf8(buffer).unwrap()
 }
 
 pub fn stringify_term<T>(term: T) -> Option<String>
