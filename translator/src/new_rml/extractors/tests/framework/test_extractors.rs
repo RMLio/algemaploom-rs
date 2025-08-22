@@ -34,10 +34,12 @@ fn get_value_from_base_expression_map(
         BaseExpressionMapEnum::Template(v)
         | BaseExpressionMapEnum::Reference(v) => Ok(v.to_string()),
         BaseExpressionMapEnum::Constant(v) => {
-            turtle_stringify_term(v).ok_or(format!(
-                "Constant value term {:?} cannot be retrieved into string",
-                v
-            ))
+            stringify_rcterm(v).map_err(|_err| {
+                format!(
+                    "Constant value term {:?} cannot be retrieved into string",
+                    v
+                )
+            })
         }
         BaseExpressionMapEnum::Unknown { type_iri, term_val } => {
             Err(format!(
