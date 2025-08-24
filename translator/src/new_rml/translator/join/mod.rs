@@ -1,5 +1,6 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
+use chumsky::primitive::Container;
 use operator::{Extend, Operator, Rename, Serializer, Target};
 use plan::states::join::join;
 
@@ -153,7 +154,10 @@ pub fn extend_op_from_join(
         .map(|gm| extend_from_term_map(store, child_base_iri, gm.as_ref()))
         .collect();
     let extension_func_graphs = extension_func_graphs_res?;
-    log::debug!("Subject map varible search map: {:#?}", store.termm_id_quad_var_map);
+    log::debug!(
+        "Subject map varible search map: {:#?}",
+        store.termm_id_quad_var_map
+    );
 
     let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).ok_or(
         TranslationError::JoinError(
@@ -161,10 +165,16 @@ pub fn extend_op_from_join(
                 .to_string(),
         ),
     )?;
-    log::debug!("Before alias parent triples map's subject term map is {:#?}", ptm.subject_map); 
+    log::debug!(
+        "Before alias parent triples map's subject term map is {:#?}",
+        ptm.subject_map
+    );
     let aliased_ptm_subj_term_map =
         ptm.subject_map.as_ref().alias_attribute(alias);
-    log::debug!("Aliased parent triples map's subject term map is {:#?}", aliased_ptm_subj_term_map); 
+    log::debug!(
+        "Aliased parent triples map's subject term map is {:#?}",
+        aliased_ptm_subj_term_map
+    );
     let (ptm_subj_var, ptm_subj_func) =
         extend_from_term_map(store, &ptm.base_iri, &aliased_ptm_subj_term_map)?;
 
@@ -198,9 +208,6 @@ pub fn serializer_template_from_join(
     let pred_patterns = pred_vec
         .iter()
         .map(|pm| get_var_or_constant(store, pm.as_ref()));
-    let mut graph_patterns = graph_vec
-        .iter()
-        .map(|gm| get_var_or_constant(store, gm.as_ref()));
 
     let ptm = store.tm_search_map.get(&ref_objmap.ptm_iri).unwrap();
     let ptm_sm = store
@@ -209,19 +216,29 @@ pub fn serializer_template_from_join(
         .unwrap();
     let ptm_sm_var = get_var_or_constant(store, ptm_sm.as_ref());
 
-    let mut statement_patterns: Vec<_> = pred_patterns
+    let mut statement_patterns: HashSet<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))
         .collect();
 
-    for graph_var in graph_patterns {
-        statement_patterns.iter_mut().for_each(|pattern| {
-            *pattern = format!("{} {}", pattern, graph_var)
-        });
+    let graph_patterns: Vec<_> = graph_vec
+        .iter()
+        .map(|gm| get_var_or_constant(store, gm.as_ref()))
+        .collect();
+    if !graph_patterns.is_empty() {
+        statement_patterns = graph_patterns
+            .into_iter()
+            .flat_map(|graph_var| {
+                statement_patterns
+                    .iter()
+                    .map(move |pattern| format!("{} {}", pattern, graph_var))
+            })
+            .collect();
     }
 
-    statement_patterns
-        .iter_mut()
-        .for_each(|pattern| pattern.push_str(" ."));
+    let statement_patterns: Vec<_> = statement_patterns
+        .iter()
+        .map(|pattern| format!("{} .", pattern))
+        .collect();
 
     statement_patterns.join("\n")
 }
