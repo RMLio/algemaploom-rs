@@ -7,7 +7,7 @@ use vocab::ToString;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
-use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
+use crate::new_rml::extractors::{stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, GraphMap,
 };
@@ -56,7 +56,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
                                 "{} <{}> <{}>",
                                 sm,
                                 vocab::rdf::PROPERTY::TYPE.to_string(),
-                                stringify_rcterm(class_iri).unwrap()
+                                stringify_term(class_iri).unwrap()
                             )
                         },
                     );

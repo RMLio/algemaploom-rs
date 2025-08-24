@@ -4,6 +4,7 @@ use sophia_api::prelude::Iri;
 use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
+use sophia_turtle::serializer::nt;
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
@@ -14,6 +15,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMap
 mod abstract_logical_source_extractor;
 pub mod error;
 mod expression_map;
+mod fnml;
 mod graphmap_extractor;
 mod input_map;
 pub mod io;
@@ -23,7 +25,6 @@ mod logical_view;
 mod objectmap_extractor;
 mod pom_extractor;
 mod predicatemap_extractor;
-mod fnml;
 mod refobject_extractor;
 mod source;
 pub mod store;
@@ -129,7 +130,7 @@ pub trait FromVocab {
     fn to_arcterm(&self) -> ArcTerm;
 }
 
-impl<'a> FromVocab for PAIR<'a> {
+impl FromVocab for PAIR<'_> {
     fn to_rcterm(&self) -> RcTerm {
         RcTerm::from_term(Iri::new_unchecked(format!("{}{}", self.0, self.1)))
     }
@@ -138,7 +139,18 @@ impl<'a> FromVocab for PAIR<'a> {
     }
 }
 
-pub fn stringify_rcterm<T>(term: T) -> Option<String>
+pub fn turtle_stringify_term<T>(term: T) -> Option<String>
+where
+    T: Term,
+{
+    let mut buffer = Vec::new();
+    if nt::write_term(&mut buffer, term).is_ok() {
+        return String::from_utf8(buffer).ok();
+    }
+    None
+}
+
+pub fn stringify_term<T>(term: T) -> Option<String>
 where
     T: Term,
 {

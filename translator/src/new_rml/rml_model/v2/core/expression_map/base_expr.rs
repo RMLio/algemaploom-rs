@@ -12,7 +12,7 @@ use crate::new_rml::rml_model::v2::AttributeAliaser;
 pub enum BaseExpressionMapEnum {
     Template(String),
     Reference(String),
-    Constant(String),
+    Constant(RcTerm),
     Unknown { type_iri: RcTerm, term_val: RcTerm },
 }
 impl BaseExpressionMapEnum {

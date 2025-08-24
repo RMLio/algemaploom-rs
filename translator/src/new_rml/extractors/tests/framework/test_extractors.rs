@@ -1,5 +1,5 @@
 use crate::new_rml::extractors::store::get_object;
-use crate::new_rml::extractors::FromVocab;
+use crate::new_rml::extractors::{turtle_stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
@@ -32,8 +32,15 @@ fn get_value_from_base_expression_map(
 ) -> Result<String, String> {
     match base_expression_map {
         BaseExpressionMapEnum::Template(v)
-        | BaseExpressionMapEnum::Reference(v)
-        | BaseExpressionMapEnum::Constant(v) => Ok(v.to_string()),
+        | BaseExpressionMapEnum::Reference(v) => Ok(v.to_string()),
+        BaseExpressionMapEnum::Constant(v) => {
+            stringify_rcterm(v).map_err(|_err| {
+                format!(
+                    "Constant value term {:?} cannot be retrieved into string",
+                    v
+                )
+            })
+        }
         BaseExpressionMapEnum::Unknown { type_iri, term_val } => {
             Err(format!(
                 "Unknown expression map detected with type {:?} and value {:?}",
@@ -48,9 +55,7 @@ fn get_expression_value(
 ) -> Result<String, String> {
     match expression_map {
         ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
-            get_value_from_base_expression_map(
-                base_expression_map_enum,
-            )
+            get_value_from_base_expression_map(base_expression_map_enum)
         }
         ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
             todo!()
@@ -80,7 +85,7 @@ fn get_source(tm: &TriplesMap) -> Result<&Source, String> {
 fn stringify_rcterm<T: sophia_api::prelude::Term + Clone>(
     term: &T,
 ) -> Result<String, String> {
-    crate::new_rml::extractors::stringify_rcterm(term.clone())
+    crate::new_rml::extractors::stringify_term(term.clone())
         .ok_or("Failed to stringify term".to_string())
 }
 
@@ -118,7 +123,7 @@ pub fn extract_logical_source_reference_formulation(
     ls.iterable
         .reference_formulation
         .as_ref()
-        .and_then(|rf| crate::new_rml::extractors::stringify_rcterm(&rf.iri))
+        .and_then(|rf| crate::new_rml::extractors::stringify_term(&rf.iri))
         .ok_or("No reference formulation defined".to_string())
 }
 
@@ -190,11 +195,16 @@ pub fn extract_object_term_type_from_pom(
     stringify_rcterm(&om.as_ref().term_type)
 }
 
-pub fn extract_object_constant_from_pom(triplesmap: &TriplesMap, index: usize) -> Result<String, String> {
+pub fn extract_object_constant_from_pom(
+    triplesmap: &TriplesMap,
+    index: usize,
+) -> Result<String, String> {
     extract_object_reference_from_pom(triplesmap, index)
 }
 
-pub fn extract_subject_map_constant(triplesmap: &TriplesMap) -> Result<String, String> {
+pub fn extract_subject_map_constant(
+    triplesmap: &TriplesMap,
+) -> Result<String, String> {
     let subject_map = get_subject_map(triplesmap)?;
     get_expression_value(&subject_map.term_map_info.expression)
 }
@@ -209,7 +219,7 @@ pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
         &path_predicate,
     ) {
         Ok(path_term) => {
-            crate::new_rml::extractors::stringify_rcterm(path_term)
+            crate::new_rml::extractors::stringify_term(path_term)
                 .ok_or("Failed to stringify path".to_string())
         }
         Err(e) => {
@@ -228,7 +238,7 @@ pub fn extract_source_root(triplesmap: &TriplesMap) -> Result<String, String> {
         &root_predicate,
     ) {
         Ok(root_term) => {
-            crate::new_rml::extractors::stringify_rcterm(root_term)
+            crate::new_rml::extractors::stringify_term(root_term)
                 .ok_or("Failed to stringify root".to_string())
         }
         Err(e) => {

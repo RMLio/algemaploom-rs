@@ -3,7 +3,7 @@ use sophia_inmem::graph::FastGraph;
 
 use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{
-    stringify_rcterm, Extractor, ExtractorResult, FromVocab,
+    stringify_term, Extractor, ExtractorResult, FromVocab,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::new_rml::rml_model::v2::core::RMLIterable;
@@ -17,7 +17,7 @@ impl Extractor<RMLField> for RMLField {
     where
         TTerm: Term + Clone,
     {
-        let name = stringify_rcterm(get_object(
+        let name = stringify_term(get_object(
             graph_ref,
             subject_ref.borrow_term(),
             vocab::rml_lv::PROPERTY::FIELD_NAME.to_rcterm(),

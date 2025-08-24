@@ -12,7 +12,9 @@ use vocab::ToString;
 
 use super::{BaseExpressionMapEnum, ExpressionMapEnum};
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::{ExtractorResult, FromVocab};
+use crate::new_rml::extractors::{
+    turtle_stringify_term, ExtractorResult, FromVocab,
+};
 use crate::new_rml::rml_model::v2::core::TemplateSubString;
 use crate::new_rml::rml_model::v2::io::target::LogicalTarget;
 use crate::new_rml::rml_model::v2::{
@@ -79,14 +81,7 @@ impl CommonTermMapInfo {
         {
             match base_expr_enum {
                 BaseExpressionMapEnum::Constant(val) => {
-                    match self.get_term_type_enum() {
-                        RMLTermTypeKind::IRI => Some(format!("<{}>", val)),
-                        RMLTermTypeKind::BlankNode => Some(val.to_string()),
-                        RMLTermTypeKind::Literal => {
-                            Some(format!("\"{}\"", val))
-                        }
-                        _ => None,
-                    }
+                    turtle_stringify_term(val)
                 }
                 _ => None,
             }

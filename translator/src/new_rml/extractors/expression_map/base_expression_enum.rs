@@ -8,7 +8,7 @@ use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::expression_map::get_expr_value_enum;
 use crate::new_rml::extractors::store::get_subgraph_subject;
 use crate::new_rml::extractors::{
-    stringify_rcterm, Extractor, ExtractorResult, FromVocab,
+    stringify_term, Extractor, ExtractorResult, FromVocab,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 
@@ -26,7 +26,7 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
             &[&vocab::rml_core::PROPERTY::TEMPLATE.to_rcterm()],
         ) {
             Ok(BaseExpressionMapEnum::Template(
-                stringify_rcterm(obj).unwrap(),
+                stringify_term(obj).unwrap(),
             ))
         } else if let Some((_, obj)) = get_expr_value_enum(
             subject_ref.borrow_term(),
@@ -34,16 +34,14 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
             &[&vocab::rml_core::PROPERTY::REFERENCE.to_rcterm()],
         ) {
             Ok(BaseExpressionMapEnum::Reference(
-                stringify_rcterm(obj).unwrap(),
+                stringify_term(obj).unwrap(),
             ))
         } else if let Some((_, obj)) = get_expr_value_enum(
             subject_ref.borrow_term(),
             graph_ref,
             &[&vocab::rml_core::PROPERTY::CONSTANT.to_rcterm()],
         ) {
-            Ok(BaseExpressionMapEnum::Constant(
-                stringify_rcterm(obj).unwrap(),
-            ))
+            Ok(BaseExpressionMapEnum::Constant(obj))
         } else {
             let sub_graph =
                 get_subgraph_subject(graph_ref, subject_ref.clone())?;

@@ -2,12 +2,14 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use operator::{Extend, Function};
+use sophia_api::ns::xsd;
+use sophia_api::term::Term;
 
 use super::error::TranslationError;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
-use crate::new_rml::extractors::stringify_rcterm;
+use crate::new_rml::extractors::{stringify_term, turtle_stringify_term};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     termkind_to_rml_rcterm, CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
@@ -117,6 +119,7 @@ fn extend_lang_dtype_function_for_om(
     func: Function,
 ) -> Result<Function, NewRMLTranslationError> {
     let term_type = &om.term_map_info.get_term_type_enum();
+    log::debug!("Term expression {:?} is a literal", om.term_map_info.expression); 
     Ok(match &func {
         Function::Literal {
             inner_function,
@@ -177,17 +180,33 @@ pub fn extend_from_term_map(
             })
         }
         RMLTermTypeKind::Literal => {
+            log::debug!("Term expression {:?} is a literal", term_map_info.expression); 
+            let mut dtype_function = None; 
+            let mut langtype_function = None; 
+            if let Ok(BaseExpressionMapEnum::Constant(term)) = term_map_info.expression.try_unwrap_base_expression_map_ref(){
+                if let Some( lt) = term.language_tag(){
+                    langtype_function = Some(Function::Constant { value: lt.as_str().to_string() }.into()); 
+                }
+                if let Some(dt) = term.datatype(){
+                    let dtype_inner = Function::Constant{ 
+                        value: dt.as_str().to_string()
+                    }.into(); 
+                    dtype_function = Some(Function::Iri { base_iri: None, inner_function: dtype_inner }.into())
+;
+                }
+            }
+            
             Ok(Function::Literal {
                 inner_function:    inner_func.into(),
-                dtype_function:    None,
-                langtype_function: None,
+                dtype_function,
+                langtype_function,
             })
         }
 
         _ => {
             Err(TranslationError::ExtendError(format!(
                 "Given term type is unsupported: {:?}",
-                stringify_rcterm(term_map_info.term_type.clone())
+                stringify_term(term_map_info.term_type.clone())
             )))
         }
     }?;
@@ -230,8 +249,13 @@ fn extend_func_from_base_expr_map(
             Ok(extend_func_from_ref_attr(reference, term_type))
         }
         BaseExpressionMapEnum::Constant(constant) => {
+            let value = stringify_term(constant)
+                .ok_or(TranslationError::ExtendError(
+                        format!("Empty string returned while trying to get the string representation of the term {:?}", constant)
+                        )
+                    )?;  
             Ok(Function::Constant {
-                value: constant.to_string(),
+                value ,
             })
         }
         BaseExpressionMapEnum::Unknown { type_iri, term_val } =>  {

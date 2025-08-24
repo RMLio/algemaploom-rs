@@ -12,7 +12,7 @@ use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
 use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::{
-    stringify_rcterm, ExtractorResult, FromVocab,
+    stringify_term, ExtractorResult, FromVocab,
 };
 use crate::new_rml::rml_model::v2::core::{
     AbstractLogicalSource, AbstractLogicalSourceEnum,
@@ -36,7 +36,7 @@ pub fn extract_parse_config(
             let config_val = get_object(graph, dialect_subject, config_pred);
 
             if let Ok(val) = config_val {
-                result.insert(key.to_string(), stringify_rcterm(val).unwrap());
+                result.insert(key.to_string(), stringify_term(val).unwrap());
             }
 
             Ok(())
@@ -78,7 +78,8 @@ fn extract_source_specific_config(
                 || value
                     == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE
                         .to_rcterm()
-                || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() =>
+                || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() 
+                || value == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()=>
         {
             Ok(file_source::extract_file_source(
                 &kind.subj_iri,
@@ -87,8 +88,9 @@ fn extract_source_specific_config(
         }
         _ => {
             Err(TranslationError::SourceError(format!(
-                "Cannot generate config hash maps for the given source : {:?}",
-                source
+                "Cannot generate config hash maps for the given source : {:?} \n It has an unsupported source kind: {:?}",
+                source, 
+                kind
             ))
             .into())
         }
@@ -109,14 +111,14 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
         if let Some(encoding) = &source.encoding {
             config.insert(
                 "encoding".to_string(),
-                stringify_rcterm(encoding).unwrap(),
+                stringify_term(encoding).unwrap(),
             );
         }
 
         if let Some(compression) = &source.compression {
             config.insert(
                 "compression".to_string(),
-                stringify_rcterm(compression).unwrap(),
+                stringify_term(compression).unwrap(),
             );
         }
 

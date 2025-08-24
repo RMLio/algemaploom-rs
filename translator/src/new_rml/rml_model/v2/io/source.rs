@@ -10,7 +10,7 @@ use sophia_turtle::serializer::nt::NtSerializer;
 
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
-use crate::new_rml::extractors::{stringify_rcterm, FromVocab};
+use crate::new_rml::extractors::{stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::translator::error::TranslationError;
 
@@ -72,15 +72,13 @@ impl TryFrom<&ReferenceFormulation>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath)
                     }
-                    value
-                        if value == vocab::query::CLASS::HTML.to_rcterm() =>
-                    {
+                    value if value == vocab::query::CLASS::HTML.to_rcterm() => {
                         Ok(formats::ReferenceFormulation::CSS3)
                     }
                     value => {
                         Err(TranslationError::SourceError(format!(
                             "Unsupported reference formulation: {}",
-                            stringify_rcterm(value).unwrap()
+                            stringify_term(value).unwrap()
                         )))
                     }
                 }
@@ -207,6 +205,7 @@ impl TryFrom<&SourceKind> for IOType {
             || value.type_iri == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
             || value.type_iri
                 == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE.to_rcterm()
+            || value.type_iri == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()
         {
             Ok(IOType::File)
         } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm()
@@ -216,7 +215,7 @@ impl TryFrom<&SourceKind> for IOType {
         } else {
             Err(TranslationError::SourceError(format!(
                 "Input format {} not not supported to convert to IOType",
-                stringify_rcterm(value.type_iri.clone()).unwrap()
+                stringify_term(value.type_iri.clone()).unwrap()
             )))
         }
     }
