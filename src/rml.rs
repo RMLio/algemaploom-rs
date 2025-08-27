@@ -2,6 +2,7 @@ use log::{error, info, warn};
 use plan::states::Init;
 use plan::Plan;
 use translator::error::TranslationError;
+use translator::new_rml::error::NewRMLTranslationError;
 use translator::new_rml::translator::NewRMLDocumentTranslator;
 use translator::rml::parser::extractors::io::{
     parse_file as old_parse_file, parse_str as old_parse_str,
@@ -30,7 +31,8 @@ impl FileTranslatorHandler for RMLFileHandler {
             info!("Trying again with the RML v2 (new) spec translator https://kg-construct.github.io/rml-resources/portal/");
             let document = translator::new_rml::extractors::io::parse_file(
                 file_path.as_ref().into(),
-            )?;
+            )
+            .map_err::<NewRMLTranslationError, _>(|err| err.into())?;
 
             NewRMLDocumentTranslator::translate_to_plan(document)
         }
@@ -55,7 +57,8 @@ impl StringTranslatorHandler for RMLStringHandler {
             // New RML mapping document shouldn't contain R2RML's prefix (BIIIGG ASSUMPTION)
             info!("Using translator for the latest RML spec https://kg-construct.github.io/rml-resources/portal/");
             let document =
-                translator::new_rml::extractors::io::parse_str(mapping)?;
+                translator::new_rml::extractors::io::parse_str(mapping)
+                    .map_err::<NewRMLTranslationError, _>(|err| err.into())?;
 
             NewRMLDocumentTranslator::translate_to_plan(document)
         }

@@ -7,7 +7,6 @@ use super::extend::insert_non_constant_func;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
-use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 use crate::new_rml::rml_model::v2::core::{RefObjectMap, TriplesMap};
 use crate::new_rml::rml_model::v2::{
@@ -39,26 +38,25 @@ impl OperatorTranslator for JoinTranslator {
         let child_plan = store
             .ls_id_sourced_plan_map
             .get(&child_logical_source_id)
-            .ok_or(ParseError::GenericError(format!(
+            .ok_or(TranslationError::JoinError(format!(
                 "Search store cannot found the associated plan for the logical source id: {:?}",
                 child_logical_source_id
             )))?;
 
         for (parent_tm_id, (pred_vec, ref_om, graph_vec)) in parent_tms_refoms {
-            let parent_tm =
-                store.tm_search_map.get(&parent_tm_id).unwrap_or_else(|| {
-                    panic!(
-                        "Given triples map id {:?} does not exist!",
-                        parent_tm_id
-                    )
-                });
+            let parent_tm = store.tm_search_map.get(&parent_tm_id).ok_or(
+                TranslationError::JoinError(format!(
+                    "Given triples map id {:?} does not exist!",
+                    parent_tm_id
+                )),
+            )?;
             let parent_logical_source_id =
                 parent_tm.abs_logical_source.get_identifier();
 
             let parent_plan = store
                     .ls_id_sourced_plan_map
                     .get(&parent_logical_source_id)
-                    .ok_or(ParseError::GenericError(format!(
+                    .ok_or(TranslationError::JoinError(format!(
                         "Search store cannot found the associated plan for the logical source id: {:?}",
                         child_logical_source_id
                     )))?;

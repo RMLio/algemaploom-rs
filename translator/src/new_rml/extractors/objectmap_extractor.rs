@@ -4,7 +4,8 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::store::get_subject;
-use super::TermMapExtractor;
+use super::{ExtractorResult, TermMapExtractor};
+use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::store::get_object_with_ps;
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
@@ -39,16 +40,18 @@ where
 }
 
 impl TermMapExtractor<TermMapEnum> for ObjectMap {
-    fn create_shortcut_map(term_map: CommonTermMapInfo) -> TermMapEnum {
+    fn create_shortcut_map(
+        term_map: CommonTermMapInfo,
+    ) -> ExtractorResult<TermMapEnum> {
         if term_map.is_bnode_term_type() {
-            panic!("Constant-valued ObjectMap has to have an IRI or a Literal as value");
+            return Err(ParseError::GenericError("Constant-valued ObjectMap has to have an IRI or a Literal as value".to_string()));
         }
 
-        TermMapEnum::ObjectMap(Self {
+        Ok(TermMapEnum::ObjectMap(Self {
             term_map_info: term_map,
             language_map:  None,
             datatype_map:  None,
-        })
+        }))
     }
 
     fn extract_self_term_map<TTerm>(

@@ -8,14 +8,13 @@ use sophia_api::term::{FromTerm, SimpleTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 
-use super::error::ParseError;
+use super::error::SophiaStoreError;
 use super::RcTerm;
-use crate::new_rml::error::NewRMLTranslationError;
 
 pub fn get_subgraph_subject<TS>(
     graph: &FastGraph,
     subj: TS,
-) -> Result<FastGraph, NewRMLTranslationError>
+) -> Result<FastGraph, SophiaStoreError>
 where
     TS: Term + Debug,
 {
@@ -97,17 +96,16 @@ pub fn get_subject<TP, TO>(
     graph: &FastGraph,
     pred: &TP,
     obj: &TO,
-) -> Result<RcTerm, NewRMLTranslationError>
+) -> Result<RcTerm, SophiaStoreError>
 where
     TP: Term + Debug,
     TO: Term + Debug,
 {
     get_subjects(graph, pred, obj).pop().ok_or(
-        ParseError::GenericError(format!(
-            "Subject not found in graph with obj {:?} and pred {:?}",
-            pred, obj
-        ))
-        .into(),
+        SophiaStoreError::SubjectNotFound {
+            pred: format!("{:?}", pred),
+            obj:  format!("{:?}", obj),
+        },
     )
 }
 
@@ -129,7 +127,7 @@ pub fn get_object<TS, TP>(
     graph_ref: &FastGraph,
     subject_ref: TS,
     pred: TP,
-) -> Result<RcTerm, NewRMLTranslationError>
+) -> Result<RcTerm, SophiaStoreError>
 where
     TS: Term + Debug,
     TP: Term + Debug,
@@ -137,13 +135,10 @@ where
     let mut objects =
         get_objects(graph_ref, subject_ref.borrow_term(), pred.borrow_term());
 
-    objects.pop().ok_or(
-        ParseError::GenericError(format!(
-            "Object not found in graph with subj {:?} and pred {:?}",
-            subject_ref, pred
-        ))
-        .into(),
-    )
+    objects.pop().ok_or(SophiaStoreError::ObjectNotFound {
+        subj: format!("{:?}", subject_ref),
+        pred: format!("{:?}", pred),
+    })
 }
 
 pub fn get_objects_with_ps<TS, TP>(
@@ -167,18 +162,15 @@ pub fn get_object_with_ps<TS, TP>(
     graph: &FastGraph,
     subject: TS,
     pred_vec: &[TP],
-) -> Result<RcTerm, NewRMLTranslationError>
+) -> Result<RcTerm, SophiaStoreError>
 where
     TS: Term + Debug,
     TP: Term + Debug,
 {
     let mut object_opt =
         get_objects_with_ps(graph, subject.borrow_term(), pred_vec);
-    object_opt.pop().ok_or(
-        ParseError::GenericError(format!(
-            "Object not found in graph with subj {:?} and preds {:?}",
-            subject, pred_vec
-        ))
-        .into(),
-    )
+    object_opt.pop().ok_or(SophiaStoreError::ObjectNotFound {
+        subj: format!("{:?}", subject),
+        pred: format!("{:?}", pred_vec),
+    })
 }

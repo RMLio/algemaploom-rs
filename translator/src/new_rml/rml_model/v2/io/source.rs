@@ -21,7 +21,7 @@ pub struct ReferenceFormulation {
 }
 
 impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
-    type Error = TranslationError;
+    type Error = ParseError;
 
     fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
         (&value).try_into()
@@ -31,7 +31,7 @@ impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
 impl TryFrom<&ReferenceFormulation>
     for operator::formats::ReferenceFormulation
 {
-    type Error = TranslationError;
+    type Error = ParseError;
 
     fn try_from(value: &ReferenceFormulation) -> Result<Self, Self::Error> {
         match value.kind {
@@ -76,7 +76,7 @@ impl TryFrom<&ReferenceFormulation>
                         Ok(formats::ReferenceFormulation::CSS3)
                     }
                     value => {
-                        Err(TranslationError::SourceError(format!(
+                        Err(ParseError::GenericError(format!(
                             "Unsupported reference formulation: {}",
                             stringify_term(value).unwrap()
                         )))
@@ -86,7 +86,7 @@ impl TryFrom<&ReferenceFormulation>
             ReferenceFormulationKind::CustomReferenceFormulation {
                 meta_data_graph: _,
             } => {
-                Err(TranslationError::SourceError(format!(
+                Err(ParseError::GenericError(format!(
                     "Complex reference formulation unsupported: {:?}",
                     value
                 )))
@@ -134,7 +134,7 @@ pub enum RMLReferenceFormulationTypeKind {
 }
 
 impl TryFrom<ReferenceFormulation> for RMLReferenceFormulationTypeKind {
-    type Error = NewRMLTranslationError;
+    type Error = ParseError;
 
     fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
         value.iri.try_into()
@@ -142,7 +142,7 @@ impl TryFrom<ReferenceFormulation> for RMLReferenceFormulationTypeKind {
 }
 
 impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
-    type Error = NewRMLTranslationError;
+    type Error = ParseError;
 
     fn try_from(value: RcTerm) -> Result<Self, Self::Error> {
         match value {
@@ -162,8 +162,7 @@ impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
                 Err(ParseError::GenericError(format!(
                     "reference formulation type is not supported: {:?}",
                     value
-                ))
-                .into())
+                )))
             }
         }
     }

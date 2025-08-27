@@ -9,7 +9,9 @@ use crate::new_rml::extractors::store::{get_object, get_objects};
 use crate::new_rml::extractors::{Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::JoinCondition;
 use crate::new_rml::rml_model::v2::lv::RMLFieldKind::Iterable;
-use crate::new_rml::rml_model::v2::lv::{LogicalView, LogicalViewJoin, RMLField};
+use crate::new_rml::rml_model::v2::lv::{
+    LogicalView, LogicalViewJoin, RMLField,
+};
 
 impl Extractor<LogicalViewJoin> for LogicalViewJoin {
     fn extract_self<TTerm>(
@@ -24,7 +26,7 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
             subject_ref.borrow_term(),
             &vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
         )
-        .and_then(|term| JoinCondition::extract_self(&term, graph_ref))?;
+        .map(|term| JoinCondition::extract_self(&term, graph_ref))??;
 
         let parent_view_term = get_object(
             graph_ref,
@@ -40,7 +42,7 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
             vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
         )
         .iter()
-        .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, NewRMLTranslationError> {
+        .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, ParseError> {
             let res = RMLField::extract_self(t, graph_ref);
             match res {
                 Ok(field) => {

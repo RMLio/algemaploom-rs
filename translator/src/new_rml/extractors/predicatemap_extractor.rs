@@ -2,7 +2,8 @@ use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
-use super::{Extractor, TermMapExtractor};
+use super::error::ParseError;
+use super::{Extractor, ExtractorResult, TermMapExtractor};
 use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, PredicateMap,
@@ -10,11 +11,16 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
 use crate::new_rml::rml_model::v2::TermMapEnum;
 
 impl TermMapExtractor<TermMapEnum> for PredicateMap {
-    fn create_shortcut_map(term_map_info: CommonTermMapInfo) -> TermMapEnum {
+    fn create_shortcut_map(
+        term_map_info: CommonTermMapInfo,
+    ) -> ExtractorResult<TermMapEnum> {
         if !term_map_info.is_iri_term_type() {
-            panic!("Constant-valued PredicateMap has to have an IRI as value");
+            return Err(ParseError::GenericError(
+                "Constant-valued PredicateMap has to have an IRI as value"
+                    .to_string(),
+            ));
         }
-        TermMapEnum::PredicateMap(PredicateMap { term_map_info })
+        Ok(TermMapEnum::PredicateMap(PredicateMap { term_map_info }))
     }
 
     fn extract_self_term_map<TS>(
@@ -53,10 +59,9 @@ mod tests {
 
     use super::*;
     use crate::import_test_mods;
-    use crate::new_rml::error::NewRMLTranslationError;
     use crate::new_rml::extractors::error::ParseError;
     use crate::new_rml::rml_model::v2::core::expression_map::{
-        BaseExpressionMapEnum, ExpressionMapEnum
+        BaseExpressionMapEnum, ExpressionMapEnum,
     };
 
     import_test_mods!(new_rml);
@@ -75,24 +80,26 @@ mod tests {
 
         assert_eq!(pms.len(), 2);
 
-        let _ = pms.iter().try_for_each(|pm| {
+        for pm in pms.iter() {
+            assert!(pm.as_ref().is_iri_term_type());
             match &pm.as_ref().expression {
                 ExpressionMapEnum::BaseExpressionMap(base_expr) => {
                     match base_expr {
                         BaseExpressionMapEnum::Constant(_) => {}
                         _ => {
-                            panic!(
+                            return Err(ParseError::GenericError(format!(
                                 "Predicate map is not a constant term map {:?}",
                                 pm
-                            )
+                            )))
                         }
                     }
                 }
-                _ => panic!("Predicate map's expression map is not an expression map defined in RML-Core {:?}", pm.as_ref().expression),
+                _ => {
+                    return Err(ParseError::GenericError(
+                            format!("Predicate map's expression map is not an expression map defined in RML-Core {:?}", pm.as_ref().expression)))
+                },
             }
-            assert!(pm.as_ref().is_iri_term_type());
-            Ok::<(), NewRMLTranslationError>(())
-        });
+        }
 
         Ok(())
     }

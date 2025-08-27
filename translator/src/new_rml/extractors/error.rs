@@ -3,15 +3,71 @@ use std::error::Error;
 use std::fmt::Display;
 use std::io;
 
+#[derive(Debug, Clone)]
+pub enum SophiaStoreError {
+    TriplesNotFound {
+        subj: String,
+        pred: String,
+        obj:  String,
+    },
+    SubjectNotFound {
+        pred: String,
+        obj:  String,
+    },
+    ObjectNotFound {
+        subj: String,
+        pred: String,
+    },
+}
+
+impl Error for SophiaStoreError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        None
+    }
+}
+
+impl Display for SophiaStoreError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            SophiaStoreError::TriplesNotFound { subj, pred, obj } => {
+                write!(
+                    f,
+                    "error while searching for nonexistent triple: subj: {}  pred: {}  obj: {}",
+                    subj, pred, obj
+                )
+            }
+            SophiaStoreError::SubjectNotFound { pred, obj } => 
+                write!(
+                    f,
+                    "error while searching for nonexistent subject with predicate and object: pred: {} obj: {}",
+                    pred, obj
+                ), 
+            SophiaStoreError::ObjectNotFound { subj, pred } => 
+                write!(
+                    f,
+                    "error while searching for nonexistent object with subject and predicate: subj: {} pred: {}",
+                   subj,  pred
+                ), 
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum ParseError {
     IOErrorStr(String),
     IOError(io::Error),
     SerdeError(serde_json::Error),
+    SophiaStoreError(SophiaStoreError), 
     GenericError(String),
     NoTermMapFoundError(String),
     ExtensionError(String),
     Infallible,
+}
+
+impl From<SophiaStoreError> for ParseError{
+    fn from(value: SophiaStoreError) -> Self {
+        ParseError::SophiaStoreError(value)
+    }
 }
 
 impl From<serde_json::Error> for ParseError {
@@ -53,7 +109,8 @@ impl Display for ParseError {
             ParseError::ExtensionError(msg) => {
                 write!(f, "file extension error with msg: \n {}", msg)
             }
-            ParseError::Infallible => panic!(),
+            ParseError::SophiaStoreError(_sophia_store_error) => write!(f, "error occurred while using sophia_rs's graph store"),
+            ParseError::Infallible => panic!("Reached infallible error state, something went really wrong"),
         }
     }
 }
@@ -63,6 +120,7 @@ impl Error for ParseError {
         match self {
             ParseError::IOError(error) => error.source(),
             ParseError::SerdeError(error) => error.source(),
+            ParseError::SophiaStoreError(error) => error.source(),  
             _ => None,
         }
     }

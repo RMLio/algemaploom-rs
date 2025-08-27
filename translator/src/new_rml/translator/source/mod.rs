@@ -7,9 +7,9 @@ use kind::file_source;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 
-use super::error::TranslationError;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
+use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::{
     stringify_term, ExtractorResult, FromVocab,
@@ -87,7 +87,7 @@ fn extract_source_specific_config(
             )?)
         }
         _ => {
-            Err(TranslationError::SourceError(format!(
+            Err(ParseError::GenericError(format!(
                 "Cannot generate config hash maps for the given source : {:?} \n It has an unsupported source kind: {:?}",
                 source, 
                 kind

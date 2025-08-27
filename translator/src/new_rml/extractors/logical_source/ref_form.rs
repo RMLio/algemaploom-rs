@@ -15,7 +15,7 @@ impl Extractor<ReferenceFormulation> for ReferenceFormulation {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> Result<ReferenceFormulation, NewRMLTranslationError>
+    ) -> ExtractorResult<ReferenceFormulation>
     where
         TTerm: Term,
     {
