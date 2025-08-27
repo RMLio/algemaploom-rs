@@ -1,6 +1,7 @@
 use std::fmt::Display;
 use std::path::PathBuf;
 
+
 use crate::new_rml::error::NewRMLTranslationError;
 use crate::rml::error::RMLTranslationError;
 use crate::shexml::error::ShExMLTranslationError;
@@ -117,17 +118,17 @@ impl std::error::Error for TranslationErrorKind {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
             TranslationErrorKind::LanguageError(language_error_kind) => {
-                language_error_kind.source()
+                Some(language_error_kind)
             }
             TranslationErrorKind::FileLanguageError {
                 file: _,
                 lang_err_kind,
-            } => lang_err_kind.source(),
+            } => Some(lang_err_kind),
             TranslationErrorKind::FileStdError { file: _, error } => {
-                error.source()
+                Some(error)
             }
-            TranslationErrorKind::IoError(error) => error.source(),
-            TranslationErrorKind::FileMsgError { file:_, msg:_ } => None,
+            TranslationErrorKind::IoError(error) => Some(error),
+            TranslationErrorKind::FileMsgError { file: _, msg: _ } => None,
         }
     }
 }
