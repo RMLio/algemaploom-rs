@@ -2,22 +2,21 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use operator::{Extend, Function};
-use sophia_api::ns::xsd;
 use sophia_api::term::Term;
 
 use super::error::TranslationError;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::{NewRMLTranslationError, NewRMLTranslationResult};
-use crate::new_rml::extractors::{stringify_term, turtle_stringify_term};
+use crate::new_rml::extractors::{stringify_term};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    termkind_to_rml_rcterm, CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
+     CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
 };
 use crate::new_rml::rml_model::v2::core::{TemplateSubString, TriplesMap};
-use crate::new_rml::rml_model::v2::fnml::{FunctionExpressionMap, InputMap};
+use crate::new_rml::rml_model::v2::fnml::{FunctionExpressionMap};
 
 pub fn func_is_not_constant(func: &Function) -> bool {
     match func {

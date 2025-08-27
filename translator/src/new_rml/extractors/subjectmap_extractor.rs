@@ -3,8 +3,7 @@ use sophia_term::RcTerm;
 
 use super::error::ParseError;
 use super::store::get_objects;
-use super::TermMapExtractor;
-use crate::new_rml::error::NewRMLTranslationError;
+use super::{ExtractorResult, TermMapExtractor};
 use crate::new_rml::extractors::{Extractor, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, GraphMap, SubjectMap,
@@ -12,19 +11,22 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
 use crate::new_rml::rml_model::v2::TermMapEnum;
 
 impl TermMapExtractor<TermMapEnum> for SubjectMap {
-    fn create_shortcut_map(tm: CommonTermMapInfo) -> TermMapEnum {
+    fn create_shortcut_map(
+        tm: CommonTermMapInfo,
+    ) -> ExtractorResult<TermMapEnum> {
         match tm.term_type {
             ref term if *term == vocab::rml_core::CLASS::IRI.to_rcterm() => {
-                TermMapEnum::SubjectMap(SubjectMap {
+                Ok(TermMapEnum::SubjectMap(SubjectMap {
                     term_map_info: tm,
                     classes:       vec![],
                     graph_maps:    vec![],
-                })
+                }))
             }
             _ => {
-                panic!(
+                Err(ParseError::GenericError(
                     "Constant-valued SubjectMap has to have an IRI as value"
-                );
+                        .to_string(),
+                ))
             }
         }
     }
@@ -113,4 +115,3 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
         })
     }
 }
-

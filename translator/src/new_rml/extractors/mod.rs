@@ -8,7 +8,6 @@ use sophia_turtle::serializer::nt;
 use vocab::{ToString, PAIR};
 
 use self::error::ParseError;
-use super::error::NewRMLTranslationError;
 use crate::new_rml::extractors::store::get_objects;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 
@@ -35,10 +34,10 @@ pub mod tests;
 mod triplesmap_extractor;
 mod util;
 
-pub type ExtractorResult<T> = Result<T, NewRMLTranslationError>;
+pub type ExtractorResult<T> = Result<T, ParseError>;
 
 pub trait TermMapExtractor<T: Debug> {
-    fn create_shortcut_map(tm: CommonTermMapInfo) -> T;
+    fn create_shortcut_map(tm: CommonTermMapInfo) -> ExtractorResult<T>;
 
     fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
@@ -60,7 +59,7 @@ pub trait TermMapExtractor<T: Debug> {
 
         let tm_info = CommonTermMapInfo::from_constant_value(map_const)?;
 
-        Ok(Self::create_shortcut_map(tm_info))
+        Ok(Self::create_shortcut_map(tm_info)?)
     }
 
     fn extract_from_container<TTerm>(

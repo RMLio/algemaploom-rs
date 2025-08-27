@@ -45,7 +45,8 @@ pub struct NewRMLDocumentTranslator {}
 
 impl LanguageTranslator<&Path> for NewRMLDocumentTranslator {
     fn translate_to_plan(path: &Path) -> crate::LanguageTranslateResult {
-        let document = parse_file(path.to_path_buf())?;
+        let document = parse_file(path.to_path_buf())
+            .map_err(|err| NewRMLTranslationError::ParseError(err.into()))?;
         NewRMLDocumentTranslator::translate_to_plan(document)
     }
 }
@@ -56,7 +57,9 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
     ) -> crate::LanguageTranslateResult {
         //preprocessing to change all logical sources to logical views
         for tm in model.triples_maps.iter_mut() {
-            tm.transform_to_logical_view()?;
+            tm.transform_to_logical_view().map_err(|err| {
+                NewRMLTranslationError::ParseError(err.into())
+            })?;
         }
 
         log::debug!("{:#?}", model);
@@ -77,7 +80,7 @@ impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
 
             // No triples maps detected which can generate triples without joins
             // so continue onto the next source
-            if tm_vec.is_empty(){
+            if tm_vec.is_empty() {
                 continue;
             }
 
