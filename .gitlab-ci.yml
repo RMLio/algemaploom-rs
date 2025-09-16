@@ -50,3 +50,36 @@ build-nodejs:
     - apt update
     - sudo apt-get install -y nodejs
     - ./build_nodejs.sh
+
+###############################
+#                             #
+#     Automated Releases      #
+#                             #
+###############################
+#
+# (c) Dylan Van Assche (2022)
+# IDLab - Ghent University - imec
+#
+# Create a Maven package and push it to Maven Central.
+#
+# CI variables: 
+#    - GPG_SECRET_KEY: GPG secret key to sign Maven package as a file
+#    - MAVEN_REPO_USER: Maven user for logging in
+#    - MAVEN_REPO_PASSWORD: Maven password for logging in
+
+Maven Central Deployment:
+  stage: deploy
+  image:
+    name: maven:3-eclipse-temurin-21
+    pull_policy: if-not-present
+  before_script:
+    - apt-get update && apt-get install -y gpg ca-certificates
+    - gpg --version
+    - gpg --verbose --import --batch --yes $GPG_SECRET_KEY
+  script:
+    - cd src/java/algemaploom
+    - mvn -s $CI_PROJECT_DIR/src/java/algemaploom/.m2/settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true clean deploy -P release -DskipTests=true
+  allow_failure: true
+  retry: 2
+  only:
+    - tags
