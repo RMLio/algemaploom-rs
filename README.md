@@ -13,7 +13,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-<h3 align="center">AlgeMapLoom: Weaving Mapping Languages with Algebraic Operators</h3>
+<h3 align="center">MappingLoom: Weaving Mapping Languages with Algebraic Operators</h3>
 </div>
 
 <!-- ABOUT THE PROJECT -->
@@ -97,7 +97,7 @@ The following features are not supported in translation yet:
 5) Conditionals
 
 ## Bindings
-AlgeMapLoom provides bindings for Java, Python and Node.js.
+MappingLoom provides bindings for Java, Python and Node.js.
 These can be enabled with the features `jni`, `pyo3` and `neon` respectively.
 
 If you build from source, you can run the `build_java.sh`, `build_python.sh` and `build_nodejs.sh`
