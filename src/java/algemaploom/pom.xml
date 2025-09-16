@@ -4,11 +4,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>be.ugent.algemaploom</groupId>
-  <artifactId>algemaploom</artifactId>
+  <groupId>be.ugent.idlab.knows</groupId>
+  <artifactId>MappingLoom</artifactId>
   <version>0.3.0</version>
 
-  <name>algemaploom</name>
+  <name>MappingLoom</name>
   <url>https://rml.io</url>
 
   <properties>

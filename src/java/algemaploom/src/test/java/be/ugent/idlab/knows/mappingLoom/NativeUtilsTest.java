@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package be.ugent.algemaploom;
+package be.ugent.idlab.knows.mappingLoom;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
