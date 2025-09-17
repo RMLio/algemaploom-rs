@@ -47,6 +47,7 @@ if [ ! "$(yes_or_no 'Do you also want to commit the changes, create a git tag $t
 then
 	git add Cargo.toml package.json src/java/algemaploom/pom.xml
 	git commit -m "Update version to $VERSION"
+	git push origin
 	git tag $tagname
 	git push origin $tagname
 fi
