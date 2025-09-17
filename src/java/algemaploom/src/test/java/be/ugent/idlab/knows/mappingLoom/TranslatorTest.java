@@ -1,4 +1,4 @@
-package be.ugent.algemaploom;
+package be.ugent.idlab.knows.mappingLoom;
 
 import static org.junit.Assert.assertTrue;
 

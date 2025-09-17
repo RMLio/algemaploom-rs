@@ -3,7 +3,7 @@
 # AlgeMapLoom JNI bindings native Rust library building script
 # License: MIT (2024)
 #
-set -e
+#set -e
 
 # Remove Rust library as resource
 echo "==> Cleaning up old Rust library"

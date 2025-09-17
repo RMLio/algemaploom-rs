@@ -1,9 +1,11 @@
 use jni::JNIEnv;
 use jni::objects::{JClass, JString};
 use crate::api::process_one_str;
+use catch_panic::catch_panic;
 
 #[no_mangle]
-pub extern "system" fn Java_be_ugent_algemaploom_Translator_translate<'local>(
+#[catch_panic]
+pub extern "system" fn Java_be_ugent_idlab_knows_mappingLoom_Translator_translate<'local>(
     mut env: JNIEnv<'local>,
     _class: JClass<'local>,
     input: JString<'local>,

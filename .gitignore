@@ -51,4 +51,7 @@ src/java/algemaploom/target/
 hs_err_pid*
 replay_pid*
 
+# Maven version update backup file
+pom.xml.versionsBackup
+
 # End of https://www.toptal.com/developers/gitignore/api/java

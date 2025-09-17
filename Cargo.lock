@@ -144,6 +144,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "514de17de45fdb8dc022b1a7975556c53c86f9f0aa5f534b98977b171857c2c9"
 
 [[package]]
+name = "catch_panic"
+version = "1.0.0"
+source = "git+https://github.com/NULLx76/catch_panic.git#385ce7a5aebfd637d5273fc18d1e7a120cd1d0e8"
+dependencies = [
+ "catch_panic_macros",
+ "jni",
+]
+
+[[package]]
+name = "catch_panic_macros"
+version = "1.0.0"
+source = "git+https://github.com/NULLx76/catch_panic.git#385ce7a5aebfd637d5273fc18d1e7a120cd1d0e8"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
 name = "cc"
 version = "1.0.83"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -693,6 +712,7 @@ name = "meamer-rs"
 version = "0.5.1"
 dependencies = [
  "anyhow",
+ "catch_panic",
  "clap",
  "colored",
  "csv",

@@ -1,4 +1,4 @@
-package be.ugent.algemaploom;
+package be.ugent.idlab.knows.mappingLoom;
 
 import java.io.IOException;
 
