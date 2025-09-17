@@ -42,8 +42,13 @@ sed -i -e "s|\"version\": \".*\"|\"version\": \"$VERSION\"|" package.json
 #	changefrog -n $VERSION
 #fi
 
-tagname="v$VERSION"
-if [ ! "$(yes_or_no 'Do you also want to commit the changes, create a git tag $tagname and push it?')" ]
+if [[ $VERSION == testrelease-* ]] ; then
+	tagname=$VERSION
+else
+	tagname="v$VERSION"
+fi
+
+if [ ! "$(yes_or_no Do you also want to commit the changes, create a git tag $tagname and push it?)" ]
 then
 	git add Cargo.toml package.json src/java/algemaploom/pom.xml
 	git commit -m "Update version to $VERSION"
