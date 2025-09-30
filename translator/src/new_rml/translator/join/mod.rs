@@ -2,6 +2,8 @@ use std::collections::{HashMap, HashSet};
 
 use operator::{Extend, Operator, Rename, Serializer, Target};
 use plan::states::join::join;
+use plan::states::Processed;
+use plan::Plan;
 
 use super::extend::insert_non_constant_func;
 use super::store::SearchStore;
@@ -66,43 +68,61 @@ impl OperatorTranslator for JoinTranslator {
             let mut aliased_plan =
                 join(child_plan.clone(), parent_plan.clone())?.alias(alias)?;
 
-            let ptm_rename_op = Rename {
-                alias:        Some(alias.to_string()),
-                rename_pairs: HashMap::new(),
-            };
-
-            aliased_plan = aliased_plan.apply_to_right_fragment(
-                Operator::RenameOp {
-                    config: ptm_rename_op,
-                },
-                "RenameOp".into(),
-                alias.into(),
-            )?;
-
+            let mut joined: Plan<Processed>;
             let join_conditions = &ref_om.join_condition;
-            let child_attributes = join_conditions
+            let child_attributes: Vec<_> = join_conditions
                 .iter()
                 .flat_map(|jc| jc.child.get_ref_attributes())
                 .collect();
-            let parent_attributes = join_conditions
+            let parent_attributes: Vec<_> = join_conditions
                 .iter()
                 .flat_map(|jc| jc.parent.get_ref_attributes())
                 .map(|val| format!("{}.{}", alias, val))
                 .collect();
 
-            let mut joined = aliased_plan
-                .where_by(child_attributes)?
-                .equal_to(parent_attributes)?;
+            let mut extend_op;
+            //Handle self-joins by inserting a natural join operator
+            if (!child_attributes.is_empty() && !parent_attributes.is_empty())
+                || child_logical_source_id != parent_logical_source_id
+            {
+                let ptm_rename_op = Rename {
+                    alias:        Some(alias.to_string()),
+                    rename_pairs: HashMap::new(),
+                };
 
-            let extend_op = extend_op_from_join(
-                &child_trip_map.subject_map,
-                &ref_om,
-                &pred_vec,
-                &child_trip_map.base_iri,
-                &graph_vec,
-                alias,
-                store,
-            )?;
+                aliased_plan = aliased_plan.apply_to_right_fragment(
+                    Operator::RenameOp {
+                        config: ptm_rename_op,
+                    },
+                    "RenameOp".into(),
+                    alias.into(),
+                )?;
+
+                joined = aliased_plan
+                    .where_by(child_attributes)?
+                    .equal_to(parent_attributes)?;
+                extend_op = extend_op_from_join(
+                    &child_trip_map.subject_map,
+                    &ref_om,
+                    &pred_vec,
+                    &child_trip_map.base_iri,
+                    &graph_vec,
+                    Some(alias),
+                    store,
+                )?;
+            } else {
+                joined = aliased_plan.natural_join()?;
+
+                extend_op = extend_op_from_join(
+                    &child_trip_map.subject_map,
+                    &ref_om,
+                    &pred_vec,
+                    &child_trip_map.base_iri,
+                    &graph_vec,
+                    None,
+                    store,
+                )?;
+            }
 
             let mut extended_plan = joined.apply(&extend_op, "ExtendOp")?;
 
@@ -132,7 +152,7 @@ pub fn extend_op_from_join(
     pred_vec: &[TermMapEnum],
     child_base_iri: &str,
     graph_maps: &[TermMapEnum],
-    alias: &str,
+    alias_opt: Option<&str>,
     store: &SearchStore,
 ) -> NewRMLTranslationResult<Operator> {
     let (subj_var, subj_func) =
@@ -165,8 +185,10 @@ pub fn extend_op_from_join(
         "Before alias parent triples map's subject term map is {:#?}",
         ptm.subject_map
     );
-    let aliased_ptm_subj_term_map =
-        ptm.subject_map.as_ref().alias_attribute(alias);
+    let aliased_ptm_subj_term_map = match alias_opt {
+        Some(alias) => ptm.subject_map.as_ref().alias_attribute(alias),
+        None => ptm.subject_map.as_ref().clone(),
+    };
     log::debug!(
         "Aliased parent triples map's subject term map is {:#?}",
         aliased_ptm_subj_term_map
