@@ -20,21 +20,21 @@ impl Extractor<Target> for Target {
         let mode = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_io::PROPERTY::MODE.to_rcterm(),
+            vocab::rml_io::PROPERTY::MODE.to_rcterm(),
         )
         .ok();
 
         let compression = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm(),
+            vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm(),
         )
         .ok();
 
         let encoding = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_io::PROPERTY::ENCODING.to_rcterm(),
+            vocab::rml_io::PROPERTY::ENCODING.to_rcterm(),
         )
         .ok();
 
@@ -62,11 +62,10 @@ where
     let target_class = get_objects(
         graph_ref,
         subject_ref.borrow_term(),
-        &vocab::rdf::PROPERTY::TYPE.to_rcterm(),
+        vocab::rdf::PROPERTY::TYPE.to_rcterm(),
     )
     .into_iter()
-    .filter(|t| *t != source_type_new)
-    .next()
+    .find(|t| *t != source_type_new)
     .ok_or(ParseError::GenericError(format!(
         "RML Target requires a type {:?}",
         subject_ref
@@ -75,18 +74,18 @@ where
     let mut metadata =
         get_subgraph_subject(graph_ref, subject_ref.borrow_term())?;
 
-    metadata.remove_matching(
+    let _ = metadata.remove_matching(
         [subject_ref.borrow_term()],
         [vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm()],
         Any,
     );
-    metadata.remove_matching(
+    let _ = metadata.remove_matching(
         [subject_ref.borrow_term()],
         [vocab::rml_io::PROPERTY::ENCODING.to_rcterm()],
         Any,
     );
 
-    metadata.remove_matching(
+    let _ = metadata.remove_matching(
         [subject_ref.borrow_term()],
         [vocab::rml_io::PROPERTY::MODE.to_rcterm()],
         Any,
