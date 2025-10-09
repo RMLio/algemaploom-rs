@@ -6,10 +6,11 @@ class Translator implements ITranslator {
 	private static native String translate(String input);
 
 	static {
-		//System.load(Paths.get("/home/dylan/Projects/algemaploom-rs/target/release/libltranslator.so").toAbsolutePath().toString());
-		//System.loadLibrary("ltransator");
         try {
 			String os = System.getProperty("os.name");
+            if (os.contains("Windows")) {
+                os = "Windows";
+            }
             NativeUtils.loadLibraryFromJar("/" + os + "/libltranslator.so");
         } catch (IOException e) {
             throw new RuntimeException("Cannot dynamically load Rust library: " + e);
