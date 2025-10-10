@@ -13,7 +13,7 @@ members = ["operator", "vocab", "plan", "translator"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.package]
-version = "0.6.2"
+version = "0.6.3"
 authors = ["Sitt Min Oo"]
 edition = "2021"
 

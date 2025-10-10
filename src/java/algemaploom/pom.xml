@@ -6,7 +6,7 @@
 
     <groupId>be.ugent.idlab.knows</groupId>
     <artifactId>MappingLoom</artifactId>
-    <version>0.6.2</version>
+    <version>0.6.3</version>
 
     <name>MappingLoom</name>
     <url>https://rml.io</url>
