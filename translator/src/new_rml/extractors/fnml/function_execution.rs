@@ -1,9 +1,10 @@
 use sophia_api::term::Term;
 
+use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::store::{get_objects, get_objects_with_ps};
 use crate::new_rml::extractors::{Extractor, ExtractorResult, FromVocab};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
-use crate::new_rml::rml_model::v2::fnml::{FunctionExecution, InputMap};
+use crate::new_rml::rml_model::v2::fnml::{FunctionExecution, FunctionMap, InputMap};
 
 impl Extractor<FunctionExecution> for FunctionExecution {
     fn extract_self<TTerm>(
@@ -31,9 +32,12 @@ impl Extractor<FunctionExecution> for FunctionExecution {
             CommonTermMapInfo::extract_self(term, graph_ref).ok()
         });
 
-        let _function = function.chain(function_maps).next().unwrap();
+        let function_term_map = function.chain(function_maps).next()
+            .ok_or_else(|| ParseError::GenericError(
+                format!("No function or functionMap found for function execution {:?}", subject_ref.borrow_term())
+            ))?;
 
-        let _input: Vec<_> = get_objects(
+        let input: Vec<_> = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
             vocab::rml_fnml::PROPERTY::INPUT.to_rcterm(),
@@ -42,10 +46,11 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         .filter_map(|term| InputMap::extract_self(term, graph_ref).ok())
         .collect();
 
-        todo!()
-        //Ok(FunctionExecution {
-        //    function_map: todo!(),
-        //    input: todo!(),
-        //})
+        Ok(FunctionExecution {
+            function_map: Box::new(FunctionMap {
+                term_map_info: function_term_map
+            }),
+            input,
+        })
     }
 }

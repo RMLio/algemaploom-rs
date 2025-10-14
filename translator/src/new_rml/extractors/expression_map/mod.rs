@@ -12,6 +12,7 @@ use super::Extractor;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
 };
+use crate::new_rml::rml_model::v2::fnml::FunctionExpressionMap;
 
 mod base_expression_enum;
 
@@ -23,13 +24,21 @@ impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
     where
         TTerm: Term + Clone,
     {
+        // Try base expression map first
         if let Ok(base_expr_enum) =
-            BaseExpressionMapEnum::extract_self(subject_ref, graph_ref)
+            BaseExpressionMapEnum::extract_self(subject_ref.clone(), graph_ref)
         {
-            Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum))
-        } else {
-            Err(ParseError::GenericError("Function expression map extraction not implemented yet!".to_string()).into())
+            return Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum));
         }
+        
+        // Try function expression map
+        if let Ok(func_expr_map) =
+            FunctionExpressionMap::extract_self(subject_ref, graph_ref)
+        {
+            return Ok(ExpressionMapEnum::FunctionExpressionMap(func_expr_map));
+        }
+        
+        Err(ParseError::GenericError("Unable to extract expression map (neither base nor function expression map)".to_string()).into())
     }
 }
 

@@ -594,8 +594,8 @@ mod rml_core_tests {
                     // TODO:
                     // POM-objectMap: return type, should be stringOut
                     // FunctionExecution: Check for object, check for actual function ( in this case random )
-                    expect_objectmap_return_type(0,"idlab-fn:_stringOut"),
-                    expect_function_execution_function(0,"idlab-fn:random"),
+                    expect_objectmap_return_type(0,"<https://w3id.org/imec/idlab/function#_stringOut>"),
+                    expect_function_execution_function(0,"<https://w3id.org/imec/idlab/function#random>"),
                 ]),
             ]
         );
