@@ -584,6 +584,47 @@ mod rml_core_tests {
     }
 
 
+    // Tests for FNML
+    #[test]
+    fn test_fnmltc0001_function_execution() {
+        test_triplesmaps(
+            "fnml/rmlfnmltc0001-CSV.ttl" ,
+             vec![
+                ("http://example.com/base/TriplesMap1", vec![
+                    // TODO:
+                    // POM: return type, 
+                    // FunctionExecution:
+
+
+                ]),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_fnmltc0002_function_execution() {
+        test_triplesmaps(
+            "fnml/rmlfnmltc0001-CSV.ttl" ,
+             vec![
+                ("http://example.com/base/TriplesMap1", vec![
+                    expect_triples_map_base_iri("http://example.com/"), 
+                ]),
+            ]
+        );
+    }
+
+    #[test]
+    fn test_fnmltc0003_function_execution() {
+        test_triplesmaps(
+            "fnml/rmlfnmltc0001-CSV.ttl" ,
+             vec![
+                ("http://example.com/base/TriplesMap1", vec![
+                    expect_triples_map_base_iri("http://example.com/"), 
+                ]),
+            ]
+        );
+    }
+
 
 
 
