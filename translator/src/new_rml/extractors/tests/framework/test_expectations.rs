@@ -267,3 +267,36 @@ pub fn expect_subject_map_constant(expected: &str) -> Box<dyn Expectation> {
         name,
     })
 }
+
+// FNML expectations
+pub fn expect_objectmap_return_type(
+    index: usize,
+    expected: &str,
+) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = format!("ObjectMap Return Type from POM {}", index);
+
+    Box::new(Expect {
+        extractor: move |triplesmap: &TriplesMap| -> Result<String, String> {
+            extract_objectmap_return_type(triplesmap, index)
+        },
+        expected: expected_str,
+        name,
+    })
+}
+
+pub fn expect_function_execution_function(
+    index: usize,
+    expected: &str,
+) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = format!("Function Execution Function from POM {}", index);
+
+    Box::new(Expect {
+        extractor: move |triplesmap: &TriplesMap| -> Result<String, String> {
+            extract_function_execution_function(triplesmap, index)
+        },
+        expected: expected_str,
+        name,
+    })
+}

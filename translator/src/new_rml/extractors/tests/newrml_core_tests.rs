@@ -588,14 +588,14 @@ mod rml_core_tests {
     #[test]
     fn test_fnmltc0001_function_execution() {
         test_triplesmaps(
-            "fnml/rmlfnmltc0001-CSV.ttl" ,
+            "rmlfnml/rmlfnmltc0001-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     // TODO:
-                    // POM: return type, 
-                    // FunctionExecution:
-
-
+                    // POM-objectMap: return type, should be stringOut
+                    // FunctionExecution: Check for object, check for actual function ( in this case random )
+                    expect_objectmap_return_type(0,"idlab-fn:_stringOut"),
+                    expect_function_execution_function(0,"idlab-fn:random"),
                 ]),
             ]
         );
@@ -604,10 +604,11 @@ mod rml_core_tests {
     #[test]
     fn test_fnmltc0002_function_execution() {
         test_triplesmaps(
-            "fnml/rmlfnmltc0001-CSV.ttl" ,
+            "rmlfnml/rmlfnmltc0002-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    expect_triples_map_base_iri("http://example.com/"), 
+                    expect_objectmap_return_type(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#stringOut"),
+                    expect_function_execution_function(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase"),
                 ]),
             ]
         );
@@ -616,10 +617,11 @@ mod rml_core_tests {
     #[test]
     fn test_fnmltc0003_function_execution() {
         test_triplesmaps(
-            "fnml/rmlfnmltc0001-CSV.ttl" ,
+            "rmlfnml/rmlfnmltc0003-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    expect_triples_map_base_iri("http://example.com/"), 
+                    expect_objectmap_return_type(0, "https://w3id.org/imec/idlab/function#_stringOut"),
+                    expect_function_execution_function(0, "https://w3id.org/imec/idlab/function#toUpperCaseURL"),
                 ]),
             ]
         );

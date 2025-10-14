@@ -1,5 +1,5 @@
 use crate::new_rml::extractors::store::get_object;
-use crate::new_rml::extractors::{turtle_stringify_term, FromVocab};
+use crate::new_rml::extractors::FromVocab;
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::SubjectMap;
 use crate::new_rml::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
@@ -57,7 +57,7 @@ fn get_expression_value(
         ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
             get_value_from_base_expression_map(base_expression_map_enum)
         }
-        ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
+        ExpressionMapEnum::FunctionExpressionMap(_function_expression_map) => {
             todo!()
         }
     }
@@ -320,4 +320,41 @@ pub fn extract_subject_map_classes(
     }
 
     Ok(classes)
+}
+
+// FNML extractors
+pub fn extract_objectmap_return_type(
+    triplesmap: &TriplesMap,
+    pom_index: usize,
+) -> Result<String, String> {
+    let pom = get_pom(triplesmap, pom_index)?;
+    let om = pom.object_map_vec.first().ok_or("No object maps")?;
+    
+    match &om.as_ref().expression {
+        ExpressionMapEnum::FunctionExpressionMap(fem) => {
+            if let Some(return_map) = &fem.return_map {
+                return_map.get_constant_value()
+                    .ok_or("No constant value found in return map".to_string())
+            } else {
+                Err("No return map found in function expression map".to_string())
+            }
+        }
+        _ => Err("Object map is not a function expression map".to_string())
+    }
+}
+
+pub fn extract_function_execution_function(
+    triplesmap: &TriplesMap,
+    pom_index: usize,
+) -> Result<String, String> {
+    let pom = get_pom(triplesmap, pom_index)?;
+    let om = pom.object_map_vec.first().ok_or("No object maps")?;
+    
+    match &om.as_ref().expression {
+        ExpressionMapEnum::FunctionExpressionMap(fem) => {
+            fem.func_execution.function_map.term_map_info.get_constant_value()
+                .ok_or("No constant value found in function map".to_string())
+        }
+        _ => Err("Object map is not a function expression map".to_string())
+    }
 }
