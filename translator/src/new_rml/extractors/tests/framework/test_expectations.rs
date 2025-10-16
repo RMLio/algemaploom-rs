@@ -300,3 +300,51 @@ pub fn expect_function_execution_function(
         name,
     })
 }
+
+pub fn expect_objectmap_term_type(
+    index: usize,
+    expected: &str,
+) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = format!("ObjectMap Term Type from POM {}", index);
+
+    Box::new(Expect {
+        extractor: move |triplesmap: &TriplesMap| -> Result<String, String> {
+            extract_object_term_type_from_pom(triplesmap, index)
+        },
+        expected: expected_str,
+        name,
+    })
+}
+
+pub fn expect_function_execution_parameter(
+    index: usize,
+    expected: &str,
+) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = format!("Function Execution Parameter from POM {}", index);
+
+    Box::new(Expect {
+        extractor: move |triplesmap: &TriplesMap| -> Result<String, String> {
+            extract_function_execution_parameter(triplesmap, index)
+        },
+        expected: expected_str,
+        name,
+    })
+}
+
+pub fn expect_function_execution_input_value_map_reference(
+    index: usize,
+    expected: &str,
+) -> Box<dyn Expectation> {
+    let expected_str = expected.to_string();
+    let name = format!("Function Execution Input Value Map Reference from POM {}", index);
+
+    Box::new(Expect {
+        extractor: move |triplesmap: &TriplesMap| -> Result<String, String> {
+            extract_function_execution_input_value_map_reference(triplesmap, index)
+        },
+        expected: expected_str,
+        name,
+    })
+}

@@ -358,3 +358,38 @@ pub fn extract_function_execution_function(
         _ => Err("Object map is not a function expression map".to_string())
     }
 }
+
+pub fn extract_function_execution_parameter(
+    triplesmap: &TriplesMap,
+    pom_index: usize,
+) -> Result<String, String> {
+    let pom = get_pom(triplesmap, pom_index)?;
+    let om = pom.object_map_vec.first().ok_or("No object maps")?;
+    
+    match &om.as_ref().expression {
+        ExpressionMapEnum::FunctionExpressionMap(fem) => {
+            let input = fem.func_execution.input.first()
+                .ok_or("No input maps in function execution".to_string())?;
+            input.parameter_map.get_constant_value()
+                .ok_or("No constant value found in parameter map".to_string())
+        }
+        _ => Err("Object map is not a function expression map".to_string())
+    }
+}
+
+pub fn extract_function_execution_input_value_map_reference(
+    triplesmap: &TriplesMap,
+    pom_index: usize,
+) -> Result<String, String> {
+    let pom = get_pom(triplesmap, pom_index)?;
+    let om = pom.object_map_vec.first().ok_or("No object maps")?;
+    
+    match &om.as_ref().expression {
+        ExpressionMapEnum::FunctionExpressionMap(fem) => {
+            let input = fem.func_execution.input.first()
+                .ok_or("No input maps in function execution".to_string())?;
+            get_expression_value(&input.input_value_map.expression)
+        }
+        _ => Err("Object map is not a function expression map".to_string())
+    }
+}

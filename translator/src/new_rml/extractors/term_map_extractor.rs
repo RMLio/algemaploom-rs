@@ -108,9 +108,9 @@ where
 
     let rml_termmap_type: RMLTermMapType = rml_termmap_pred.try_into()?;
     match rml_termmap_type {
-        RMLTermMapType::ObjectMap => {
-            debug!("{:?} is an object map", subject_ref);
-            debug!("Inferring term type for object map");
+        RMLTermMapType::ObjectMap | RMLTermMapType::InputValueMap | RMLTermMapType::ParameterMap => {
+            debug!("{:?} is an object map or input/parameter map", subject_ref);
+            debug!("Inferring term type for map");
             let datatype_lang_opt = graph_ref
                 .triples_matching(
                     [subject_ref.borrow_term()],
@@ -151,6 +151,8 @@ enum RMLTermMapType {
     PredicateMap,
     ObjectMap,
     GraphMap,
+    InputValueMap,
+    ParameterMap,
 }
 
 impl TryInto<RMLTermMapType> for RcTerm {
@@ -198,6 +200,16 @@ impl<'a> TryInto<RMLTermMapType> for &'a RcTerm {
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::GraphMap)
+            }
+            value
+                if value == &vocab::rml_fnml::PROPERTY::INPUT_VALUE_MAP.to_rcterm() =>
+            {
+                Ok(RMLTermMapType::InputValueMap)
+            }
+            value
+                if value == &vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm() =>
+            {
+                Ok(RMLTermMapType::ParameterMap)
             }
 
             _ => {

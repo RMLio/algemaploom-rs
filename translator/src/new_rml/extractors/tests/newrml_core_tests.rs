@@ -591,9 +591,6 @@ mod rml_core_tests {
             "rmlfnml/rmlfnmltc0001-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    // TODO:
-                    // POM-objectMap: return type, should be stringOut
-                    // FunctionExecution: Check for object, check for actual function ( in this case random )
                     expect_objectmap_return_type(0,"<https://w3id.org/imec/idlab/function#_stringOut>"),
                     expect_function_execution_function(0,"<https://w3id.org/imec/idlab/function#random>"),
                 ]),
@@ -607,8 +604,10 @@ mod rml_core_tests {
             "rmlfnml/rmlfnmltc0002-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    expect_objectmap_return_type(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#stringOut"),
                     expect_function_execution_function(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase"),
+                    expect_objectmap_return_type(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#stringOut"),
+                    expect_function_execution_parameter(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam"),
+                    expect_function_execution_input_value_map_reference(0, "Name"),
                 ]),
             ]
         );
@@ -620,8 +619,11 @@ mod rml_core_tests {
             "rmlfnml/rmlfnmltc0003-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    expect_objectmap_return_type(0, "https://w3id.org/imec/idlab/function#_stringOut"),
-                    expect_function_execution_function(0, "https://w3id.org/imec/idlab/function#toUpperCaseURL"),
+                    expect_function_execution_function(0, "<https://w3id.org/imec/idlab/function#toUpperCaseURL>"),
+                    expect_objectmap_return_type(0, "<https://w3id.org/imec/idlab/function#_stringOut>"),
+                    expect_objectmap_term_type(0, "http://w3id.org/rml/IRI"),
+                    expect_function_execution_parameter(0, "<https://w3id.org/imec/idlab/function#str>"),
+                    expect_function_execution_input_value_map_reference(0, "url"),
                 ]),
             ]
         );
