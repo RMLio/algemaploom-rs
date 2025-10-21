@@ -325,26 +325,35 @@ fn extend_func_from_func_expr_map(
     func_exp_map: &FunctionExpressionMap,
     term_type: &RMLTermTypeKind,
 ) -> NewRMLTranslationResult<Function> {
-    //FIXME: Implement FnO function translation to extend functions from expression maps
-
-    todo!()
-    // if let ExpressionMapKind::FunctionExecution { execution, returns } =
-    //     &exp_map.kind
-    // {
-    //     let mut parameters = HashMap::with_capacity(execution.input.capacity());
-    //     for input in &execution.input {
-    //         let (param, func) = fno_input_extend_function(store, input)?;
-    //         parameters.insert(param, func);
-    //     }
-
-    //     Ok(Function::FnO {
-    //         fno_identifier: stringify_rcterm(execution.function.clone())
-    //             .unwrap(),
-    //         parameters,
-    //     })
-    // } else {
-    //     Err(TranslationError::Infallible.into())
-    // }
+    let execution = &func_exp_map.func_execution;
+    
+    // Extract function identifier
+    let fno_identifier = func_exp_map.func_execution.function_map.term_map_info.get_constant_value()
+        .ok_or_else(|| TranslationError::ExtendError(
+            "Function map does not have a constant value".to_string()
+        ))?;
+    
+    // Build parameters HashMap from input maps
+    let mut parameters = HashMap::with_capacity(execution.input.len());
+    for input in &execution.input {
+        let param_name = input.parameter_map.get_constant_value()
+            .ok_or_else(|| TranslationError::ExtendError(
+                "Parameter map does not have a constant value".to_string()
+            ))?;
+        
+        let input_func = extension_func_from_exp_map(
+            store,
+            &input.input_value_map.expression,
+            term_type,
+        )?;
+        
+        parameters.insert(param_name, input_func.into());
+    }
+    
+    Ok(Function::FnO {
+        fno_identifier,
+        parameters,
+    })
 }
 
 fn star_extend_function(exp_map: &ExpressionMapEnum) -> Function {
