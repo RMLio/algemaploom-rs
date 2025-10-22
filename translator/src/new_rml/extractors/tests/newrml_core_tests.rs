@@ -604,9 +604,9 @@ mod rml_core_tests {
             "rmlfnml/rmlfnmltc0002-CSV.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    expect_function_execution_function(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase"),
-                    expect_objectmap_return_type(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#stringOut"),
-                    expect_function_execution_parameter(0, "http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam"),
+                    expect_function_execution_function(0, "<http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase>"),
+                    expect_objectmap_return_type(0, "<http://users.ugent.be/~bjdmeest/function/grel.ttl#stringOut>"),
+                    expect_function_execution_parameter(0, "<http://users.ugent.be/~bjdmeest/function/grel.ttl#valueParam>"),
                     expect_function_execution_input_value_map_reference(0, "Name"),
                 ]),
             ]
