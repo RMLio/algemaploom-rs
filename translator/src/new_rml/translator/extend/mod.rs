@@ -332,6 +332,8 @@ fn extend_func_from_func_expr_map(
         .ok_or_else(|| TranslationError::ExtendError(
             "Function map does not have a constant value".to_string()
         ))?;
+    // Remove surrounding angle brackets if present (e.g., <http://example.com/fn>)
+    let fno_identifier = strip_angle_brackets(&fno_identifier);
     
     // Build parameters HashMap from input maps
     let mut parameters = HashMap::with_capacity(execution.input.len());
@@ -340,6 +342,7 @@ fn extend_func_from_func_expr_map(
             .ok_or_else(|| TranslationError::ExtendError(
                 "Parameter map does not have a constant value".to_string()
             ))?;
+        let param_name = strip_angle_brackets(&param_name);
         
         let input_func = extension_func_from_exp_map(
             store,
@@ -360,4 +363,13 @@ fn star_extend_function(exp_map: &ExpressionMapEnum) -> Function {
     todo!()
     // TODO: Implement star extend function
     //
+}
+
+// Helper to remove surrounding angle brackets from turtle-stringified IRIs
+fn strip_angle_brackets(value: &str) -> String {
+    if value.starts_with('<') && value.ends_with('>') && value.len() >= 2 {
+        value[1..value.len() - 1].to_string()
+    } else {
+        value.to_string()
+    }
 }
