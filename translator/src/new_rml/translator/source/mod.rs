@@ -2,6 +2,7 @@ mod fields;
 mod kind;
 
 use std::collections::HashMap;
+use serde_json::{Map as JsonMap, Value as JsonValue};
 
 use kind::file_source;
 use sophia_inmem::graph::FastGraph;
@@ -19,7 +20,7 @@ use crate::new_rml::rml_model::v2::core::{
 };
 use crate::new_rml::rml_model::v2::io::source::Source;
 use crate::new_rml::translator::source::kind::{
-    kafka_source, rdb_source, tcp_source,
+    kafka_source, rdb_source, tcp_source, websocket_source,
 };
 
 mod iterator;
@@ -86,6 +87,12 @@ fn extract_source_specific_config(
                 &kind.metadata,
             )?)
         }
+        value if value == vocab::td::CLASS::THING.to_rcterm() => {
+            Ok(websocket_source::extract_websocket_source(
+                &kind.subj_iri,
+                &kind.metadata,
+            )?)
+        }
         _ => {
             Err(ParseError::GenericError(format!(
                 "Cannot generate config hash maps for the given source : {:?} \n It has an unsupported source kind: {:?}",
@@ -106,38 +113,47 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
         abs_ls: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
         let source = abs_ls.get_source();
-        let mut config = HashMap::new();
+        // Build a flat HashMap<String, String> for the operator config.
+        // The source-specific access configuration will be serialized and
+        // inserted under the key "Access" as a JSON string.
+        let mut config_map: HashMap<String, String> = HashMap::new();
 
         if let Some(encoding) = &source.encoding {
-            config.insert(
+            config_map.insert(
                 "encoding".to_string(),
                 stringify_term(encoding).unwrap(),
             );
         }
 
         if let Some(compression) = &source.compression {
-            config.insert(
+            config_map.insert(
                 "compression".to_string(),
                 stringify_term(compression).unwrap(),
             );
         }
 
         if !source.nullable_vec.is_empty() {
-            config.insert(
+            config_map.insert(
                 "nullable_vec".to_string(),
                 source.nullable_vec.join(","),
             );
         }
 
+        // Extract source-kind specific config and serialize it under "Access".
         let source_kind_config = extract_source_specific_config(&source)?;
-
-        config.extend(source_kind_config);
+        let mut access_map: JsonMap<String, JsonValue> = JsonMap::new();
+        for (k, v) in source_kind_config.into_iter() {
+            access_map.insert(k, JsonValue::String(v));
+        }
+        let access_json_string = serde_json::to_string(&JsonValue::Object(access_map))
+            .unwrap_or_else(|_| "{}".to_string());
+        config_map.insert("Access".to_string(), access_json_string);
 
         let root_iterator = iterator::IteratorTranslator::translate(abs_ls)?;
         let source_kind_ref = &source.kind;
 
         Ok(operator::Source {
-            config,
+            config: config_map,
             source_type: source_kind_ref.try_into()?,
             root_iterator,
         })
