@@ -211,6 +211,12 @@ impl TryFrom<&SourceKind> for IOType {
             || value.type_iri == vocab::rml_io::CLASS::SQL_TABLE.to_rcterm()
         {
             Ok(IOType::RDB)
+        } else if value.type_iri == vocab::td::CLASS::THING.to_rcterm() {
+            Ok(IOType::Websocket)
+        } else if value.type_iri == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() {
+            Ok(IOType::Websocket)
+        } else if value.type_iri == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() {
+            Ok(IOType::Kafka)
         } else {
             Err(TranslationError::SourceError(format!(
                 "Input format {} not not supported to convert to IOType",

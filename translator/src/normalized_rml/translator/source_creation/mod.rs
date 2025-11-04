@@ -77,6 +77,11 @@ pub fn create_source_operator(
     Ok((
         Source {
             config:        get_source_config(logical_source_iri, store)?,
+            access:        {
+                let mut m = HashMap::new();
+                m.insert("type".to_string(), format!("{:?}", operator::IOType::File));
+                m
+            },
             source_type:   operator::IOType::File,
             root_iterator: operator::Iterator {
                 reference,

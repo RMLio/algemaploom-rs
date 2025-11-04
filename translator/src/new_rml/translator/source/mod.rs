@@ -139,22 +139,20 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
             );
         }
 
-        // Extract source-kind specific config and serialize it under "Access".
-        let source_kind_config = extract_source_specific_config(&source)?;
-        let mut access_map: JsonMap<String, JsonValue> = JsonMap::new();
-        for (k, v) in source_kind_config.into_iter() {
-            access_map.insert(k, JsonValue::String(v));
-        }
-        let access_json_string = serde_json::to_string(&JsonValue::Object(access_map))
-            .unwrap_or_else(|_| "{}".to_string());
-        config_map.insert("Access".to_string(), access_json_string);
+        let mut access_map_kv = extract_source_specific_config(&source)?;
 
         let root_iterator = iterator::IteratorTranslator::translate(abs_ls)?;
         let source_kind_ref = &source.kind;
 
+        let source_type = source_kind_ref.try_into()?;
+        access_map_kv
+            .entry("type".to_string())
+            .or_insert_with(|| format!("{:?}", source_type));
+
         Ok(operator::Source {
             config: config_map,
-            source_type: source_kind_ref.try_into()?,
+            access: access_map_kv,
+            source_type,
             root_iterator,
         })
     }

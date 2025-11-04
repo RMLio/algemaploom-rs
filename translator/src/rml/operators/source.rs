@@ -53,6 +53,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             alias: None,
         };
 
+        // keep old RML behavior: do not use access, leave it empty
         let config = tm.logical_source.source.config.clone();
         let source_type = match tm.logical_source.source.source_type {
             SourceType::CSVW => operator::IOType::File,
@@ -63,10 +64,6 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             SourceType::HTML => operator::IOType::File,
         };
 
-        Source {
-            config,
-            source_type,
-            root_iterator,
-        }
+        Source { config, access: Default::default(), source_type, root_iterator }
     }
 }

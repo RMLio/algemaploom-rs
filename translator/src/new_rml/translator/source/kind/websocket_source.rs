@@ -29,34 +29,20 @@ lazy_static! {
     ];
 }
 
-/// Extracts WebSocket source configuration from a WoT Thing Description
-/// Supports the pattern:
-/// ```turtle
-/// [ a rml:Source, td:Thing;
-///     td:hasPropertyAffordance [
-///         td:hasForm [
-///             hctl:hasTarget "ws://localhost:1234/topic";
-///             hctl:forContentType "application/json";
-///         ];
-///     ];
-/// ];
-/// ```
+
 pub fn extract_websocket_source(
     subject: &RcTerm,
     graph: &FastGraph,
 ) -> ExtractorResult<HashMap<String, String>> {
     let mut config = HashMap::new();
 
-    // Navigate through td:hasPropertyAffordance
     let property_affordance_pred = vocab::td::PROPERTY::HAS_PROPERTY_AFFORDANCE.to_rcterm();
     let property_affordances = get_objects(graph, subject, &property_affordance_pred);
     
-    // If we have property affordances, traverse them to find forms
-    for property_affordance in property_affordances {
+        for property_affordance in property_affordances {
         let form_pred = vocab::td::PROPERTY::HAS_FORM.to_rcterm();
         let forms = get_objects(graph, property_affordance.borrow_term(), &form_pred);
         
-        // Extract configuration from each form
         for form in forms {
             // Extract hasTarget (URL)
             let target_pred = vocab::hctl::PROPERTY::HAS_TARGET.to_arcterm();
