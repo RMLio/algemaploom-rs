@@ -318,6 +318,7 @@ mod tests {
         let mut plan = Plan::new();
         let source = Source {
             config:        HashMap::new(),
+            access:        Default::default(),
             source_type:   operator::IOType::File,
             root_iterator: Iterator::default(),
         };
@@ -350,6 +351,7 @@ mod tests {
         let mut plan = Plan::new();
         let source = Source {
             config:        HashMap::new(),
+            access:        Default::default(),
             source_type:   operator::IOType::File,
             root_iterator: Iterator::default(),
         };
