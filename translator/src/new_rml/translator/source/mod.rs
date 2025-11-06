@@ -139,15 +139,12 @@ impl OperatorTranslator for AbstractLogicalSourceTranslator {
             );
         }
 
-        let mut access_map_kv = extract_source_specific_config(&source)?;
+        let access_map_kv = extract_source_specific_config(&source)?;
 
         let root_iterator = iterator::IteratorTranslator::translate(abs_ls)?;
         let source_kind_ref = &source.kind;
 
         let source_type = source_kind_ref.try_into()?;
-        access_map_kv
-            .entry("type".to_string())
-            .or_insert_with(|| format!("{:?}", source_type));
 
         Ok(operator::Source {
             config: config_map,

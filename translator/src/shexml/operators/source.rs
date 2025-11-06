@@ -89,8 +89,7 @@ impl<'a> OperatorTranslator<ShExMLSourceTranslatorOutput>
 
                 let iter = ident_iterators_map.get(iter_ident).unwrap();
                 let source_type = config_iotype_pair.1.clone();
-                let mut access: HashMap<String, String> = HashMap::new();
-                access.insert("type".to_string(), format!("{:?}", source_type));
+                let access: HashMap<String, String> = HashMap::new();
                 let source = Source {
                     config:        config_iotype_pair.0.clone(),
                     access,

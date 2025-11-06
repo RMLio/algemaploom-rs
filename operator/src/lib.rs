@@ -120,7 +120,6 @@ pub struct Source {
     #[serde(flatten)]
     pub config:      HashMap<String, String>,
     pub access:      HashMap<String, String>,
-    #[serde(skip_serializing)]
     pub source_type:    IOType,
     pub root_iterator:    Iterator,
 }
