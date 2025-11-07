@@ -68,6 +68,7 @@ pub fn process_one_file(
 pub fn process_one_str(mapping: &str) -> String {
     let handlers: Vec<Box<dyn StringTranslatorHandler>> =
         vec![Box::new(RMLStringHandler), Box::new(ShExMLStringHandler)];
+    let mut error_messages: Vec<String> = Vec::new();
 
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
         .iter()
@@ -84,6 +85,15 @@ pub fn process_one_str(mapping: &str) -> String {
             .enumerate()
             .for_each(|(id, err)| {
                 error!("Handler is: {:?} ", handlers[id]);
+                let mut chain: Vec<String> = vec![format!("Error: {:#}", err)];
+                let mut idx: u32 = 0;
+                let mut current = err.source();
+                while let Some(inner) = current {
+                    chain.push(format!("{}: {:#}", idx, inner));
+                    idx += 1;
+                    current = inner.source();
+                }
+                error_messages.push(chain.join(" | "));
                 pretty_print_err(&err);
             });
     } else if let Some(plan) = generated_plans
@@ -94,5 +104,14 @@ pub fn process_one_str(mapping: &str) -> String {
         return plan.to_string().unwrap();
     };
 
-    panic!("Generated plan not serialized as string")
+    let rust_logs = if error_messages.is_empty() {
+        "No error messages".to_string()
+    } else {
+        error_messages.join(" || ")
+    };
+
+    panic!(
+        "Translation failed, Rust logs: {}",
+        rust_logs
+    )
 }
