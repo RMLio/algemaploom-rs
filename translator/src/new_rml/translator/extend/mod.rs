@@ -343,12 +343,32 @@ fn extend_func_from_func_expr_map(
                 "Parameter map does not have a constant value".to_string()
             ))?;
         let param_name = strip_angle_brackets(&param_name);
-        
-        let input_func = extension_func_from_exp_map(
-            store,
-            &input.input_value_map.expression,
-            term_type,
-        )?;
+        // If the input value map is a plain reference expression, do not
+        // wrap it with a UriEncode; return a Reference function directly.
+        // This implements: "input map should not get a uri encode if it is
+        // a reference-valued term map".
+        let input_func = if let Ok(base_expr) = input
+            .input_value_map
+            .expression
+            .try_unwrap_base_expression_map_ref()
+        {
+            match base_expr {
+                crate::new_rml::rml_model::v2::core::expression_map::BaseExpressionMapEnum::Reference(ref_attr) => {
+                    Function::Reference { value: ref_attr.to_string() }
+                }
+                _ => extension_func_from_exp_map(
+                    store,
+                    &input.input_value_map.expression,
+                    term_type,
+                )?,
+            }
+        } else {
+            extension_func_from_exp_map(
+                store,
+                &input.input_value_map.expression,
+                term_type,
+            )?
+        };
         
         parameters.insert(param_name, input_func.into());
     }
