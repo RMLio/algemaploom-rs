@@ -61,7 +61,7 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
         )
         .ok();
 
-        let term_type = if let Some(ttype_iri) = ttype_iri_opt {
+        let (term_type, term_type_is_explicit) = if let Some(ttype_iri) = ttype_iri_opt {
             if ttype_iri.kind() != TermKind::Iri {
                 return Err(ParseError::GenericError(format!(
                     "Term type node for {:?} has value {:?} which is not an IRI",
@@ -75,14 +75,15 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
                         format!("Term type is explicity defined for node {:?} even though it is a constant term map with value {:?}", 
                             subject_ref, val)).into());
             }
-            Ok(ttype_iri)
+            Ok::<(RcTerm, bool), ParseError>((ttype_iri, true))
         } else {
-            infer_term_type(subject_ref.borrow_term(), graph_ref)
+            Ok::<(RcTerm, bool), ParseError>((infer_term_type(subject_ref.borrow_term(), graph_ref)?, false))
         }?;
 
         Ok(CommonTermMapInfo {
             identifier: RcTerm::from_term(subject_ref),
             term_type,
+            term_type_is_explicit,
             expression,
             logical_targets,
         })

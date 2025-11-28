@@ -173,10 +173,14 @@ pub fn extend_from_term_map(
             })
         }
         RMLTermTypeKind::IRI => {
-            Ok(Function::Iri {
-                base_iri:       Some(base_iri.to_string()),
-                inner_function: inner_func.into(),
-            })
+            if !term_map_info.term_type_is_explicit && term_map_info.expression.is_function_map() {
+                Ok(inner_func)
+            } else {
+                Ok(Function::Iri {
+                    base_iri:       Some(base_iri.to_string()),
+                    inner_function: inner_func.into(),
+                })
+            }
         }
         RMLTermTypeKind::Literal => {
             log::debug!("Term expression {:?} is a literal", term_map_info.expression); 

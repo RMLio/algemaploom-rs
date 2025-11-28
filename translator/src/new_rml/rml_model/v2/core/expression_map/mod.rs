@@ -160,6 +160,9 @@ impl ExpressionMapEnum {
             term_val: value,
         }))
     }
+    pub fn is_function_map(&self) -> bool {
+        matches!(self, ExpressionMapEnum::FunctionExpressionMap(_))
+    }
 }
 
 impl RefAttributeGetter for ExpressionMapEnum {
