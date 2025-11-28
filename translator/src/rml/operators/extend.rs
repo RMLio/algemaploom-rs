@@ -59,19 +59,13 @@ lazy_static! {
 fn extract_template_function(
     term_value: String,
     term_type: &Option<TermKind>,
-    term_map_type: &TermMapType,
 ) -> Function {
     let found_variables = TEMPLATE_REGEX
         .captures_iter(&term_value)
         .map(|c| c.extract())
         .map(|(_, [var])| var);
-    // Do not uri-encode when the term map is reference-valued or when the
-    // term kind is not an IRI. This preserves raw reference values for
-    // reference-valued term maps (requirement: avoid encoding input maps
-    // that are reference-valued).
-    let variable_function_pairs = if *term_type == Some(TermKind::Iri)
-        && *term_map_type != TermMapType::Reference
-    {
+
+    let variable_function_pairs = if *term_type == Some(TermKind::Iri) {
         found_variables
             .map(|var| {
                 (
@@ -123,11 +117,7 @@ fn extract_function(
             }
         }
         TermMapType::Template => {
-            extract_template_function(
-                term_value,
-                &tm_info.term_type,
-                &tm_info.term_map_type,
-            )
+            extract_template_function(term_value, &tm_info.term_type)
         }
         TermMapType::Function => {
             let fn_map = tm_info.fun_map_opt.as_ref().unwrap();
