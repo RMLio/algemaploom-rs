@@ -375,9 +375,15 @@ fn extend_func_from_func_expr_map(
         parameters.insert(param_name, input_func.into());
     }
     
+    // Extract optional rml:return
+    let return_type = func_exp_map.return_map.as_ref()
+        .and_then(|rm| rm.get_constant_value())
+        .map(|v| strip_angle_brackets(&v));
+    
     Ok(Function::FnO {
         fno_identifier,
         parameters,
+        return_type,
     })
 }
 

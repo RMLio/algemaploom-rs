@@ -364,6 +364,7 @@ pub enum Function {
     FnO {
         fno_identifier:   String,
         parameters: HashMap<String, RcExtendFunction>,
+        return_type: Option<String>,
     },
     Star {
        // TODO: Implement star function
