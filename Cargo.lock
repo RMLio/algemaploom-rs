@@ -770,6 +770,7 @@ dependencies = [
  "pyo3",
  "regex",
  "serde_json",
+ "sparql-sat-checker",
  "thiserror 1.0.49",
  "translator",
  "urlencoding",

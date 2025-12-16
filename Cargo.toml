@@ -44,6 +44,7 @@ clap.workspace = true
 operator = { path = "./operator/" }
 plan = { path = "./plan/" }
 translator = { path = "./translator/" }
+sparql-sat-checker = {path = "./sparql-sat-checker/"}
 
 csv = "1.2.2"
 urlencoding = "2.1.2"
@@ -64,3 +65,8 @@ crate-type = ["cdylib", "rlib"]
 [[bin]]
 name = "translator-bin"
 path = "src/bin/translator-bin/main.rs"
+
+
+[[bin]]
+name = "sparql-rml-pruner"
+path = "src/bin/pruner-bin/main.rs"
