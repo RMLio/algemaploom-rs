@@ -10,7 +10,7 @@ use operator::{
     Field, Function, Iterator, Operator, RcExtendFunction, formats::ReferenceFormulation,
 };
 use plan::data_type::DiGraphOperators;
-use translator::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use translator::normalized_rml::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 use uuid::Uuid;
 fn add_prefixes(buffer: &mut Vec<String>) {
     buffer.push("@base  <http://example.com/ns#>.".to_string());
@@ -110,7 +110,7 @@ fn extend_func_to_rml(
 
 fn retrieve_references_from_attributes(fields: &[Field], value: &str) -> String {
     let iter = fields.iter().find(|iter| iter.alias == value);
-    iter.unwrap().reference.clone()
+    iter.unwrap().reference.clone().expect("Reference attribute in the given field is empty")
 }
 
 fn value_term_string(
@@ -289,6 +289,7 @@ fn refform_to_iri(ref_form: &ReferenceFormulation) -> String {
         ReferenceFormulation::XMLPath | ReferenceFormulation::XMLQuery => "ql:XPath".to_string(),
         ReferenceFormulation::SQLQuery => "ql:SQL".to_string(),
         ReferenceFormulation::SPARQL => "ql:SPARQL".to_string(),
+        ReferenceFormulation::CSS3 => "ql:CSS3".to_string(),
     }
 }
 

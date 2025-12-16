@@ -3,7 +3,7 @@ use std::collections::{HashMap, HashSet};
 use operator::{Serializer, Target, formats::DataFormat};
 use petgraph::visit::IntoNodeReferences;
 use plan::data_type::{DiGraphOperators, PlanEdge, PlanNode};
-use translator::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use translator::normalized_rml::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 
 use crate::{extractor::rml::trmap_sub_expression::TrMapSubExpression, is_graph};
 pub mod error;

@@ -18,6 +18,6 @@ pub use extractor::rml::{
 pub use extractor::sparql::{
     extract_triple_patterns_from_sparql_file, extract_triple_patterns_from_sparql_str,
 };
-pub use plan::util as plan_util;
-pub use plan::{prune_graph_using_trmap_subexprs, reverse_rml::serialize_trmap_expr_to_rml};
-use translator::GRAPH_ATTR;
+pub use serializer::util as plan_util;
+pub use serializer::{prune_graph_using_trmap_subexprs, reverse_rml::serialize_trmap_expr_to_rml};
+use translator::normalized_rml::GRAPH_ATTR;
