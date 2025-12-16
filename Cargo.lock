@@ -825,6 +825,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "normalizer"
+version = "0.6.3"
+dependencies = [
+ "oxrdf 0.3.1",
+ "oxrdfio 0.2.1",
+ "spareval 0.2.2",
+ "spargebra 0.4.2",
+]
+
+[[package]]
 name = "num-traits"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -869,13 +879,13 @@ dependencies = [
  "libc",
  "oxiri",
  "oxrdf 0.2.4",
- "oxrdfio",
+ "oxrdfio 0.1.7",
  "oxsdatatypes",
  "rand 0.8.5",
  "rustc-hash",
  "siphasher",
- "sparesults",
- "spareval",
+ "sparesults 0.2.4",
+ "spareval 0.1.3",
  "spargebra 0.3.5",
  "thiserror 2.0.12",
 ]
@@ -891,6 +901,18 @@ name = "oxiri"
 version = "0.2.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "54b4ed3a7192fa19f5f48f99871f2755047fabefd7f222f12a1df1773796a102"
+
+[[package]]
+name = "oxjsonld"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e5b44046d987eafa6762dffa7f51cb7ac4fbff371fcc0e8e57060b5c478871c0"
+dependencies = [
+ "json-event-parser",
+ "oxiri",
+ "oxrdf 0.3.1",
+ "thiserror 2.0.12",
+]
 
 [[package]]
 name = "oxrdf"
@@ -913,6 +935,7 @@ checksum = "380cb0b0f0b7c38c5c9f3f5a90b5a7e8e89c751b3f087c4d16101c16a221cf16"
 dependencies = [
  "oxilangtag",
  "oxiri",
+ "oxsdatatypes",
  "rand 0.9.2",
  "thiserror 2.0.12",
 ]
@@ -924,8 +947,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "47d45d81e8e5313e13f88da6c040f5edcd5aa48e91d1cdf0972f5bc79362890d"
 dependencies = [
  "oxrdf 0.2.4",
- "oxrdfxml",
- "oxttl",
+ "oxrdfxml 0.1.6",
+ "oxttl 0.1.7",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "oxrdfio"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19c493572957ed196c076ad30c778215f85d28530e56451cdb07f564dddabfcd"
+dependencies = [
+ "oxjsonld",
+ "oxrdf 0.3.1",
+ "oxrdfxml 0.2.1",
+ "oxttl 0.2.1",
  "thiserror 2.0.12",
 ]
 
@@ -938,6 +974,19 @@ dependencies = [
  "oxilangtag",
  "oxiri",
  "oxrdf 0.2.4",
+ "quick-xml",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "oxrdfxml"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0fdb40d6d81141e19b4898c8930e6b50c85b7155a2377b9ac1e62a9588f32b5f"
+dependencies = [
+ "oxilangtag",
+ "oxiri",
+ "oxrdf 0.3.1",
  "quick-xml",
  "thiserror 2.0.12",
 ]
@@ -961,6 +1010,19 @@ dependencies = [
  "oxilangtag",
  "oxiri",
  "oxrdf 0.2.4",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "oxttl"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "357f8c6b875ee108f3aa34249383c50bfda2c195a9d5e6178ba5ee53546e7225"
+dependencies = [
+ "memchr",
+ "oxilangtag",
+ "oxiri",
+ "oxrdf 0.3.1",
  "thiserror 2.0.12",
 ]
 
@@ -1551,6 +1613,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "sparesults"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "63c2001427f2d0575e3f6d68e2ff9597988361bc0e3b1b5cf444991258860e18"
+dependencies = [
+ "json-event-parser",
+ "memchr",
+ "oxrdf 0.3.1",
+ "quick-xml",
+ "thiserror 2.0.12",
+]
+
+[[package]]
 name = "spareval"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1567,9 +1642,32 @@ dependencies = [
  "rustc-hash",
  "sha1",
  "sha2",
- "sparesults",
+ "sparesults 0.2.4",
  "spargebra 0.3.5",
- "sparopt",
+ "sparopt 0.2.1",
+ "thiserror 2.0.12",
+]
+
+[[package]]
+name = "spareval"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9014a55e3f69ebb491768d80690aab9f93b7b7479b0b344e2ad09eee439a5f42"
+dependencies = [
+ "hex",
+ "json-event-parser",
+ "md-5",
+ "oxiri",
+ "oxrdf 0.3.1",
+ "oxsdatatypes",
+ "rand 0.9.2",
+ "regex",
+ "rustc-hash",
+ "sha1",
+ "sha2",
+ "sparesults 0.3.1",
+ "spargebra 0.4.2",
+ "sparopt 0.3.2",
  "thiserror 2.0.12",
 ]
 
@@ -1610,6 +1708,17 @@ dependencies = [
  "oxrdf 0.2.4",
  "rand 0.8.5",
  "spargebra 0.3.5",
+]
+
+[[package]]
+name = "sparopt"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "559d593b1ed5806562944a3ea831dbce356f9c079e92fb32814fafe4a9f84ea5"
+dependencies = [
+ "oxrdf 0.3.1",
+ "rand 0.9.2",
+ "spargebra 0.4.2",
 ]
 
 [[package]]

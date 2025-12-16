@@ -1,0 +1,11 @@
+[package]
+name = "normalizer"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+oxrdf = "0.3.1"
+oxrdfio = "0.2.1"
+spareval = "0.2.2"
+spargebra = "0.4.2"

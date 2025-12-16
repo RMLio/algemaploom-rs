@@ -9,7 +9,7 @@ authors.workspace = true
 opt-level = 3
 
 [workspace]
-members = ["operator", "vocab", "plan", "translator", "sparql-sat-checker"]
+members = ["operator", "vocab", "plan", "translator", "sparql-sat-checker", "normalizer"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.package]
