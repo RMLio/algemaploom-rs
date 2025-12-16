@@ -1,0 +1,24 @@
+[package]
+name = "sparql-sat-checker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+spargebra = "0.4.2"
+
+
+operator = { path = "../operator/" }
+plan = { path = "../plan/" }
+translator = { path = "../translator/" }
+vocab = { path = "../vocab/" }
+
+either.workspace = true
+petgraph.workspace = true
+anyhow.workspace = true
+uuid.workspace = true
+regex.workspace = true
+lazy_static.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+clap.workspace = true
+log.workspace = true
