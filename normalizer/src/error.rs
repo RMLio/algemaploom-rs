@@ -1,7 +1,8 @@
 use std::string::FromUtf8Error;
 
+use oxigraph::io::RdfParseError;
 use oxigraph::sparql::{SparqlSyntaxError, UpdateEvaluationError};
-use oxigraph::store::{LoaderError, SerializerError};
+use oxigraph::store::{LoaderError, SerializerError, StorageError};
 use thiserror::Error;
 
 pub type NormalizerResult<T> = Result<T, NormalizerError>;
@@ -14,6 +15,12 @@ pub enum NormalizerError {
         #[source]
         std::io::Error,
     ),
+    #[error("error while parsing RDF data")]
+    RDFParse(
+        #[from]
+        #[source]
+        RdfParseError,
+    ),
     #[error("error while serializing in-memory store")]
     RDFSerializer(
         #[from]
@@ -25,6 +32,12 @@ pub enum NormalizerError {
         #[from]
         #[source]
         FromUtf8Error,
+    ),
+    #[error("error while storing RDF data with Oxigraph")]
+    Storage(
+        #[from]
+        #[source]
+        StorageError,
     ),
     #[error("error while loading RML document into in-memory Oxigraph store")]
     Loading(

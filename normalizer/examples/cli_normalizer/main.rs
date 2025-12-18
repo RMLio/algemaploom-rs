@@ -14,9 +14,9 @@ pub fn main() -> Result<()> {
 
     let input_rml_path = cli
         .matches
-        .get_one::<PathBuf>("INPUT_RML")
+        .get_one::<String>("INPUT_RML")
         .expect("Input RML document is required");
 
-    normalizer::normalize_rml_path(input_rml_path)?;
+    normalizer::normalize_rml_path(Path::new(&input_rml_path))?;
     Ok(())
 }

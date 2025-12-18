@@ -2,8 +2,9 @@ use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
 use std::path::Path;
 
-use error::NormalizerResult;
-use oxigraph::io::RdfFormat;
+use error::{NormalizerError, NormalizerResult};
+use oxigraph::io::{RdfFormat, RdfParseError, RdfParser, RdfSerializer};
+use oxigraph::model::Triple;
 use oxigraph::sparql::SparqlEvaluator;
 use oxigraph::store::Store;
 use queries::QUERY_MSG_PAIRS;
@@ -13,15 +14,35 @@ mod queries;
 
 pub fn normalize_rml_str(rml_str: &str) -> NormalizerResult<String> {
     let store = Store::new().unwrap();
-    store.load_from_reader(RdfFormat::Turtle, rml_str.as_bytes())?;
+    let mut loader = store.bulk_loader();
+    let parser = RdfParser::from_format(RdfFormat::Turtle);
+    let mut reader = parser.for_reader(rml_str.as_bytes());
+
+    loader.load_ok_quads::<RdfParseError, NormalizerError>(&mut reader)?;
+    loader.commit()?;
+
+    let prefixes = reader.prefixes().collect::<Vec<_>>();
+    log::debug!("Found prefixes of the RML document: {:?}", prefixes);
+
     for (update, msg) in QUERY_MSG_PAIRS {
         log::info!("{}", msg);
         let update = SparqlEvaluator::new().parse_update(update)?;
         update.on_store(&store).execute()?;
     }
 
+    log::info!("Serializing normalized RDF dataset to Turtle");
+    let mut serializer = RdfSerializer::from_format(RdfFormat::Turtle);
+    serializer = prefixes.iter().fold(serializer, |acc, pref| {
+        acc.with_prefix(pref.0, pref.1).unwrap()
+    });
+
     let mut buf_writer = BufWriter::new(vec![]);
-    buf_writer = store.dump_to_writer(RdfFormat::Turtle, buf_writer)?;
+    let mut write_serializer = serializer.for_writer(buf_writer);
+    for quad in store.iter().flatten() {
+        write_serializer.serialize_triple(&Into::<Triple>::into(quad))?;
+    }
+
+    buf_writer = write_serializer.finish()?;
 
     Ok(String::from_utf8(buf_writer.into_inner().unwrap())?)
 }
