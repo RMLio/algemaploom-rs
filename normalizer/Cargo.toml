@@ -5,7 +5,19 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-oxrdf = "0.3.1"
-oxrdfio = "0.2.1"
-spareval = "0.2.2"
-spargebra = "0.4.2"
+thiserror.workspace = true
+log.workspace = true
+oxigraph = { version = "0.5.2", default-features = false }
+
+
+[dev-dependencies]
+anyhow.workspace = true
+log4rs.workspace = true
+clap.workspace = true
+
+[lib]
+name = "normalizer"
+
+
+[[example]]
+name = "cli_normalizer"
