@@ -90,12 +90,11 @@ impl OperatorTranslator for JoinTranslator {
                     rename_pairs: HashMap::new(),
                 };
 
-                aliased_plan = aliased_plan.apply_to_right_fragment(
+                aliased_plan = aliased_plan.apply_to_right(
                     Operator::RenameOp {
                         config: ptm_rename_op,
                     },
                     "RenameOp".into(),
-                    alias.into(),
                 )?;
 
                 joined = aliased_plan

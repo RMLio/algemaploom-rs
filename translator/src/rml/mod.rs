@@ -11,7 +11,7 @@ use std::path::Path;
 use std::rc::Rc;
 
 use error::RMLTranslationError;
-use operator::{Extend, Operator};
+use operator::{Extend, Operator, Rename};
 use operators::projection::ProjectionTranslator;
 use operators::source::SourceOpTranslator;
 use parser::extractors::{rcterm_to_string, TermMapExtractor};
@@ -25,7 +25,6 @@ use plan::Plan;
 use util::extract_tm_infos_from_sm_poms;
 
 use self::operators::extend::*;
-use self::operators::fragment::FragmentTranslator;
 use self::operators::serializer::{self, translate_serializer_op};
 use self::util::generate_lt_quads_from_spo;
 use crate::rml::parser::extractors::io::parse_file;
@@ -181,7 +180,7 @@ fn partition_pom_join_nonjoin(
 }
 
 fn add_non_join_related_ops(
-    tm_iri: &str,
+    _tm_iri: &str,
     no_join_poms: &[PredicateObjectMap],
     sm: &SubjectMap,
     search_map: &SearchMap,
@@ -218,17 +217,11 @@ fn add_non_join_related_ops(
     // Generate quad patterns and group them by the logical targets using the
     // informations from the different term maps (subject, predicate, object)
     let lt_quads_map = &generate_lt_quads_from_spo(sm, no_join_poms);
-    let fragment_translator = FragmentTranslator { lt_quads_map };
-    let fragmenter = fragment_translator.translate();
 
     // Add the fragmenter operator which fragments/broadcast the incoming
     // stream of mapping tuples to N streams of targets/serializer based
     // on N logical targets
-    let mut lt_id_vec = vec![lt_quads_map.keys().next().unwrap().clone()];
-    if let Some(fragmenter) = fragmenter {
-        next_plan = next_plan.fragment(fragmenter.clone())?;
-        lt_id_vec = fragmenter.to;
-    }
+    let lt_id_vec = vec![lt_quads_map.keys().next().unwrap().clone()];
 
     for lt_id in lt_id_vec {
         let target = target_map.get(&lt_id).unwrap();
@@ -242,9 +235,7 @@ fn add_non_join_related_ops(
             &[sm],
         );
 
-        let _ = next_plan
-            .serialize_with_fragment(serializer_op, &lt_id)?
-            .sink(target)?;
+        let _ = next_plan.serialize(serializer_op)?.sink(target)?;
 
         //let _ = extended_plan.fragment(fragmenter)?.serialize(serializer_op);
     }
@@ -316,10 +307,9 @@ fn add_join_related_ops(
                     is_parent: false,
                 }
                 .translate();
-                aliased_plan = aliased_plan.apply_to_left_fragment(
+                aliased_plan = aliased_plan.apply_to_left(
                     left_projection,
                     Cow::Borrowed("LeftProjection"),
-                    Cow::Borrowed(&ptm_alias),
                 )?;
 
                 let right_projection = ProjectionTranslator {
@@ -329,15 +319,29 @@ fn add_join_related_ops(
                 }
                 .translate();
 
-                aliased_plan = aliased_plan.apply_to_right_fragment(
+                aliased_plan = aliased_plan.apply_to_right(
                     right_projection,
                     Cow::Borrowed("RightProjection"),
-                    Cow::Borrowed(&ptm_alias),
                 )?;
 
                 let child_attributes = &join_condition.child_attributes;
                 let parent_attributes = &join_condition.parent_attributes;
+                let parent_attributes: Vec<_> = parent_attributes
+                    .into_iter()
+                    .map(|val| format!("{}.{}", ptm_alias, val))
+                    .collect();
 
+                let ptm_rename_op = Rename {
+                    alias:        Some(ptm_alias.to_string()),
+                    rename_pairs: HashMap::new(),
+                };
+
+                aliased_plan = aliased_plan.apply_to_right(
+                    Operator::RenameOp {
+                        config: ptm_rename_op,
+                    },
+                    "RenameOp".into(),
+                )?;
                 joined_plan = aliased_plan
                     .where_by(child_attributes.clone())?
                     .equal_to(parent_attributes.clone())?;
