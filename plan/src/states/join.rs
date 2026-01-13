@@ -30,23 +30,6 @@ pub fn join(
     })
 }
 
-//TODO: Remove [Result] usage since it will never return an error
-fn add_join_fragmenter(
-    plan: &mut Plan<Processed>,
-    alias: &str,
-) -> Result<Plan<Processed>, PlanError> {
-    if plan.fragment_node_idx == plan.current_cursor_idx {
-        plan.update_prev_fragment_node(alias);
-        Ok(plan.clone())
-    } else {
-        let default_fragment = plan.get_fragment_str();
-        let fragmenter = Fragmenter {
-            from: default_fragment.clone(),
-            to:   vec![default_fragment, alias.to_string()],
-        };
-        plan.fragment(fragmenter)
-    }
-}
 
 #[derive(Debug, Clone)]
 pub struct NotAliasedJoinedPlan<T> {
@@ -65,16 +48,6 @@ impl NotAliasedJoinedPlan<Processed> {
         &mut self,
         alias: &str,
     ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
-        //TODO: Remove [Result] usage since it will never return an error
-        {
-            let right_plan = &mut *self.right_plan.borrow_mut();
-            *right_plan = add_join_fragmenter(right_plan, alias)?;
-        }
-        {
-            let left_plan = &mut *self.left_plan.borrow_mut();
-            *left_plan = add_join_fragmenter(left_plan, alias)?;
-        }
-
         Ok(AliasedJoinedPlan {
             left_plan:  Rc::clone(&self.left_plan),
             right_plan: Rc::clone(&self.right_plan),
@@ -97,16 +70,14 @@ impl AliasedJoinedPlan<Processed> {
     ///
     /// Returns an error if the underlying [Plan::apply_to_fragment] method call
     /// fail.
-    pub fn apply_to_right_fragment(
+    pub fn apply_to_right(
         self,
         operator: Operator,
         op_name: Cow<str>,
-        fragment_str: Cow<str>,
     ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
-        let applied_right = self.right_plan.borrow_mut().apply_to_fragment(
+        let applied_right = self.right_plan.borrow_mut().apply(
             &operator,
             &op_name,
-            &fragment_str,
         )?;
 
         Ok(AliasedJoinedPlan {
@@ -121,16 +92,14 @@ impl AliasedJoinedPlan<Processed> {
     ///
     /// Returns an error if the underlying [Plan::apply_to_fragment] method call
     /// fail.
-    pub fn apply_to_left_fragment(
+    pub fn apply_to_left(
         self,
         operator: Operator,
         op_name: Cow<str>,
-        fragment_str: Cow<str>,
     ) -> Result<AliasedJoinedPlan<Processed>, PlanError> {
-        let applied_left = self.left_plan.borrow_mut().apply_to_fragment(
+        let applied_left = self.left_plan.borrow_mut().apply(
             &operator,
             &op_name,
-            &fragment_str,
         )?;
 
         Ok(AliasedJoinedPlan {

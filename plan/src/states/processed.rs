@@ -7,61 +7,6 @@ use crate::states::Serialized;
 use crate::Plan;
 
 impl Plan<Processed> {
-
-    /// Apply the given operator to the given fragment label.
-    ///
-    /// # Errors
-    ///
-    /// Returns an error for the following cases: 
-    ///
-    /// * plan is empty.
-    /// * previous node has not been set yet (applying dangling operator).
-    /// * given fragment label does not exists in the parent fragmenter operator.
-    /// * given operator is either a [Operator::SourceOp], [Operator::FragmentOp],
-    ///   [Operator::TargetOp] or [Operator::SerializerOp].
-    pub fn apply_to_fragment(
-        &mut self,
-        operator: &Operator,
-        node_id_prefix: &str,
-        fragment_str: &str,
-    ) -> Result<Plan<Processed>, PlanError> {
-        self.non_empty_plan_check()?;
-        self.target_fragment_valid(fragment_str)?;
-
-        self.current_cursor_idx
-            .ok_or(PlanError::DanglingApplyOperator(operator.clone()))?;
-
-        //blacklist check for illegal operator argument
-        match operator {
-            Operator::SourceOp { .. }
-            | Operator::FragmentOp { .. }
-            | Operator::TargetOp { .. }
-            | Operator::SerializerOp { .. } => {
-                return Err(PlanError::WrongApplyOperator(operator.clone()))
-            }
-            _ => (),
-        };
-
-        let id_num = self.node_count();
-
-        let plan_node = PlanNode {
-            id:       format!("{}_{}", node_id_prefix, id_num),
-            operator: operator.clone(),
-        };
-
-        let plan_edge = PlanEdge {
-            fragment: fragment_str.to_string(),
-            ..Default::default()
-        };
-
-        let new_node_idx = self.add_node_with_edge(plan_node, plan_edge);
-
-        Ok(self.next_idx_fragment(Some(new_node_idx), fragment_str))
-    }
-
-
-
-
     /// .
     ///
     /// # Panics
@@ -84,22 +29,22 @@ impl Plan<Processed> {
         let node_idx = graph.add_node(union_node);
         let self_node = self.current_cursor_idx.unwrap();
         let left_edge = PlanEdge {
-            fragment:  self.fragment_string.to_string(),
             direction: EdgeDirection::Left,
+            ..Default::default()
         };
         graph.add_edge(self_node, node_idx, left_edge);
 
         if let Ok(other_plan) = other.try_borrow_mut() {
             let right_node = other_plan.current_cursor_idx.unwrap();
             let right_edge = PlanEdge {
-                fragment:  self.fragment_string.to_string(),
                 direction: EdgeDirection::Right,
+                ..Default::default()
             };
             graph.add_edge(right_node, node_idx, right_edge);
         } else {
             let right_edge = PlanEdge {
-                fragment:  self.fragment_string.to_string(),
                 direction: EdgeDirection::Right,
+                ..Default::default()
             };
             graph.add_edge(self_node, self_node, right_edge);
         }
@@ -112,54 +57,47 @@ impl Plan<Processed> {
         operator: &Operator,
         node_id_prefix: &str,
     ) -> Result<Plan<Processed>, PlanError> {
-        let fragment_str = &self.get_fragment_str();
-        self.apply_to_fragment(operator, node_id_prefix, fragment_str)
-    }
-
-    pub fn fragment(
-        &mut self,
-        fragmenter: Fragmenter,
-    ) -> Result<Plan<Processed>, PlanError> {
         self.non_empty_plan_check()?;
-        self.target_fragment_valid(&fragmenter.from)?;
-        self.current_cursor_idx.ok_or(PlanError::DanglingApplyOperator(
-            Operator::FragmentOp {
-                config: fragmenter.clone(),
-            },
-        ))?;
+
+        self.current_cursor_idx
+            .ok_or(PlanError::DanglingApplyOperator(operator.clone()))?;
+
+        //blacklist check for illegal operator argument
+        match operator {
+            Operator::SourceOp { .. }
+            | Operator::TargetOp { .. }
+            | Operator::SerializerOp { .. } => {
+                return Err(PlanError::WrongApplyOperator(operator.clone()))
+            }
+            _ => (),
+        };
 
         let id_num = self.node_count();
 
-        let fragment_node = PlanNode {
-            id:       format!("Fragmenter_{}", id_num),
-            operator: Operator::FragmentOp {
-                config: fragmenter.clone(),
-            },
+        let plan_node = PlanNode {
+            id:       format!("{}_{}", node_id_prefix, id_num),
+            operator: operator.clone(),
         };
 
-        let edge = PlanEdge {
-            fragment: fragmenter.from.clone(),
-            ..Default::default()
-        };
-        let node_idx = self.add_node_with_edge(fragment_node, edge);
+        let plan_edge = PlanEdge::default();
 
-        self.fragment_node_idx = Some(node_idx);
+        let new_node_idx = self.add_node_with_edge(plan_node, plan_edge);
 
-        Ok(self.next_idx(Some(node_idx)))
+        Ok(self.next_idx(Some(new_node_idx)))
     }
 
-    pub fn serialize_with_fragment(
+
+    pub fn serialize(
         &mut self,
         serializer: Serializer,
-        fragment_str: &str,
     ) -> Result<Plan<Serialized>, PlanError> {
         self.non_empty_plan_check()?;
-        self.target_fragment_valid(fragment_str)?;
-        self.current_cursor_idx.ok_or(PlanError::DanglingApplyOperator(
-            Operator::SerializerOp {
-                config: serializer.clone(),
-            },
-        ))?;
+        self.current_cursor_idx
+            .ok_or(PlanError::DanglingApplyOperator(
+                Operator::SerializerOp {
+                    config: serializer.clone(),
+                },
+            ))?;
 
         let node_count = self.node_count();
         let plan_node = PlanNode {
@@ -167,19 +105,9 @@ impl Plan<Processed> {
             operator: Operator::SerializerOp { config: serializer },
         };
 
-        let plan_edge = PlanEdge {
-            fragment: fragment_str.to_string(),
-            ..Default::default()
-        };
+        let plan_edge = PlanEdge ::default();
 
         let node_idx = self.add_node_with_edge(plan_node, plan_edge);
-        Ok(self.next_idx_fragment(Some(node_idx), fragment_str))
-    }
-
-    pub fn serialize(
-        &mut self,
-        serializer: Serializer,
-    ) -> Result<Plan<Serialized>, PlanError> {
-        self.serialize_with_fragment(serializer, &self.get_fragment_str())
+        Ok(self.next_idx(Some(node_idx)))
     }
 }

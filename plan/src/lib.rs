@@ -22,7 +22,7 @@ use petgraph::graph::{DiGraph, NodeIndex};
 
 use crate::data_type::{
     DiGraphOperators, PlanEdge, PlanNode, RcRefCellDiGraph,
-    RcRefCellVSourceIdxs, DEFAULT_FRAGMENT,
+    RcRefCellVSourceIdxs,
 };
 use crate::error::PlanError;
 use crate::states::Init;
@@ -30,17 +30,17 @@ pub mod data_type;
 pub mod error;
 pub mod states;
 
-/// Represents a plan in state [T](states) with functions to transition between 
+/// Represents a plan in state [T](states) with functions to transition between
 /// different states by adding new nodes with a cursor.
 ///
-/// The [T](states) determine the API exposed from the plan to modify it. 
-/// Building the plan works with a cursor which points at the recently added 
-/// node. 
-/// Adding a new node to the plan will attach it to the node 
-/// currently pointed by the cursor of the plan. 
+/// The [T](states) determine the API exposed from the plan to modify it.
+/// Building the plan works with a cursor which points at the recently added
+/// node.
+/// Adding a new node to the plan will attach it to the node
+/// currently pointed by the cursor of the plan.
 /// If the cursor is pointing at nothing, the new (to-be-added) node will be  
-/// instantiated in the plan as a separate self-standing node. 
-/// The field `graph` is repeatedly modified to build up the mapping plan with 
+/// instantiated in the plan as a separate self-standing node.
+/// The field `graph` is repeatedly modified to build up the mapping plan with
 /// the addition of mapping algebra operators.
 #[derive(Debug, Clone)]
 pub struct Plan<T> {
@@ -49,16 +49,10 @@ pub struct Plan<T> {
     pub graph: RcRefCellDiGraph,
 
     /// Node indexes of the source operators in the graph.
-    pub sources:           RcRefCellVSourceIdxs,
+    pub sources: RcRefCellVSourceIdxs,
 
-    /// Index of the node currently being pointed by the cursor of the plan. 
-    pub current_cursor_idx:     Option<NodeIndex>,
-
-    /// Index of the previous **fragment** node on which the plan is being built upon.
-    pub fragment_node_idx: Option<NodeIndex>,
-
-    /// String label of the current fragment on which the plan is being built upon.
-    pub fragment_string:   Rc<String>,
+    /// Index of the node currently being pointed by the cursor of the plan.
+    pub current_cursor_idx: Option<NodeIndex>,
 }
 
 impl<T> From<Plan<T>> for RcRefCellPlan<T> {
@@ -71,99 +65,15 @@ impl Plan<()> {
     /// Creates a new empty mapping plan
     pub fn new() -> Plan<Init> {
         Plan {
-            _t:                PhantomData,
-            graph:             Rc::new(RefCell::new(DiGraph::new())),
-            sources:           Rc::new(RefCell::new(Vec::new())),
-            fragment_string:   Rc::new(DEFAULT_FRAGMENT.to_string()),
-            fragment_node_idx: None,
-            current_cursor_idx:     None,
+            _t:                 PhantomData,
+            graph:              Rc::new(RefCell::new(DiGraph::new())),
+            sources:            Rc::new(RefCell::new(Vec::new())),
+            current_cursor_idx: None,
         }
     }
 }
 
 impl<T> Plan<T> {
-
-
-    /// Update the previous node's fragment by adding the provided fragment string. 
-    ///
-    /// If the previous node is not a [Fragmenter] operator, 
-    /// a new [Fragmenter] operator will be added. 
-    fn update_prev_fragment_node(&mut self, new_fragment: &str) {
-        let mut graph = self.graph.borrow_mut();
-        let fragment_node = graph
-            .node_weight_mut(self.fragment_node_idx.unwrap())
-            .unwrap();
-
-        let mut update_fragment = match fragment_node.operator.clone() {
-            Operator::FragmentOp { config } => config,
-
-            _ => {
-                Fragmenter {
-                    from: self.get_fragment_str(),
-                    to:   vec![self.get_fragment_str()],
-                }
-            }
-        };
-
-        if !update_fragment.to.contains(&new_fragment.to_string()){
-
-            update_fragment.to.push(new_fragment.to_string());
-
-            fragment_node.operator = Operator::FragmentOp {
-                config: update_fragment,
-            };
-        }
-    }
-
-    /// Get the [Fragmenter] operator closest to the current cursor 
-    /// in the plan. 
-    fn get_fragment_op(&self) -> Option<Fragmenter> {
-        if let Some(idx) = self.fragment_node_idx {
-            let graph = self.graph.borrow();
-            let fragment_node = graph.node_weight(idx).unwrap();
-
-            return match &fragment_node.operator {
-                Operator::FragmentOp { config } => Some(config.clone()),
-                _ => None,
-            };
-        }
-
-        None
-    }
-
-    /// Returns a [Result] as follows: 
-    /// * Err:  if the given fragment is either not equal to the current fragment and there aren't
-    ///   any previous fragment **or** if the given fragment isn't part of the output fragments of
-    ///   the prevoius fragmenter operator. 
-    /// * Ok: otherwise
-    fn target_fragment_valid(
-        &self,
-        target_fragment: &str,
-    ) -> Result<(), PlanError> {
-        let fragment_op = self.get_fragment_op();
-        let current_fragment = &*self.fragment_string;
-
-        if fragment_op.is_none() && target_fragment != current_fragment {
-            return Err(PlanError::GenericError(format!(
-                "Target fragment {} is NOT equal to current fragment {} and there aren't any previous fragmenter",
-                target_fragment, current_fragment
-            )));
-        } else if let Some(fragmenter) = fragment_op {
-            if !fragmenter.target_fragment_exist(target_fragment) {
-                return Err(PlanError::GenericError(format!(
-                    "Target fragment {} doesn't exists as part of the output fragments of the previous fragmenter",
-                    target_fragment
-                )));
-            }
-        }
-
-        Ok(())
-    }
-
-    fn get_fragment_str(&self) -> String {
-        (*self.fragment_string).clone()
-    }
-
     fn node_count(&self) -> usize {
         self.graph.borrow().node_count()
     }
@@ -188,39 +98,19 @@ impl<T> Plan<T> {
         node_idx
     }
 
-    /// Update last_node_idx with given node's index to ensure that next 
+    /// Update last_node_idx with given node's index to ensure that next
     /// operator addition on the plan continues from the given node.
     pub fn next_idx<O>(&self, idx: Option<NodeIndex>) -> Plan<O> {
         Plan {
-            _t:                PhantomData,
-            graph:             Rc::clone(&self.graph),
-            sources:           Rc::clone(&self.sources),
-            fragment_string:   Rc::clone(&self.fragment_string),
-            fragment_node_idx: self.fragment_node_idx,
-            current_cursor_idx:     idx,
+            _t:                 PhantomData,
+            graph:              Rc::clone(&self.graph),
+            sources:            Rc::clone(&self.sources),
+            current_cursor_idx: idx,
         }
     }
 
-    /// Update last_node_idx with given node's index and update the fragment 
-    /// string of the plan to ensure that next 
-    /// operator addition on the plan continues from the given node, and that it 
-    /// is a part of the updated fragment.
-    pub fn next_idx_fragment<O>(
-        &self,
-        idx: Option<NodeIndex>,
-        fragment_string: &str,
-    ) -> Plan<O> {
-        Plan {
-            _t:                PhantomData,
-            graph:             Rc::clone(&self.graph),
-            sources:           Rc::clone(&self.sources),
-            fragment_string:   Rc::new(fragment_string.to_string()),
-            fragment_node_idx: self.fragment_node_idx,
-            current_cursor_idx:     idx,
-        }
-    }
 
-    /// Serializes the plan with the given [dot](Dot) formatter, `fmt`, to a file 
+    /// Serializes the plan with the given [dot](Dot) formatter, `fmt`, to a file
     /// at the given `path`.
     pub fn write_fmt(
         &mut self,
@@ -233,35 +123,34 @@ impl<T> Plan<T> {
         Ok(())
     }
 
-
-    /// Serializes the plan using the [Display](std::fmt::Display) trait which 
-    /// makes the serialized plan more readable and less verbose. 
+    /// Serializes the plan using the [Display](std::fmt::Display) trait which
+    /// makes the serialized plan more readable and less verbose.
     pub fn write_pretty(&mut self, path: PathBuf) -> Result<()> {
         self.write_fmt(path, &|dot| format!("{}", dot))?;
         Ok(())
     }
 
-    /// Serializes the plan using the [Debug](std::fmt::Debug) trait which 
-    /// makes the serialized plan more verbose for debugging purpose. 
+    /// Serializes the plan using the [Debug](std::fmt::Debug) trait which
+    /// makes the serialized plan more verbose for debugging purpose.
     pub fn write(&mut self, path: PathBuf) -> Result<()> {
         self.write_fmt(path, &|dot| format!("{:?}", dot))?;
         Ok(())
     }
 
-    /// Serializes the plan in JSON format to a file at the given `path`. 
+    /// Serializes the plan in JSON format to a file at the given `path`.
     /// Delegates the actual serialization to [Plan::to_json_string()].  
     pub fn write_json(&self, path: PathBuf) -> Result<()> {
         write_string_to_file(path, self.to_json_string()?)
     }
 
-    /// Parses the mapping plan from a file at the given `path`. 
-    /// 
-    /// # Required 
-    /// The serialized plan has to be in **JSON** format parsable with [serde_json]. 
+    /// Parses the mapping plan from a file at the given `path`.
     ///
-    /// # Error 
-    /// Returns error if there is an IO error or the given input file cannot be 
-    /// parsed with [serde_json]. 
+    /// # Required
+    /// The serialized plan has to be in **JSON** format parsable with [serde_json].
+    ///
+    /// # Error
+    /// Returns error if there is an IO error or the given input file cannot be
+    /// parsed with [serde_json].
     pub fn from_file_path(path: PathBuf) -> Result<Plan<Init>> {
         let mut file = File::open(path)?;
         let mut buf = String::new();
@@ -274,7 +163,7 @@ impl<T> Plan<T> {
         Ok(plan)
     }
 
-    #[deprecated(note="please use `to_json_string` method instead")]
+    #[deprecated(note = "please use `to_json_string` method instead")]
     pub fn to_string(&self) -> Result<String> {
         let graph = &*self.graph.borrow();
         let json_string = serde_json::to_string(&graph).unwrap();
@@ -284,7 +173,7 @@ impl<T> Plan<T> {
 
     /// Serializes the plan to a [String] in **JSON** format with [serde_json].
     ///
-    /// # Error 
+    /// # Error
     /// Returns an error if [serde_json] fails to serialize the plan.
     pub fn to_json_string(&self) -> Result<String> {
         let graph = &*self.graph.borrow();
@@ -330,7 +219,7 @@ mod tests {
         };
         let rename_op = Operator::RenameOp {
             config: Rename {
-                alias: None, 
+                alias:        None,
                 rename_pairs: HashMap::from([(
                     "first".to_string(),
                     "last".to_string(),

@@ -23,10 +23,7 @@ impl Plan<Serialized> {
         let node_idx = graph.add_node(plan_node);
         let prev_node_idx = self.current_cursor_idx.unwrap();
 
-        let plan_edge = PlanEdge {
-            fragment: self.get_fragment_str().to_string(),
-            ..Default::default()
-        };
+        let plan_edge = PlanEdge::default();
         graph.add_edge(prev_node_idx, node_idx, plan_edge);
 
         Ok(self.next_idx(Some(node_idx)))
