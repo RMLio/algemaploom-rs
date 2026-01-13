@@ -1,8 +1,7 @@
 pub mod display;
 pub mod formats;
 mod test_util;
-pub mod tuples;
-pub mod value;
+pub mod tuples; pub mod value;
 
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
@@ -26,6 +25,7 @@ pub enum Operator {
     RenameOp { config: Rename },
     SerializerOp { config: Serializer },
     TargetOp { config: Target },
+    #[deprecated]
     FragmentOp { config: Fragmenter },
 }
 
@@ -452,6 +452,7 @@ impl Hash for Target {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[deprecated]
 pub struct Fragmenter {
     pub from: String,
     pub to:   Vec<String>,
