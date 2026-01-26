@@ -13,7 +13,7 @@ use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractLogicalSourceEnum, TriplesMap,
+     AbstractLogicalSourceEnum, TriplesMap,
 };
 use crate::new_rml::rml_model::v2::TermMapEnum;
 use crate::new_rml::rml_model::Document;
@@ -23,13 +23,28 @@ pub struct SearchStore<'a> {
     pub root_plan:              Option<Plan<Init>>,
     pub reference_attr_map:     HashMap<String, String>,
     pub termm_id_quad_var_map:  HashMap<RcTerm, String>,
+
+    /// key: TriplesMap URI
+    ///
+    /// value: 
     pub tm_id_join_map:         HashMap<RcTerm, HashSet<RcTerm>>,
+
+    /// key: Abstract logical source URI 
+    ///
+    /// value: [AbstractLogicalSourceEnum]
     pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSourceEnum>,
+
     pub ls_id_sourced_plan_map: HashMap<RcTerm, RcRefCellPlan<Processed>>,
+    /// SubjectMap search map
     pub sm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+    /// PredicateMap search map
     pub pm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+    /// ObjectMap search map
     pub om_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+    /// GraphMap search map
     pub gm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
+
+    /// TriplesMap search map
     pub tm_search_map:          HashMap<RcTerm, &'a TriplesMap>,
 }
 
@@ -196,12 +211,12 @@ fn create_ls_id_sourced_plan_map(
     plan: &mut Plan<Init>,
     abs_ls_search_map: &HashMap<RcTerm, &AbstractLogicalSourceEnum>,
 ) -> NewRMLTranslationResult<HashMap<RcTerm, RcRefCellPlan<Processed>>> {
-    let mut ls_id_sourced_plan_map = HashMap::new();
+    let mut abs_ls_id_sourced_plan_map = HashMap::new();
     for abs_ls in abs_ls_search_map.values().copied() {
         let source = AbstractLogicalSourceTranslator::translate(abs_ls)?;
         let sourced_plan: RcRefCellPlan<Processed> = plan.source(source).into();
 
-        ls_id_sourced_plan_map.insert(abs_ls.get_identifier(), sourced_plan);
+        abs_ls_id_sourced_plan_map.insert(abs_ls.get_identifier(), sourced_plan);
     }
-    Ok(ls_id_sourced_plan_map)
+    Ok(abs_ls_id_sourced_plan_map)
 }

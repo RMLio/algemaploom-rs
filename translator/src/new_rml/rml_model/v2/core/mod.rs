@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use std::fmt::Display;
 use std::hash::Hash;
 
+use derive_more::{TryUnwrap, Unwrap};
 use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
 use expression_map::ExpressionMapEnum;
 use sophia_term::RcTerm;
@@ -228,38 +229,10 @@ impl RMLIterable {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct AbstractLogicalSource {
-    pub iterable:        RMLIterable,
-    pub abs_source_enum: AbstractLogicalSourceEnum,
-}
 
-impl AbstractLogicalSource {
-    pub fn get_source(&self) -> Source {
-        match &self.abs_source_enum {
-            AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
-                logical_source.source.clone()
-            }
-            AbstractLogicalSourceEnum::LogicalView(logical_view) => {
-                logical_view.get_source()
-            }
-        }
-    }
-    pub fn get_identifier(&self) -> RcTerm {
-        let term_ref = match &self.abs_source_enum {
-            AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
-                &logical_source.identifier
-            }
-            AbstractLogicalSourceEnum::LogicalView(logical_view) => {
-                &logical_view.identifier
-            }
-        };
-
-        term_ref.clone()
-    }
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Unwrap, TryUnwrap)]
+#[unwrap(ref)]
+#[try_unwrap(ref)]
 #[non_exhaustive]
 pub enum AbstractLogicalSourceEnum {
     LogicalSource(LogicalSource),

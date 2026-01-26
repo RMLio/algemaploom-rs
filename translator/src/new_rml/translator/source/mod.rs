@@ -16,7 +16,7 @@ use crate::new_rml::extractors::{
     stringify_term, ExtractorResult, FromVocab,
 };
 use crate::new_rml::rml_model::v2::core::{
-    AbstractLogicalSource, AbstractLogicalSourceEnum,
+     AbstractLogicalSourceEnum,
 };
 use crate::new_rml::rml_model::v2::io::source::Source;
 use crate::new_rml::translator::source::kind::{
