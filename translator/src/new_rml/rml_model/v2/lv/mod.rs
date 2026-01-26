@@ -40,19 +40,21 @@ impl LogicalView {
 
 #[derive(Debug, Clone)]
 pub struct RMLField {
-    pub name:   String,
-    pub kind:   RMLFieldKind,
-    pub fields: Vec<RMLField>,
+    pub name:          String,
+    pub kind:          RMLFieldKind,
+    pub absolute_name: String,
+    pub fields:        Vec<RMLField>,
 }
 
 impl RMLField {
     pub fn from_ref_str(ref_str: &str) -> RMLField {
         RMLField {
-            name:   ref_str.to_string(),
-            kind:   RMLFieldKind::Expression(ExpressionMapEnum::new_ref_str(
-                ref_str,
-            )),
-            fields: vec![],
+            name:          ref_str.to_string(),
+            absolute_name: ref_str.to_string(),
+            kind:          RMLFieldKind::Expression(
+                ExpressionMapEnum::new_ref_str(ref_str),
+            ),
+            fields:        vec![],
         }
     }
 }

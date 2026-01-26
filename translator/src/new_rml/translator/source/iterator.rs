@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use operator::{formats, Iterator};
 
 use super::fields::translate_rml_field_vec;
@@ -9,7 +11,7 @@ use crate::new_rml::translator::error::TranslationError;
 use crate::new_rml::translator::OperatorTranslator;
 
 #[derive(Debug, Clone)]
-pub struct IteratorTranslator {}
+pub struct IteratorTranslator;
 
 impl OperatorTranslator for IteratorTranslator {
     type Input = AbstractLogicalSourceEnum;
@@ -36,12 +38,15 @@ impl OperatorTranslator for IteratorTranslator {
             reference_formulation = ref_form.try_into()?;
         }
 
+        let mut alias_query_map = HashMap::new();
+
         Ok(Iterator {
             reference:             rml_iterable.iterator.clone(),
             reference_formulation: reference_formulation.clone(),
             fields:                translate_rml_field_vec(
                 &logical_view.fields,
                 reference_formulation,
+                &mut alias_query_map,
             )?,
             alias:                 None,
         })
