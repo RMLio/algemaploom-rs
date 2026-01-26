@@ -17,7 +17,7 @@ pub struct LogicalView {
 
 impl LogicalView {
     pub fn get_iterable(&self) -> RMLIterable {
-        match *self.clone().view_on {
+        match &*self.view_on {
             AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
                 logical_source.iterable.clone()
             }
@@ -27,7 +27,7 @@ impl LogicalView {
         }
     }
     pub fn get_source(&self) -> Source {
-        match *self.clone().view_on {
+        match &*self.view_on {
             AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
                 logical_source.source.clone()
             }
