@@ -17,8 +17,7 @@ use super::store::get_objects;
 use super::Extractor;
 use crate::new_rml::extractors::store::get_object;
 use crate::new_rml::extractors::FromVocab;
-use crate::new_rml::rml_model::v2::core::{AbstractLogicalSource, AbstractLogicalSourceEnum};
-use crate::new_rml::rml_model::v2::io::source::LogicalSource;
+use crate::new_rml::rml_model::v2::core::AbstractLogicalSourceEnum;
 use crate::new_rml::rml_model::v2::lv::{
     LogicalView, LogicalViewJoin, RMLField, StructuralAnnotation,
 };
@@ -53,8 +52,10 @@ impl Extractor<LogicalView> for LogicalView {
             &subject_ref,
             vocab::rml_lv::PROPERTY::VIEW_ON.to_rcterm(),
         )?;
-        let view_on_abs =
-            AbstractLogicalSourceEnum::extract_self(&logical_source_term, graph_ref)?;
+        let view_on_abs = AbstractLogicalSourceEnum::extract_self(
+            &logical_source_term,
+            graph_ref,
+        )?;
         let fields = get_objects(
             graph_ref,
             &subject_ref,
@@ -101,7 +102,7 @@ fn check_cyclic_view_or_error(
     );
 
     if views.is_empty() {
-        return Ok(()); 
+        return Ok(());
     }
 
     for view in views {
@@ -113,11 +114,7 @@ fn check_cyclic_view_or_error(
             ))
             .into());
         } else {
-            check_cyclic_view_or_error(
-                view,
-                graph_ref,
-                visited,
-            )?;
+            check_cyclic_view_or_error(view, graph_ref, visited)?;
         }
     }
 
