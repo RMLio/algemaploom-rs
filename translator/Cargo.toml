@@ -31,3 +31,4 @@ clap.workspace = true
 log.workspace = true
 derive_more.workspace = true
 walkdir = "2.4.0"
+sophia_isomorphism = "0.9.0"
