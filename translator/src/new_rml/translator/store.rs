@@ -24,10 +24,6 @@ pub struct SearchStore<'a> {
     pub reference_attr_map:     HashMap<String, String>,
     pub termm_id_quad_var_map:  HashMap<RcTerm, String>,
 
-    /// key: TriplesMap URI
-    ///
-    /// value: 
-    pub tm_id_join_map:         HashMap<RcTerm, HashSet<RcTerm>>,
 
     /// key: Abstract logical source URI 
     ///
@@ -87,7 +83,6 @@ impl SearchStore<'_> {
         let mut om_search_map = HashMap::new();
         let mut gm_search_map = HashMap::new();
         let mut termm_id_quad_var_map = HashMap::new();
-        let mut tm_id_join_map = HashMap::new();
 
         for (tm_count, tm) in document.triples_maps.iter().enumerate(){
             abs_ls_search_map.insert(
@@ -96,8 +91,6 @@ impl SearchStore<'_> {
             );
             let tm_id = &tm.identifier;
             tm_search_map.insert(tm_id.clone(), tm);
-            tm_id_join_map
-                .insert(tm_id.clone(), tm.get_parent_tms_pred_refom_pairs());
 
             let sm = &tm.subject_map;
             let sm_ident = sm.as_ref().identifier.clone();
@@ -202,7 +195,6 @@ impl SearchStore<'_> {
             abs_ls_search_map,
             root_plan: Some(root_plan),
             reference_attr_map: HashMap::new(),
-            tm_id_join_map: HashMap::new(),
         })
     }
 }
