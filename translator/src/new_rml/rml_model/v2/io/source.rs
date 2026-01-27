@@ -8,13 +8,12 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
 
-use crate::new_rml::error::NewRMLTranslationError;
 use crate::new_rml::extractors::error::ParseError;
 use crate::new_rml::extractors::{stringify_term, FromVocab};
 use crate::new_rml::rml_model::v2::core::RMLIterable;
 use crate::new_rml::translator::error::TranslationError;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ReferenceFormulation {
     pub iri:  RcTerm,
     pub kind: ReferenceFormulationKind,
@@ -101,6 +100,32 @@ pub enum ReferenceFormulationKind {
     CustomReferenceFormulation { meta_data_graph: Rc<FastGraph> },
 }
 
+impl Eq for ReferenceFormulationKind {}
+
+impl PartialEq for ReferenceFormulationKind {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (
+                Self::CustomReferenceFormulation {
+                    meta_data_graph: l_meta_data_graph,
+                },
+                Self::CustomReferenceFormulation {
+                    meta_data_graph: r_meta_data_graph,
+                },
+            ) => {
+                sophia_isomorphism::isomorphic_graphs(
+                    l_meta_data_graph.as_ref(),
+                    r_meta_data_graph.as_ref(),
+                )
+                .unwrap()
+            }
+            _ => {
+                core::mem::discriminant(self) == core::mem::discriminant(other)
+            }
+        }
+    }
+}
+
 impl Debug for ReferenceFormulationKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut serde = NtSerializer::new_stringifier();
@@ -175,7 +200,7 @@ pub struct LogicalSource {
     pub source:     Source,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Source {
     pub encoding:     Option<RcTerm>,
     pub compression:  Option<RcTerm>,
@@ -189,6 +214,20 @@ pub struct SourceKind {
     pub type_iri: RcTerm,
     pub metadata: Rc<FastGraph>,
 }
+
+impl Eq for SourceKind {}
+impl PartialEq for SourceKind {
+    fn eq(&self, other: &Self) -> bool {
+        self.subj_iri == other.subj_iri
+            && self.type_iri == other.type_iri
+            && sophia_isomorphism::isomorphic_graphs(
+                self.metadata.as_ref(),
+                other.metadata.as_ref(),
+            )
+            .unwrap()
+    }
+}
+
 impl TryFrom<SourceKind> for IOType {
     type Error = TranslationError;
 
@@ -213,9 +252,12 @@ impl TryFrom<&SourceKind> for IOType {
             Ok(IOType::RDB)
         } else if value.type_iri == vocab::td::CLASS::THING.to_rcterm() {
             Ok(IOType::Websocket)
-        } else if value.type_iri == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() {
+        } else if value.type_iri
+            == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm()
+        {
             Ok(IOType::Websocket)
-        } else if value.type_iri == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() {
+        } else if value.type_iri == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm()
+        {
             Ok(IOType::Kafka)
         } else {
             Err(TranslationError::SourceError(format!(

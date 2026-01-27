@@ -16,6 +16,10 @@ pub struct LogicalView {
 }
 
 impl LogicalView {
+    pub fn is_same_logical_view(&self, other: &LogicalView) -> bool {
+        (self.identifier == other.identifier)
+            || self.view_on.is_same_source(&other.view_on) 
+    }
     pub fn get_iterable(&self) -> RMLIterable {
         match &*self.view_on {
             AbstractLogicalSourceEnum::LogicalSource(logical_source) => {

@@ -209,7 +209,7 @@ pub struct JoinCondition {
     pub child:  ExpressionMapEnum,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct RMLIterable {
     pub iterator:              Option<String>,
     pub reference_formulation: Option<ReferenceFormulation>,
@@ -229,7 +229,6 @@ impl RMLIterable {
     }
 }
 
-
 #[derive(Debug, Clone, Unwrap, TryUnwrap)]
 #[unwrap(ref)]
 #[try_unwrap(ref)]
@@ -240,6 +239,23 @@ pub enum AbstractLogicalSourceEnum {
 }
 
 impl AbstractLogicalSourceEnum {
+    pub fn is_same_source(&self, other: &AbstractLogicalSourceEnum) -> bool {
+        match (self, other) {
+            (
+                AbstractLogicalSourceEnum::LogicalSource(l_logical_source),
+                AbstractLogicalSourceEnum::LogicalSource(r_logical_source),
+            ) => {
+                l_logical_source.iterable == r_logical_source.iterable
+                    && l_logical_source.source == r_logical_source.source
+            }
+            (
+                AbstractLogicalSourceEnum::LogicalView(l_logical_view),
+                AbstractLogicalSourceEnum::LogicalView(r_logical_view),
+            ) => l_logical_view.is_same_logical_view(r_logical_view),
+
+            _ => false,
+        }
+    }
     pub fn get_iterable(&self) -> RMLIterable {
         match self {
             AbstractLogicalSourceEnum::LogicalSource(logical_source) => {
