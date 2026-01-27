@@ -6,9 +6,7 @@ use derive_more::{IsVariant, TryUnwrap, Unwrap};
 use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
     CommonTermMapInfo, GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
-use crate::new_rml::rml_model::v2::fnml::{
-    FunctionMap,
-};
+use crate::new_rml::rml_model::v2::fnml::FunctionMap;
 
 pub mod core;
 pub mod fnml;
@@ -37,6 +35,30 @@ impl AsRef<CommonTermMapInfo> for TermMapEnum {
             TermMapEnum::GraphMap(graph_map) => &graph_map.term_map_info,
             TermMapEnum::FunctionMap(function_map) => {
                 &function_map.term_map_info
+            }
+        }
+    }
+}
+
+impl RefAttributeGetter for TermMapEnum {
+    fn get_ref_attributes(&self) -> HashSet<String> {
+        match self {
+            TermMapEnum::SubjectMap(subject_map) => {
+                let mut result = subject_map.term_map_info.get_ref_attributes(); 
+                result.extend(subject_map.graph_maps.iter().flat_map(|tm| tm.get_ref_attributes()));
+                result
+            }
+            TermMapEnum::PredicateMap(predicate_map) => {
+                predicate_map.term_map_info.get_ref_attributes()
+            }
+            TermMapEnum::ObjectMap(object_map) => {
+                object_map.term_map_info.get_ref_attributes()
+            }
+            TermMapEnum::GraphMap(graph_map) => {
+                graph_map.term_map_info.get_ref_attributes()
+            }
+            TermMapEnum::FunctionMap(function_map) => {
+                function_map.term_map_info.get_ref_attributes()
             }
         }
     }
