@@ -1,9 +1,11 @@
 use std::collections::{HashMap, HashSet};
 
 use operator::{Extend, Operator, Rename, Serializer, Target};
+use plan::data_type::RcRefCellPlan;
 use plan::states::join::join;
 use plan::states::Processed;
 use plan::Plan;
+use sophia_term::RcTerm;
 
 use super::extend::insert_non_constant_func;
 use super::store::SearchStore;
@@ -44,6 +46,7 @@ impl OperatorTranslator for JoinTranslator {
                 "Search store cannot found the associated plan for the logical source id: {:?}",
                 child_logical_source_id
             )))?;
+        let child_abs_source = &child_trip_map.abs_logical_source;
 
         for (parent_tm_id, (pred_vec, ref_om, graph_vec)) in parent_tms_refoms {
             let parent_tm = store.tm_search_map.get(&parent_tm_id).ok_or(
@@ -52,79 +55,56 @@ impl OperatorTranslator for JoinTranslator {
                     parent_tm_id
                 )),
             )?;
-            let parent_logical_source_id =
-                parent_tm.abs_logical_source.get_identifier();
 
-            let parent_plan = store
-                    .ls_id_sourced_plan_map
-                    .get(&parent_logical_source_id)
-                    .ok_or(TranslationError::JoinError(format!(
-                        "Search store cannot found the associated plan for the logical source id: {:?}",
-                        child_logical_source_id
-                    )))?;
-
-            let alias = "join_alias";
-            // Join the plans and progress the cursur
-            let mut aliased_plan =
-                join(child_plan.clone(), parent_plan.clone())?.alias(alias)?;
-
-            let mut joined: Plan<Processed>;
-            let join_conditions = &ref_om.join_condition;
-            let child_attributes: Vec<_> = join_conditions
-                .iter()
-                .flat_map(|jc| jc.child.get_ref_attributes())
-                .collect();
-            let parent_attributes: Vec<_> = join_conditions
-                .iter()
-                .flat_map(|jc| jc.parent.get_ref_attributes())
-                .map(|val| format!("{}.{}", alias, val))
-                .collect();
-
-            let mut extend_op;
-            //Handle self-joins by inserting a natural join operator
-            if (!child_attributes.is_empty() && !parent_attributes.is_empty())
-                || child_logical_source_id != parent_logical_source_id
+            let parent_abs_source = &parent_tm.abs_logical_source;
+            let mut extended_plan;
+            if ref_om.join_condition.is_empty()
+                && child_abs_source.is_same_source(parent_abs_source)
             {
-                let ptm_rename_op = Rename {
-                    alias:        Some(alias.to_string()),
-                    rename_pairs: HashMap::new(),
-                };
-
-                aliased_plan = aliased_plan.apply_to_right(
-                    Operator::RenameOp {
-                        config: ptm_rename_op,
-                    },
-                    "RenameOp".into(),
-                )?;
-
-                joined = aliased_plan
-                    .where_by(child_attributes)?
-                    .equal_to(parent_attributes)?;
-                extend_op = extend_op_from_join(
-                    &child_trip_map.subject_map,
-                    &ref_om,
-                    &pred_vec,
-                    &child_trip_map.base_iri,
-                    &graph_vec,
-                    Some(alias),
-                    store,
-                )?;
+                let plan_to_extend = child_plan.clone();
+                // Self-join situation
+                if child_abs_source.get_identifier()
+                    != parent_abs_source.get_identifier()
+                {
+                    log::warn!("Falling back to apply normal join operator since iterator/field
+                        merging is NOT implemented YET for self-joins with semantically same
+                        logical source but different URI"); 
+                    extended_plan = join_related_plan_processing(
+                        store,
+                        child_trip_map,
+                        &child_logical_source_id,
+                        child_plan,
+                        &pred_vec,
+                        &ref_om,
+                        &graph_vec,
+                        parent_tm,
+                    )?;
+                } else {
+                    let extend_op = extend_op_from_join(
+                        &child_trip_map.subject_map,
+                        &ref_om,
+                        &pred_vec,
+                        &child_trip_map.base_iri,
+                        &graph_vec,
+                        None,
+                        store,
+                    )?;
+                    extended_plan = plan_to_extend
+                        .borrow_mut()
+                        .apply(&extend_op, "Extend")?;
+                }
             } else {
-                joined = aliased_plan.natural_join()?;
-
-                extend_op = extend_op_from_join(
-                    &child_trip_map.subject_map,
-                    &ref_om,
-                    &pred_vec,
-                    &child_trip_map.base_iri,
-                    &graph_vec,
-                    None,
+                extended_plan = join_related_plan_processing(
                     store,
+                    child_trip_map,
+                    &child_logical_source_id,
+                    child_plan,
+                    &pred_vec,
+                    &ref_om,
+                    &graph_vec,
+                    parent_tm,
                 )?;
             }
-
-            let mut extended_plan = joined.apply(&extend_op, "ExtendOp")?;
-
             let serializer = Serializer {
                 template: serializer_template_from_join(
                     &child_trip_map.subject_map,
@@ -143,6 +123,83 @@ impl OperatorTranslator for JoinTranslator {
         }
         Ok(())
     }
+}
+
+fn join_related_plan_processing(
+    store: &SearchStore<'_>,
+    child_trip_map: &TriplesMap,
+    child_logical_source_id: &RcTerm,
+    child_plan: &RcRefCellPlan<Processed>,
+    pred_vec: &[TermMapEnum],
+    ref_om: &RefObjectMap,
+    graph_vec: &[TermMapEnum],
+    parent_tm: &&TriplesMap,
+) -> Result<Plan<Processed>, crate::new_rml::error::NewRMLTranslationError> {
+    let parent_logical_source_id =
+        parent_tm.abs_logical_source.get_identifier();
+    let parent_plan = store
+        .ls_id_sourced_plan_map
+        .get(&parent_logical_source_id)
+        .ok_or(TranslationError::JoinError(format!(
+            "Search store cannot found the associated plan for the logical source id: {:?}",
+            child_logical_source_id
+        )))?;
+    let alias = "join_alias";
+    let mut aliased_plan =
+        join(child_plan.clone(), parent_plan.clone())?.alias(alias)?;
+    let mut joined: Plan<Processed>;
+    let join_conditions = &ref_om.join_condition;
+    let child_attributes: Vec<_> = join_conditions
+        .iter()
+        .flat_map(|jc| jc.child.get_ref_attributes())
+        .collect();
+    let parent_attributes: Vec<_> = join_conditions
+        .iter()
+        .flat_map(|jc| jc.parent.get_ref_attributes())
+        .map(|val| format!("{}.{}", alias, val))
+        .collect();
+    let extend_op;
+    if (!child_attributes.is_empty() && !parent_attributes.is_empty())
+        || *child_logical_source_id != parent_logical_source_id
+    {
+        let ptm_rename_op = Rename {
+            alias:        Some(alias.to_string()),
+            rename_pairs: HashMap::new(),
+        };
+
+        aliased_plan = aliased_plan.apply_to_right(
+            Operator::RenameOp {
+                config: ptm_rename_op,
+            },
+            "RenameOp".into(),
+        )?;
+
+        joined = aliased_plan
+            .where_by(child_attributes)?
+            .equal_to(parent_attributes)?;
+        extend_op = extend_op_from_join(
+            &child_trip_map.subject_map,
+            ref_om,
+            pred_vec,
+            &child_trip_map.base_iri,
+            graph_vec,
+            Some(alias),
+            store,
+        )?;
+    } else {
+        joined = aliased_plan.natural_join()?;
+
+        extend_op = extend_op_from_join(
+            &child_trip_map.subject_map,
+            ref_om,
+            pred_vec,
+            &child_trip_map.base_iri,
+            graph_vec,
+            None,
+            store,
+        )?;
+    }
+    Ok(joined.apply(&extend_op, "ExtendOp")?)
 }
 
 pub fn extend_op_from_join(
