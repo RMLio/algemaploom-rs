@@ -43,7 +43,7 @@ impl OperatorTranslator for JoinTranslator {
             .ls_id_sourced_plan_map
             .get(&child_logical_source_id)
             .ok_or(TranslationError::JoinError(format!(
-                "Search store cannot found the associated plan for the logical source id: {:?}",
+                "Search store cannot find the associated plan for the logical source id: {:?}",
                 child_logical_source_id
             )))?;
         let child_abs_source = &child_trip_map.abs_logical_source;
