@@ -8,11 +8,18 @@ class Translator implements ITranslator {
 	static {
         try {
 			String os = System.getProperty("os.name");
+			String arch = System.getProperty("os.arch");
             String path;
             if (os.contains("Windows")) {
                 path = "/Windows/ltranslator.dll";
             } else if (os.contains("Linux")) {
                 path = "/Linux/libltranslator.so";
+            } else if (os.contains("Mac")) {
+                if (arch.contains("aarch64") || arch.contains("arm")) {
+                    path = "/Apple-aarch64/libltranslator.dylib";
+                } else {
+                    path = "/Apple-x86_64/libltranslator.dylib";
+                }
             } else {
                 path = "/" + os + "/ltranslator.dll";
             }
