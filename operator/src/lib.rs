@@ -1,7 +1,8 @@
 pub mod display;
 pub mod formats;
 mod test_util;
-pub mod tuples; pub mod value;
+pub mod tuples;
+pub mod value;
 
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
@@ -17,16 +18,32 @@ pub type RcOperator = Rc<Operator>;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Operator {
-    SourceOp { config: Source },
-    JoinOp { config: Join },
-    UnionOp, 
-    ProjectOp { config: Projection },
-    ExtendOp { config: Extend },
-    RenameOp { config: Rename },
-    SerializerOp { config: Serializer },
-    TargetOp { config: Target },
+    SourceOp {
+        config: Source,
+    },
+    JoinOp {
+        config: Join,
+    },
+    UnionOp,
+    ProjectOp {
+        config: Projection,
+    },
+    ExtendOp {
+        config: Extend,
+    },
+    RenameOp {
+        config: Rename,
+    },
+    SerializerOp {
+        config: Serializer,
+    },
+    TargetOp {
+        config: Target,
+    },
     #[deprecated]
-    FragmentOp { config: Fragmenter },
+    FragmentOp {
+        config: Fragmenter,
+    },
 }
 
 impl From<Extend> for Operator {
@@ -89,13 +106,14 @@ where
     }
 }
 
-// TODO: Turn Field and Iterator into an Enum since a field itself can be an iterator! 
+// TODO: Turn Field and Iterator into an Enum since a field itself can be an iterator!
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Field {
     pub alias:                 String,
+    pub absolute_path:         Option<String>,
     pub reference:             Option<String>,
-    pub constant:              Option<String>, 
-    pub iterator:              Option<String>, 
+    pub constant:              Option<String>,
+    pub iterator:              Option<String>,
     pub reference_formulation: ReferenceFormulation,
     pub inner_fields:          Vec<Field>,
 }
@@ -118,10 +136,10 @@ impl Hash for Iterator {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Source {
     #[serde(flatten)]
-    pub config:      HashMap<String, String>,
-    pub access:      HashMap<String, String>,
-    pub source_type:    IOType,
-    pub root_iterator:    Iterator,
+    pub config:        HashMap<String, String>,
+    pub access:        HashMap<String, String>,
+    pub source_type:   IOType,
+    pub root_iterator: Iterator,
 }
 
 impl PrettyDisplay for Source {
@@ -157,7 +175,6 @@ pub enum JoinType {
     NaturalJoin,
 }
 
-
 /// Type of predicate function used in a θ-join operator
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum PredicateType {
@@ -167,7 +184,6 @@ pub enum PredicateType {
     LEqual,
     Equal,
 }
-
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Join {
@@ -200,7 +216,7 @@ impl PrettyDisplay for Join {
             "type: {:?}\npredicate_type: {:?}\nattribute_pairs: {}\n",
             self.join_type,
             self.predicate_type,
-            serde_json::to_string_pretty(&self.left_right_attr_pairs)?, 
+            serde_json::to_string_pretty(&self.left_right_attr_pairs)?,
         );
 
         Ok(result)
@@ -233,7 +249,7 @@ impl Hash for Projection {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Rename {
-    pub alias: Option<String>, 
+    pub alias:        Option<String>,
     #[serde(flatten)]
     pub rename_pairs: HashMap<String, String>,
 }
@@ -243,7 +259,7 @@ impl PrettyDisplay for Rename {
         let alias_string = match &self.alias {
             Some(inner) => format!("{}\n", inner),
             None => "".to_string(),
-        }; 
+        };
 
         let pairs_string = self
             .rename_pairs
@@ -252,7 +268,10 @@ impl PrettyDisplay for Rename {
             .collect::<Vec<String>>()
             .join("\n");
 
-        Ok(format!("Renaming pairs:\n {}{}", alias_string, pairs_string))
+        Ok(format!(
+            "Renaming pairs:\n {}{}",
+            alias_string, pairs_string
+        ))
     }
 }
 
@@ -295,32 +314,30 @@ impl PrettyDisplay for Extend {
 
 pub type RcExtendFunction = Rc<Function>;
 
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub enum TermType {
     Literal,
-    IRI
+    IRI,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum Function {
-    Nop, 
-    SimpleConcat{
-        inner_function: Option<RcExtendFunction>
-    }, 
-    Concatenate{
-        left_value: RcExtendFunction,
-        separator: String, 
+    Nop,
+    SimpleConcat {
+        inner_function: Option<RcExtendFunction>,
+    },
+    Concatenate {
+        left_value:  RcExtendFunction,
+        separator:   String,
         right_value: RcExtendFunction,
     },
     Reference {
         value: String,
     },
-    TypedConstant{
-
-        value:String, 
-        term_type: TermType, 
+    TypedConstant {
+        value:     String,
+        term_type: TermType,
     },
 
     Constant {
@@ -330,26 +347,26 @@ pub enum Function {
         value: String,
     },
 
-    Replace{
+    Replace {
         replace_map:    HashMap<String, HashSet<String>>,
-        inner_function: RcExtendFunction, 
+        inner_function: RcExtendFunction,
     },
 
-    TemplateFunctionValue{
-        template: String, 
-        variable_function_pairs: Vec<(String, RcExtendFunction)>, 
+    TemplateFunctionValue {
+        template:                String,
+        variable_function_pairs: Vec<(String, RcExtendFunction)>,
     },
 
     UriEncode {
         inner_function: RcExtendFunction,
     },
     Iri {
-        base_iri: Option<String>, 
+        base_iri:       Option<String>,
         inner_function: RcExtendFunction,
     },
     Literal {
-        inner_function: RcExtendFunction,
-        dtype_function: Option<RcExtendFunction>, 
+        inner_function:    RcExtendFunction,
+        dtype_function:    Option<RcExtendFunction>,
         langtype_function: Option<RcExtendFunction>,
     },
     BlankNode {
@@ -362,13 +379,13 @@ pub enum Function {
         inner_function: RcExtendFunction,
     },
     FnO {
-        fno_identifier:   String,
-        parameters: HashMap<String, RcExtendFunction>,
-        return_type: Option<String>,
+        fno_identifier: String,
+        parameters:     HashMap<String, RcExtendFunction>,
+        return_type:    Option<String>,
     },
     Star {
-       // TODO: Implement star function
-    }
+        // TODO: Implement star function
+    },
 }
 
 // Post-mapping operators
@@ -401,7 +418,7 @@ impl Hash for Serializer {
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum IOType {
-    StdIn, 
+    StdIn,
     StdOut,
     File,
     Kafka,
@@ -424,9 +441,13 @@ pub struct Target {
     pub data_format:   DataFormat,
 }
 
-impl Default for Target{
+impl Default for Target {
     fn default() -> Self {
-        Self { configuration: Default::default(), target_type: IOType::StdOut, data_format: DataFormat::NQuads }
+        Self {
+            configuration: Default::default(),
+            target_type:   IOType::StdOut,
+            data_format:   DataFormat::NQuads,
+        }
     }
 }
 
