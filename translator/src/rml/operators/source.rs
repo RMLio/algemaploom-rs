@@ -36,6 +36,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
 
         fields.extend(references.into_iter().map(|reference| {
             Field {
+                absolute_path:         Some(reference.clone()),
                 alias:                 reference.clone(),
                 constant:              None,
                 iterator:              None,
@@ -64,6 +65,11 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             SourceType::HTML => operator::IOType::File,
         };
 
-        Source { config, access: Default::default(), source_type, root_iterator }
+        Source {
+            config,
+            access: Default::default(),
+            source_type,
+            root_iterator,
+        }
     }
 }

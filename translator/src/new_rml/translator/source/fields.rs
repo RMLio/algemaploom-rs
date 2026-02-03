@@ -16,6 +16,10 @@ fn translate_rml_field_mut(
     alias_query_map:  &mut HashMap<String, String>, 
 ) -> NewRMLTranslationResult<OperatorField> {
     log::debug!("Translating field: {:?}", field);
+
+    let alias = field.name.clone();
+    let absolute_path  = Some(field.absolute_name.clone()); 
+
     match &field.kind {
         RMLFieldKind::Iterable(rmliterable) => {
             let value = &rmliterable.iterator;
@@ -28,7 +32,8 @@ fn translate_rml_field_mut(
             let inner_fields =
                 translate_rml_field_vec(&field.fields, ref_form.clone(), alias_query_map)?;
             Ok(OperatorField {
-                alias: field.absolute_name.clone(),
+                alias,
+                absolute_path, 
                 constant: None,
                 iterator: value.clone(),
                 reference: None,
@@ -40,12 +45,12 @@ fn translate_rml_field_mut(
             if let Ok(base_expr_enum) =
                 expression_map.try_unwrap_base_expression_map_ref()
             {
-                let alias = field.absolute_name.clone();
 
                 match base_expr_enum {
                     BaseExpressionMapEnum::Reference(reference) => {
                         Ok(OperatorField {
                             alias,
+                            absolute_path, 
                             reference:             Some(reference.clone()),
                             constant:              None,
                             iterator:              None,
@@ -56,6 +61,7 @@ fn translate_rml_field_mut(
                     BaseExpressionMapEnum::Constant(constant) => {
                         Ok(OperatorField {
                             alias,
+                            absolute_path, 
                             reference:             None,
                             constant:              turtle_stringify_term(constant), 
                             iterator:              None,

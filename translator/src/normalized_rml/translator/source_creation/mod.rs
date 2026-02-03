@@ -131,6 +131,7 @@ fn create_fields_from_map(
         .iter()
         .map(|(query, attr)| {
             Field {
+                absolute_path:         Some(attr.to_string()),
                 alias:                 attr.to_string(),
                 constant:              None,
                 iterator:              None,

@@ -91,7 +91,7 @@ impl<'a> OperatorTranslator<ShExMLSourceTranslatorOutput>
                 let source_type = config_iotype_pair.1.clone();
                 let access: HashMap<String, String> = HashMap::new();
                 let source = Source {
-                    config:        config_iotype_pair.0.clone(),
+                    config: config_iotype_pair.0.clone(),
                     access,
                     source_type,
                     root_iterator: translate_to_operator_iterator(iter),
@@ -189,6 +189,7 @@ fn translate_to_operator_fields(
         .iter()
         .map(|nested_iter| {
             operator::Field {
+                absolute_path:         Some(nested_iter.ident.clone()),
                 alias:                 nested_iter.ident.clone(),
                 reference:             nested_iter.query.clone(),
                 constant:              None,
@@ -214,6 +215,7 @@ fn translate_to_flat_fields(
         parcombi::FieldType::Push | parcombi::FieldType::Normal => {
             Some(operator::Field {
                 alias:                 shex_field.ident.clone(),
+                absolute_path:         Some(shex_field.ident.clone()),
                 reference:             Some(shex_field.query.clone()),
                 constant:              None,
                 iterator:              None,

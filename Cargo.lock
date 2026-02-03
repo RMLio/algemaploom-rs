@@ -753,7 +753,7 @@ dependencies = [
 
 [[package]]
 name = "meamer-rs"
-version = "0.6.3"
+version = "0.6.4"
 dependencies = [
  "anyhow",
  "catch_panic",
@@ -826,7 +826,7 @@ dependencies = [
 
 [[package]]
 name = "normalizer"
-version = "0.6.3"
+version = "0.6.4"
 dependencies = [
  "anyhow",
  "clap",
@@ -853,7 +853,7 @@ checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
 
 [[package]]
 name = "operator"
-version = "0.6.3"
+version = "0.6.4"
 dependencies = [
  "anyhow",
  "serde",
@@ -1160,7 +1160,7 @@ dependencies = [
 
 [[package]]
 name = "plan"
-version = "0.6.3"
+version = "0.6.4"
 dependencies = [
  "anyhow",
  "operator",
@@ -1886,7 +1886,7 @@ dependencies = [
 
 [[package]]
 name = "translator"
-version = "0.6.3"
+version = "0.6.4"
 dependencies = [
  "anyhow",
  "chumsky",
@@ -1988,7 +1988,7 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
 name = "vocab"
-version = "0.6.3"
+version = "0.6.4"
 
 [[package]]
 name = "walkdir"
