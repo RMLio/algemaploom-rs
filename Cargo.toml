@@ -9,7 +9,7 @@ authors.workspace = true
 opt-level = 3
 
 [workspace]
-members = ["operator", "vocab", "plan", "translator", "sparql-sat-checker", "normalizer"]
+members = ["crates/*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.package]
@@ -41,10 +41,10 @@ serde_json.workspace = true
 thiserror.workspace = true
 clap.workspace = true
 
-operator = { path = "./operator/" }
-plan = { path = "./plan/" }
-translator = { path = "./translator/" }
-sparql-sat-checker = {path = "./sparql-sat-checker/"}
+operator = { path = "./crates/operator/" }
+plan = { path = "./crates/plan/" }
+translator = { path = "./crates/translator/" }
+sparql-sat-checker = {path = "./crates/sparql-sat-checker/"}
 
 csv = "1.2.2"
 urlencoding = "2.1.2"
