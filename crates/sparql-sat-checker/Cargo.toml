@@ -9,7 +9,7 @@ spargebra = "0.4.2"
 
 operator = { path = "../operator/" }
 plan = { path = "../plan/" }
-translator = { path = "../translator/" }
+translator_api = { path = "../translator_api/" }
 vocab = { path = "../vocab/" }
 
 either.workspace = true

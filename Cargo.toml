@@ -43,7 +43,7 @@ clap.workspace = true
 
 operator = { path = "./crates/operator/" }
 plan = { path = "./crates/plan/" }
-translator = { path = "./crates/translator/" }
+translator_api = { path = "./crates/translator_api/" }
 sparql-sat-checker = {path = "./crates/sparql-sat-checker/"}
 
 csv = "1.2.2"
