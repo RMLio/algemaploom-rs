@@ -14,7 +14,7 @@ use crate::rml_model::v2::core::{
     PredicateObjectMap, TriplesMap,
 };
 use crate::rml_model::v2::RefAttributeGetter;
-use crate::rml::parser::extractors::rcterm_to_string;
+use super::util::rcterm_to_string;
 
 impl Extractor<TriplesMap> for TriplesMap {
     fn extract_self<TTerm>(

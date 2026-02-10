@@ -21,7 +21,7 @@ use super::rml_model::v2::core::TriplesMap;
 use super::rml_model::Document;
 use crate::error::NewRMLTranslationError;
 use crate::extractors::io::parse_file;
-use crate::LanguageTranslator;
+use translator_api::{LanguageTranslateResult, LanguageTranslator};
 
 pub trait OperatorTranslator {
     type Input;
@@ -43,18 +43,18 @@ pub trait OperatorTranslator {
 #[derive(Debug, Clone)]
 pub struct NewRMLDocumentTranslator {}
 
-impl LanguageTranslator<&Path> for NewRMLDocumentTranslator {
-    fn translate_to_plan(path: &Path) -> crate::LanguageTranslateResult {
+impl LanguageTranslator<&Path, NewRMLTranslationError> for NewRMLDocumentTranslator {
+    fn translate_to_plan(path: &Path) -> LanguageTranslateResult<NewRMLTranslationError> {
         let document = parse_file(path.to_path_buf())
             .map_err(|err| NewRMLTranslationError::ParseError(err.into()))?;
         NewRMLDocumentTranslator::translate_to_plan(document)
     }
 }
 
-impl LanguageTranslator<Document> for NewRMLDocumentTranslator {
+impl LanguageTranslator<Document, NewRMLTranslationError> for NewRMLDocumentTranslator {
     fn translate_to_plan(
         mut model: Document,
-    ) -> crate::LanguageTranslateResult {
+    ) -> LanguageTranslateResult<NewRMLTranslationError> {
         //preprocessing to change all logical sources to logical views
         for tm in model.triples_maps.iter_mut() {
             tm.transform_to_logical_view().map_err(|err| {
