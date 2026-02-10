@@ -36,15 +36,15 @@ use crate::{LanguageTranslator, OperatorTranslator};
 
 pub struct OptimizedRMLDocumentTranslator;
 
-impl LanguageTranslator<&Path> for OptimizedRMLDocumentTranslator {
-    fn translate_to_plan(path: &Path) -> crate::LanguageTranslateResult {
+impl LanguageTranslator<&Path, RMLTranslationError> for OptimizedRMLDocumentTranslator {
+    fn translate_to_plan(path: &Path) -> crate::LanguageTranslateResult<RMLTranslationError> {
         let doc = parse_file(path.to_path_buf())?;
         Self::translate_to_plan(doc)
     }
 }
 
-impl LanguageTranslator<Document> for OptimizedRMLDocumentTranslator {
-    fn translate_to_plan(doc: Document) -> crate::LanguageTranslateResult {
+impl LanguageTranslator<Document, RMLTranslationError> for OptimizedRMLDocumentTranslator {
+    fn translate_to_plan(doc: Document) -> crate::LanguageTranslateResult<RMLTranslationError> {
         let base_iri = doc.default_base_iri.clone();
         let mut plan = Plan::<()>::new();
 

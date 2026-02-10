@@ -31,10 +31,10 @@ mod util;
 
 pub struct ShExMLTranslator;
 
-impl LanguageTranslator<ShExMLDocument> for ShExMLTranslator {
+impl LanguageTranslator<ShExMLDocument, ShExMLTranslationError> for ShExMLTranslator {
     fn translate_to_plan(
         model: ShExMLDocument,
-    ) -> crate::LanguageTranslateResult {
+    ) -> crate::LanguageTranslateResult<ShExMLTranslationError> {
         let mut plan = Plan::new();
         debug!("Indexing shexml document");
         let indexed_document = model.convert_to_indexed();

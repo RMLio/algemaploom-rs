@@ -1,10 +1,9 @@
 use super::*;
-use crate::error::TranslationError;
 use crate::test_case;
 
 #[ignore]
 #[test]
-fn translate_to_plan_test() -> Result<(), TranslationError> {
+fn translate_to_plan_test() -> Result<(), ShExMLTranslationError> {
     let input_shexml = test_case!("shexml/sample.shexml");
     let shexml_document = parcombi::parse_file(input_shexml).unwrap();
 
