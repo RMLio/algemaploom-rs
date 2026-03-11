@@ -7,10 +7,8 @@ use vocab::ToString;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::new_rml::error::NewRMLTranslationResult;
-use crate::new_rml::extractors::{stringify_term, FromVocab};
-use crate::new_rml::rml_model::v2::core::expression_map::term_map::{
-    CommonTermMapInfo, GraphMap,
-};
+use crate::new_rml::extractors::stringify_term;
+use crate::new_rml::rml_model::v2::core::expression_map::term_map::CommonTermMapInfo;
 use crate::new_rml::rml_model::v2::core::{PredicateObjectMap, TriplesMap};
 use crate::new_rml::rml_model::v2::TermMapEnum;
 
@@ -74,16 +72,17 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
                     triples.push(format!("{} {} {}", sm, pm_var, om_var));
                 }
 
-                if !pom.graph_map_vec.is_empty() {
-                    is_part_of_graph = true
+                // only apply graph map if the pom has no reference map, because that's already
+                // been handled by the join translator
+                if pom.ref_object_map.is_empty() && !pom.graph_map_vec.is_empty() {
+                    is_part_of_graph = true;
+                    add_graph_to_triple(
+                        store,
+                        &mut graph_pattern,
+                        &triples,
+                        &pom.graph_map_vec,
+                    );
                 }
-
-                add_graph_to_triple(
-                    store,
-                    &mut graph_pattern,
-                    &triples,
-                    &pom.graph_map_vec,
-                );
             }
 
             if let Ok(sm) = tm.subject_map.try_unwrap_subject_map_ref() {
