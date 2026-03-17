@@ -1,14 +1,14 @@
 use log::{error, info, warn};
 use plan::states::Init;
 use plan::Plan;
-use translator::error::TranslationError;
-use translator::new_rml::error::NewRMLTranslationError;
-use translator::new_rml::translator::NewRMLDocumentTranslator;
-use translator::rml::parser::extractors::io::{
+use crate::error::TranslationError;
+use translator_new_rml::error::NewRMLTranslationError;
+use translator_new_rml::translator::NewRMLDocumentTranslator;
+use translator_api::rml::parser::extractors::io::{
     parse_file as old_parse_file, parse_str as old_parse_str,
 };
-use translator::rml::OptimizedRMLDocumentTranslator;
-use translator::LanguageTranslator;
+use translator_api::rml::OptimizedRMLDocumentTranslator;
+use translator_api::LanguageTranslator;
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
 
@@ -25,16 +25,16 @@ impl FileTranslatorHandler for RMLFileHandler {
     ) -> Result<Plan<Init>, TranslationError> {
         info!("Trying to translate file {} with RML v1 (old) spec translator https://rml.io/specs/rml/", file_path.as_ref());
         if let Ok(document) = old_parse_file(file_path.as_ref().into()) {
-            OptimizedRMLDocumentTranslator::translate_to_plan(document)
+            Ok(OptimizedRMLDocumentTranslator::translate_to_plan(document)?)
         } else {
             warn!("Failed extracting with RML v1 (old) spec translator");
             info!("Trying again with the RML v2 (new) spec translator https://kg-construct.github.io/rml-resources/portal/");
-            let document = translator::new_rml::extractors::io::parse_file(
+            let document = translator_new_rml::extractors::io::parse_file(
                 file_path.as_ref().into(),
             )
             .map_err::<NewRMLTranslationError, _>(|err| err.into())?;
 
-            NewRMLDocumentTranslator::translate_to_plan(document)
+            Ok(NewRMLDocumentTranslator::translate_to_plan(document)?)
         }
     }
 
@@ -52,15 +52,15 @@ impl StringTranslatorHandler for RMLStringHandler {
 
             info!("Using translator for the Old RML spec https://rml.io/specs/rml/");
             let document = old_parse_str(mapping)?;
-            OptimizedRMLDocumentTranslator::translate_to_plan(document)
+            Ok(OptimizedRMLDocumentTranslator::translate_to_plan(document)?)
         } else {
             // New RML mapping document shouldn't contain R2RML's prefix (BIIIGG ASSUMPTION)
             info!("Using translator for the latest RML spec https://kg-construct.github.io/rml-resources/portal/");
             let document =
-                translator::new_rml::extractors::io::parse_str(mapping)
+                translator_new_rml::extractors::io::parse_str(mapping)
                     .map_err::<NewRMLTranslationError, _>(|err| err.into())?;
 
-            NewRMLDocumentTranslator::translate_to_plan(document)
+            Ok(NewRMLDocumentTranslator::translate_to_plan(document)?)
         }
     }
 }

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use plan::error::PlanError;
 use plan::states::Init;
 use plan::Plan;
-use translator::error::{TranslationError, TranslationErrorKind};
+use crate::error::{TranslationError, TranslationErrorKind};
 
 pub trait FileTranslatorHandler: Debug {
     fn supported_extension(&self) -> String;

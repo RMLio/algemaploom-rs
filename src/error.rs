@@ -2,9 +2,9 @@ use std::fmt::Display;
 use std::path::PathBuf;
 
 
-use crate::new_rml::error::NewRMLTranslationError;
-use crate::rml::error::RMLTranslationError;
-use crate::shexml::error::ShExMLTranslationError;
+use translator_new_rml::error::NewRMLTranslationError;
+use translator_api::rml::error::RMLTranslationError;
+use translator_api::shexml::error::ShExMLTranslationError;
 
 #[derive(Debug)]
 pub struct TranslationError {
@@ -175,7 +175,7 @@ impl Display for LanguageErrorKind {
 }
 
 impl std::error::Error for LanguageErrorKind {
-    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+    fn source(&self) -> std::option::Option<&(dyn std::error::Error + 'static)> {
         match self {
             LanguageErrorKind::RMLTranslationError(rmltranslation_error) => {
                 Some(rmltranslation_error)

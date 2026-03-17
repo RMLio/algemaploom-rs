@@ -1,10 +1,10 @@
 use plan::error::PlanError;
 use plan::states::Init;
 use plan::Plan;
-use translator::error::TranslationError;
-use translator::shexml::error::ShExMLTranslationError;
-use translator::shexml::{parcombi, ShExMLTranslator};
-use translator::LanguageTranslator;
+use crate::error::TranslationError;
+use translator_api::shexml::error::ShExMLTranslationError;
+use translator_api::shexml::{parcombi, ShExMLTranslator};
+use translator_api::LanguageTranslator;
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
 
@@ -23,7 +23,7 @@ impl FileTranslatorHandler for ShExMLFileHandler {
             parcombi::parse_file(file_path.as_ref())
                 .map_err::<ShExMLTranslationError, _>(|err| err.into())?;
 
-        ShExMLTranslator::translate_to_plan(shexml_document)
+        Ok(ShExMLTranslator::translate_to_plan(shexml_document)?)
     }
 
     fn supported_extension(&self) -> String {
@@ -37,6 +37,6 @@ impl StringTranslatorHandler for ShExMLStringHandler {
             parcombi::parse_string(mapping.to_string())
                 .map_err::<ShExMLTranslationError, _>(|err| err.into())?;
 
-        ShExMLTranslator::translate_to_plan(shexml_document)
+        Ok(ShExMLTranslator::translate_to_plan(shexml_document)?)
     }
 }

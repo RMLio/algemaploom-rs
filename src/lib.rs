@@ -3,6 +3,7 @@ pub mod rml;
 pub mod shexml;
 pub mod logger;
 pub mod api;
+pub mod error; 
 pub mod util;
 
 #[cfg(feature = "jni")]
