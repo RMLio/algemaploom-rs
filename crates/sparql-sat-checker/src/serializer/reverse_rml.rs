@@ -10,7 +10,7 @@ use operator::{
     Field, Function, Iterator, Operator, RcExtendFunction, formats::ReferenceFormulation,
 };
 use plan::data_type::DiGraphOperators;
-use translator::normalized_rml::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use translator_api::normalized_rml::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 use uuid::Uuid;
 fn add_prefixes(buffer: &mut Vec<String>) {
     buffer.push("@base  <http://example.com/ns#>.".to_string());
