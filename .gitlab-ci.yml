@@ -1,6 +1,6 @@
 # Unittests
 test-rust:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: test
   script:
     - cargo test --verbose --jobs 1 --workspace
@@ -19,13 +19,13 @@ test-java:
 
 # Builds
 build-rust:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - cargo build
 
 build-java:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - apt update
@@ -37,13 +37,13 @@ build-java:
     - ./build_java.sh
 
 build-python:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - ./build_python.sh
 
 build-nodejs:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
@@ -70,7 +70,7 @@ build-nodejs:
 Maven Central Deployment:
   stage: deploy
   image:
-    name:  rustdocker/rust:stable
+    name:  rust:latest
     pull_policy: if-not-present
   before_script:
     - sudo apt-get update && apt-get install -y gpg ca-certificates openjdk-17-jdk curl maven gcc-mingw-w64
