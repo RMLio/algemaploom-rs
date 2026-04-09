@@ -1886,6 +1886,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "transaltor_shexml"
+version = "0.6.5"
+
+[[package]]
 name = "translator_api"
 version = "0.6.5"
 dependencies = [
@@ -1945,7 +1949,6 @@ name = "translator_normalized_rml"
 version = "0.6.5"
 dependencies = [
  "anyhow",
- "chumsky",
  "clap",
  "derive_more",
  "either",
@@ -1957,15 +1960,9 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
- "sophia_api",
- "sophia_inmem",
- "sophia_isomorphism",
- "sophia_term",
- "sophia_turtle",
  "translator_api",
  "uuid",
  "vocab",
- "walkdir",
 ]
 
 [[package]]
