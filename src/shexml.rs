@@ -1,9 +1,8 @@
-use plan::error::PlanError;
 use plan::states::Init;
 use plan::Plan;
 use crate::error::TranslationError;
-use translator_api::shexml::error::ShExMLTranslationError;
-use translator_api::shexml::{parcombi, ShExMLTranslator};
+use translator_shexml::error::ShExMLTranslationError;
+use translator_shexml::{parcombi, ShExMLTranslator};
 use translator_api::LanguageTranslator;
 
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
