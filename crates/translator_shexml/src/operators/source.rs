@@ -5,8 +5,8 @@ use operator::formats::ReferenceFormulation;
 use operator::{IOType, Source};
 use plan::error::PlanError;
 
-use crate::shexml::error::ShExMLTranslationError;
-use crate::shexml::parcombi::{
+use crate::error::ShExMLTranslationError;
+use crate::parcombi::{
     self, ExpressionStmtEnum, IndexedShExMLDocument, Iterator, SourceType,
 };
 use crate::OperatorTranslator;

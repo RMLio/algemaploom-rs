@@ -1,7 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use log::{debug, trace};
-use crate::shexml::parcombi::{
+use crate::parcombi::{
     ExpressionReferenceIdent, ExpressionStmt, ExpressionStmtEnum, FieldType,
     Iterator,
 };

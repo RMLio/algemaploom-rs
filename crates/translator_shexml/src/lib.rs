@@ -15,26 +15,30 @@ use plan::states::{Processed, Serialized, Sunk};
 use plan::Plan;
 
 use self::util::IndexVariableTerm;
-use crate::shexml::operators::source::ShExMLSourceTranslator;
-use crate::shexml::operators::{extend, rename};
-use crate::shexml::util::{
+use crate::operators::source::ShExMLSourceTranslator;
+use crate::operators::{extend, rename};
+use crate::util::{
     get_quads_from_same_source, variablelize_quads, ShExMLQuads,
 };
-use crate::{LanguageTranslator, OperatorTranslator};
+use translator_api::{LanguageTranslator, OperatorTranslator};
 
 pub mod error;
-mod operators;
 pub mod parcombi;
+
+mod util;
+mod operators;
+
 #[cfg(test)]
 mod tests;
-mod util;
+#[cfg(test)]
+mod test_macro;
 
 pub struct ShExMLTranslator;
 
 impl LanguageTranslator<ShExMLDocument, ShExMLTranslationError> for ShExMLTranslator {
     fn translate_to_plan(
         model: ShExMLDocument,
-    ) -> crate::LanguageTranslateResult<ShExMLTranslationError> {
+    ) -> translator_api::LanguageTranslateResult<ShExMLTranslationError> {
         let mut plan = Plan::new();
         debug!("Indexing shexml document");
         let indexed_document = model.convert_to_indexed();

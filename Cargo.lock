@@ -1886,10 +1886,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "transaltor_shexml"
-version = "0.6.5"
-
-[[package]]
 name = "translator_api"
 version = "0.6.5"
 dependencies = [
@@ -1956,6 +1952,27 @@ dependencies = [
  "log",
  "operator",
  "oxigraph 0.4.9",
+ "plan",
+ "regex",
+ "serde",
+ "serde_json",
+ "translator_api",
+ "uuid",
+ "vocab",
+]
+
+[[package]]
+name = "translator_shexml"
+version = "0.6.5"
+dependencies = [
+ "anyhow",
+ "chumsky",
+ "clap",
+ "derive_more",
+ "either",
+ "lazy_static",
+ "log",
+ "operator",
  "plan",
  "regex",
  "serde",

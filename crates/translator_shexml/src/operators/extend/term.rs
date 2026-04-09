@@ -3,7 +3,7 @@ use std::rc::Rc;
 use log::warn;
 use operator::Function;
 
-use crate::shexml::parcombi::{
+use crate::parcombi::{
     IndexedShExMLDocument, Object, PrefixNameSpace, ShapeExpression,
 };
 

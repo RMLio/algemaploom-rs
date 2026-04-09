@@ -1,8 +1,8 @@
 #[cfg(test)]
 use std::collections::HashSet;
-use crate::shexml::parcombi::parser;
-use crate::shexml::parcombi::lexer;
-use crate::shexml::parcombi::*; 
+use crate::parcombi::parser;
+use crate::parcombi::lexer;
+use crate::parcombi::*; 
 use chumsky::prelude::*; 
 
  

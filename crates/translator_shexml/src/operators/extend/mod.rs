@@ -5,7 +5,7 @@ use either::Either;
 use log::trace;
 use operator::Function;
 
-use crate::shexml::parcombi::{
+use crate::parcombi::{
     ExpressionReferenceIdent, ExpressionStmtEnum, Iterator
 };
 

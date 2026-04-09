@@ -2,7 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use log::{debug, trace};
 
-use crate::shexml::parcombi::{
+use crate::parcombi::{
     GraphShapes, IndexedShExMLDocument, Object, Predicate, ShapeExpression,
     ShapeIdent, Subject,
 };

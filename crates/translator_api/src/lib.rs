@@ -2,7 +2,6 @@ use plan::states::Init;
 use plan::Plan;
 
 pub mod rml;
-pub mod shexml;
 //pub mod error; 
 //pub mod mapping_test;
 
