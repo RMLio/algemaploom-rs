@@ -7,9 +7,9 @@ use oxigraph::store::Store;
 
 use super::data::QueryAttrMap;
 use super::util::termref_to_literal;
-use crate::normalized_rml::error::oxigraph::OxigraphErrorKind;
-use crate::normalized_rml::translator::util::get_object;
-use crate::normalized_rml::FromVocab;
+use crate::error::oxigraph::OxigraphErrorKind;
+use crate::translator::util::get_object;
+use crate::FromVocab;
 
 pub fn create_extend_function(
     term_map_subj: SubjectRef,

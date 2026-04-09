@@ -7,7 +7,7 @@ use oxigraph::io::{RdfFormat, RdfSerializer};
 use oxigraph::model::GraphNameRef;
 use oxigraph::store::Store;
 
-use crate::normalized_rml::error::fromfile::{FromFileError, FromFileErrorKind};
+use crate::error::fromfile::{FromFileError, FromFileErrorKind};
 
 pub fn read_rml_document(path: &Path) -> Result<Store> {
     if let Some(extension) = path.extension() {

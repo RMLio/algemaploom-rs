@@ -11,13 +11,13 @@ use util::get_queries_from_template;
 
 use super::data::QueryAttrMap;
 use super::util::{get_quads, termref_to_literal};
-use crate::normalized_rml::error::oxigraph::{
+use crate::error::oxigraph::{
     OxigraphError, OxigraphErrorKind,
 };
-use crate::normalized_rml::translator::util::{
+use crate::translator::util::{
     get_object, rooted_subgraph, termref_to_subjref,
 };
-use crate::normalized_rml::FromVocab;
+use crate::FromVocab;
 
 pub fn create_source_operator(
     triples_map_iri: SubjectRef,

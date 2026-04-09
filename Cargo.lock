@@ -1941,6 +1941,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "translator_normalized_rml"
+version = "0.6.5"
+dependencies = [
+ "anyhow",
+ "chumsky",
+ "clap",
+ "derive_more",
+ "either",
+ "lazy_static",
+ "log",
+ "operator",
+ "oxigraph 0.4.9",
+ "plan",
+ "regex",
+ "serde",
+ "serde_json",
+ "sophia_api",
+ "sophia_inmem",
+ "sophia_isomorphism",
+ "sophia_term",
+ "sophia_turtle",
+ "translator_api",
+ "uuid",
+ "vocab",
+ "walkdir",
+]
+
+[[package]]
 name = "typemap-ors"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

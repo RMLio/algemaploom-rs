@@ -18,7 +18,7 @@ use source_creation::create_source_operator;
 use util::{get_object, get_quads, termref_to_literal, termref_to_subjref};
 use vocab::ToString;
 
-use crate::normalized_rml::{FromVocab, GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use crate::{FromVocab, GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 
 pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Result<Plan<Sunk>> {
     let mut plan = Plan::new();

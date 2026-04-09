@@ -4,8 +4,8 @@ use oxigraph::model::{
 };
 use oxigraph::store::Store;
 
-use crate::normalized_rml::error::oxigraph::{OxigraphError, OxigraphErrorKind};
-use crate::normalized_rml::FromVocab;
+use crate::error::oxigraph::{OxigraphError, OxigraphErrorKind};
+use crate::FromVocab;
 
 pub fn termref_to_literal(term_ref: TermRef) -> Result<LiteralRef> {
     match term_ref {

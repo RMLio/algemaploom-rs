@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 
 use oxigraph::model::IriParseError;
 
-use crate::normalized_rml::error::oxigraph::{OxigraphError, OxigraphErrorKind};
+use crate::error::oxigraph::{OxigraphError, OxigraphErrorKind};
 
 #[derive(Debug)]
 pub struct FromFileError {

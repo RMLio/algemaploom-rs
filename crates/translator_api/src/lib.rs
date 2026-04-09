@@ -3,7 +3,6 @@ use plan::Plan;
 
 pub mod rml;
 pub mod shexml;
-pub mod normalized_rml; 
 //pub mod error; 
 //pub mod mapping_test;
 
