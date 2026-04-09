@@ -1773,6 +1773,7 @@ dependencies = [
  "serde_json",
  "spargebra 0.4.2",
  "translator_api",
+ "translator_normalized_rml",
  "uuid",
  "vocab",
 ]

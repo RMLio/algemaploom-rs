@@ -12,7 +12,7 @@ use petgraph::{
     visit::{Dfs, Reversed},
 };
 use plan::data_type::DiGraphOperators;
-use translator_api::normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 use vocab::query;
 
 use super::error::{RMLExtractorError, RMLResult};

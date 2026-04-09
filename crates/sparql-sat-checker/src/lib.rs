@@ -20,4 +20,4 @@ pub use extractor::sparql::{
 };
 pub use serializer::util as plan_util;
 pub use serializer::{prune_graph_using_trmap_subexprs, reverse_rml::serialize_trmap_expr_to_rml};
-use translator_api::normalized_rml::GRAPH_ATTR;
+use translator_normalized_rml::GRAPH_ATTR;

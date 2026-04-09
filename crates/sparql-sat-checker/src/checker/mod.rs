@@ -4,7 +4,7 @@ use error::{CheckerError, CheckerErrorKind, CheckerResult};
 use operator::{Function, TermType};
 use plan::data_type::DiGraphOperators;
 use spargebra::term::{Literal, NamedNode, NamedNodePattern, TermPattern, TriplePattern};
-use translator_api::normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 use util::{extract_extend_expr_from_operator, spo_from_trmap_sub_expression};
 use vocab::ToString;
 
