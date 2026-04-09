@@ -1,7 +1,7 @@
 use std::fmt::Display;
 use std::path::PathBuf;
 
-use translator_api::rml::error::RMLTranslationError;
+use translator_rml::error::RMLTranslationError;
 use translator_new_rml::error::NewRMLTranslationError;
 use translator_shexml::error::ShExMLTranslationError;
 

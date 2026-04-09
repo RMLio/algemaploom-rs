@@ -1,15 +1,15 @@
 use log::{error, info, warn};
 use plan::states::Init;
 use plan::Plan;
-use crate::error::TranslationError;
+use translator_api::LanguageTranslator;
 use translator_new_rml::error::NewRMLTranslationError;
 use translator_new_rml::translator::NewRMLDocumentTranslator;
-use translator_api::rml::parser::extractors::io::{
+use translator_rml::parser::extractors::io::{
     parse_file as old_parse_file, parse_str as old_parse_str,
 };
-use translator_api::rml::OptimizedRMLDocumentTranslator;
-use translator_api::LanguageTranslator;
+use translator_rml::OptimizedRMLDocumentTranslator;
 
+use crate::error::TranslationError;
 use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
 
 #[derive(Debug)]

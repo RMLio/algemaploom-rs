@@ -48,6 +48,7 @@ clap.workspace = true
 operator = { path = "./crates/operator/" }
 plan = { path = "./crates/plan/" }
 translator_api = { path = "./crates/translator_api/" }
+translator_rml = { path = "./crates/translator_rml/" }
 translator_new_rml = { path = "./crates/translator_new_rml/" }
 translator_shexml = { path = "./crates/translator_shexml/" }
 sparql-sat-checker = { path = "./crates/sparql-sat-checker/" }

@@ -1,9 +1,6 @@
 use plan::states::Init;
 use plan::Plan;
 
-pub mod rml;
-//pub mod error; 
-//pub mod mapping_test;
 
 #[cfg(test)]
 mod test_macro;

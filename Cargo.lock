@@ -774,6 +774,7 @@ dependencies = [
  "thiserror 1.0.49",
  "translator_api",
  "translator_new_rml",
+ "translator_rml",
  "translator_shexml",
  "urlencoding",
  "walkdir",
@@ -1890,27 +1891,7 @@ dependencies = [
 name = "translator_api"
 version = "0.6.5"
 dependencies = [
- "anyhow",
- "chumsky",
- "clap",
- "derive_more",
- "either",
- "lazy_static",
- "log",
- "operator",
- "oxigraph 0.4.9",
  "plan",
- "regex",
- "serde",
- "serde_json",
- "sophia_api",
- "sophia_inmem",
- "sophia_isomorphism",
- "sophia_term",
- "sophia_turtle",
- "uuid",
- "vocab",
- "walkdir",
 ]
 
 [[package]]
@@ -1960,6 +1941,31 @@ dependencies = [
  "translator_api",
  "uuid",
  "vocab",
+]
+
+[[package]]
+name = "translator_rml"
+version = "0.6.5"
+dependencies = [
+ "anyhow",
+ "clap",
+ "derive_more",
+ "either",
+ "lazy_static",
+ "log",
+ "operator",
+ "plan",
+ "regex",
+ "serde",
+ "serde_json",
+ "sophia_api",
+ "sophia_inmem",
+ "sophia_term",
+ "sophia_turtle",
+ "translator_api",
+ "uuid",
+ "vocab",
+ "walkdir",
 ]
 
 [[package]]
