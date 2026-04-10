@@ -752,35 +752,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "meamer-rs"
-version = "0.6.5"
-dependencies = [
- "anyhow",
- "catch_panic",
- "clap",
- "colored",
- "csv",
- "jni",
- "lazy_static",
- "log",
- "log4rs",
- "neon",
- "operator",
- "plan",
- "pyo3",
- "regex",
- "serde_json",
- "sparql-sat-checker",
- "thiserror 1.0.49",
- "translator_api",
- "translator_new_rml",
- "translator_rml",
- "translator_shexml",
- "urlencoding",
- "walkdir",
-]
-
-[[package]]
 name = "memchr"
 version = "2.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1885,6 +1856,35 @@ checksum = "f0ec81c46e9eb50deaa257be2f148adf052d1fb7701cfd55ccfab2525280b70b"
 dependencies = [
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "translator"
+version = "0.6.5"
+dependencies = [
+ "anyhow",
+ "catch_panic",
+ "clap",
+ "colored",
+ "csv",
+ "jni",
+ "lazy_static",
+ "log",
+ "log4rs",
+ "neon",
+ "operator",
+ "plan",
+ "pyo3",
+ "regex",
+ "serde_json",
+ "sparql-sat-checker",
+ "thiserror 1.0.49",
+ "translator_api",
+ "translator_new_rml",
+ "translator_rml",
+ "translator_shexml",
+ "urlencoding",
+ "walkdir",
 ]
 
 [[package]]

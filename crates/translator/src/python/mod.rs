@@ -9,7 +9,7 @@ fn translate(mapping: String) -> PyResult<String> {
 }
 
 #[pymodule]
-fn ltranslator(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn translator(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(translate, m)?)?;
     Ok(())
 }

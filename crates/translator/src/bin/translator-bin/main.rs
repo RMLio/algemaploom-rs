@@ -6,8 +6,8 @@ use std::io::BufRead;
 use std::path::PathBuf;
 
 use log::debug;
-use ltranslator::api::{process_one_file, process_one_str};
-use ltranslator::logger::init_logger;
+use translator::api::{process_one_file, process_one_str};
+use translator::logger::init_logger;
 use plan::error::PlanError;
 use walkdir::WalkDir;
 
