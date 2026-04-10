@@ -13,4 +13,4 @@ npm i
 # Execute NEON on Rust library to generate index.node file for NodeJS dynamic library
 ./node_modules/.bin/neon dist -n translator -v -f target/release/libtranslator.so
 # Move index.node to the right folder after generation
-mv index.node src/nodejs
+mv index.node crates/translator/src/nodejs
