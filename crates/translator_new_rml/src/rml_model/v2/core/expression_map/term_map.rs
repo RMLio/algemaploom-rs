@@ -125,7 +125,22 @@ impl CommonTermMapInfo {
         } else if self.is_bnode_term_type() {
             RMLTermTypeKind::BlankNode
         } else if self.is_iri_term_type() {
-            RMLTermTypeKind::IRI
+            match self.term_type.clone() {
+                val if val
+                    == vocab::rml_core::CLASS::UNSAFE_URI.to_rcterm() =>
+                {
+                    RMLTermTypeKind::UnsafeURI
+                }
+                val if val
+                    == vocab::rml_core::CLASS::UNSAFE_IRI.to_rcterm() =>
+                {
+                    RMLTermTypeKind::UnsafeIRI
+                }
+                val if val == vocab::rml_core::CLASS::URI.to_rcterm() => {
+                    RMLTermTypeKind::URI
+                }
+                _ => RMLTermTypeKind::IRI,
+            }
         } else {
             RMLTermTypeKind::UnknownT(self.term_type.clone())
         }
@@ -235,17 +250,17 @@ impl Default for GraphMap {
     fn default() -> Self {
         Self {
             term_map_info: CommonTermMapInfo {
-                identifier:      RcTerm::from_term(BnodeId::new_unchecked(
-                    uuid::Uuid::new_v4().to_string(),
-                )),
-                term_type:       vocab::rml_core::CLASS::IRI.to_rcterm(),
+                identifier:            RcTerm::from_term(
+                    BnodeId::new_unchecked(uuid::Uuid::new_v4().to_string()),
+                ),
+                term_type:             vocab::rml_core::CLASS::IRI.to_rcterm(),
                 term_type_is_explicit: false,
-                expression:      ExpressionMapEnum::try_new_unknown(
+                expression:            ExpressionMapEnum::try_new_unknown(
                     vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
                     RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
                 )
                 .unwrap(),
-                logical_targets: Vec::new(),
+                logical_targets:       Vec::new(),
             },
         }
     }

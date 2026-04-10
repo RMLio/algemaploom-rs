@@ -36,11 +36,10 @@ cd $SCRIPTDIR
 echo 'Updating package.json...'
 sed -i -e "s|\"version\": \".*\"|\"version\": \"$VERSION\"|" package.json
 
-# There is no CHANGELOG yet!!
-#if [ ! "$(yes_or_no 'Do you also want to add the version to CHANGELOG.md?')" ]
-#then
-#	changefrog -n $VERSION
-#fi
+if [ ! "$(yes_or_no 'Do you also want to add the version to CHANGELOG.md?')" ]
+then
+	changefrog -n $VERSION
+fi
 
 if [[ $VERSION == testrelease-* ]] ; then
 	tagname=$VERSION
@@ -50,7 +49,7 @@ fi
 
 if [ ! "$(yes_or_no Do you also want to commit the changes, create a git tag $tagname and push it?)" ]
 then
-	git add Cargo.toml package.json src/java/algemaploom/pom.xml
+	git add Cargo.toml package.json src/java/algemaploom/pom.xml CHANGELOG.md
 	git commit -m "Update version to $VERSION"
 	git push origin
 	git tag $tagname

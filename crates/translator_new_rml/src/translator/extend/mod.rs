@@ -8,15 +8,15 @@ use super::error::TranslationError;
 use super::store::SearchStore;
 use super::OperatorTranslator;
 use crate::error::{NewRMLTranslationError, NewRMLTranslationResult};
-use crate::extractors::{stringify_term};
+use crate::extractors::stringify_term;
 use crate::rml_model::v2::core::expression_map::term_map::{
-     CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
+    CommonTermMapInfo, ObjectMap, RMLTermTypeKind,
 };
 use crate::rml_model::v2::core::expression_map::{
     BaseExpressionMapEnum, ExpressionMapEnum,
 };
 use crate::rml_model::v2::core::{TemplateSubString, TriplesMap};
-use crate::rml_model::v2::fnml::{FunctionExpressionMap};
+use crate::rml_model::v2::fnml::FunctionExpressionMap;
 
 pub fn func_is_not_constant(func: &Function) -> bool {
     match func {
@@ -118,7 +118,10 @@ fn extend_lang_dtype_function_for_om(
     func: Function,
 ) -> Result<Function, NewRMLTranslationError> {
     let term_type = &om.term_map_info.get_term_type_enum();
-    log::debug!("Term expression {:?} is a literal", om.term_map_info.expression); 
+    log::debug!(
+        "Term expression {:?} is a literal",
+        om.term_map_info.expression
+    );
     Ok(match &func {
         Function::Literal {
             inner_function,
@@ -166,41 +169,70 @@ pub fn extend_from_term_map(
         &term_map_info.get_term_type_enum(),
     )?;
 
-    let function = match term_map_info.get_term_type_enum() {
+    let term_type = term_map_info.get_term_type_enum();
+    let function = match term_type {
         RMLTermTypeKind::BlankNode => {
             Ok(Function::BlankNode {
                 inner_function: inner_func.into(),
             })
         }
-        RMLTermTypeKind::IRI => {
-            if !term_map_info.term_type_is_explicit && term_map_info.expression.is_function_map() {
+        RMLTermTypeKind::UnsafeIRI
+        | RMLTermTypeKind::UnsafeURI
+        | RMLTermTypeKind::URI
+        | RMLTermTypeKind::IRI => {
+            if !term_map_info.term_type_is_explicit
+                && term_map_info.expression.is_function_map()
+            {
                 Ok(inner_func)
             } else {
+                let mut base_iri_opt = Some(base_iri.to_string());
+                if term_type == RMLTermTypeKind::URI
+                    || term_type == RMLTermTypeKind::UnsafeURI
+                {
+                    base_iri_opt = None;
+                }
                 Ok(Function::Iri {
-                    base_iri:       Some(base_iri.to_string()),
+                    base_iri:       base_iri_opt,
                     inner_function: inner_func.into(),
                 })
             }
         }
         RMLTermTypeKind::Literal => {
-            log::debug!("Term expression {:?} is a literal", term_map_info.expression); 
-            let mut dtype_function = None; 
-            let mut langtype_function = None; 
-            if let Ok(BaseExpressionMapEnum::Constant(term)) = term_map_info.expression.try_unwrap_base_expression_map_ref(){
-                if let Some( lt) = term.language_tag(){
-                    langtype_function = Some(Function::Constant { value: lt.as_str().to_string() }.into()); 
+            log::debug!(
+                "Term expression {:?} is a literal",
+                term_map_info.expression
+            );
+            let mut dtype_function = None;
+            let mut langtype_function = None;
+            if let Ok(BaseExpressionMapEnum::Constant(term)) = term_map_info
+                .expression
+                .try_unwrap_base_expression_map_ref()
+            {
+                if let Some(lt) = term.language_tag() {
+                    langtype_function = Some(
+                        Function::Constant {
+                            value: lt.as_str().to_string(),
+                        }
+                        .into(),
+                    );
                 }
-                if let Some(dt) = term.datatype(){
-                    let dtype_inner = Function::Constant{ 
-                        value: dt.as_str().to_string()
-                    }.into(); 
-                    dtype_function = Some(Function::Iri { base_iri: None, inner_function: dtype_inner }.into())
-;
+                if let Some(dt) = term.datatype() {
+                    let dtype_inner = Function::Constant {
+                        value: dt.as_str().to_string(),
+                    }
+                    .into();
+                    dtype_function = Some(
+                        Function::Iri {
+                            base_iri:       None,
+                            inner_function: dtype_inner,
+                        }
+                        .into(),
+                    );
                 }
             }
-            
+
             Ok(Function::Literal {
-                inner_function:    inner_func.into(),
+                inner_function: inner_func.into(),
                 dtype_function,
                 langtype_function,
             })
@@ -256,7 +288,7 @@ fn extend_func_from_base_expr_map(
                 .ok_or(TranslationError::ExtendError(
                         format!("Empty string returned while trying to get the string representation of the term {:?}", constant)
                         )
-                    )?;  
+                    )?;
             Ok(Function::Constant {
                 value ,
             })
@@ -313,9 +345,7 @@ fn extend_func_from_ref_attr(
     match term_type {
         RMLTermTypeKind::BlankNode
         | RMLTermTypeKind::IRI
-        | RMLTermTypeKind::UnsafeIRI
-        | RMLTermTypeKind::URI
-        | RMLTermTypeKind::UnsafeURI => {
+        | RMLTermTypeKind::URI => {
             Function::UriEncode {
                 inner_function: inner_function.into(),
             }
@@ -330,22 +360,30 @@ fn extend_func_from_func_expr_map(
     term_type: &RMLTermTypeKind,
 ) -> NewRMLTranslationResult<Function> {
     let execution = &func_exp_map.func_execution;
-    
+
     // Extract function identifier
-    let fno_identifier = func_exp_map.func_execution.function_map.term_map_info.get_constant_value()
-        .ok_or_else(|| TranslationError::ExtendError(
-            "Function map does not have a constant value".to_string()
-        ))?;
+    let fno_identifier = func_exp_map
+        .func_execution
+        .function_map
+        .term_map_info
+        .get_constant_value()
+        .ok_or_else(|| {
+            TranslationError::ExtendError(
+                "Function map does not have a constant value".to_string(),
+            )
+        })?;
     // Remove surrounding angle brackets if present (e.g., <http://example.com/fn>)
     let fno_identifier = strip_angle_brackets(&fno_identifier);
-    
+
     // Build parameters HashMap from input maps
     let mut parameters = HashMap::with_capacity(execution.input.len());
     for input in &execution.input {
-        let param_name = input.parameter_map.get_constant_value()
-            .ok_or_else(|| TranslationError::ExtendError(
-                "Parameter map does not have a constant value".to_string()
-            ))?;
+        let param_name =
+            input.parameter_map.get_constant_value().ok_or_else(|| {
+                TranslationError::ExtendError(
+                    "Parameter map does not have a constant value".to_string(),
+                )
+            })?;
         let param_name = strip_angle_brackets(&param_name);
         // If the input value map is a plain reference expression, do not
         // wrap it with a UriEncode; return a Reference function directly.
@@ -371,15 +409,17 @@ fn extend_func_from_func_expr_map(
                 term_type,
             )?
         };
-        
+
         parameters.insert(param_name, input_func.into());
     }
-    
+
     // Extract optional rml:return
-    let return_type = func_exp_map.return_map.as_ref()
+    let return_type = func_exp_map
+        .return_map
+        .as_ref()
         .and_then(|rm| rm.get_constant_value())
         .map(|v| strip_angle_brackets(&v));
-    
+
     Ok(Function::FnO {
         fno_identifier,
         parameters,

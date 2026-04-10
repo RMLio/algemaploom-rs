@@ -1,6 +1,6 @@
 # Unittests
 test-rust:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: test
   script:
     - cargo test --verbose --jobs 1 --workspace
@@ -9,8 +9,8 @@ test-java:
   image: rustdocker/rust:stable
   stage: test
   script:
-    - sudo apt update
-    - sudo apt install -y openjdk-17-jdk curl maven gcc-mingw-w64
+    - apt update
+    - apt install -y openjdk-17-jdk curl maven gcc-mingw-w64
     - rustup target add x86_64-unknown-linux-gnu
     - rustup target add x86_64-pc-windows-gnu
     - rustup target add x86_64-apple-darwin
@@ -19,17 +19,17 @@ test-java:
 
 # Builds
 build-rust:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - cargo build
 
 build-java:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - apt update
-    - apt install -y openjdk-17-jdk curl maven gcc-mingw-w64
+    - apt install -y default-jdk curl maven gcc-mingw-w64
     - rustup target add x86_64-unknown-linux-gnu
     - rustup target add x86_64-pc-windows-gnu
     - rustup target add x86_64-apple-darwin
@@ -37,18 +37,18 @@ build-java:
     - ./build_java.sh
 
 build-python:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
     - ./build_python.sh
 
 build-nodejs:
-  image: rustdocker/rust:stable
+  image: rust:latest
   stage: build
   script:
-    - curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
+    - curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
     - apt update
-    - sudo apt-get install -y nodejs
+    - apt-get install -y nodejs
     - ./build_nodejs.sh
 
 ###############################
@@ -70,10 +70,10 @@ build-nodejs:
 Maven Central Deployment:
   stage: deploy
   image:
-    name:  rustdocker/rust:stable
+    name:  rust:latest
     pull_policy: if-not-present
   before_script:
-    - sudo apt-get update && apt-get install -y gpg ca-certificates openjdk-17-jdk curl maven gcc-mingw-w64
+    - apt-get update && apt-get install -y gpg ca-certificates default-jdk curl maven gcc-mingw-w64
     - rustup target add x86_64-unknown-linux-gnu
     - rustup target add x86_64-pc-windows-gnu
     - rustup target add x86_64-apple-darwin

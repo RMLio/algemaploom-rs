@@ -356,7 +356,9 @@ pub enum Function {
         template:                String,
         variable_function_pairs: Vec<(String, RcExtendFunction)>,
     },
-
+    IriEncode {
+        inner_function: RcExtendFunction,
+    },
     UriEncode {
         inner_function: RcExtendFunction,
     },

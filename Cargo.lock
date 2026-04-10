@@ -589,9 +589,12 @@ dependencies = [
 
 [[package]]
 name = "indoc"
-version = "2.0.5"
+version = "2.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b248f5224d1d606005e02c97f5aa4e88eeb230488bcc03bc9ca4d7991399f2b5"
+checksum = "79cf5c93f93228cf8efb3ba362535fb11199ac548a09ce117c9b1adc3030d706"
+dependencies = [
+ "rustversion",
+]
 
 [[package]]
 name = "is-terminal"
@@ -800,7 +803,7 @@ dependencies = [
 
 [[package]]
 name = "normalizer"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "clap",
@@ -821,13 +824,13 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.18.0"
+version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd8b5dd2ae5ed71462c540258bedcb51965123ad7e7ccf4b9a8cafaa4a63576d"
+checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
 name = "operator"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "serde",
@@ -1134,7 +1137,7 @@ dependencies = [
 
 [[package]]
 name = "plan"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "operator",
@@ -1402,6 +1405,12 @@ dependencies = [
  "linux-raw-sys",
  "windows-sys 0.48.0",
 ]
+
+[[package]]
+name = "rustversion"
+version = "1.0.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "ryu"
@@ -1804,9 +1813,9 @@ dependencies = [
 
 [[package]]
 name = "target-lexicon"
-version = "0.12.15"
+version = "0.12.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4873307b7c257eddcb50c9bedf158eb669578359fb28428bef438fec8e6ba7c2"
+checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
 
 [[package]]
 name = "thiserror"
@@ -1860,7 +1869,7 @@ dependencies = [
 
 [[package]]
 name = "translator"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "catch_panic",
@@ -1889,14 +1898,14 @@ dependencies = [
 
 [[package]]
 name = "translator_api"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "plan",
 ]
 
 [[package]]
 name = "translator_new_rml"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "chumsky",
@@ -1924,7 +1933,7 @@ dependencies = [
 
 [[package]]
 name = "translator_normalized_rml"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "clap",
@@ -1945,7 +1954,7 @@ dependencies = [
 
 [[package]]
 name = "translator_rml"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "clap",
@@ -1970,7 +1979,7 @@ dependencies = [
 
 [[package]]
 name = "translator_shexml"
-version = "0.6.5"
+version = "0.6.6"
 dependencies = [
  "anyhow",
  "chumsky",
@@ -2024,9 +2033,9 @@ checksum = "f6ccf251212114b54433ec949fd6a7841275f9ada20dddd2f29e9ceea4501493"
 
 [[package]]
 name = "unindent"
-version = "0.2.3"
+version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7de7d73e1754487cb58364ee906a499937a0dfabd86bcb980fa99ec8c8fa2ce"
+checksum = "7264e107f553ccae879d21fbea1d6724ac785e8c3bfc762137959b5802826ef3"
 
 [[package]]
 name = "unsafe-any-ors"
@@ -2066,7 +2075,7 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
 name = "vocab"
-version = "0.6.5"
+version = "0.6.6"
 
 [[package]]
 name = "walkdir"
