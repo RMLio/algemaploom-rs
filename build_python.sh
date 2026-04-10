@@ -9,4 +9,4 @@ cargo build --lib --release --features=pyo3
 # Python bindings
 echo "==> Python bindings"
 # Native import, but requires renaming
-cp target/release/libltranslator.so src/python/ltranslator.so
+cp target/release/libtranslator.so crates/translator/src/python/ltranslator.so

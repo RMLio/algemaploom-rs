@@ -11,17 +11,17 @@ class Translator implements ITranslator {
 			String arch = System.getProperty("os.arch");
             String path;
             if (os.contains("Windows")) {
-                path = "/Windows/ltranslator.dll";
+                path = "/Windows/translator.dll";
             } else if (os.contains("Linux")) {
-                path = "/Linux/libltranslator.so";
+                path = "/Linux/libtranslator.so";
             } else if (os.contains("Mac")) {
                 if (arch.contains("aarch64") || arch.contains("arm")) {
-                    path = "/Apple-aarch64/libltranslator.dylib";
+                    path = "/Apple-aarch64/libtranslator.dylib";
                 } else {
-                    path = "/Apple-x86_64/libltranslator.dylib";
+                    path = "/Apple-x86_64/libtranslator.dylib";
                 }
             } else {
-                path = "/" + os + "/ltranslator.dll";
+                path = "/" + os + "/translator.dll";
             }
             NativeUtils.loadLibraryFromJar(path);
         } catch (IOException e) {

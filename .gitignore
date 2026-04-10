@@ -17,6 +17,7 @@ src/python/ltranslator.so
 *.class
 src/java/algemaploom/target/
 crates/translator/src/java/algemaploom/target/
+crates/translator/target/
 *.so
 *.dll
 *.dylib

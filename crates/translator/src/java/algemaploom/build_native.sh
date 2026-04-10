@@ -11,7 +11,7 @@ rm -rf src/main/resources/Linux/*
 rm -rf src/main/resources/Windows/*
 rm -rf src/main/resources/Apple-x86_64/*
 rm -rf src/main/resources/Apple-aarch64/*
-cd ../../../
+cd ../../../../../
 rm -rf target
 
 # Compile Rust library
@@ -38,11 +38,11 @@ fi
 
 # Copy compiled Rust library to Java Jar resource location
 echo "==> Copying Rust library to Java Jar resource"
-cp target/x86_64-unknown-linux-gnu/release/libltranslator.so src/java/algemaploom/src/main/resources/Linux/
-cp target/x86_64-pc-windows-gnu/release/ltranslator.dll src/java/algemaploom/src/main/resources/Windows/
+cp target/x86_64-unknown-linux-gnu/release/libtranslator.so crates/translator/src/java/algemaploom/src/main/resources/Linux/
+cp target/x86_64-pc-windows-gnu/release/translator.dll crates/translator/src/java/algemaploom/src/main/resources/Windows/
 if [[ "$OSTYPE" == "darwin"* ]]; then
-	cp target/x86_64-apple-darwin/release/libltranslator.dylib src/java/algemaploom/src/main/resources/Apple-x86_64
-	cp target/aarch64-apple-darwin/release/libltranslator.dylib src/java/algemaploom/src/main/resources/Apple-aarch64
+	cp target/x86_64-apple-darwin/release/libtranslator.dylib crates/translator/src/java/algemaploom/src/main/resources/Apple-x86_64
+	cp target/aarch64-apple-darwin/release/libtranslator.dylib crates/translator/src/java/algemaploom/src/main/resources/Apple-aarch64
 fi
 
 echo "Done!"
