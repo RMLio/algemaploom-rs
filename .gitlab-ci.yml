@@ -81,8 +81,8 @@ Maven Central Deployment:
     - gpg --version
     - gpg --verbose --import --batch --yes $GPG_SECRET_KEY
   script:
-    - cd src/java/algemaploom
-    - mvn -s $CI_PROJECT_DIR/src/java/algemaploom/.m2/settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true clean deploy -P release -DskipTests=true
+    - cd ./crates/translator/src/java/algemaploom
+    - mvn -s $CI_PROJECT_DIR/crates/translator/src/java/algemaploom/.m2/settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true clean deploy -P release -DskipTests=true
   allow_failure: true
   retry: 2
   only:
