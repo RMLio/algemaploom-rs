@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use operator::{Extend, Function};
-use sophia_api::term::Term;
+use sophia_api::term::{self, Term};
 
 use super::error::TranslationError;
 use super::store::SearchStore;
@@ -275,7 +275,7 @@ fn extend_func_from_base_expr_map(
             Ok(template_extend_function(base_expr_map, term_type))
         }
         BaseExpressionMapEnum::Reference(reference) => {
-            Ok(extend_func_from_ref_attr(reference, term_type))
+            Ok(extend_func_from_ref_attr(reference))
         }
         BaseExpressionMapEnum::Constant(constant) => {
             let value = stringify_term(constant)
@@ -305,7 +305,19 @@ fn template_extend_function(
     for split in template_splits {
         let right_func_opt = match &split {
             TemplateSubString::Attribute(attr) => {
-                Some(extend_func_from_ref_attr(attr, term_type))
+                let inner_func = extend_func_from_ref_attr(attr);
+                let func = match term_type {
+                    RMLTermTypeKind::BlankNode
+                    | RMLTermTypeKind::IRI
+                    | RMLTermTypeKind::URI => {
+                        Function::UriEncode {
+                            inner_function: Rc::new(inner_func),
+                        }
+                    }
+                    _ => inner_func,
+                };
+
+                Some(func)
             }
             TemplateSubString::NormalString(norm) => {
                 if norm.is_empty() {
@@ -329,22 +341,9 @@ fn template_extend_function(
     template_function
 }
 
-fn extend_func_from_ref_attr(
-    attr: &str,
-    term_type: &RMLTermTypeKind,
-) -> Function {
-    let inner_function = Function::Reference {
+fn extend_func_from_ref_attr(attr: &str) -> Function {
+    Function::Reference {
         value: attr.to_string(),
-    };
-    match term_type {
-        RMLTermTypeKind::BlankNode
-        | RMLTermTypeKind::IRI
-        | RMLTermTypeKind::URI => {
-            Function::UriEncode {
-                inner_function: inner_function.into(),
-            }
-        }
-        _ => inner_function,
     }
 }
 
