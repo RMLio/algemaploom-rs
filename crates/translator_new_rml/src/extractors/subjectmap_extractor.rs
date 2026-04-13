@@ -61,7 +61,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
         )?
         .into_iter()
         .filter(|gm| gm.is_graph_map())
-        .filter(|gm| !gm.unwrap_graph_map_ref().is_default_graph())
+        //.filter(|gm| !gm.unwrap_graph_map_ref().is_default_graph())
         .collect();
 
         Ok(TermMapEnum::SubjectMap(SubjectMap {
