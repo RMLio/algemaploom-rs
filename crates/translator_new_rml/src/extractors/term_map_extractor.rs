@@ -9,7 +9,7 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::store::get_objects_with_ps;
-use super::{Extractor, ExtractorResult, FromVocab};
+use super::{expression_map, Extractor, ExtractorResult, FromVocab};
 use crate::extractors::store::{get_object, get_object_with_ps};
 use crate::extractors::ParseError;
 use crate::rml_model::v2::core::expression_map::term_map::{
@@ -61,29 +61,28 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
         )
         .ok();
 
-        let (term_type, term_type_is_explicit) = if let Some(ttype_iri) = ttype_iri_opt {
+        let term_type = if let Some(ttype_iri) = ttype_iri_opt {
             if ttype_iri.kind() != TermKind::Iri {
                 return Err(ParseError::GenericError(format!(
                     "Term type node for {:?} has value {:?} which is not an IRI",
                     subject_ref, ttype_iri
-                )).into());
+                )));
             }
             if let Ok(BaseExpressionMapEnum::Constant(val)) =
                 expression.try_unwrap_base_expression_map_ref()
             {
                 return Err(ParseError::GenericError(
                         format!("Term type is explicity defined for node {:?} even though it is a constant term map with value {:?}", 
-                            subject_ref, val)).into());
+                            subject_ref, val)));
             }
-            Ok::<(RcTerm, bool), ParseError>((ttype_iri, true))
+            Ok::<RcTerm, ParseError>(ttype_iri)
         } else {
-            Ok::<(RcTerm, bool), ParseError>((infer_term_type(subject_ref.borrow_term(), graph_ref)?, false))
+            Ok::<RcTerm, ParseError>(infer_term_type(subject_ref.borrow_term(), graph_ref, &expression)?)
         }?;
 
         Ok(CommonTermMapInfo {
             identifier: RcTerm::from_term(subject_ref),
             term_type,
-            term_type_is_explicit,
             expression,
             logical_targets,
         })
@@ -93,6 +92,7 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
 fn infer_term_type<TTerm>(
     subject_ref: TTerm,
     graph_ref: &FastGraph,
+    exp_map: &ExpressionMapEnum, 
 ) -> Result<RcTerm, ParseError>
 where
     TTerm: Term + Debug,
@@ -134,7 +134,7 @@ where
             )
             .ok();
 
-            if datatype_lang_opt.is_some() {
+            if datatype_lang_opt.is_some() || exp_map.is_function_map() {
                 Ok(vocab::rml_core::CLASS::LITERAL.to_rcterm())
             } else if let Some(term) = constant_value_opt {
                 termkind_to_rml_rcterm(term.kind())

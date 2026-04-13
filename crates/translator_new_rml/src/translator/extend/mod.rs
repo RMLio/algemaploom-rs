@@ -180,22 +180,16 @@ pub fn extend_from_term_map(
         | RMLTermTypeKind::UnsafeURI
         | RMLTermTypeKind::URI
         | RMLTermTypeKind::IRI => {
-            if !term_map_info.term_type_is_explicit
-                && term_map_info.expression.is_function_map()
+            let mut base_iri_opt = Some(base_iri.to_string());
+            if term_type == RMLTermTypeKind::URI
+                || term_type == RMLTermTypeKind::UnsafeURI
             {
-                Ok(inner_func)
-            } else {
-                let mut base_iri_opt = Some(base_iri.to_string());
-                if term_type == RMLTermTypeKind::URI
-                    || term_type == RMLTermTypeKind::UnsafeURI
-                {
-                    base_iri_opt = None;
-                }
-                Ok(Function::Iri {
-                    base_iri:       base_iri_opt,
-                    inner_function: inner_func.into(),
-                })
+                base_iri_opt = None;
             }
+            Ok(Function::Iri {
+                base_iri:       base_iri_opt,
+                inner_function: inner_func.into(),
+            })
         }
         RMLTermTypeKind::Literal => {
             log::debug!(

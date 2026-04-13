@@ -25,7 +25,6 @@ use crate::rml_model::v2::{
 pub struct CommonTermMapInfo {
     pub identifier:            RcTerm,
     pub term_type:             RcTerm,
-    pub term_type_is_explicit: bool,
     pub expression:            ExpressionMapEnum,
     pub logical_targets:       Vec<LogicalTarget>,
 }
@@ -35,7 +34,6 @@ impl AttributeAliaser for CommonTermMapInfo {
         Self {
             identifier:            self.identifier.clone(),
             term_type:             self.term_type.clone(),
-            term_type_is_explicit: self.term_type_is_explicit,
             expression:            self.expression.alias_attribute(alias),
             logical_targets:       self.logical_targets.clone(),
         }
@@ -73,7 +71,6 @@ impl CommonTermMapInfo {
         Ok(Self {
             identifier,
             term_type: termkind_to_rml_rcterm(term.kind())?,
-            term_type_is_explicit: false,
             expression: ExpressionMapEnum::new_constant_term(term),
             logical_targets: Vec::new(),
         })
@@ -254,7 +251,6 @@ impl Default for GraphMap {
                     BnodeId::new_unchecked(uuid::Uuid::new_v4().to_string()),
                 ),
                 term_type:             vocab::rml_core::CLASS::IRI.to_rcterm(),
-                term_type_is_explicit: false,
                 expression:            ExpressionMapEnum::try_new_unknown(
                     vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
                     RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
