@@ -1,4 +1,4 @@
 #!/bin/sh
 
-cd src/java/algemaploom
+cd ./crates/translator/src/java/algemaploom
 mvn clean test
