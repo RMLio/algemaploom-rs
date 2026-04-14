@@ -472,7 +472,7 @@ mod tests {
     #[ignore]
     #[test]
     fn test_projection_operator() -> ExtractorResult<()> {
-        let graph = load_graph!("rml/sample_mapping.ttl").unwrap();
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let mut triples_map_vec = extract_triples_maps(&graph)?;
         assert_eq!(triples_map_vec.len(), 1);
 
@@ -511,7 +511,7 @@ mod tests {
     #[ignore]
     #[test]
     fn test_extend_operator() -> ExtractorResult<()> {
-        let graph = load_graph!("rml/sample_mapping.ttl").unwrap();
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let mut triples_map_vec = extract_triples_maps(&graph)?;
         assert_eq!(triples_map_vec.len(), 1);
         let triples_map = triples_map_vec.pop().unwrap();
@@ -541,7 +541,7 @@ mod tests {
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
-        let _output = File::create("op_trans_output.json").unwrap();
+        let _output = File::create("op_trans_output.json")?;
         println!("{:#?}", operators);
         Ok(())
     }
@@ -553,7 +553,7 @@ mod tests {
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
-        let _output = File::create("op_trans_complex_output.json").unwrap();
+        let _output = File::create("op_trans_complex_output.json")?;
         println!("{:#?}", operators);
         Ok(())
     }

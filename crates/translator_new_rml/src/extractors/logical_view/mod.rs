@@ -187,8 +187,7 @@ where
 
     for trip in triples {
         let pair = LogicalViewJoin::extract_self(trip.o(), graph_ref)
-            .map(move |vjoin| (RcTerm::from_term(trip.p()), vjoin))
-            .unwrap();
+            .map(move |vjoin| (RcTerm::from_term(trip.p()), vjoin))?;
         result.push(pair);
     }
 
