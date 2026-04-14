@@ -412,10 +412,10 @@ fn shape_expression() -> t!(ShapeExpression) {
 }
 
 fn expressions() -> t!(Vec<ExpressionEnum>) {
-    (expression_stmt()
+    expression_stmt()
         .or(matcher())
         .or(function())
-        .or(auto_increment()))
+        .or(auto_increment())
     .repeated()
     .at_least(1)
     .labelled("parser:expressions")
