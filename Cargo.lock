@@ -1809,14 +1809,12 @@ dependencies = [
 name = "translator"
 version = "0.6.6"
 dependencies = [
- "anyhow",
  "catch_panic",
  "clap",
  "colored",
  "common",
  "jni",
  "log",
- "log4rs",
  "neon",
  "plan",
  "pyo3",
