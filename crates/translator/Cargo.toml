@@ -7,22 +7,14 @@ edition.workspace = true
 
 [dependencies]
 anyhow.workspace = true
-lazy_static.workspace = true
-regex.workspace = true
-serde_json.workspace = true
-thiserror.workspace = true
 clap.workspace = true
 
-operator = { path = "../operator/" }
 plan = { path = "../plan/" }
 translator_api = { path = "../translator_api/" }
 translator_rml = { path = "../translator_rml/" }
 translator_new_rml = { path = "../translator_new_rml/" }
 translator_shexml = { path = "../translator_shexml/" }
-sparql-sat-checker = { path = "../sparql-sat-checker/" }
 
-csv = "1.2.2"
-urlencoding = "2.1.2"
 walkdir = "2.4.0"
 colored = "2.0.4"
 log4rs.workspace = true

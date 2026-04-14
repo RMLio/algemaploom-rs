@@ -12,13 +12,8 @@ plan = { path = "../plan/" }
 translator_normalized_rml = { path = "../translator_normalized_rml/" }
 vocab = { path = "../vocab/" }
 
-either.workspace = true
 petgraph.workspace = true
-anyhow.workspace = true
 uuid.workspace = true
 regex.workspace = true
-lazy_static.workspace = true
 serde_json.workspace = true
-serde.workspace = true
-clap.workspace = true
 log.workspace = true

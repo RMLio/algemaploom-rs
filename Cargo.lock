@@ -315,27 +315,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "csv"
-version = "1.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ac574ff4d437a7b5ad237ef331c17ccca63c46479e5b5453eb8e10bb99a759fe"
-dependencies = [
- "csv-core",
- "itoa",
- "ryu",
- "serde",
-]
-
-[[package]]
-name = "csv-core"
-version = "0.1.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5efa2b3d7902f4b634a20cae3c9c4e6209dc4779feb6863329607560143efa70"
-dependencies = [
- "memchr",
-]
-
-[[package]]
 name = "dashmap"
 version = "6.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -823,7 +802,6 @@ dependencies = [
  "anyhow",
  "serde",
  "serde_json",
- "thiserror 1.0.49",
 ]
 
 [[package]]
@@ -1719,16 +1697,11 @@ dependencies = [
 name = "sparql-sat-checker"
 version = "0.1.0"
 dependencies = [
- "anyhow",
- "clap",
- "either",
- "lazy_static",
  "log",
  "operator",
  "petgraph",
  "plan",
  "regex",
- "serde",
  "serde_json",
  "spargebra 0.4.2",
  "translator_normalized_rml",
@@ -1852,24 +1825,16 @@ dependencies = [
  "catch_panic",
  "clap",
  "colored",
- "csv",
  "jni",
- "lazy_static",
  "log",
  "log4rs",
  "neon",
- "operator",
  "plan",
  "pyo3",
- "regex",
- "serde_json",
- "sparql-sat-checker",
- "thiserror 1.0.49",
  "translator_api",
  "translator_new_rml",
  "translator_rml",
  "translator_shexml",
- "urlencoding",
  "walkdir",
 ]
 
@@ -1884,18 +1849,11 @@ dependencies = [
 name = "translator_new_rml"
 version = "0.6.6"
 dependencies = [
- "anyhow",
- "chumsky",
- "clap",
  "derive_more",
- "either",
  "lazy_static",
  "log",
  "operator",
- "oxigraph 0.4.9",
  "plan",
- "regex",
- "serde",
  "serde_json",
  "sophia_api",
  "sophia_inmem",
@@ -1905,7 +1863,6 @@ dependencies = [
  "translator_api",
  "uuid",
  "vocab",
- "walkdir",
 ]
 
 [[package]]
@@ -1913,18 +1870,11 @@ name = "translator_normalized_rml"
 version = "0.6.6"
 dependencies = [
  "anyhow",
- "clap",
- "derive_more",
- "either",
  "lazy_static",
- "log",
  "operator",
  "oxigraph 0.4.9",
  "plan",
  "regex",
- "serde",
- "serde_json",
- "translator_api",
  "uuid",
  "vocab",
 ]
@@ -1933,16 +1883,11 @@ dependencies = [
 name = "translator_rml"
 version = "0.6.6"
 dependencies = [
- "anyhow",
- "clap",
- "derive_more",
- "either",
  "lazy_static",
  "log",
  "operator",
  "plan",
  "regex",
- "serde",
  "serde_json",
  "sophia_api",
  "sophia_inmem",
@@ -1951,27 +1896,19 @@ dependencies = [
  "translator_api",
  "uuid",
  "vocab",
- "walkdir",
 ]
 
 [[package]]
 name = "translator_shexml"
 version = "0.6.6"
 dependencies = [
- "anyhow",
  "chumsky",
- "clap",
- "derive_more",
  "either",
- "lazy_static",
  "log",
  "operator",
  "plan",
- "regex",
  "serde",
- "serde_json",
  "translator_api",
- "uuid",
  "vocab",
 ]
 
@@ -2016,12 +1953,6 @@ checksum = "e0a303d30665362d9680d7d91d78b23f5f899504d4f08b3c4cf08d055d87c0ad"
 dependencies = [
  "destructure_traitobject",
 ]
-
-[[package]]
-name = "urlencoding"
-version = "2.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "daf8dba3b7eb870caf1ddeed7bc9d2a049f3cfdfae7cb521b087cc33ae4c49da"
 
 [[package]]
 name = "utf8parse"
