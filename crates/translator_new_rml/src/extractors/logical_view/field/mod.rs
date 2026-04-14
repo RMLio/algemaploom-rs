@@ -1,6 +1,12 @@
+pub mod error;
+use std::collections::{HashMap, HashSet};
+
+use error::FieldErrorEnum;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
+use crate::extractors::error::ParseError;
+use crate::extractors::logical_view::error::LogicalViewErrorEnum;
 use crate::extractors::store::{get_object, get_objects};
 use crate::extractors::{
     stringify_term, Extractor, ExtractorResult, FromVocab,
@@ -9,11 +15,11 @@ use crate::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::rml_model::v2::core::RMLIterable;
 use crate::rml_model::v2::lv::{RMLField, RMLFieldKind};
 
-fn extract_self<TTerm>(
+pub fn extract_field<TTerm>(
     subject_ref: TTerm,
     graph_ref: &FastGraph,
     parent_path_opt: Option<&str>,
-) -> ExtractorResult<RMLField>
+) -> Result<RMLField, FieldErrorEnum>
 where
     TTerm: Term + Clone,
 {
@@ -50,7 +56,10 @@ where
     } else {
         log::debug!("Extracting RMLIterable");
         let iterable =
-            RMLIterable::extract_self(subject_ref.borrow_term(), graph_ref)?;
+            RMLIterable::extract_self(subject_ref.borrow_term(), graph_ref)
+                .map_err(|err| {
+                    FieldErrorEnum::IterableError(err.to_string())
+                })?;
         RMLFieldKind::Iterable(iterable)
     };
 
@@ -65,8 +74,10 @@ where
         vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
     )
     .iter()
-    .filter_map(|term| extract_self(term, graph_ref, Some(&absolute_name)).ok())
-    .collect();
+    .map(|term| extract_field(term, graph_ref, Some(&absolute_name)))
+    .collect::<Result<Vec<_>, FieldErrorEnum>>()?;
+
+    name_conflict_check(&fields)?;
 
     Ok(RMLField {
         name,
@@ -76,14 +87,29 @@ where
     })
 }
 
-impl Extractor<RMLField> for RMLField {
-    fn extract_self<TTerm>(
-        subject_ref: TTerm,
-        graph_ref: &FastGraph,
-    ) -> ExtractorResult<RMLField>
-    where
-        TTerm: Term + Clone,
-    {
-        extract_self(subject_ref, graph_ref, None)
+pub fn name_conflict_check(fields: &[RMLField]) -> Result<(), FieldErrorEnum> {
+    let name_iter = fields.iter().map(|f| &f.name);
+    let unique_names_count = name_iter.clone().collect::<HashSet<_>>().len();
+
+    if fields.len() != unique_names_count {
+        let conflicting_field_names = name_iter
+            .fold(HashMap::new(), |mut map, f| {
+                map.entry(f).and_modify(|c| *c += 1).or_insert(1);
+                map
+            })
+            .iter()
+            .filter(|pair| *pair.1 > 1)
+            .map(|pair| pair.0.to_string())
+            .collect::<Vec<_>>();
+
+        return Err(FieldErrorEnum::ConflictingNamesError(
+            conflicting_field_names,
+        ));
     }
+
+    for field in fields {
+        name_conflict_check(&field.fields)?;
+    }
+
+    Ok(())
 }

@@ -42,7 +42,7 @@ impl Display for NewRMLTranslationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "error occurred while translating a RML 2.0 spec mapping document"
+            "parsing or translation error occurred in the translator_new_rml module"
         )
     }
 }

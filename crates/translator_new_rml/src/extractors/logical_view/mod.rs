@@ -1,9 +1,12 @@
+pub mod error;
 mod field;
 mod join_view;
 mod struct_annotation;
 
 use std::collections::HashSet;
 
+use error::LogicalViewErrorEnum;
+use field::name_conflict_check;
 use log::debug;
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
@@ -16,7 +19,7 @@ use super::error::ParseError;
 use super::store::get_objects;
 use super::Extractor;
 use crate::extractors::store::get_object;
-use crate::extractors::FromVocab;
+use crate::extractors::{stringify_term, FromVocab};
 use crate::rml_model::v2::core::AbstractLogicalSourceEnum;
 use crate::rml_model::v2::lv::{
     LogicalView, LogicalViewJoin, RMLField, StructuralAnnotation,
@@ -56,14 +59,28 @@ impl Extractor<LogicalView> for LogicalView {
             &logical_source_term,
             graph_ref,
         )?;
+
         let fields = get_objects(
             graph_ref,
             &subject_ref,
             vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
         )
         .iter()
-        .filter_map(|term| RMLField::extract_self(term, graph_ref).ok())
-        .collect();
+        .map(|term| field::extract_field(term, graph_ref, None))
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|field_error| {
+            LogicalViewErrorEnum::FieldError {
+                logical_view_id: stringify_term(&subject_ref).unwrap(),
+                field_error,
+            }
+        })?;
+
+        name_conflict_check(&fields).map_err(|field_error| {
+            LogicalViewErrorEnum::FieldError {
+                logical_view_id: stringify_term(&subject_ref).unwrap(),
+                field_error,
+            }
+        })?;
 
         let struct_annotations = get_objects(
             graph_ref,
@@ -79,13 +96,15 @@ impl Extractor<LogicalView> for LogicalView {
         let join_kind_view_pairs =
             get_joins(subject_ref.borrow_term(), graph_ref)?;
 
-        Ok(Self {
+        let logical_view = Self {
             identifier: RcTerm::from_term(subject_ref),
             view_on: Box::new(view_on_abs),
             fields,
             struct_annotations,
             join_kind_view_pairs,
-        })
+        };
+
+        Ok(logical_view)
     }
 }
 

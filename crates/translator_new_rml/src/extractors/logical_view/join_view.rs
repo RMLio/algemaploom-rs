@@ -3,15 +3,14 @@ use std::rc::Rc;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
+use super::field;
 use crate::error::NewRMLTranslationError;
 use crate::extractors::error::ParseError;
 use crate::extractors::store::{get_object, get_objects};
 use crate::extractors::{Extractor, ExtractorResult, FromVocab};
 use crate::rml_model::v2::core::JoinCondition;
 use crate::rml_model::v2::lv::RMLFieldKind::Iterable;
-use crate::rml_model::v2::lv::{
-    LogicalView, LogicalViewJoin, RMLField,
-};
+use crate::rml_model::v2::lv::{LogicalView, LogicalViewJoin, RMLField};
 
 impl Extractor<LogicalViewJoin> for LogicalViewJoin {
     fn extract_self<TTerm>(
@@ -43,17 +42,17 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
         )
         .iter()
         .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, ParseError> {
-            let res = RMLField::extract_self(t, graph_ref);
+            let res = field::extract_field(t, graph_ref, None);
             match res {
                 Ok(field) => {
                     if let Iterable(_) = field.kind{
-                        Err(ParseError::GenericError(format!("Logical view join's field cannot be an iterable {:?}", t)).into())
+                        Err(ParseError::GenericError(format!("Logical view join's field cannot be an iterable {:?}", t)))
                     }else{
                         acc.push(field);
                         Ok(acc)
                     }
                 }
-                Err(e) => Err(e),
+                Err(e) => Err(ParseError::GenericError(format!("something went from parsing fields for logical view joins: {}", e))),
             }
         })?;
 

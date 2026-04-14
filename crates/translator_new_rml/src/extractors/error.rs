@@ -3,6 +3,8 @@ use std::error::Error;
 use std::fmt::Display;
 use std::io;
 
+use super::logical_view::error::LogicalViewErrorEnum;
+
 #[derive(Debug, Clone)]
 pub enum SophiaStoreError {
     TriplesNotFound {
@@ -60,8 +62,15 @@ pub enum ParseError {
     SophiaStoreError(SophiaStoreError), 
     GenericError(String),
     NoTermMapFoundError(String),
+    LogicalViewError(LogicalViewErrorEnum), 
     ExtensionError(String),
     Infallible,
+}
+
+impl From<LogicalViewErrorEnum> for ParseError{
+    fn from(value: LogicalViewErrorEnum) -> Self {
+        ParseError::LogicalViewError(value)
+    }
 }
 
 impl From<SophiaStoreError> for ParseError{
@@ -92,24 +101,25 @@ impl Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             ParseError::IOErrorStr(msg) => {
-                write!(f, "IO error occurred while parsing with msg: {}", msg)
-            }
+                        write!(f, "IO error occurred while parsing with msg: {}", msg)
+                    }
             ParseError::IOError(_error) => {
-                write!(f, "IO error occurred while parsing")
-            }
+                        write!(f, "IO error occurred while parsing")
+                    }
             ParseError::SerdeError(_error) => {
-                write!(f, "JSON serde error occurred while parsing")
-            }
+                        write!(f, "JSON serde error occurred while parsing")
+                    }
             ParseError::GenericError(msg) => {
-                write!(f, "generic error while parsing with msg: \n {}", msg)
-            }
+                        write!(f, "generic error while parsing with msg: \n {}", msg)
+                    }
             ParseError::NoTermMapFoundError(msg) => {
-                write!(f, "no term map found error with msg: \n {}", msg)
-            }
+                        write!(f, "no term map found error with msg: \n {}", msg)
+                    }
             ParseError::ExtensionError(msg) => {
-                write!(f, "file extension error with msg: \n {}", msg)
-            }
+                        write!(f, "file extension error with msg: \n {}", msg)
+                    }
             ParseError::SophiaStoreError(_sophia_store_error) => write!(f, "error occurred while using sophia_rs's graph store"),
+            ParseError::LogicalViewError(_) => write!(f, "error while extracting logical views"),
             ParseError::Infallible => panic!("Reached infallible error state, something went really wrong"),
         }
     }
@@ -121,6 +131,7 @@ impl Error for ParseError {
             ParseError::IOError(error) => Some(error),
             ParseError::SerdeError(error) => Some(error),
             ParseError::SophiaStoreError(error) => Some(error),  
+            ParseError::LogicalViewError(error) => Some(error), 
             _ => None,
         }
     }
