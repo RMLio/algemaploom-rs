@@ -20,21 +20,21 @@ impl Extractor<Target> for Target {
         let mode = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_io::PROPERTY::MODE.to_rcterm(),
+            vocab::rml_io::property::MODE.to_rcterm(),
         )
         .ok();
 
         let compression = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm(),
+            vocab::rml_io::property::COMPRESSION.to_rcterm(),
         )
         .ok();
 
         let encoding = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_io::PROPERTY::ENCODING.to_rcterm(),
+            vocab::rml_io::property::ENCODING.to_rcterm(),
         )
         .ok();
 
@@ -57,12 +57,12 @@ where
     TTerm: Term,
 {
     // FIXME: There can be multiple classes defined for a single target
-    let source_type_new = vocab::rml_io::CLASS::SOURCE.to_rcterm();
+    let source_type_new = vocab::rml_io::class::SOURCE.to_rcterm();
 
     let target_class = get_objects(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rdf::PROPERTY::TYPE.to_rcterm(),
+        vocab::rdf::property::TYPE.to_rcterm(),
     )
     .into_iter()
     .find(|t| *t != source_type_new)
@@ -76,18 +76,18 @@ where
 
     let _ = metadata.remove_matching(
         [subject_ref.borrow_term()],
-        [vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm()],
+        [vocab::rml_io::property::COMPRESSION.to_rcterm()],
         Any,
     );
     let _ = metadata.remove_matching(
         [subject_ref.borrow_term()],
-        [vocab::rml_io::PROPERTY::ENCODING.to_rcterm()],
+        [vocab::rml_io::property::ENCODING.to_rcterm()],
         Any,
     );
 
     let _ = metadata.remove_matching(
         [subject_ref.borrow_term()],
-        [vocab::rml_io::PROPERTY::MODE.to_rcterm()],
+        [vocab::rml_io::property::MODE.to_rcterm()],
         Any,
     );
 

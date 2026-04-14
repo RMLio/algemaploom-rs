@@ -13,16 +13,16 @@ lazy_static! {
             vocab::rml::PROPERTY::QUERY.to_arcterm()
         ),
         (
-            vocab::r2rml::PROPERTY::TABLENAME.1.to_string(),
-            vocab::r2rml::PROPERTY::TABLENAME.to_arcterm()
+            vocab::r2rml::property::TABLENAME.1.to_string(),
+            vocab::r2rml::property::TABLENAME.to_arcterm()
         ),
         (
-            vocab::r2rml::PROPERTY::SQLVERSION.1.to_string(),
-            vocab::r2rml::PROPERTY::SQLVERSION.to_arcterm()
+            vocab::r2rml::property::SQLVERSION.1.to_string(),
+            vocab::r2rml::property::SQLVERSION.to_arcterm()
         ),
         (
-            vocab::r2rml::PROPERTY::COLUMN.1.to_string(),
-            vocab::r2rml::PROPERTY::COLUMN.to_arcterm()
+            vocab::r2rml::property::COLUMN.1.to_string(),
+            vocab::r2rml::property::COLUMN.to_arcterm()
         )
     ];
 }

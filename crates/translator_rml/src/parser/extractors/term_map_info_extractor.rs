@@ -20,17 +20,17 @@ fn extract_term_map_type_value(
     graph_ref: &FastGraph,
 ) -> ExtractorResult<(TermMapType, RcTerm)> {
     //function-map
-    let fno_pred: RcTerm = vocab::fnml::PROPERTY::FUNCTION_VALUE.to_rcterm();
+    let fno_pred: RcTerm = vocab::fnml::property::FUNCTION_VALUE.to_rcterm();
 
     //template-map
-    let temp_pred: RcTerm = vocab::r2rml::PROPERTY::TEMPLATE.to_rcterm();
+    let temp_pred: RcTerm = vocab::r2rml::property::TEMPLATE.to_rcterm();
 
     //constant-map
-    let const_pred: RcTerm = vocab::r2rml::PROPERTY::CONSTANT.to_rcterm();
+    let const_pred: RcTerm = vocab::r2rml::property::CONSTANT.to_rcterm();
 
     //reference-map
     let ref_pred: RcTerm = vocab::rml::PROPERTY::REFERENCE.to_rcterm();
-    let col_pred: RcTerm = vocab::r2rml::PROPERTY::COLUMN.to_rcterm();
+    let col_pred: RcTerm = vocab::r2rml::property::COLUMN.to_rcterm();
 
     let pred_query = [&ref_pred, &col_pred, &const_pred, &temp_pred, &fno_pred];
 
@@ -79,7 +79,7 @@ impl Extractor<TermMapInfo> for TermMapInfo {
         let (term_map_type, term_value) =
             extract_term_map_type_value(subj_ref, graph_ref)?;
 
-        let term_type_pred = vocab::r2rml::PROPERTY::TERMTYPE.to_rcterm();
+        let term_type_pred = vocab::r2rml::property::TERMTYPE.to_rcterm();
 
         let mut term_type = None;
 
@@ -98,9 +98,9 @@ impl Extractor<TermMapInfo> for TermMapInfo {
         if let Ok(term_type_soph) =
             get_object(graph_ref, subj_ref, &term_type_pred)
         {
-            let lit_class = vocab::r2rml::CLASS::LITERAL.to_rcterm();
-            let iri_class = vocab::r2rml::CLASS::IRI.to_rcterm();
-            let bnode_class = vocab::r2rml::CLASS::BLANKNODE.to_rcterm();
+            let lit_class = vocab::r2rml::class::LITERAL.to_rcterm();
+            let iri_class = vocab::r2rml::class::IRI.to_rcterm();
+            let bnode_class = vocab::r2rml::class::BLANKNODE.to_rcterm();
 
             // Debug: print both the value and its type for diagnosis
             println!(
@@ -172,7 +172,7 @@ mod tests {
     #[test]
     fn term_map_info_extraction_test() -> ExtractorResult<()> {
         let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
-        let sub_pred = vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm();
+        let sub_pred = vocab::r2rml::property::SUBJECTMAP.to_rcterm();
         let triple = graph.triples_matching(Any,[sub_pred], Any).next().unwrap().unwrap();
         let sub_ref = RcTerm::from_term(triple.o());
 

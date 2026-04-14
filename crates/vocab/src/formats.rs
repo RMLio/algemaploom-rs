@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "formats";
 pub const IRI: &str = "http://www.w3.org/ns/formats/";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 

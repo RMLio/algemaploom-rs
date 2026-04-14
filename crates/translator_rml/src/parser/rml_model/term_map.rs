@@ -93,7 +93,7 @@ impl TermMapInfo {
 
         self.term_value = RcTerm::from_term(GenericLiteral::Typed(
             prefixed_term_value_string.into(),
-            IriRef::new_unchecked(vocab::xsd::TYPE::XSD_STRING.to_string()),
+            IriRef::new_unchecked(vocab::xsd::r#type::XSD_STRING.to_string()),
         ));
     }
 

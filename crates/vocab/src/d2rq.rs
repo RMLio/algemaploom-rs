@@ -17,6 +17,6 @@ pub mod PROPERTY {
     pub const USERNAME : PAIR = (IRI, "username");
     pub const PASSWORD : PAIR = (IRI, "password");
     pub const JDBCDSN : PAIR = (IRI, "jdbcDSN");
-    pub const JDBCDriver : PAIR = (IRI, "jdbcDriver");
+    pub const JDBCDRIVER: PAIR = (IRI, "jdbcDriver");
 
 }

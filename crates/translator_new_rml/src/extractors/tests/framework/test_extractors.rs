@@ -211,7 +211,7 @@ pub fn extract_subject_map_constant(
 
 pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
     let source = get_source(triplesmap)?;
-    let path_predicate = vocab::rml_io::PROPERTY::PATH.to_rcterm();
+    let path_predicate = vocab::rml_io::property::PATH.to_rcterm();
 
     match get_object(
         &source.kind.metadata,
@@ -230,7 +230,7 @@ pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
 
 pub fn extract_source_root(triplesmap: &TriplesMap) -> Result<String, String> {
     let source = get_source(triplesmap)?;
-    let root_predicate = vocab::rml_io::PROPERTY::ROOT.to_rcterm();
+    let root_predicate = vocab::rml_io::property::ROOT.to_rcterm();
 
     match get_object(
         &source.kind.metadata,

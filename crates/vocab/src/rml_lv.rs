@@ -19,7 +19,7 @@ pub mod PROPERTY {
     pub const STRUCTURAL_ANNOTATION: PAIR = (IRI, "structuralAnnotation");
 }
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
     pub const LOGICAL_VIEW_JOIN: PAIR = (IRI, "LogicalViewJoin");

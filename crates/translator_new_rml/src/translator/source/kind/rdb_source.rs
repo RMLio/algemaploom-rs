@@ -22,8 +22,8 @@ lazy_static! {
             vocab::d2rq::PROPERTY::JDBCDSN.to_arcterm()
         ),
         (
-            vocab::d2rq::PROPERTY::JDBCDriver.1.to_string(),
-            vocab::d2rq::PROPERTY::JDBCDriver.to_arcterm()
+            vocab::d2rq::PROPERTY::JDBCDRIVER.1.to_string(),
+            vocab::d2rq::PROPERTY::JDBCDRIVER.to_arcterm()
         ),
         (
             vocab::d2rq::PROPERTY::SQLQUERY.1.to_string(),

@@ -100,8 +100,8 @@ pub fn extract_triples_maps(
     // Case 1: Regular RML:TRIPLES_MAP
     let rml_core_tm_iter = graph.triples_matching(
         Any,
-        [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
-        [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
+        [vocab::rdf::property::TYPE.to_rcterm()],
+        [vocab::rml_core::class::TRIPLES_MAP.to_rcterm()],
     );
 
     let explicit_tms: ExtractorResult<Vec<TriplesMap>> = rml_core_tm_iter
@@ -118,8 +118,8 @@ pub fn extract_triples_maps(
     let explicit_tm_subjects: std::collections::HashSet<_> = graph
         .triples_matching(
             Any,
-            [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
-            [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
+            [vocab::rdf::property::TYPE.to_rcterm()],
+            [vocab::rml_core::class::TRIPLES_MAP.to_rcterm()],
         )
         .filter_map(|triple| triple.ok())
         .map(|triple| RcTerm::from_term(triple.s()))

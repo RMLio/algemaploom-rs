@@ -55,7 +55,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
                     graph_ref,
                     *term,
                     &[
-                        &vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_rcterm(),
+                        &vocab::r2rml::property::PARENTTRIPLESMAP.to_rcterm(),
                         &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP
                             .to_rcterm(),
                     ],

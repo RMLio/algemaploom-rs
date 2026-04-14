@@ -15,7 +15,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
         tm: CommonTermMapInfo,
     ) -> ExtractorResult<TermMapEnum> {
         match tm.term_type {
-            ref term if *term == vocab::rml_core::CLASS::IRI.to_rcterm() => {
+            ref term if *term == vocab::rml_core::class::IRI.to_rcterm() => {
                 Ok(TermMapEnum::SubjectMap(SubjectMap {
                     term_map_info: tm,
                     classes:       vec![],
@@ -42,7 +42,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
             CommonTermMapInfo::extract_self(subj_ref.borrow_term(), graph_ref)?;
 
         if term_map_info.term_type
-            == vocab::rml_core::CLASS::LITERAL.to_rcterm()
+            == vocab::rml_core::class::LITERAL.to_rcterm()
         {
             return Err(ParseError::GenericError(
                     "SubjectMap can only have rml:IRI rml:UnsafeIRI, rml:URI, rml:UnsafeURI or rml:BlankNode as rml:termType!"
@@ -73,14 +73,14 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::SUBJECT.to_rcterm(),
+            vocab::r2rml::property::SUBJECT.to_rcterm(),
             vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm(),
+            vocab::r2rml::property::SUBJECTMAP.to_rcterm(),
             vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm(),
         ]
     }

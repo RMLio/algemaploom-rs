@@ -2,7 +2,7 @@
 //! Vocab module contains API for the IRI values of common ontologies used in 
 //! the mapping languages.
 //! 
-//! Classes of the ontologies are behind the `CLASS` sub-module of each ontology modules.
+//! Classes of the ontologies are behind the `class` sub-module of each ontology modules.
 //! 
 //! The following example shows the utilization of the `TriplesMap` class 
 //! from the latest RML ontology [http://w3id.org/rml/TriplesMap](http://w3id.org/rml/TriplesMap)
@@ -11,13 +11,13 @@
 //! use vocab::rml_core;
 //! use vocab::ToString; 
 //! 
-//! let rml_triples_map = rml_core::CLASS::TRIPLES_MAP;
+//! let rml_triples_map = rml_core::class::TRIPLES_MAP;
 //! 
 //! assert_eq!("http://w3id.org/rml/TriplesMap".to_string(), rml_triples_map.to_string()); 
 //! 
 //! ```
 //! 
-//! Idem for the properties of the ontologies which are behind the `PROPERTY` sub-module of each 
+//! Idem for the properties of the ontologies which are behind the `property` sub-module of each 
 //! ontology modules.
 //! 
 use std::fmt::Display;

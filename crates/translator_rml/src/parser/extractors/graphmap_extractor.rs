@@ -35,11 +35,11 @@ impl TermMapExtractor<GraphMap> for GraphMap {
     }
 
     fn get_const_pred() -> sophia_term::RcTerm {
-        vocab::r2rml::PROPERTY::GRAPH.to_rcterm()
+        vocab::r2rml::property::GRAPH.to_rcterm()
     }
 
     fn get_map_pred() -> sophia_term::RcTerm {
-        vocab::r2rml::PROPERTY::GRAPHMAP.to_rcterm()
+        vocab::r2rml::property::GRAPHMAP.to_rcterm()
     }
 
     fn extract_many_from_container(

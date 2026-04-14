@@ -14,17 +14,17 @@ lazy_static! {
         // Support for direct target URL
         (
             "url".to_string(),
-            vocab::hctl::PROPERTY::HAS_TARGET.to_arcterm()
+            vocab::hctl::property::HAS_TARGET.to_arcterm()
         ),
         // Support for content type
         (
             "contentType".to_string(),
-            vocab::hctl::PROPERTY::FOR_CONTENT_TYPE.to_arcterm()
+            vocab::hctl::property::FOR_CONTENT_TYPE.to_arcterm()
         ),
         // Support for sub-protocol (e.g., mqtt, stomp)
         (
             "subProtocol".to_string(),
-            vocab::hctl::PROPERTY::FOR_SUB_PROTOCOL.to_arcterm()
+            vocab::hctl::property::FOR_SUB_PROTOCOL.to_arcterm()
         ),
     ];
 }
@@ -45,7 +45,7 @@ pub fn extract_websocket_source(
         
         for form in forms {
             // Extract hasTarget (URL)
-            let target_pred = vocab::hctl::PROPERTY::HAS_TARGET.to_arcterm();
+            let target_pred = vocab::hctl::property::HAS_TARGET.to_arcterm();
             if let Ok(target) = get_object(graph, form.borrow_term(), &target_pred) {
                 if let Some(url) = stringify_term(target) {
                     config.insert("url".to_string(), url);
@@ -53,7 +53,7 @@ pub fn extract_websocket_source(
             }
             
             // Extract forContentType
-            let content_type_pred = vocab::hctl::PROPERTY::FOR_CONTENT_TYPE.to_arcterm();
+            let content_type_pred = vocab::hctl::property::FOR_CONTENT_TYPE.to_arcterm();
             if let Ok(content_type) = get_object(graph, form.borrow_term(), &content_type_pred) {
                 if let Some(ct) = stringify_term(content_type) {
                     config.insert("contentType".to_string(), ct);
@@ -61,7 +61,7 @@ pub fn extract_websocket_source(
             }
             
             // Extract forSubProtocol
-            let sub_protocol_pred = vocab::hctl::PROPERTY::FOR_SUB_PROTOCOL.to_arcterm();
+            let sub_protocol_pred = vocab::hctl::property::FOR_SUB_PROTOCOL.to_arcterm();
             if let Ok(sub_protocol) = get_object(graph, form.borrow_term(), &sub_protocol_pred) {
                 if let Some(sp) = stringify_term(sub_protocol) {
                     config.insert("subProtocol".to_string(), sp);

@@ -39,7 +39,7 @@ impl Extractor<JoinCondition> for JoinCondition {
             subject_ref.borrow_term(),
             graph_ref,
             &[
-                vocab::r2rml::PROPERTY::PARENT.to_rcterm(),
+                vocab::r2rml::property::PARENT.to_rcterm(),
                 vocab::rml_core::PROPERTY::PARENT.to_rcterm(),
                 vocab::rml_core::PROPERTY::PARENT_MAP.to_rcterm(),
             ],
@@ -49,7 +49,7 @@ impl Extractor<JoinCondition> for JoinCondition {
             subject_ref,
             graph_ref,
             &[
-                vocab::r2rml::PROPERTY::CHILD.to_rcterm(),
+                vocab::r2rml::property::CHILD.to_rcterm(),
                 vocab::rml_core::PROPERTY::CHILD.to_rcterm(),
                 vocab::rml_core::PROPERTY::CHILD_MAP.to_rcterm(),
             ],
@@ -71,7 +71,7 @@ impl Extractor<RefObjectMap> for RefObjectMap {
             graph_ref,
             subject_ref.borrow_term(),
             &[
-                &vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_rcterm(),
+                &vocab::r2rml::property::PARENTTRIPLESMAP.to_rcterm(),
                 &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP.to_rcterm(),
             ],
         )?;
@@ -80,7 +80,7 @@ impl Extractor<RefObjectMap> for RefObjectMap {
             graph_ref,
             subject_ref,
             &[
-                &vocab::r2rml::PROPERTY::JOINCONDITION.to_rcterm(),
+                &vocab::r2rml::property::JOINCONDITION.to_rcterm(),
                 &vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
             ],
         );

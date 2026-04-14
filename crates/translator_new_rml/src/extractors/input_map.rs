@@ -17,7 +17,7 @@ impl Extractor<InputMap> for InputMap {
         let parameter = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::PARAMETER.to_rcterm()],
+            &[&vocab::rml_fnml::property::PARAMETER.to_rcterm()],
         )
         .into_iter()
         .filter_map(|iri| CommonTermMapInfo::from_constant_value(iri).ok());
@@ -25,7 +25,7 @@ impl Extractor<InputMap> for InputMap {
         let parameter_maps = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm()],
+            &[&vocab::rml_fnml::property::PARAMETER_MAP.to_rcterm()],
         )
         .into_iter()
         .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok());
@@ -40,7 +40,7 @@ impl Extractor<InputMap> for InputMap {
         let value = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::INPUT_VALUE.to_rcterm()],
+            &[&vocab::rml_fnml::property::INPUT_VALUE.to_rcterm()],
         )
         .into_iter()
         .filter_map(|iri| CommonTermMapInfo::from_constant_value(iri).ok());
@@ -48,7 +48,7 @@ impl Extractor<InputMap> for InputMap {
         let value_map = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::INPUT_VALUE_MAP.to_rcterm()],
+            &[&vocab::rml_fnml::property::INPUT_VALUE_MAP.to_rcterm()],
         )
         .into_iter()
         .filter_map(|iri| CommonTermMapInfo::extract_self(iri, graph_ref).ok());

@@ -55,7 +55,7 @@ pub mod PROPERTY {
     pub const GRAPH_MAP: PAIR = (IRI, "graphMap");
 }
 
-pub mod CLASS {
+pub mod class {
     use super::IRI as SUPER_IRI;
     use crate::PAIR;
 

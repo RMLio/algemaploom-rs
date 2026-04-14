@@ -75,7 +75,7 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
                 subj_ref.borrow_term(),
                 graph_ref,
                 &[
-                    &vocab::r2rml::PROPERTY::DATATYPE.to_rcterm(),
+                    &vocab::r2rml::property::DATATYPE.to_rcterm(),
                     &vocab::rml_core::PROPERTY::DATATYPE.to_rcterm(),
                 ],
                 &[&vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm()],
@@ -85,7 +85,7 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
                 subj_ref.borrow_term(),
                 graph_ref,
                 &[
-                    &vocab::r2rml::PROPERTY::LANGUAGE.to_rcterm(),
+                    &vocab::r2rml::property::LANGUAGE.to_rcterm(),
                     &vocab::rml_core::PROPERTY::LANGUAGE.to_rcterm(),
                 ],
                 &[
@@ -112,14 +112,14 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::OBJECT.to_rcterm(),
+            vocab::r2rml::property::OBJECT.to_rcterm(),
             vocab::rml_core::PROPERTY::OBJECT.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm(),
+            vocab::r2rml::property::OBJECTMAP.to_rcterm(),
             vocab::rml_core::PROPERTY::OBJECT_MAP.to_rcterm(),
         ]
     }

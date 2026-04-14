@@ -27,8 +27,8 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
     for triples_map_quad in store
         .quads_for_pattern(
             None,
-            Some((&vocab::rdf::PROPERTY::TYPE.to_named_node()).into()),
-            Some((&vocab::r2rml::CLASS::TRIPLESMAP.to_term()).into()),
+            Some((&vocab::rdf::property::TYPE.to_named_node()).into()),
+            Some((&vocab::r2rml::class::TRIPLESMAP.to_term()).into()),
             None,
         )
         .filter_map(|res| res.ok())
@@ -38,7 +38,7 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
         //Predicate object map's presence checked first before mutating the plan
         let predicate_object_map_res = get_object(
             triples_map_iri,
-            vocab::r2rml::PROPERTY::PREDICATEOBJECTMAP
+            vocab::r2rml::property::PREDICATEOBJECTMAP
                 .to_named_node()
                 .as_ref(),
             store,
@@ -54,7 +54,7 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
 
         let subject = get_object(
             triples_map_iri,
-            vocab::r2rml::PROPERTY::SUBJECTMAP.to_named_node().as_ref(),
+            vocab::r2rml::property::SUBJECTMAP.to_named_node().as_ref(),
             store,
         )?;
         let subject_ref = termref_to_subjref(subject.as_ref())?;
@@ -72,7 +72,7 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
 
         let predicate = get_object(
             predicate_object_map_subjref,
-            vocab::r2rml::PROPERTY::PREDICATEMAP
+            vocab::r2rml::property::PREDICATEMAP
                 .to_named_node()
                 .as_ref(),
             store,
@@ -105,12 +105,12 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
 
         let sm_gm_res = get_object(
             subject_ref,
-            vocab::r2rml::PROPERTY::GRAPHMAP.to_named_node().as_ref(),
+            vocab::r2rml::property::GRAPHMAP.to_named_node().as_ref(),
             store,
         );
         let pom_gm_res = get_object(
             predicate_object_map_subjref,
-            vocab::r2rml::PROPERTY::GRAPHMAP.to_named_node().as_ref(),
+            vocab::r2rml::property::GRAPHMAP.to_named_node().as_ref(),
             store,
         );
 
@@ -125,7 +125,7 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
             )?
         } else {
             Function::TypedConstant {
-                value: vocab::r2rml::CLASS::DEFAULTGRAPH.to_string(),
+                value: vocab::r2rml::class::DEFAULTGRAPH.to_string(),
                 term_type: TermType::IRI,
             }
         };
@@ -192,13 +192,13 @@ fn process_object_map(
 ) -> Result<Plan<Processed>, anyhow::Error> {
     let object = get_object(
         predicate_object_map_subjref,
-        vocab::r2rml::PROPERTY::OBJECTMAP.to_named_node().as_ref(),
+        vocab::r2rml::property::OBJECTMAP.to_named_node().as_ref(),
         store,
     )?;
     let object_subjref = termref_to_subjref(object.as_ref())?;
     if let Ok(ptm) = get_object(
         object_subjref,
-        vocab::r2rml::PROPERTY::PARENTTRIPLESMAP
+        vocab::r2rml::property::PARENTTRIPLESMAP
             .to_named_node()
             .as_ref(),
         store,
@@ -226,7 +226,7 @@ fn process_object_map(
         let ptm_subj_ref = termref_to_subjref(ptm.as_ref())?;
         let subject_ptm = get_object(
             ptm_subj_ref,
-            vocab::r2rml::PROPERTY::SUBJECTMAP.to_named_node().as_ref(),
+            vocab::r2rml::property::SUBJECTMAP.to_named_node().as_ref(),
             store,
         )?;
         let extend_func = create_extend_function(
@@ -268,7 +268,7 @@ fn get_join_condition_pairs<'a>(
     let mut join_condition_pairs = vec![];
     for jc in get_quads(
         object_subjref,
-        vocab::r2rml::PROPERTY::JOINCONDITION
+        vocab::r2rml::property::JOINCONDITION
             .to_named_node()
             .as_ref(),
         store,
@@ -279,14 +279,14 @@ fn get_join_condition_pairs<'a>(
 
         let parent_term = get_object(
             jc_subj_ref,
-            vocab::r2rml::PROPERTY::PARENT.to_named_node().as_ref(),
+            vocab::r2rml::property::PARENT.to_named_node().as_ref(),
             store,
         )?;
         let parent = termref_to_literal(parent_term.as_ref())?;
 
         let child_term = get_object(
             jc_subj_ref,
-            vocab::r2rml::PROPERTY::CHILD.to_named_node().as_ref(),
+            vocab::r2rml::property::CHILD.to_named_node().as_ref(),
             store,
         )?;
         let child = termref_to_literal(child_term.as_ref())?;

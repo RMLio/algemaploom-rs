@@ -49,7 +49,7 @@ impl SerializeTranslator for NQuadsSerializer {
                         .filter(|trip| {
                             !trip.contains(&format!(
                                 "<{}>",
-                                vocab::rdf::PROPERTY::TYPE.to_string()
+                                vocab::rdf::property::TYPE.to_string()
                             ))
                         })
                         .collect::<Vec<_>>()
@@ -72,7 +72,7 @@ impl SerializeTranslator for NQuadsSerializer {
                             format!(
                                 "{} <{}> <{}> .",
                                 sm_var,
-                                vocab::rdf::PROPERTY::TYPE.to_string(),
+                                vocab::rdf::property::TYPE.to_string(),
                                 crate::parser::extractors::rcterm_to_string(cls)
                             )
                         });

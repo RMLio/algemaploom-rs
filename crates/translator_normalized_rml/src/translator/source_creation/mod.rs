@@ -171,7 +171,7 @@ fn extract_queries(
     }
 
     for template_quad in tm_subgraph.iter().filter(|trip| {
-        trip.predicate == vocab::r2rml::PROPERTY::TEMPLATE.to_named_node()
+        trip.predicate == vocab::r2rml::property::TEMPLATE.to_named_node()
     }) {
         let template_str =
             termref_to_literal(template_quad.object.as_ref())?.value();
@@ -181,7 +181,7 @@ fn extract_queries(
     }
 
     let child_quads = tm_subgraph.into_iter().filter(|trip| {
-        trip.predicate == vocab::r2rml::PROPERTY::CHILD.to_named_node()
+        trip.predicate == vocab::r2rml::property::CHILD.to_named_node()
     });
     let mut parent_quads = get_parent_quads(triples_map_iri, store);
 
@@ -218,7 +218,7 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
         .quads_for_pattern(
             None,
             Some(
-                vocab::r2rml::PROPERTY::PARENTTRIPLESMAP
+                vocab::r2rml::property::PARENTTRIPLESMAP
                     .to_named_node()
                     .as_ref(),
             ),
@@ -235,7 +235,7 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
             // s' ∈ I ∪ B where (s', rr:joinCondition, s) ∈ G
             get_quads(
                 subject.as_ref(),
-                vocab::r2rml::PROPERTY::JOINCONDITION
+                vocab::r2rml::property::JOINCONDITION
                     .to_named_node()
                     .as_ref(),
                 store,
@@ -246,7 +246,7 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
             // (s, rr:parent, o) ∈ G
             get_quads(
                 termref_to_subjref(o.as_ref()).unwrap(),
-                vocab::r2rml::PROPERTY::PARENT.to_named_node().as_ref(),
+                vocab::r2rml::property::PARENT.to_named_node().as_ref(),
                 store,
             )
         })

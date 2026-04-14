@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "csvw";
 pub const IRI: &str = "http://www.w3.org/ns/csvw#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 
@@ -10,7 +10,7 @@ pub mod CLASS {
     pub const SCHEMA: PAIR = (IRI, "Schema");
 }
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 

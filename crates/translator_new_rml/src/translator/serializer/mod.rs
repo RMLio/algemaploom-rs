@@ -77,7 +77,7 @@ impl<'a> OperatorTranslator for SerializerOperatorTranslator<'a> {
                         format!(
                             "{} <{}> <{}>",
                             sm,
-                            vocab::rdf::PROPERTY::TYPE.to_string(),
+                            vocab::rdf::property::TYPE.to_string(),
                             stringify_term(class_iri).unwrap()
                         )
                     },

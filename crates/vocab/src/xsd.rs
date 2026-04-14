@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "xsd";
 pub const IRI: &str = "http://www.w3.org/2001/XMLSchema#";
 
-pub mod TYPE {
+pub mod r#type {
     use super::IRI;
     use crate::PAIR;
 

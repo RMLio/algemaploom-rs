@@ -23,7 +23,7 @@ impl Extractor<LogicalSource> for LogicalSource {
     where
         TTerm: Term + Clone,
     {
-        let source_new_pred = &vocab::rml_io::PROPERTY::SOURCE.to_rcterm();
+        let source_new_pred = &vocab::rml_io::property::SOURCE.to_rcterm();
         let source_old_pred = &vocab::rml::PROPERTY::SOURCE.to_rcterm();
         let source_obj_term = get_object_with_ps(
             graph_ref,
@@ -38,15 +38,15 @@ impl Extractor<LogicalSource> for LogicalSource {
                 metadata
                     .insert(
                         subj_bnode,
-                        vocab::rml_io::PROPERTY::ROOT.to_rcterm(),
-                        vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
+                        vocab::rml_io::property::ROOT.to_rcterm(),
+                        vocab::rml_io::class::MAPPING_DIR.to_rcterm(),
                     )
                     .unwrap();
 
                 metadata
                     .insert(
                         subj_bnode,
-                        vocab::rml_io::PROPERTY::PATH.to_rcterm(),
+                        vocab::rml_io::property::PATH.to_rcterm(),
                         literal,
                     )
                     .unwrap();
@@ -54,7 +54,7 @@ impl Extractor<LogicalSource> for LogicalSource {
                 Source {
                     kind:         SourceKind {
                         subj_iri: RcTerm::from_term(subj_bnode),
-                        type_iri: vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm(),
+                        type_iri: vocab::rml_io::class::MAPPING_DIR.to_rcterm(),
                         metadata: Rc::new(metadata),
                     },
                     encoding:     None,

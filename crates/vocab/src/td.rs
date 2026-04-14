@@ -4,7 +4,7 @@
 pub const PREFIX: &str = "td";
 pub const IRI: &str = "https://www.w3.org/2019/wot/td#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
     

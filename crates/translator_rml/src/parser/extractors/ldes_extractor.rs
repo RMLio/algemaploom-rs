@@ -17,7 +17,7 @@ impl Extractor<LdesInformation> for LdesInformation {
         let ldes_baseiri_pred = vocab::rmlt::PROPERTY::LDESBASE.to_rcterm();
         let ldes_timestamp_path = vocab::ldes::PROPERTY::TIMESTAMPPATH.to_rcterm();
         let ldes_version_of_path = vocab::ldes::PROPERTY::VERSIONOFPATH.to_rcterm();
-        let ldes_tree_shape = vocab::tree::PROPERTY::SHAPE.to_rcterm();
+        let ldes_tree_shape = vocab::tree::property::SHAPE.to_rcterm();
         let ldes_eventstream_pred = vocab::rmlt::PROPERTY::LDES.to_rcterm();
         let ldes_generate_immutable_pred = vocab::rmlt::PROPERTY::LDESIMMUTABLE.to_rcterm();
         

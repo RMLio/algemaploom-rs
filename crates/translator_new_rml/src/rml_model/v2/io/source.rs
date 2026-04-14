@@ -40,10 +40,10 @@ impl TryFrom<&ReferenceFormulation>
                         if value
                             == vocab::d2rq::CLASS::DATABASE.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::SQL_QUERY
+                                == vocab::rml_io::class::SQL_QUERY
                                     .to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::SQL_TABLE
+                                == vocab::rml_io::class::SQL_TABLE
                                     .to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::SQLQuery)
@@ -51,7 +51,7 @@ impl TryFrom<&ReferenceFormulation>
                     value
                         if value == vocab::query::CLASS::CSV.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::CSV.to_rcterm() =>
+                                == vocab::rml_io::class::CSV.to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::CSVRows)
                     }
@@ -59,7 +59,7 @@ impl TryFrom<&ReferenceFormulation>
                         if value
                             == vocab::query::CLASS::JSONPATH.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::JSONPATH
+                                == vocab::rml_io::class::JSONPATH
                                     .to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::JSONPath)
@@ -67,7 +67,7 @@ impl TryFrom<&ReferenceFormulation>
                     value
                         if value == vocab::query::CLASS::XPATH.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::XPATH.to_rcterm() =>
+                                == vocab::rml_io::class::XPATH.to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath)
                     }
@@ -239,18 +239,18 @@ impl TryFrom<SourceKind> for IOType {
 impl TryFrom<&SourceKind> for IOType {
     type Error = TranslationError;
     fn try_from(value: &SourceKind) -> Result<Self, Self::Error> {
-        if value.type_iri == vocab::rml_io::CLASS::FILE_PATH.to_rcterm()
-            || value.type_iri == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
+        if value.type_iri == vocab::rml_io::class::FILE_PATH.to_rcterm()
+            || value.type_iri == vocab::rml_io::class::RELATIVE_PATH.to_rcterm()
             || value.type_iri
-                == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE.to_rcterm()
-            || value.type_iri == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()
+                == vocab::rml_io::class::RELATIVE_PATH_SOURCE.to_rcterm()
+            || value.type_iri == vocab::rml_io::class::MAPPING_DIR.to_rcterm()
         {
             Ok(IOType::File)
         } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm()
-            || value.type_iri == vocab::rml_io::CLASS::SQL_TABLE.to_rcterm()
+            || value.type_iri == vocab::rml_io::class::SQL_TABLE.to_rcterm()
         {
             Ok(IOType::RDB)
-        } else if value.type_iri == vocab::td::CLASS::THING.to_rcterm() {
+        } else if value.type_iri == vocab::td::class::THING.to_rcterm() {
             Ok(IOType::Websocket)
         } else if value.type_iri
             == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm()
@@ -290,7 +290,7 @@ impl Default for SourceKind {
             subj_iri: RcTerm::from_term(BnodeId::new_unchecked_const(
                 "default_bnode",
             )),
-            type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
+            type_iri: vocab::rml_io::class::FILE_PATH.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }

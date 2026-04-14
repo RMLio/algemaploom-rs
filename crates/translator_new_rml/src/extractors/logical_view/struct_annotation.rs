@@ -33,7 +33,7 @@ impl Extractor<StructuralAnnotation> for StructuralAnnotation {
         let kind = get_object(
             graph_ref,
             subject_ref,
-            vocab::rdf::PROPERTY::TYPE.to_rcterm(),
+            vocab::rdf::property::TYPE.to_rcterm(),
         )?;
 
         Ok(StructuralAnnotation {

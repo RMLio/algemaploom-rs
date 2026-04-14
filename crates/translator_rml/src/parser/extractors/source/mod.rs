@@ -53,7 +53,7 @@ fn extract_typed_source(
     subject: &RcTerm,
     graph: &FastGraph,
 ) -> ExtractorResult<Source> {
-    let type_pred = vocab::rdf::PROPERTY::TYPE.to_rcterm();
+    let type_pred = vocab::rdf::property::TYPE.to_rcterm();
     let source_type = get_object(graph, subject, &type_pred)?;
 
     let match_result = match source_type {
@@ -66,7 +66,7 @@ fn extract_typed_source(
     }?;
 
     match match_result {
-        iri_string if iri_string == vocab::csvw::CLASS::TABLE.to_rcterm() => {
+        iri_string if iri_string == vocab::csvw::class::TABLE.to_rcterm() => {
             extract_csvw_source(subject, graph)
         }
 

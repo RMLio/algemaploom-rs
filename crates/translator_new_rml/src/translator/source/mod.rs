@@ -75,19 +75,19 @@ fn extract_source_specific_config(
             )?)
         }
         value
-            if value == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
+            if value == vocab::rml_io::class::RELATIVE_PATH.to_rcterm()
                 || value
-                    == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE
+                    == vocab::rml_io::class::RELATIVE_PATH_SOURCE
                         .to_rcterm()
-                || value == vocab::rml_io::CLASS::FILE_PATH.to_rcterm() 
-                || value == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()=>
+                || value == vocab::rml_io::class::FILE_PATH.to_rcterm() 
+                || value == vocab::rml_io::class::MAPPING_DIR.to_rcterm()=>
         {
             Ok(file_source::extract_file_source(
                 &kind.subj_iri,
                 &kind.metadata,
             )?)
         }
-        value if value == vocab::td::CLASS::THING.to_rcterm() => {
+        value if value == vocab::td::class::THING.to_rcterm() => {
             Ok(websocket_source::extract_websocket_source(
                 &kind.subj_iri,
                 &kind.metadata,

@@ -54,7 +54,7 @@ impl Extractor<LogicalTarget> for LogicalTarget {
 
         let compression = get_object(graph, subject, &compression_pred).ok();
         let serialization = get_object(graph, subject, &serialization_pred)
-            .unwrap_or(vocab::formats::CLASS::NTRIPLES.to_rcterm());
+            .unwrap_or(vocab::formats::class::NTRIPLES.to_rcterm());
 
         let target = get_object(graph, subject, &target_pred)?;
         let (output_type, config) =

@@ -15,16 +15,16 @@ fn extract_join_condition(
     subject_ref: &RcTerm,
     graph_ref: &FastGraph,
 ) -> ExtractorResult<JoinCondition> {
-    let jc_pred = vocab::r2rml::PROPERTY::JOINCONDITION.to_rcterm();
+    let jc_pred = vocab::r2rml::property::JOINCONDITION.to_rcterm();
     let jc_iri = get_object(graph_ref, subject_ref, &jc_pred)?;
 
-    let child_pred = vocab::r2rml::PROPERTY::CHILD.to_rcterm();
+    let child_pred = vocab::r2rml::property::CHILD.to_rcterm();
     let child_attributes = get_objects(graph_ref, &jc_iri, &child_pred)
         .iter()
         .map(|term| rcterm_to_string(term))
         .collect();
 
-    let parent_pred = vocab::r2rml::PROPERTY::PARENT.to_rcterm();
+    let parent_pred = vocab::r2rml::property::PARENT.to_rcterm();
     let parent_attributes = get_objects(graph_ref, &jc_iri, &parent_pred)
         .iter()
         .map(|term| rcterm_to_string(term))
@@ -40,7 +40,7 @@ fn extract_parent_tm(
     subject_ref: &RcTerm,
     graph_ref: &FastGraph,
 ) -> ExtractorResult<RcTerm> {
-    let parent_tm_pred = vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_rcterm();
+    let parent_tm_pred = vocab::r2rml::property::PARENTTRIPLESMAP.to_rcterm();
     Ok(get_object(graph_ref, subject_ref, &parent_tm_pred)?)
 }
 
@@ -63,11 +63,11 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
         subj_ref: &RcTerm,
         graph_ref: &FastGraph,
     ) -> super::ExtractorResult<ObjectMap> {
-        let dtype_pred = vocab::r2rml::PROPERTY::DATATYPE.to_rcterm();
+        let dtype_pred = vocab::r2rml::property::DATATYPE.to_rcterm();
         let data_type: Option<RcTerm> =
             get_object(graph_ref, subj_ref, &dtype_pred).ok();
 
-        let lang_pred = vocab::r2rml::PROPERTY::LANGUAGE.to_rcterm();
+        let lang_pred = vocab::r2rml::property::LANGUAGE.to_rcterm();
         let language = get_object(graph_ref, subj_ref, &lang_pred)
             .ok()
             .map(|tshared| rcterm_to_string(&tshared));
@@ -122,11 +122,11 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
     }
 
     fn get_const_pred() -> RcTerm {
-        vocab::r2rml::PROPERTY::OBJECT.to_rcterm()
+        vocab::r2rml::property::OBJECT.to_rcterm()
     }
 
     fn get_map_pred() -> RcTerm {
-        vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm()
+        vocab::r2rml::property::OBJECTMAP.to_rcterm()
     }
 
     fn get_term_map_info(&self) -> TermMapInfo {
@@ -152,7 +152,7 @@ mod tests {
     #[test]
     fn map_object_test() -> ExtractorResult<()> {
         let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
-        let map_pred = vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm();
+        let map_pred = vocab::r2rml::property::OBJECTMAP.to_rcterm();
         let container_vec = graph
             .triples_matching(Any, [map_pred], Any)
             .flatten()

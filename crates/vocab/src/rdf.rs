@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "rdf";
 pub const IRI: &str = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 

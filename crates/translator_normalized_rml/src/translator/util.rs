@@ -83,7 +83,7 @@ pub fn rooted_subgraph(
     while let Some(quad) = to_visit.pop() {
         result.push(quad.clone());
         if quad.predicate
-            != vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_named_node()
+            != vocab::r2rml::property::PARENTTRIPLESMAP.to_named_node()
         {
             match quad.object {
                 x if x.is_named_node() || x.is_blank_node() => {

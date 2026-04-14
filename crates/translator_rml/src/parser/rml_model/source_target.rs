@@ -69,7 +69,7 @@ impl Default for LogicalTarget {
             identifier:    String::from("default"),
             compression:   Default::default(),
             serialization: RcTerm::from_term(Iri::new_unchecked(
-                vocab::formats::CLASS::NQUADS.to_string(),
+                vocab::formats::class::NQUADS.to_string(),
             )),
             output_type:   Default::default(),
             ldes:          None,
@@ -87,23 +87,23 @@ impl Hash for LogicalTarget {
 fn serialization_to_dataformat(serialization: &RcTerm) -> DataFormat {
     match serialization.to_owned() {
         ser_iri_string
-            if ser_iri_string == vocab::formats::CLASS::TURTLE.to_rcterm() =>
+            if ser_iri_string == vocab::formats::class::TURTLE.to_rcterm() =>
         {
             DataFormat::TTL
         }
         ser_iri_string
             if ser_iri_string
-                == vocab::formats::CLASS::NTRIPLES.to_rcterm() =>
+                == vocab::formats::class::NTRIPLES.to_rcterm() =>
         {
             DataFormat::NTriples
         }
         ser_iri_string
-            if ser_iri_string == vocab::formats::CLASS::JSONLD.to_rcterm() =>
+            if ser_iri_string == vocab::formats::class::JSONLD.to_rcterm() =>
         {
             DataFormat::JSONLD
         }
         ser_iri_string
-            if ser_iri_string == vocab::formats::CLASS::NQUADS.to_rcterm() =>
+            if ser_iri_string == vocab::formats::class::NQUADS.to_rcterm() =>
         {
             DataFormat::NQuads
         }

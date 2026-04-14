@@ -65,7 +65,7 @@ impl Debug for TargetKind {
 impl Default for TargetKind {
     fn default() -> Self {
         Self {
-            type_iri: vocab::rml_io::CLASS::STD_OUT.to_rcterm(),
+            type_iri: vocab::rml_io::class::STD_OUT.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }
