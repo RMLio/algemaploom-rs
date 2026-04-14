@@ -2,7 +2,6 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::rc::Rc;
 
-use sophia_api::graph::Graph;
 use sophia_api::serializer::*;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;

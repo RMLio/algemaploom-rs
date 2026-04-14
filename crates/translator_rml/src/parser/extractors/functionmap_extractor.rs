@@ -1,4 +1,3 @@
-
 use super::store::get_objects;
 use super::{rcterm_to_string, Extractor, FromVocab};
 use crate::parser::rml_model::term_map::FunctionMap;
@@ -63,7 +62,7 @@ mod tests {
 
     use sophia_api::graph::Graph;
     use sophia_api::prelude::Any;
-    use sophia_api::term::{FromTerm, IriRef, Term};
+    use sophia_api::term::{FromTerm, IriRef};
     use sophia_api::triple::Triple;
     use sophia_inmem::graph::FastGraph;
     use sophia_term::{GenericLiteral, RcTerm};

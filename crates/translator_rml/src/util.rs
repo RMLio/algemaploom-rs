@@ -2,7 +2,6 @@ use std::collections::{HashMap, HashSet};
 use std::vec;
 
 use operator::Target;
-use sophia_api::term::Term;
 
 use super::parser::extractors::rcterm_to_string;
 use super::types::{Quad, RefPOM, Triple};

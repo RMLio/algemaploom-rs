@@ -1,7 +1,4 @@
-use std::collections::HashSet;
-
 use error::RMLResult;
-use operator::Operator;
 use petgraph::visit::{IntoNodeReferences, Reversed};
 use plan::data_type::DiGraphOperators;
 use trmap_sub_expression::TrMapSubExpression;

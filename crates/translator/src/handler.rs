@@ -1,10 +1,9 @@
 use std::fmt::Debug;
 use std::path::PathBuf;
 
-use plan::error::PlanError;
+use crate::error::{TranslationError, TranslationErrorKind};
 use plan::states::Init;
 use plan::Plan;
-use crate::error::{TranslationError, TranslationErrorKind};
 
 pub trait FileTranslatorHandler: Debug {
     fn supported_extension(&self) -> String;
