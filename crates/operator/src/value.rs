@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-
 use serde::Serialize;
+use std::collections::HashMap;
+use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum Value {
@@ -30,9 +30,9 @@ pub enum Number {
     Float(f32),
 }
 
-impl ToString for Number {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for Number {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
             Number::PosInfinity => "+∞".to_string(),
             Number::NegInfinity => "-∞".to_string(),
             Number::Double(db) => db.to_string(),
@@ -42,7 +42,8 @@ impl ToString for Number {
             Number::Int(int) => int.to_string(),
             Number::UInt(uint) => uint.to_string(),
             Number::Float(float) => float.to_string(),
-        }
+        };
+        write!(f, "{}", str)
     }
 }
 
@@ -79,9 +80,9 @@ impl From<&Value> for String {
     }
 }
 
-impl ToString for Value {
-    fn to_string(&self) -> String {
-        self.into()
+impl Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", <&Value as Into<String>>::into(self.into()))
     }
 }
 
