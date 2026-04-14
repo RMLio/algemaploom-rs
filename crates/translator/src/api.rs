@@ -101,7 +101,7 @@ pub fn process_one_str(mapping: &str) -> String {
         .flat_map(|p_res| p_res.ok())
         .next()
     {
-        return plan.to_string().unwrap();
+        return plan.to_json_string().unwrap();
     };
 
     let rust_logs = if error_messages.is_empty() {

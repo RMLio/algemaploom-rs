@@ -163,14 +163,6 @@ impl<T> Plan<T> {
         Ok(plan)
     }
 
-    #[deprecated(note = "please use `to_json_string` method instead")]
-    pub fn to_string(&self) -> Result<String> {
-        let graph = &*self.graph.borrow();
-        let json_string = serde_json::to_string(&graph).unwrap();
-
-        Ok(json_string)
-    }
-
     /// Serializes the plan to a [String] in **JSON** format with [serde_json].
     ///
     /// # Error
