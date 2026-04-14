@@ -136,7 +136,7 @@ mod tests {
             SubjectMap::create_term_map(&RcTerm::from_term(sub_ref), &graph)?;
 
         assert_eq!(subj_map.tm_info.term_map_type, TermMapType::Template);
-        assert!(subj_map.classes.len() == 0);
+        assert_eq!(subj_map.classes.len(), 0);
 
         Ok(())
     } 

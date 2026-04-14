@@ -108,12 +108,7 @@ mod tests {
             source_type: SourceType::FileInput,
             config,
         };
-        assert!(
-            generated == expected,
-            "Generated: {:?} \n Expected: {:?}",
-            generated,
-            expected
-        );
+        assert_eq!(generated, expected, "Generated: {:?} \n Expected: {:?}", generated, expected);
 
         Ok(())
     }

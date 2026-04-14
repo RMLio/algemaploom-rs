@@ -1,24 +1,18 @@
+use crate::parcombi::lexer;
+use crate::parcombi::parser;
+use crate::parcombi::*;
+use chumsky::prelude::*;
 #[cfg(test)]
 use std::collections::HashSet;
-use crate::parcombi::parser;
-use crate::parcombi::lexer;
-use crate::parcombi::*; 
-use chumsky::prelude::*; 
 
- 
 
 fn assert_parse_expected<T: std::fmt::Debug + PartialEq + Eq>(
     parsed_items: Option<T>,
     expected_items: Option<T>,
 ) {
-    assert!(
-        parsed_items == expected_items,
-        "{:#?} is the parsed items
+    assert_eq!(parsed_items, expected_items, "{:#?} is the parsed items
             {:#?} is the expected items
-            ",
-        parsed_items,
-        expected_items
-    );
+            ", parsed_items, expected_items);
 }
 
 #[test]
@@ -53,12 +47,12 @@ EXPRESSION films <films_xml_file.film_xml UNION films_json_file.film_json>
 
     let (tokens_opt, errors) = lexer::shexml().parse_recovery(document_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shexml().parse_recovery_verbose(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     assert!(parsed_items.is_some(), "{:?}", parsed_items);
 }
@@ -86,7 +80,7 @@ fn multiple_graph_test() {
         .then_ignore(end())
         .parse_recovery(mutli_graph_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::graph_shapes().parse_recovery(tokens_opt.unwrap());
@@ -209,7 +203,7 @@ fn multiple_graph_test() {
         },
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     assert_parse_expected(parsed_items, expected_items);
 }
 
@@ -232,7 +226,7 @@ fn graph_multiple_shapes_test() {
         .then_ignore(end())
         .parse_recovery(graph_shape_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::graph_shapes().parse_recovery(tokens_opt.unwrap());
@@ -345,7 +339,7 @@ fn graph_multiple_shapes_test() {
         shapes: vec![shape, shape_2],
     }]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     assert_parse_expected(parsed_items, expected_items);
 }
 
@@ -365,7 +359,7 @@ fn graph_shape_test() {
         .then_ignore(end())
         .parse_recovery(graph_shape_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::graph_shapes().parse_recovery(tokens_opt.unwrap());
@@ -467,7 +461,7 @@ fn graph_shape_test() {
         shapes: vec![shape],
     }]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     assert_parse_expected(parsed_items, expected_items);
 }
 
@@ -487,12 +481,12 @@ fn shape_condition_if_test() {
         .then_ignore(end())
         .parse_recovery(shape_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let subject = Subject {
         prefix:     PrefixNameSpace::BasePrefix,
@@ -603,12 +597,12 @@ fn shape_function_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -700,12 +694,12 @@ fn shape_simple_matching_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -807,12 +801,12 @@ fn shape_multiple_link_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -941,12 +935,12 @@ fn shape_simple_link_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -1039,12 +1033,12 @@ fn shape_simple_object_literal_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![(
         Predicate {
@@ -1094,12 +1088,12 @@ fn shape_simple_static_datatype_languagetag_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -1175,12 +1169,12 @@ fn shape_simple_subject_fixed_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![(
         Predicate {
@@ -1228,12 +1222,12 @@ fn shape_simple_class_type_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![(
         Predicate {
@@ -1284,12 +1278,12 @@ fn shape_simple_bnode_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -1358,12 +1352,12 @@ fn shape_simple_test() {
         .parse_recovery(shape_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (parsed_items, errors) =
         parser::shapes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let pred_obj_pairs = vec![
         (
@@ -1434,12 +1428,12 @@ fn expressions_test() {
         .then_ignore(end())
         .parse_recovery(expressions_str);
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let (expressions, errors) =
         parser::expressions().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let source_ident = "file".to_string();
     let field_ident = Some("name".to_string());
@@ -1508,16 +1502,16 @@ fn expressions_test() {
     for exp in expressions.unwrap() {
         match exp {
             ExpressionEnum::ExpressionStmt(stmt) => {
-                assert!(stmt == expected_stmt, "{:?}", stmt)
+                assert_eq!(stmt, expected_stmt, "{:?}", stmt)
             }
             ExpressionEnum::MatcherExp(matcher) => {
-                assert!(matcher == expected_matcher, "{:?}", matcher)
+                assert_eq!(matcher, expected_matcher, "{:?}", matcher)
             }
             ExpressionEnum::AutoIncrementExp(autoinc) => {
-                assert!(autoinc == expected_autoinc, "{:?}", autoinc)
+                assert_eq!(autoinc, expected_autoinc, "{:?}", autoinc)
             }
             ExpressionEnum::FunctionExp(function) => {
-                assert!(function == expected_function, "{:?}", function)
+                assert_eq!(function, expected_function, "{:?}", function)
             }
         }
     }
@@ -1635,7 +1629,7 @@ fn auto_inc_test() {
     let (parsed_items, errors) =
         parser::auto_increment().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let expected_items =
         Some(ExpressionEnum::AutoIncrementExp(AutoIncrement {
@@ -1661,11 +1655,11 @@ fn matcher_multiple_test() {
         .padded()
         .then_ignore(end())
         .parse_recovery(match_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let (parsed_items, errors) =
         parser::matcher().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let asturias_set: HashSet<_> = HashSet::from_iter(vec![
         "Principality of Asturias".to_string(),
@@ -1704,11 +1698,11 @@ fn matcher_single_test() {
         .then_ignore(end())
         .parse_recovery(match_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let (parsed_items, errors) =
         parser::matcher().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let values_set = HashSet::from_iter(vec![
         "Principality of Asturias".to_string(),
         "Principado de Asturias".to_string(),
@@ -1737,12 +1731,12 @@ fn expression_join_union_test() {
         .then_ignore(end())
         .parse_recovery(exp_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     println!("{:?}", tokens_opt);
     let (parsed_items, errors) =
         parser::expression_stmt().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let source_ident = "file".to_string();
     let field_ident = Some("name".to_string());
 
@@ -1791,13 +1785,13 @@ fn expression_simple_test() {
         .padded()
         .then_ignore(end())
         .parse_recovery(exp_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     println!("{:?}", tokens_opt);
     let (parsed_items, errors) =
         parser::expression_stmt().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
     let source_ident = "file".to_string();
     let field_ident = Some("name".to_string());
@@ -1828,12 +1822,12 @@ fn expression_string_op_test() {
         .then_ignore(end())
         .parse_recovery(exp_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     println!("{:?}", tokens_opt);
     let (parsed_items, errors) =
         parser::expression_stmt().parse_recovery(tokens_opt.unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let source_ident = "file".to_string();
 
     let expr_enum = ExpressionStmtEnum::ConcatenateString {
@@ -1921,7 +1915,7 @@ fn iterator_nested_test() {
     let (parsed_items, errors) =
         parser::iterators().parse_recovery(tokens_opt.unwrap().0);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     assert_parse_expected(parsed_items, expected_items)
 }
 
@@ -1992,7 +1986,7 @@ fn iterator_nested_same_level_test() {
     let (parsed_items, errors) =
         parser::iterators().parse_recovery(tokens_opt.unwrap().0);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     assert_parse_expected(parsed_items, expected_items)
 }
 #[test]
@@ -2009,7 +2003,7 @@ ITERATOR example <xpath: /path/to/entity> {
         .parse_recovery(iter_str);
 
     println!("{:#?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let parsed_items = parser::iterators().parse(tokens_opt.unwrap()).ok();
 
     let fields = vec![
@@ -2053,7 +2047,7 @@ ITERATOR example <csvperrow> {
         .then_ignore(end())
         .parse_recovery(iter_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let parsed_items = parser::iterators().parse(tokens_opt.unwrap()).ok();
 
     let fields = vec![
@@ -2095,7 +2089,7 @@ fn prefix_multiple_test() {
     let (parsed_items, error) =
         parser::prefixes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(error.len() == 0, "{:#?}", error);
+    assert_eq!(error.len(), 0, "{:#?}", error);
     let expected_items = Some(vec![
         Prefix {
             prefix: PrefixNameSpace::NamedPrefix("ex".to_string()),
@@ -2118,7 +2112,7 @@ fn prefix_test() {
     let (parsed_items, error) =
         parser::prefixes().parse_recovery(tokens_opt.unwrap());
 
-    assert!(error.len() == 0, "{:#?}", error);
+    assert_eq!(error.len(), 0, "{:#?}", error);
     let expected_items = Some(vec![Prefix {
         prefix: PrefixNameSpace::NamedPrefix("ex".to_string()),
         uri:    "https://example.com/".to_string(),
@@ -2138,7 +2132,7 @@ fn source_multiple_test() {
     let (parsed_items, errors) =
         parser::sources().parse_recovery(tokens_opt.clone().unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_items = Some(vec![
         Source {
             ident:       "xml_file".to_string(),
@@ -2161,7 +2155,7 @@ fn source_test() {
     let (parsed_items, errors) =
         parser::sources().parse_recovery(tokens_opt.clone().unwrap());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_items = Some(vec![Source {
         ident:       "xml_file".to_string(),
         uri:         "https://example.com/file.xml".to_string(),

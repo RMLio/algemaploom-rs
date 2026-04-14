@@ -168,7 +168,7 @@ mod tests {
         let num_string: Value = String::from("Foobar").into();
         let val = Value::String("Foobar".into());
 
-        assert!(num_string == val);
+        assert_eq!(num_string, val);
     }
 
     #[test]
@@ -177,7 +177,7 @@ mod tests {
         let intoed_val: Value = arr.into();
 
         let val_arr = Value::Array(vec!["A".into(), "B".into(), "C".into()]);
-        assert!(intoed_val == val_arr);
+        assert_eq!(intoed_val, val_arr);
     }
 
     #[test]
@@ -189,7 +189,7 @@ mod tests {
             ("age".to_string(), 23_u8.into()),
         ]));
 
-        assert!(map_val == intoed_map, "{:?} == {:?}", map_val, intoed_map);
+        assert_eq!(map_val, intoed_map, "{:?} == {:?}", map_val, intoed_map);
     }
 
     #[test]
@@ -197,6 +197,6 @@ mod tests {
         let num_str: Value = "23.0".into();
         let f64_val: Value = 23_f64.into();
 
-        assert!(num_str != f64_val, "{:?} != {:?}", num_str, f64_val);
+        assert_ne!(num_str, f64_val, "{:?} != {:?}", num_str, f64_val);
     }
 }

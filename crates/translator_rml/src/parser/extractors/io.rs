@@ -11,7 +11,7 @@ use sophia_inmem::graph::FastGraph;
 use sophia_turtle::parser::turtle;
 
 use super::error::ParseError;
-use super::triplesmap_extractor::{self, extract_triples_maps};
+use super::triplesmap_extractor::extract_triples_maps;
 use super::ExtractorResult;
 use crate::parser::rml_model::{Document, TriplesMap};
 
@@ -132,7 +132,6 @@ pub fn parse_file(path: PathBuf) -> ExtractorResult<Document> {
 
 #[cfg(test)]
 mod tests {
-
     use super::*;
     use crate::test_case;
 
@@ -142,7 +141,7 @@ mod tests {
         let parsed_res = parse_file(path)?;
 
         // One TriplesMap should be parsed
-        assert!(parsed_res.triples_maps.len() == 1);
+        assert_eq!(parsed_res.triples_maps.len(), 1);
 
         Ok(())
     }
@@ -154,6 +153,6 @@ mod tests {
 
         assert!(parsed_res.is_ok());
         // One TriplesMap should be parsed
-        assert!(parsed_res.unwrap().triples_maps.len() == 2);
+        assert_eq!(parsed_res.unwrap().triples_maps.len(), 2);
     }
 }

@@ -178,9 +178,9 @@ mod tests {
         let tm_info = TermMapInfo::extract_self(&sub_ref, &graph)?;
 
         assert!(tm_info.term_type.is_none());
-        assert!(tm_info.term_map_type == TermMapType::Template);
+        assert_eq!(tm_info.term_map_type, TermMapType::Template);
         println!("{:?}", tm_info);
-        assert!(rcterm_to_string(&tm_info.term_value) == "example/{brand}");
+        assert_eq!(rcterm_to_string(&tm_info.term_value), "example/{brand}");
 
         Ok(())
     }
