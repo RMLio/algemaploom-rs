@@ -8,11 +8,11 @@ edition.workspace = true
 thiserror.workspace = true
 log.workspace = true
 oxigraph = { version = "0.5.2", default-features = false }
+common = {path = "../common/"}
 
 
 [dev-dependencies]
 anyhow.workspace = true
-log4rs.workspace = true
 clap.workspace = true
 
 [lib]

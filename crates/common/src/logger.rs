@@ -31,13 +31,13 @@ pub fn build_log_config(debug_enabled: bool) -> Config {
     let console_appender = Appender::builder().filter(Box::new(console_threshold)).build(
         "console",
         Box::new(
-        ConsoleAppender::builder()
-            .target(Target::Stderr)
-            .encoder(Box::new(PatternEncoder::new(
+            ConsoleAppender::builder()
+                .target(Target::Stderr)
+                .encoder(Box::new(PatternEncoder::new(
 
-                "{h({d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {M}:{L} - {([{l}]:):<8} {m})}{n}",
-            )))
-            .build()),
+                    "{h({d(%Y-%m-%d %H:%M:%S %Z)(utc)} - {M}:{L} - {([{l}]:):<8} {m})}{n}",
+                )))
+                .build()),
     );
 
     let mut appenders = Vec::new();

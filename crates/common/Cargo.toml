@@ -1,0 +1,10 @@
+[package]
+name = "common"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+log.workspace = true
+log4rs.workspace = true
+anyhow.workspace = true

@@ -9,6 +9,7 @@ edition.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 
+common = {path = "../common/"}
 plan = { path = "../plan/" }
 translator_api = { path = "../translator_api/" }
 translator_rml = { path = "../translator_rml/" }
