@@ -150,7 +150,7 @@ impl PrettyDisplay for Source {
 }
 
 impl Hash for Source {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         hash_hashmap(&self.config, state);
         hash_hashmap(&self.access, state);
         self.source_type.hash(state);

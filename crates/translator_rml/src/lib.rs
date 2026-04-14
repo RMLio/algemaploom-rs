@@ -28,7 +28,7 @@ use translator_api::{LanguageTranslator, OperatorTranslator};
 use util::extract_tm_infos_from_sm_poms;
 
 use self::operators::extend::*;
-use self::operators::serializer::{self, translate_serializer_op};
+use self::operators::serializer::translate_serializer_op;
 use self::util::generate_lt_quads_from_spo;
 use crate::parser::extractors::io::parse_file;
 use crate::types::SearchMap;
@@ -238,7 +238,7 @@ fn add_non_join_related_ops(
         let serialize_format = &target.data_format;
         let quads = lt_quads_map.get(&lt_id).unwrap();
 
-        let serializer_op = serializer::translate_serializer_op(
+        let serializer_op = translate_serializer_op(
             quads,
             serialize_format,
             variable_map,

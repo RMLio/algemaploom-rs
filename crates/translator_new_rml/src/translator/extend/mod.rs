@@ -53,7 +53,7 @@ impl OperatorTranslator for ExtendOperatorTranslator {
     fn translate_with_store(
         store: &SearchStore,
         tm: &Self::Input,
-    ) -> crate::error::NewRMLTranslationResult<Self::Output> {
+    ) -> NewRMLTranslationResult<Self::Output> {
         let base_iri = &tm.base_iri;
         let mut extend_pairs: HashMap<String, Function> = HashMap::new();
 
@@ -97,7 +97,7 @@ impl OperatorTranslator for ExtendOperatorTranslator {
                 insert_non_constant_func(&mut extend_pairs, var, func);
             }
         }
-        Ok(operator::Extend { extend_pairs })
+        Ok(Extend { extend_pairs })
     }
 }
 
@@ -386,7 +386,7 @@ fn extend_func_from_func_expr_map(
             .try_unwrap_base_expression_map_ref()
         {
             match base_expr {
-                crate::rml_model::v2::core::expression_map::BaseExpressionMapEnum::Reference(ref_attr) => {
+                BaseExpressionMapEnum::Reference(ref_attr) => {
                     Function::Reference { value: ref_attr.to_string() }
                 }
                 _ => extension_func_from_exp_map(

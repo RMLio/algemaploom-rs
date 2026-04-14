@@ -60,7 +60,7 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
         let subject_ref = termref_to_subjref(subject.as_ref())?;
         let subject_function =
             create_extend_function(subject_ref, store, &query_attr_map, false, &base_iri)?;
-        let subj_extend = operator::Operator::ExtendOp {
+        let subj_extend = Operator::ExtendOp {
             config: Extend {
                 extend_pairs: HashMap::from([(SUBJECT_ATTR.to_string(), subject_function)]),
             },
@@ -263,7 +263,7 @@ fn get_join_condition_pairs<'a>(
     store: &'a Store,
     child_query_attr_map: &'a HashMap<String, String>,
     parent_query_attr_map: &'a HashMap<String, String>,
-    object_subjref: oxigraph::model::SubjectRef<'a>,
+    object_subjref: SubjectRef<'a>,
 ) -> Result<Vec<(&'a str, &'a str)>, anyhow::Error> {
     let mut join_condition_pairs = vec![];
     for jc in get_quads(

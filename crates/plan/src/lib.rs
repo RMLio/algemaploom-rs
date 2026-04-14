@@ -45,7 +45,7 @@ pub mod states;
 #[derive(Debug, Clone)]
 pub struct Plan<T> {
     _t:        PhantomData<T>,
-    /// Underlying graph data structure from [petgraph](petgraph::graph::DiGraph).
+    /// Underlying graph data structure from [petgraph](DiGraph).
     pub graph: RcRefCellDiGraph,
 
     /// Node indexes of the source operators in the graph.

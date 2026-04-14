@@ -31,7 +31,7 @@ impl OperatorTranslator for JoinTranslator {
     type Output = ();
 
     fn translate_with_store(
-        store: &super::store::SearchStore,
+        store: &SearchStore,
         child_trip_map: &Self::Input,
     ) -> NewRMLTranslationResult<Self::Output> {
         let parent_tms_refoms =

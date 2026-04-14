@@ -12,8 +12,8 @@ use crate::rml_model::v2::io::target::{Target, TargetKind};
 impl Extractor<Target> for Target {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
-        graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<Target>
+        graph_ref: &FastGraph,
+    ) -> ExtractorResult<Target>
     where
         TTerm: Term,
     {

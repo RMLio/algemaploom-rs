@@ -19,7 +19,7 @@ pub struct ReferenceFormulation {
     pub kind: ReferenceFormulationKind,
 }
 
-impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
+impl TryFrom<ReferenceFormulation> for formats::ReferenceFormulation {
     type Error = ParseError;
 
     fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
@@ -28,7 +28,7 @@ impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
 }
 
 impl TryFrom<&ReferenceFormulation>
-    for operator::formats::ReferenceFormulation
+    for formats::ReferenceFormulation
 {
     type Error = ParseError;
 

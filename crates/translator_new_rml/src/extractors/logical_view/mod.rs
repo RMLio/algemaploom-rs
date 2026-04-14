@@ -32,7 +32,7 @@ impl Extractor<LogicalView> for LogicalView {
     {
         let subject_ref = RcTerm::from_term(subject_ref);
 
-        log::debug!("Checking for cyclical join for {:?}", subject_ref);
+        debug!("Checking for cyclical join for {:?}", subject_ref);
         // Checks for cyclic joins and throws error if there is one
         check_cyclic_join_or_error(
             subject_ref.clone(),
@@ -40,7 +40,7 @@ impl Extractor<LogicalView> for LogicalView {
             &mut HashSet::new(),
         )?;
         // Checks for cyclic views and throws error if there is one
-        log::debug!("Checking for cyclical view for {:?}", subject_ref);
+        debug!("Checking for cyclical view for {:?}", subject_ref);
         check_cyclic_view_or_error(
             subject_ref.clone(),
             graph_ref,

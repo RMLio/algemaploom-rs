@@ -57,7 +57,7 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
     fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {

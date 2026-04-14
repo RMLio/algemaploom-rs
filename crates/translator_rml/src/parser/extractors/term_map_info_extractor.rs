@@ -75,7 +75,7 @@ impl Extractor<TermMapInfo> for TermMapInfo {
     fn extract_self(
         subj_ref: &RcTerm,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<TermMapInfo> {
+    ) -> ExtractorResult<TermMapInfo> {
         let (term_map_type, term_value) =
             extract_term_map_type_value(subj_ref, graph_ref)?;
 

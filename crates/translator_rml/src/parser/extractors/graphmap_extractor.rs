@@ -19,7 +19,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
     fn create_term_map(
         subj_ref: &sophia_term::RcTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<GraphMap> {
+    ) -> ExtractorResult<GraphMap> {
         let mut tm_info = TermMapInfo::extract_self(subj_ref, graph_ref)?;
 
         tm_info = match tm_info.term_type{
@@ -45,7 +45,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
     fn extract_many_from_container(
         graph_ref: &sophia_inmem::graph::FastGraph,
         container_map_subj_ref: &sophia_term::RcTerm,
-    ) -> super::ExtractorResult<Vec<GraphMap>> {
+    ) -> ExtractorResult<Vec<GraphMap>> {
         let map_pred = Self::get_map_pred();
         let const_pred = Self::get_const_pred();
         let map_subj_vec = super::store::get_objects(
@@ -62,7 +62,7 @@ impl TermMapExtractor<GraphMap> for GraphMap {
         let mut result: Vec<_> = map_subj_vec
             .iter()
             .map(|map_subj| Self::create_term_map(map_subj, graph_ref))
-            .collect::<super::ExtractorResult<_>>()?;
+            .collect::<ExtractorResult<_>>()?;
 
         let constant_tms: Vec<_> = map_const_obj_vec
             .iter()

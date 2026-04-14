@@ -173,7 +173,7 @@ fn translate_to_reference_formulation(
 }
 
 fn translate_to_operator_fields(
-    parent_shex_iter: &parcombi::Iterator,
+    parent_shex_iter: &Iterator,
     ref_formulation: &ReferenceFormulation,
 ) -> Vec<operator::Field> {
     let mut result = Vec::new();

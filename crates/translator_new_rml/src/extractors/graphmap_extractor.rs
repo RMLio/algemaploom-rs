@@ -21,7 +21,7 @@ impl TermMapExtractor<TermMapEnum> for GraphMap {
     fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {

@@ -12,7 +12,7 @@ impl Extractor<LogicalSource> for LogicalSource {
     fn extract_self(
         subject: &RcTerm,
         graph: &FastGraph,
-    ) -> super::ExtractorResult<LogicalSource> {
+    ) -> ExtractorResult<LogicalSource> {
         let iter_pred = vocab::rml::property::ITERATOR.to_rcterm();
         let refform_pred =
             vocab::rml::property::REFERENCEFORMULATION.to_rcterm();

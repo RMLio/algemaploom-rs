@@ -3,7 +3,6 @@ use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
-use crate::error::NewRMLTranslationError;
 use crate::extractors::error::ParseError;
 use crate::extractors::store::get_subgraph_subject;
 use crate::extractors::{Extractor, ExtractorResult};
@@ -14,7 +13,7 @@ use crate::rml_model::v2::io::source::{
 impl Extractor<ReferenceFormulation> for ReferenceFormulation {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
-        graph_ref: &sophia_inmem::graph::FastGraph,
+        graph_ref: &FastGraph,
     ) -> ExtractorResult<ReferenceFormulation>
     where
         TTerm: Term,

@@ -112,7 +112,7 @@ fn serialization_to_dataformat(serialization: &RcTerm) -> DataFormat {
     }
 }
 
-impl From<&LogicalTarget> for operator::Target {
+impl From<&LogicalTarget> for Target {
     fn from(val: &LogicalTarget) -> Self {
         let mut configuration = HashMap::new();
 
@@ -154,7 +154,7 @@ impl From<&LogicalTarget> for operator::Target {
     }
 }
 
-impl From<LogicalTarget> for operator::Target {
+impl From<LogicalTarget> for Target {
     fn from(val: LogicalTarget) -> Self {
         (&val).into()
     }

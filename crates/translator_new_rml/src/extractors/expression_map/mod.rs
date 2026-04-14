@@ -19,7 +19,7 @@ mod base_expression_enum;
 impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
-        graph_ref: &sophia_inmem::graph::FastGraph,
+        graph_ref: &FastGraph,
     ) -> super::ExtractorResult<ExpressionMapEnum>
     where
         TTerm: Term + Clone,

@@ -34,7 +34,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
     fn extract_self_term_map<TS>(
         subj_ref: TS,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TS: Term + Clone,
     {
@@ -88,7 +88,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
     fn extract_from_container<TTerm>(
         graph_ref: &sophia_inmem::graph::FastGraph,
         container_map_subj_ref: TTerm,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {

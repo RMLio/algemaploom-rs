@@ -1,7 +1,6 @@
 //!
 //! Contains the functionalities to parse an input RML document into 
-//! the [RML data model](crate::parser::rml_model)
-
+//! the [RML data model](rml_model)
 
 use sophia_api::prelude::Iri;
 

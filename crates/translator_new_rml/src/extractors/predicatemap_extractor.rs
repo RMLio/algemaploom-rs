@@ -26,7 +26,7 @@ impl TermMapExtractor<TermMapEnum> for PredicateMap {
     fn extract_self_term_map<TS>(
         subj_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TS: Term + Clone,
     {

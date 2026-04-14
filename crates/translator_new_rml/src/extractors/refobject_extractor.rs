@@ -29,7 +29,7 @@ impl Extractor<JoinCondition> for JoinCondition {
     fn extract_self<TS>(
         subject_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<JoinCondition>
+    ) -> ExtractorResult<JoinCondition>
     where
         TS: Term,
     {
@@ -61,7 +61,7 @@ impl Extractor<RefObjectMap> for RefObjectMap {
     fn extract_self<TS>(
         subject_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<RefObjectMap>
+    ) -> ExtractorResult<RefObjectMap>
     where
         TS: Term,
     {

@@ -155,7 +155,7 @@ pub type ShExMLQuads<'a> =
 
 pub fn get_quads_from_same_source<'a>(
     indexed_document: &'a IndexedShExMLDocument,
-    graph_shapes: impl std::iter::Iterator<Item = &'a GraphShapes>,
+    graph_shapes: impl Iterator<Item = &'a GraphShapes>,
     expr_idents: HashSet<&'a str>,
 ) -> ShExMLQuads<'a> {
     get_quads_from_shapes(
@@ -168,7 +168,7 @@ pub fn get_quads_from_same_source<'a>(
 
 pub fn get_quads_from_different_source<'a>(
     indexed_document: &'a IndexedShExMLDocument,
-    graph_shapes: impl std::iter::Iterator<Item = &'a GraphShapes>,
+    graph_shapes: impl Iterator<Item = &'a GraphShapes>,
     expr_idents: HashSet<&'a str>,
 ) -> ShExMLQuads<'a> {
     get_quads_from_shapes(
@@ -181,7 +181,7 @@ pub fn get_quads_from_different_source<'a>(
 
 fn get_quads_from_shapes<'a, CheckerFn>(
     indexed_document: &'a IndexedShExMLDocument,
-    graph_shapes: impl std::iter::Iterator<Item = &'a GraphShapes>,
+    graph_shapes: impl Iterator<Item = &'a GraphShapes>,
     expr_idents: HashSet<&'a str>,
     source_checker: CheckerFn,
 ) -> ShExMLQuads<'a>

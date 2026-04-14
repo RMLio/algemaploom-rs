@@ -23,8 +23,8 @@ use crate::rml_model::v2::io::target::LogicalTarget;
 impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
-        graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<CommonTermMapInfo>
+        graph_ref: &FastGraph,
+    ) -> ExtractorResult<CommonTermMapInfo>
     where
         TTerm: Term + Clone,
     {

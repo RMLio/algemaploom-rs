@@ -62,7 +62,7 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
     fn create_term_map(
         subj_ref: &RcTerm,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<ObjectMap> {
+    ) -> ExtractorResult<ObjectMap> {
         let dtype_pred = vocab::r2rml::property::DATATYPE.to_rcterm();
         let data_type: Option<RcTerm> =
             get_object(graph_ref, subj_ref, &dtype_pred).ok();
@@ -136,8 +136,6 @@ impl TermMapExtractor<ObjectMap> for ObjectMap {
 
 #[cfg(test)]
 mod tests {
-
-
     use sophia_api::graph::Graph;
     use sophia_api::prelude::Any;
     use sophia_api::term::FromTerm;
