@@ -20,7 +20,7 @@ where
     let name = stringify_term(get_object(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rml_lv::PROPERTY::FIELD_NAME.to_rcterm(),
+        vocab::rml_lv::property::FIELD_NAME.to_rcterm(),
     )?)
     .unwrap();
     log::debug!("RML field name: {}", name);
@@ -28,14 +28,14 @@ where
     let reference_opt = get_object(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+        vocab::rml_core::property::REFERENCE.to_rcterm(),
     )
     .ok();
 
     let constant_opt = get_object(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+        vocab::rml_core::property::CONSTANT.to_rcterm(),
     )
     .ok();
 
@@ -62,7 +62,7 @@ where
     let fields = get_objects(
         graph_ref,
         subject_ref,
-        vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
+        vocab::rml_lv::property::FIELD.to_rcterm(),
     )
     .iter()
     .filter_map(|term| extract_self(term, graph_ref, Some(&absolute_name)).ok())

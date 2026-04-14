@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "tree";
 pub const IRI: &str = "https://w3id.org/tree#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 

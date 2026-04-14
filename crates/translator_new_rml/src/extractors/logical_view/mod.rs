@@ -50,7 +50,7 @@ impl Extractor<LogicalView> for LogicalView {
         let logical_source_term = get_object(
             graph_ref,
             &subject_ref,
-            vocab::rml_lv::PROPERTY::VIEW_ON.to_rcterm(),
+            vocab::rml_lv::property::VIEW_ON.to_rcterm(),
         )?;
         let view_on_abs = AbstractLogicalSourceEnum::extract_self(
             &logical_source_term,
@@ -59,7 +59,7 @@ impl Extractor<LogicalView> for LogicalView {
         let fields = get_objects(
             graph_ref,
             &subject_ref,
-            vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
+            vocab::rml_lv::property::FIELD.to_rcterm(),
         )
         .iter()
         .filter_map(|term| RMLField::extract_self(term, graph_ref).ok())
@@ -68,7 +68,7 @@ impl Extractor<LogicalView> for LogicalView {
         let struct_annotations = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_lv::PROPERTY::STRUCTURAL_ANNOTATION.to_rcterm(),
+            vocab::rml_lv::property::STRUCTURAL_ANNOTATION.to_rcterm(),
         )
         .iter()
         .filter_map(|term| {
@@ -98,7 +98,7 @@ fn check_cyclic_view_or_error(
     let views = get_objects(
         graph_ref,
         &subject_ref,
-        vocab::rml_lv::PROPERTY::VIEW_ON.to_rcterm(),
+        vocab::rml_lv::property::VIEW_ON.to_rcterm(),
     );
 
     if views.is_empty() {
@@ -128,8 +128,8 @@ fn check_cyclic_join_or_error(
 ) -> super::ExtractorResult<()> {
     visited.insert(subject_ref.clone());
     let join_preds = [
-        vocab::rml_lv::PROPERTY::INNER_JOIN.to_rcterm(),
-        vocab::rml_lv::PROPERTY::LEFT_JOIN.to_rcterm(),
+        vocab::rml_lv::property::INNER_JOIN.to_rcterm(),
+        vocab::rml_lv::property::LEFT_JOIN.to_rcterm(),
     ];
 
     let triples: Vec<_> = graph_ref
@@ -142,7 +142,7 @@ fn check_cyclic_join_or_error(
         .flat_map(|trip| {
             graph_ref.triples_matching(
                 [trip.o()],
-                [vocab::rml_lv::PROPERTY::PARENT_LOGICAL_VIEW.to_rcterm()],
+                [vocab::rml_lv::property::PARENT_LOGICAL_VIEW.to_rcterm()],
                 Any,
             )
         })
@@ -176,8 +176,8 @@ fn get_joins<TTerm>(
 where
     TTerm: Term,
 {
-    let ijoin_p = vocab::rml_lv::PROPERTY::INNER_JOIN.to_rcterm();
-    let ljoin_p = vocab::rml_lv::PROPERTY::LEFT_JOIN.to_rcterm();
+    let ijoin_p = vocab::rml_lv::property::INNER_JOIN.to_rcterm();
+    let ljoin_p = vocab::rml_lv::property::LEFT_JOIN.to_rcterm();
     let triples: Vec<_> = graph_ref
         .triples_matching([subject_ref], [ijoin_p, ljoin_p], Any)
         .filter_map(|trip_res| trip_res.ok())

@@ -18,7 +18,7 @@ impl Extractor<TriplesMap> for TriplesMap {
     ) -> ExtractorResult<TriplesMap> {
         let subject_map = SubjectMap::extract_from_container(graph, subject)?;
 
-        let ls_term = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let ls_term = vocab::rml::property::LOGICALSOURCE.to_rcterm();
         let logical_source_subj = get_object(graph, subject, &ls_term)?;
         let logical_source =
             LogicalSource::extract_self(&logical_source_subj, graph)?;

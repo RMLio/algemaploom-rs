@@ -56,7 +56,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
                     *term,
                     &[
                         &vocab::r2rml::property::PARENTTRIPLESMAP.to_rcterm(),
-                        &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP
+                        &vocab::rml_core::property::PARENT_TRIPLES_MAP
                             .to_rcterm(),
                     ],
                 )
@@ -81,7 +81,7 @@ impl Extractor<PredicateObjectMap> for PredicateObjectMap {
         if object_map_vec.is_empty() && ref_object_map_vec.is_empty() {
             let subject = get_subject(
                 graph_ref,
-                &vocab::rml_core::PROPERTY::PREDICATE_OBJECT_MAP.to_rcterm(),
+                &vocab::rml_core::property::PREDICATE_OBJECT_MAP.to_rcterm(),
                 &subject_ref,
             )?;
             debug!("Triples Map where a predicate object maps has no associated object maps: {:?}", subject);

@@ -3,7 +3,6 @@ use std::rc::Rc;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
-use crate::error::NewRMLTranslationError;
 use crate::extractors::error::ParseError;
 use crate::extractors::store::{get_object, get_objects};
 use crate::extractors::{Extractor, ExtractorResult, FromVocab};
@@ -24,14 +23,14 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
         let join_condition = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            &vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
+            &vocab::rml_core::property::JOIN_CONDITION.to_rcterm(),
         )
         .map(|term| JoinCondition::extract_self(&term, graph_ref))??;
 
         let parent_view_term = get_object(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_lv::PROPERTY::PARENT_LOGICAL_VIEW.to_rcterm(),
+            vocab::rml_lv::property::PARENT_LOGICAL_VIEW.to_rcterm(),
         )?;
         let parent_view =
             Rc::new(LogicalView::extract_self(&parent_view_term, graph_ref)?);
@@ -39,7 +38,7 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
         let fields = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
+            vocab::rml_lv::property::FIELD.to_rcterm(),
         )
         .iter()
         .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, ParseError> {

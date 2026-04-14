@@ -19,7 +19,7 @@ pub mod property {
     pub const INPUT_VALUE: PAIR = (IRI, "inputValue");
 }
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
     pub const PARAMETER_MAP: PAIR = (IRI, "ParameterMap");

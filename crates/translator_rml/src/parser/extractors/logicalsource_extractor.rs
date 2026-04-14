@@ -13,9 +13,9 @@ impl Extractor<LogicalSource> for LogicalSource {
         subject: &RcTerm,
         graph: &FastGraph,
     ) -> super::ExtractorResult<LogicalSource> {
-        let iter_pred = vocab::rml::PROPERTY::ITERATOR.to_rcterm();
+        let iter_pred = vocab::rml::property::ITERATOR.to_rcterm();
         let refform_pred =
-            vocab::rml::PROPERTY::REFERENCEFORMULATION.to_rcterm();
+            vocab::rml::property::REFERENCEFORMULATION.to_rcterm();
 
         let iterator = get_object(graph, subject, &iter_pred)
             .ok()
@@ -29,7 +29,7 @@ impl Extractor<LogicalSource> for LogicalSource {
             // Default reference formulation for RDB is not required, default to CSV
             reference_formulation =
                 get_object(graph, subject, &refform_pred)
-                    .unwrap_or(vocab::query::CLASS::CSV.to_rcterm());
+                    .unwrap_or(vocab::query::class::CSV.to_rcterm());
             // Add the config from the RDB logical source to the source
             source = update_with_logicalsource(subject, graph, &source)?;
         } else {
@@ -49,7 +49,7 @@ fn extract_concrete_source(
     subject: &RcTerm,
     graph: &FastGraph,
 ) -> ExtractorResult<Source> {
-    let source_pred = vocab::rml::PROPERTY::SOURCE.to_rcterm();
+    let source_pred = vocab::rml::property::SOURCE.to_rcterm();
     let source_subj = get_object(graph, subject, &source_pred)?;
 
     Source::extract_self(&source_subj, graph)
@@ -76,7 +76,7 @@ mod tests {
     #[test]
     fn logical_source_extract_test() -> ExtractorResult<()> {
         let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
-        let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let sub_pred = vocab::rml::property::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_matching(Any, [sub_pred], Any).next().unwrap().unwrap();
 
         let sub_ref = triple.o();
@@ -84,7 +84,7 @@ mod tests {
 
         assert_eq!(
             logical_source.reference_formulation,
-            vocab::query::CLASS::CSV.to_rcterm()
+            vocab::query::class::CSV.to_rcterm()
         );
         assert!(logical_source.iterator.is_none());
         Ok(())
@@ -93,7 +93,7 @@ mod tests {
     #[test]
     fn input_type_test() -> ExtractorResult<()> {
         let graph: FastGraph = load_graph!("rml/sample_mapping.ttl")?;
-        let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let sub_pred = vocab::rml::property::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_matching(Any, [sub_pred], Any).next().unwrap().unwrap();
 
         let sub_ref = triple.o();
@@ -122,7 +122,7 @@ mod tests {
     fn no_reference_formulation_test() -> ExtractorResult<()> {
         let graph: FastGraph =
             load_graph!("rml/sample_mapping_no_reference.ttl")?;
-        let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let sub_pred = vocab::rml::property::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_matching(Any, [sub_pred], Any).next().unwrap().unwrap();
 
         let sub_ref = triple.o();
@@ -130,7 +130,7 @@ mod tests {
 
         assert_eq!(
             logical_source.reference_formulation,
-            vocab::query::CLASS::CSV.to_rcterm()
+            vocab::query::class::CSV.to_rcterm()
         );
         assert!(logical_source.iterator.is_none());
         Ok(())
@@ -140,7 +140,7 @@ mod tests {
     fn html_logical_source_test() -> ExtractorResult<()> {
         let graph: FastGraph =
             load_graph!("rmlmapper-custom/test-cases-HTML/RMLTC0001a-HTML/mapping.ttl")?;
-        let sub_pred = vocab::rml::PROPERTY::LOGICALSOURCE.to_rcterm();
+        let sub_pred = vocab::rml::property::LOGICALSOURCE.to_rcterm();
         let triple = graph.triples_matching(Any, [sub_pred], Any).next().unwrap().unwrap();
 
         let sub_ref = triple.o();
@@ -148,7 +148,7 @@ mod tests {
 
         assert_eq!(
             logical_source.reference_formulation,
-            vocab::query::CLASS::HTML.to_rcterm()
+            vocab::query::class::HTML.to_rcterm()
         );
         assert_eq!(logical_source.iterator.unwrap(), "table tbody tr");
         Ok(())

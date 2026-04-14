@@ -1,14 +1,14 @@
 pub const PREFIX: &str = "rmlt";
 pub const IRI: &str = "http://semweb.mmlab.be/ns/rml-target#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 
     pub const LOGICALTARGET: PAIR = (IRI, "LogicalTarget");
 }
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 

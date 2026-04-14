@@ -28,9 +28,9 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
     where
         TTerm: Term + Clone,
     {
-        let ltarget_old_pred = &vocab::rml::PROPERTY::LOGICALTARGET.to_rcterm();
+        let ltarget_old_pred = &vocab::rml::property::LOGICALTARGET.to_rcterm();
         let ltarget_new_pred =
-            &vocab::rml_core::PROPERTY::LOGICAL_TARGET.to_rcterm();
+            &vocab::rml_core::property::LOGICAL_TARGET.to_rcterm();
         let ltarget_terms = get_objects_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
@@ -53,7 +53,7 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
         )?;
 
         let ttype_old_pred = &vocab::r2rml::property::TERMTYPE.to_rcterm();
-        let ttype_pred = &vocab::rml_core::PROPERTY::TERMTYPE.to_rcterm();
+        let ttype_pred = &vocab::rml_core::property::TERMTYPE.to_rcterm();
         let ttype_iri_opt = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
@@ -116,11 +116,11 @@ where
                 .triples_matching(
                     [subject_ref.borrow_term()],
                     [
-                        vocab::rml_core::PROPERTY::LANGUAGE.to_rcterm(),
-                        vocab::rml_core::PROPERTY::LANGUAGE_MAP.to_rcterm(),
-                        vocab::rml_core::PROPERTY::DATATYPE.to_rcterm(),
-                        vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm(),
-                        vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+                        vocab::rml_core::property::LANGUAGE.to_rcterm(),
+                        vocab::rml_core::property::LANGUAGE_MAP.to_rcterm(),
+                        vocab::rml_core::property::DATATYPE.to_rcterm(),
+                        vocab::rml_core::property::DATATYPE_MAP.to_rcterm(),
+                        vocab::rml_core::property::REFERENCE.to_rcterm(),
                     ],
                     Any,
                 )
@@ -130,7 +130,7 @@ where
             let constant_value_opt = get_object(
                 graph_ref,
                 subject_ref.borrow_term(),
-                vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+                vocab::rml_core::property::CONSTANT.to_rcterm(),
             )
             .ok();
 
@@ -172,7 +172,7 @@ impl<'a> TryInto<RMLTermMapType> for &'a RcTerm {
             value
                 if value == &vocab::r2rml::property::SUBJECTMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::SUBJECT_MAP
+                        == &vocab::rml_core::property::SUBJECT_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::SubjectMap)
@@ -181,7 +181,7 @@ impl<'a> TryInto<RMLTermMapType> for &'a RcTerm {
                 if value
                     == &vocab::r2rml::property::PREDICATEMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::PREDICATE_MAP
+                        == &vocab::rml_core::property::PREDICATE_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::PredicateMap)
@@ -189,7 +189,7 @@ impl<'a> TryInto<RMLTermMapType> for &'a RcTerm {
             value
                 if value == &vocab::r2rml::property::OBJECTMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::OBJECT_MAP
+                        == &vocab::rml_core::property::OBJECT_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::ObjectMap)
@@ -197,7 +197,7 @@ impl<'a> TryInto<RMLTermMapType> for &'a RcTerm {
             value
                 if value == &vocab::r2rml::property::GRAPHMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::GRAPH_MAP
+                        == &vocab::rml_core::property::GRAPH_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::GraphMap)

@@ -38,7 +38,7 @@ impl TryFrom<&ReferenceFormulation>
                 match value.iri.clone() {
                     value
                         if value
-                            == vocab::d2rq::CLASS::DATABASE.to_rcterm()
+                            == vocab::d2rq::class::DATABASE.to_rcterm()
                             || value
                                 == vocab::rml_io::class::SQL_QUERY
                                     .to_rcterm()
@@ -49,7 +49,7 @@ impl TryFrom<&ReferenceFormulation>
                         Ok(formats::ReferenceFormulation::SQLQuery)
                     }
                     value
-                        if value == vocab::query::CLASS::CSV.to_rcterm()
+                        if value == vocab::query::class::CSV.to_rcterm()
                             || value
                                 == vocab::rml_io::class::CSV.to_rcterm() =>
                     {
@@ -57,7 +57,7 @@ impl TryFrom<&ReferenceFormulation>
                     }
                     value
                         if value
-                            == vocab::query::CLASS::JSONPATH.to_rcterm()
+                            == vocab::query::class::JSONPATH.to_rcterm()
                             || value
                                 == vocab::rml_io::class::JSONPATH
                                     .to_rcterm() =>
@@ -65,13 +65,13 @@ impl TryFrom<&ReferenceFormulation>
                         Ok(formats::ReferenceFormulation::JSONPath)
                     }
                     value
-                        if value == vocab::query::CLASS::XPATH.to_rcterm()
+                        if value == vocab::query::class::XPATH.to_rcterm()
                             || value
                                 == vocab::rml_io::class::XPATH.to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath)
                     }
-                    value if value == vocab::query::CLASS::HTML.to_rcterm() => {
+                    value if value == vocab::query::class::HTML.to_rcterm() => {
                         Ok(formats::ReferenceFormulation::CSS3)
                     }
                     value => {
@@ -171,16 +171,16 @@ impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
 
     fn try_from(value: RcTerm) -> Result<Self, Self::Error> {
         match value {
-            value if value == vocab::query::CLASS::CSV.to_rcterm() => {
+            value if value == vocab::query::class::CSV.to_rcterm() => {
                 Ok(RMLReferenceFormulationTypeKind::CSVRows)
             }
-            value if value == vocab::query::CLASS::JSONPATH.to_rcterm() => {
+            value if value == vocab::query::class::JSONPATH.to_rcterm() => {
                 Ok(RMLReferenceFormulationTypeKind::JSONPath)
             }
-            value if value == vocab::query::CLASS::XPATH.to_rcterm() => {
+            value if value == vocab::query::class::XPATH.to_rcterm() => {
                 Ok(RMLReferenceFormulationTypeKind::XPath)
             }
-            value if value == vocab::query::CLASS::HTML.to_rcterm() => {
+            value if value == vocab::query::class::HTML.to_rcterm() => {
                 Ok(RMLReferenceFormulationTypeKind::CSS3)
             }
             _ => {
@@ -246,17 +246,17 @@ impl TryFrom<&SourceKind> for IOType {
             || value.type_iri == vocab::rml_io::class::MAPPING_DIR.to_rcterm()
         {
             Ok(IOType::File)
-        } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm()
+        } else if value.type_iri == vocab::d2rq::class::DATABASE.to_rcterm()
             || value.type_iri == vocab::rml_io::class::SQL_TABLE.to_rcterm()
         {
             Ok(IOType::RDB)
         } else if value.type_iri == vocab::td::class::THING.to_rcterm() {
             Ok(IOType::Websocket)
         } else if value.type_iri
-            == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm()
+            == vocab::rmls::class::TCPSOCKETSTREAM.to_rcterm()
         {
             Ok(IOType::Websocket)
-        } else if value.type_iri == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm()
+        } else if value.type_iri == vocab::rmls::class::KAFKASTREAM.to_rcterm()
         {
             Ok(IOType::Kafka)
         } else {

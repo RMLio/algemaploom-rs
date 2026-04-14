@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "void";
 pub const IRI: &str = "http://rdfs.org/ns/void#";
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 
@@ -10,7 +10,7 @@ pub mod PROPERTY {
     pub const SPARQL_ENDPOINT: PAIR = (IRI, "sparqlEndpoint");
 }
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 

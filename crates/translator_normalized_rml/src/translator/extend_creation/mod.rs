@@ -50,7 +50,7 @@ pub fn create_extend_function(
     // Handle rml:reference
     if let Ok(reference_o) = get_object(
         term_map_subj,
-        vocab::rml::PROPERTY::REFERENCE.to_named_node().as_ref(),
+        vocab::rml::property::REFERENCE.to_named_node().as_ref(),
         store,
     ) {
         let query = termref_to_literal(reference_o.as_ref())?.value();
@@ -142,9 +142,9 @@ pub fn create_extend_function(
     // if object map and rr:reference exists
     } else if is_object_map
         && get_object(
-            term_map_subj,
-            vocab::rml::PROPERTY::REFERENCE.to_named_node().as_ref(),
-            store,
+        term_map_subj,
+        vocab::rml::property::REFERENCE.to_named_node().as_ref(),
+        store,
         )
         .is_ok()
     {

@@ -36,11 +36,11 @@ pub fn extract_websocket_source(
 ) -> ExtractorResult<HashMap<String, String>> {
     let mut config = HashMap::new();
 
-    let property_affordance_pred = vocab::td::PROPERTY::HAS_PROPERTY_AFFORDANCE.to_rcterm();
+    let property_affordance_pred = vocab::td::property::HAS_PROPERTY_AFFORDANCE.to_rcterm();
     let property_affordances = get_objects(graph, subject, &property_affordance_pred);
     
         for property_affordance in property_affordances {
-        let form_pred = vocab::td::PROPERTY::HAS_FORM.to_rcterm();
+        let form_pred = vocab::td::property::HAS_FORM.to_rcterm();
         let forms = get_objects(graph, property_affordance.borrow_term(), &form_pred);
         
         for form in forms {

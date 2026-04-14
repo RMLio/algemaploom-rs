@@ -27,13 +27,13 @@ pub fn create_source_operator(
 
     let ls_object = get_object(
         triples_map_iri,
-        vocab::rml::PROPERTY::LOGICALSOURCE.to_named_node().as_ref(),
+        vocab::rml::property::LOGICALSOURCE.to_named_node().as_ref(),
         store,
     )?;
     let logical_source_iri = termref_to_subjref(ls_object.as_ref())?;
     let source = get_object(
         logical_source_iri,
-        vocab::rml::PROPERTY::SOURCE.to_named_node().as_ref(),
+        vocab::rml::property::SOURCE.to_named_node().as_ref(),
         store,
     )
     .iter()
@@ -45,7 +45,7 @@ pub fn create_source_operator(
         Some(_) => {
             let ref_form_node = get_object(
                 logical_source_iri,
-                vocab::rml::PROPERTY::REFERENCEFORMULATION
+                vocab::rml::property::REFERENCEFORMULATION
                     .to_named_node()
                     .as_ref(),
                 store,
@@ -59,7 +59,7 @@ pub fn create_source_operator(
     if reference_formulation != ReferenceFormulation::CSVRows {
         reference = get_object(
             logical_source_iri,
-            vocab::rml::PROPERTY::ITERATOR.to_named_node().as_ref(),
+            vocab::rml::property::ITERATOR.to_named_node().as_ref(),
             store,
         )
         .ok()
@@ -104,13 +104,13 @@ fn get_reference_formulation_from_term(
     }?;
 
     match ref_form_iri {
-        val if val == vocab::query::CLASS::CSV.to_named_node() => {
+        val if val == vocab::query::class::CSV.to_named_node() => {
             Ok(ReferenceFormulation::CSVRows)
         }
-        val if val == vocab::query::CLASS::JSONPATH.to_named_node() => {
+        val if val == vocab::query::class::JSONPATH.to_named_node() => {
             Ok(ReferenceFormulation::JSONPath)
         }
-        val if val == vocab::query::CLASS::XPATH.to_named_node() => {
+        val if val == vocab::query::class::XPATH.to_named_node() => {
             Ok(ReferenceFormulation::XMLPath)
         }
         val => {
@@ -162,7 +162,7 @@ fn extract_queries(
     let tm_subgraph = rooted_subgraph(triples_map_iri, store)?;
 
     for reference_quad in tm_subgraph.iter().filter(|trip| {
-        trip.predicate == vocab::rml::PROPERTY::REFERENCE.to_named_node()
+        trip.predicate == vocab::rml::property::REFERENCE.to_named_node()
     }) {
         let query = termref_to_literal(reference_quad.object.as_ref())?
             .value()
@@ -261,7 +261,7 @@ fn get_source_config(
     let mut result = HashMap::new();
     let source_node = get_object(
         logical_source_iri,
-        vocab::rml::PROPERTY::SOURCE.to_named_node().as_ref(),
+        vocab::rml::property::SOURCE.to_named_node().as_ref(),
         store,
     )?;
 

@@ -18,13 +18,13 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         log::debug!("Translating source operator for triples map {:#?}", tm);
         let reference_formulation =
             match &tm.logical_source.reference_formulation {
-                iri if *iri == vocab::query::CLASS::CSV.to_rcterm() => {
+                iri if *iri == vocab::query::class::CSV.to_rcterm() => {
                     ReferenceFormulation::CSVRows
                 }
-                iri if *iri == vocab::query::CLASS::JSONPATH.to_rcterm() => {
+                iri if *iri == vocab::query::class::JSONPATH.to_rcterm() => {
                     ReferenceFormulation::JSONPath
                 }
-                iri if *iri == vocab::query::CLASS::XPATH.to_rcterm() => {
+                iri if *iri == vocab::query::class::XPATH.to_rcterm() => {
                     ReferenceFormulation::XMLPath
                 }
                 _ => ReferenceFormulation::CSVRows,

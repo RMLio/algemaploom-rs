@@ -50,7 +50,7 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
                 ).into());
         }
 
-        let class_pred = vocab::rml_core::PROPERTY::CLASS.to_rcterm();
+        let class_pred = vocab::rml_core::property::CLASS.to_rcterm();
 
         let classes: Vec<RcTerm> =
             get_objects(graph_ref, subj_ref.borrow_term(), &class_pred);
@@ -74,14 +74,14 @@ impl TermMapExtractor<TermMapEnum> for SubjectMap {
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::property::SUBJECT.to_rcterm(),
-            vocab::rml_core::PROPERTY::SUBJECT.to_rcterm(),
+            vocab::rml_core::property::SUBJECT.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::property::SUBJECTMAP.to_rcterm(),
-            vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm(),
+            vocab::rml_core::property::SUBJECT_MAP.to_rcterm(),
         ]
     }
 

@@ -8,7 +8,7 @@ pub mod property {
     pub const TYPE: PAIR = (IRI, "type");
 }
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 

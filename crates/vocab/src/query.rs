@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "ql";
 pub const IRI: &str = "http://semweb.mmlab.be/ns/ql#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
     pub const JSONPATH: PAIR = (IRI, "JSONPath");

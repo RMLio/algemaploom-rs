@@ -29,7 +29,7 @@ fn extract_term_map_type_value(
     let const_pred: RcTerm = vocab::r2rml::property::CONSTANT.to_rcterm();
 
     //reference-map
-    let ref_pred: RcTerm = vocab::rml::PROPERTY::REFERENCE.to_rcterm();
+    let ref_pred: RcTerm = vocab::rml::property::REFERENCE.to_rcterm();
     let col_pred: RcTerm = vocab::r2rml::property::COLUMN.to_rcterm();
 
     let pred_query = [&ref_pred, &col_pred, &const_pred, &temp_pred, &fno_pred];
@@ -120,7 +120,7 @@ impl Extractor<TermMapInfo> for TermMapInfo {
         let logical_target_iris = get_objects(
             graph_ref,
             subj_ref,
-            &vocab::rml::PROPERTY::LOGICALTARGET.to_rcterm(),
+            &vocab::rml::property::LOGICALTARGET.to_rcterm(),
         );
 
         let mut logical_targets: HashSet<LogicalTarget> = logical_target_iris
@@ -160,7 +160,6 @@ mod tests {
     use std::path::PathBuf;
 
     use sophia_api::graph::Graph;
-    use sophia_api::term::Term;
     use sophia_api::triple::Triple;
 
     use super::*;

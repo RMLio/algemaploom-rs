@@ -252,7 +252,7 @@ impl Default for GraphMap {
                 ),
                 term_type:             vocab::rml_core::class::IRI.to_rcterm(),
                 expression:            ExpressionMapEnum::try_new_unknown(
-                    vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+                    vocab::rml_core::property::CONSTANT.to_rcterm(),
                     RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
                 )
                 .unwrap(),

@@ -3,17 +3,16 @@ use sophia_inmem::graph::FastGraph;
 use sophia_term::ArcTerm;
 
 use crate::parser::extractors::config_extractor::extract_parse_config;
-use crate::parser::extractors::store::get_object;
 use crate::parser::extractors::{
-    rcterm_to_string, ExtractorResult, FromVocab, RcTerm,
+    ExtractorResult, FromVocab, RcTerm,
 };
 use crate::parser::rml_model::source_target::{Source, SourceType};
 
 lazy_static! {
     static ref PARSE_CONFIGS_PREDICATES: Vec<(String, ArcTerm)> = vec![
         
-        (vocab::rml::PROPERTY::ITERATOR.1.to_string(),
-         vocab::rml::PROPERTY::ITERATOR.to_arcterm()),
+        (vocab::rml::property::ITERATOR.1.to_string(),
+         vocab::rml::property::ITERATOR.to_arcterm()),
 
     ];
 }

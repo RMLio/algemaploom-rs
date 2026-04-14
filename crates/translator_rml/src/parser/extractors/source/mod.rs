@@ -70,18 +70,18 @@ fn extract_typed_source(
             extract_csvw_source(subject, graph)
         }
 
-        iri_string if iri_string == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
+        iri_string if iri_string == vocab::d2rq::class::DATABASE.to_rcterm() => {
             rdb_source::extract_rdb_source(subject, graph)
         }
-        iri_string if iri_string == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
+        iri_string if iri_string == vocab::rmls::class::KAFKASTREAM.to_rcterm() => {
             kafka_source::extract_kafka_source(subject, graph)
         }
 
-        iri_string if iri_string == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
+        iri_string if iri_string == vocab::rmls::class::TCPSOCKETSTREAM.to_rcterm() => {
             tcp_source::extract_tcp_source(subject, graph)
         }
 
-        iri_string if iri_string == vocab::rmls::CLASS::HTML.to_rcterm() => {
+        iri_string if iri_string == vocab::rmls::class::HTML.to_rcterm() => {
             html_source::extract_html_source(subject, graph)
         }
 

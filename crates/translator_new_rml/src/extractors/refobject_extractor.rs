@@ -3,9 +3,7 @@ use sophia_inmem::graph::FastGraph;
 
 use super::store::{get_object_with_ps, get_objects_with_ps};
 use super::{stringify_term, Extractor, ExtractorResult, FromVocab};
-use crate::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum,
-};
+use crate::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::rml_model::v2::core::{JoinCondition, RefObjectMap};
 
 fn parent_child_extract<TS, TP>(
@@ -40,8 +38,8 @@ impl Extractor<JoinCondition> for JoinCondition {
             graph_ref,
             &[
                 vocab::r2rml::property::PARENT.to_rcterm(),
-                vocab::rml_core::PROPERTY::PARENT.to_rcterm(),
-                vocab::rml_core::PROPERTY::PARENT_MAP.to_rcterm(),
+                vocab::rml_core::property::PARENT.to_rcterm(),
+                vocab::rml_core::property::PARENT_MAP.to_rcterm(),
             ],
         )?;
 
@@ -50,8 +48,8 @@ impl Extractor<JoinCondition> for JoinCondition {
             graph_ref,
             &[
                 vocab::r2rml::property::CHILD.to_rcterm(),
-                vocab::rml_core::PROPERTY::CHILD.to_rcterm(),
-                vocab::rml_core::PROPERTY::CHILD_MAP.to_rcterm(),
+                vocab::rml_core::property::CHILD.to_rcterm(),
+                vocab::rml_core::property::CHILD_MAP.to_rcterm(),
             ],
         )?;
 
@@ -72,7 +70,7 @@ impl Extractor<RefObjectMap> for RefObjectMap {
             subject_ref.borrow_term(),
             &[
                 &vocab::r2rml::property::PARENTTRIPLESMAP.to_rcterm(),
-                &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP.to_rcterm(),
+                &vocab::rml_core::property::PARENT_TRIPLES_MAP.to_rcterm(),
             ],
         )?;
 
@@ -81,7 +79,7 @@ impl Extractor<RefObjectMap> for RefObjectMap {
             subject_ref,
             &[
                 &vocab::r2rml::property::JOINCONDITION.to_rcterm(),
-                &vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
+                &vocab::rml_core::property::JOIN_CONDITION.to_rcterm(),
             ],
         );
 

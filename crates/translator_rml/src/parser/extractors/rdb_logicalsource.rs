@@ -9,8 +9,8 @@ use crate::parser::rml_model::source_target::{Source, SourceType};
 lazy_static! {
     static ref PARSE_CONFIGS_PREDICATES: Vec<(String, ArcTerm)> = vec![
         (
-            vocab::rml::PROPERTY::QUERY.1.to_string(),
-            vocab::rml::PROPERTY::QUERY.to_arcterm()
+            vocab::rml::property::QUERY.1.to_string(),
+            vocab::rml::property::QUERY.to_arcterm()
         ),
         (
             vocab::r2rml::property::TABLENAME.1.to_string(),

@@ -24,7 +24,7 @@ impl Extractor<LogicalSource> for LogicalSource {
         TTerm: Term + Clone,
     {
         let source_new_pred = &vocab::rml_io::property::SOURCE.to_rcterm();
-        let source_old_pred = &vocab::rml::PROPERTY::SOURCE.to_rcterm();
+        let source_old_pred = &vocab::rml::property::SOURCE.to_rcterm();
         let source_obj_term = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),

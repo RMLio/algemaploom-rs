@@ -2,7 +2,7 @@ pub const PREFIX: &str = "rml";
 
 pub const IRI: &str = "http://w3id.org/rml/";
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 

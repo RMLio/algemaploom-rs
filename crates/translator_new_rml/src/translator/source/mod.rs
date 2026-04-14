@@ -1,8 +1,8 @@
 mod fields;
 mod kind;
 
-use std::collections::HashMap;
 use serde_json::{Map as JsonMap, Value as JsonValue};
+use std::collections::HashMap;
 
 use kind::file_source;
 use sophia_inmem::graph::FastGraph;
@@ -15,9 +15,7 @@ use crate::extractors::store::get_object;
 use crate::extractors::{
     stringify_term, ExtractorResult, FromVocab,
 };
-use crate::rml_model::v2::core::{
-     AbstractLogicalSourceEnum,
-};
+use crate::rml_model::v2::core::AbstractLogicalSourceEnum;
 use crate::rml_model::v2::io::source::Source;
 use crate::translator::source::kind::{
     kafka_source, rdb_source, tcp_source, websocket_source,
@@ -56,19 +54,19 @@ fn extract_source_specific_config(
     let kind = &source.kind;
     log::debug!("Generating source operator for source {:#?}", source);
     match kind.type_iri.clone() {
-        value if value == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
+        value if value == vocab::rmls::class::KAFKASTREAM.to_rcterm() => {
             Ok(kafka_source::extract_kafka_source(
                 &kind.subj_iri,
                 &kind.metadata,
             )?)
         }
-        value if value == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
+        value if value == vocab::rmls::class::TCPSOCKETSTREAM.to_rcterm() => {
             Ok(tcp_source::extract_tcp_source(
                 &kind.subj_iri,
                 &kind.metadata,
             )?)
         }
-        value if value == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
+        value if value == vocab::d2rq::class::DATABASE.to_rcterm() => {
             Ok(rdb_source::extract_rdb_source(
                 &kind.subj_iri,
                 &kind.metadata,

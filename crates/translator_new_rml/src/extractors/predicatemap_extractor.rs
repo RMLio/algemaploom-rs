@@ -38,14 +38,14 @@ impl TermMapExtractor<TermMapEnum> for PredicateMap {
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::property::PREDICATE.to_rcterm(),
-            vocab::rml_core::PROPERTY::PREDICATE.to_rcterm(),
+            vocab::rml_core::property::PREDICATE.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
             vocab::r2rml::property::PREDICATEMAP.to_rcterm(),
-            vocab::rml_core::PROPERTY::PREDICATE_MAP.to_rcterm(),
+            vocab::rml_core::property::PREDICATE_MAP.to_rcterm(),
         ]
     }
 }

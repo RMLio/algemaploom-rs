@@ -1,14 +1,14 @@
 pub const PREFIX: &str = "ldes";
 pub const IRI: &str = "https://w3id.org/ldes#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 
     pub const EVENTSTREAM: PAIR = (IRI, "EventStream");
 }
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 
