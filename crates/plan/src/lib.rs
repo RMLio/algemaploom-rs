@@ -16,7 +16,7 @@ use std::rc::Rc;
 
 use anyhow::Result;
 use data_type::RcRefCellPlan;
-use operator::{Fragmenter, Operator};
+use operator::Operator;
 use petgraph::dot::Dot;
 use petgraph::graph::{DiGraph, NodeIndex};
 

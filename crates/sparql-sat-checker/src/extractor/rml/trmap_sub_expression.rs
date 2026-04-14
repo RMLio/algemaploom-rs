@@ -136,7 +136,6 @@ fn log_trmap_sub_expr_to_file(
                 Operator::RenameOp { config } => "RenameOperator".to_string(),
                 Operator::SerializerOp { config } => "SerializeOperator".to_string(),
                 Operator::TargetOp { config } => "TargetOperator".to_string(),
-                Operator::FragmentOp { config } => "Fragmenter".to_string(),
             })
             .collect();
         writeln!(writer, "[{}]", operators.join(","))?;

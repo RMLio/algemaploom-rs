@@ -39,11 +39,7 @@ pub enum Operator {
     },
     TargetOp {
         config: Target,
-    },
-    #[deprecated]
-    FragmentOp {
-        config: Fragmenter,
-    },
+    }
 }
 
 impl From<Extend> for Operator {
@@ -81,9 +77,6 @@ impl PrettyDisplay for Operator {
             }
             Operator::JoinOp { config } => {
                 ("Join Operator".to_string(), config.pretty_string()?)
-            }
-            Operator::FragmentOp { config } => {
-                ("Fragment Operator".to_string(), config.pretty_string()?)
             }
             Operator::UnionOp => ("Union Operator".to_string(), "".to_string()),
         };
@@ -471,34 +464,5 @@ impl Hash for Target {
         hash_hashmap(&self.configuration, state);
         self.target_type.hash(state);
         self.data_format.hash(state);
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash)]
-#[deprecated]
-pub struct Fragmenter {
-    pub from: String,
-    pub to:   Vec<String>,
-}
-
-impl Fragmenter {
-    pub fn target_fragment_exist(&self, target_fragment: &str) -> bool {
-        self.to
-            .iter()
-            .filter(|frag| *frag == target_fragment)
-            .count()
-            == 1
-    }
-}
-
-impl PrettyDisplay for Fragmenter {
-    fn pretty_string(&self) -> Result<String> {
-        let result = format!(
-            "from_fragment: {} \n to_fragments: {}",
-            self.from,
-            serde_json::to_string(&self.to)?,
-        );
-
-        Ok(result)
     }
 }

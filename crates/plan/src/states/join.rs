@@ -3,7 +3,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 
 use anyhow::Result;
-use operator::{Fragmenter, Join, Operator};
+use operator::{Join, Operator};
 
 use crate::data_type::{EdgeDirection, PlanEdge, PlanNode, RcRefCellPlan};
 use crate::error::PlanError;
