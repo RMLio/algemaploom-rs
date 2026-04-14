@@ -96,7 +96,7 @@ impl LanguageTranslator<Document, RMLTranslationError>
             tm_rccellplan_map,
             variable_map,
             target_map,
-            lt_id_quad_map,
+            _lt_id_quad_map: lt_id_quad_map,
         };
         // Finish search dictionaries instantiations
 

@@ -6,7 +6,7 @@ use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_term::{GenericLiteral, RcTerm};
 
 use crate::extractors::error::ParseError;
-use crate::extractors::{stringify_term, FromVocab};
+use crate::extractors::stringify_term;
 use crate::rml_model::v2::core::TemplateSubString;
 use crate::rml_model::v2::fnml::FunctionExpressionMap;
 use crate::rml_model::v2::{AttributeAliaser, RefAttributeGetter};

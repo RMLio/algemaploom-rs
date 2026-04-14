@@ -4,7 +4,7 @@ use sophia_api::term::Term;
 use super::error::ParseError;
 use super::store::{get_object, get_object_with_ps};
 use super::{Extractor, FromVocab, TermMapExtractor};
-use crate::extractors::store::{get_subject, get_subjects};
+use crate::extractors::store::get_subject;
 use crate::rml_model::v2::core::expression_map::term_map::{
     GraphMap, ObjectMap, PredicateMap,
 };

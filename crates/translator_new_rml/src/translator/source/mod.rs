@@ -1,7 +1,6 @@
 mod fields;
 mod kind;
 
-use serde_json::{Map as JsonMap, Value as JsonValue};
 use std::collections::HashMap;
 
 use kind::file_source;

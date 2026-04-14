@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::ops::Deref;
 
 use derive_more::{IsVariant, TryUnwrap, Unwrap};
 

@@ -76,8 +76,6 @@ pub enum ShExMLToken {
 
     /// ;
     PredicateSplit,
-    /// ,
-    ObjectSplit,
 
     /// ,
     Comma,

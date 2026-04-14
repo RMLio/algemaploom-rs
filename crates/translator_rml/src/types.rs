@@ -2,13 +2,13 @@ use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-use operator::Target;
-use plan::states::Processed;
-use plan::Plan;
 use crate::parser::rml_model::term_map::{
     GraphMap, ObjectMap, PredicateMap, SubjectMap,
 };
 use crate::parser::rml_model::{PredicateObjectMap, TriplesMap};
+use operator::Target;
+use plan::states::Processed;
+use plan::Plan;
 
 #[derive(Debug, Clone)]
 pub struct RefPOM<'a> {
@@ -99,5 +99,5 @@ pub struct SearchMap<'a> {
     pub tm_rccellplan_map: HashMap<String, TMPlanPair<'a>>,
     pub variable_map:      HashMap<String, String>,
     pub target_map:        HashMap<String, Target>,
-    pub lt_id_quad_map:    HashMap<String, HashSet<Quad<'a>>>,
+    pub _lt_id_quad_map:    HashMap<String, HashSet<Quad<'a>>>,
 }

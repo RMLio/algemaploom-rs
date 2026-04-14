@@ -166,19 +166,6 @@ pub fn get_quads_from_same_source<'a>(
     )
 }
 
-pub fn get_quads_from_different_source<'a>(
-    indexed_document: &'a IndexedShExMLDocument,
-    graph_shapes: impl Iterator<Item = &'a GraphShapes>,
-    expr_idents: HashSet<&'a str>,
-) -> ShExMLQuads<'a> {
-    get_quads_from_shapes(
-        indexed_document,
-        graph_shapes,
-        expr_idents,
-        |subj_check, obj_check| subj_check || obj_check,
-    )
-}
-
 fn get_quads_from_shapes<'a, CheckerFn>(
     indexed_document: &'a IndexedShExMLDocument,
     graph_shapes: impl Iterator<Item = &'a GraphShapes>,

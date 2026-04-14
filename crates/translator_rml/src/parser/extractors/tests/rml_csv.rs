@@ -1,10 +1,9 @@
-use super::framework::test_core::test_triplesmaps;
-use super::framework::test_expectations::*;
-use crate::parser::extractors::tests::framework::test_core::expect_parse_fail;
 
 #[cfg(test)]    
 mod csv_testcases {
-    use super::*;
+    use super::super::framework::test_core::test_triplesmaps;
+    use super::super::framework::test_expectations::*;
+    use crate::parser::extractors::tests::framework::test_core::expect_parse_fail;
 
     #[test]
     fn test_rmltc0000() {

@@ -2,18 +2,15 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{BufWriter, Write},
-    path::Path,
-    ptr::write_unaligned,
 };
 
-use operator::{display::PrettyDisplay, Extend, Operator};
+use operator::{display::PrettyDisplay, Operator};
 use petgraph::{
     graph::NodeIndex,
     visit::{Dfs, Reversed},
 };
 use plan::data_type::DiGraphOperators;
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
-use vocab::query;
 
 use super::error::{RMLExtractorError, RMLResult};
 

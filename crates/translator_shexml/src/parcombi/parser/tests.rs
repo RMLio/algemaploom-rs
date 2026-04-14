@@ -2,7 +2,6 @@ use crate::parcombi::lexer;
 use crate::parcombi::parser;
 use crate::parcombi::*;
 use chumsky::prelude::*;
-#[cfg(test)]
 use std::collections::HashSet;
 
 

@@ -20,8 +20,6 @@
 //! Idem for the properties of the ontologies which are behind the `property` sub-module of each 
 //! ontology modules.
 //! 
-use std::fmt::Display;
-
 pub mod comp;
 pub mod csvw;
 pub mod d2rq;

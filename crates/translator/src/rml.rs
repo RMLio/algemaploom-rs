@@ -1,4 +1,4 @@
-use log::{error, info, warn};
+use log::{info, warn};
 use plan::states::Init;
 use plan::Plan;
 use translator_api::LanguageTranslator;

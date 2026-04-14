@@ -16,7 +16,6 @@ use std::rc::Rc;
 
 use anyhow::Result;
 use data_type::RcRefCellPlan;
-use operator::Operator;
 use petgraph::dot::Dot;
 use petgraph::graph::{DiGraph, NodeIndex};
 
@@ -188,7 +187,7 @@ fn write_string_to_file(
 mod tests {
     use std::collections::{HashMap, HashSet};
 
-    use operator::{Iterator, Projection, Rename, Source};
+    use operator::{Iterator, Operator, Projection, Rename, Source};
     use petgraph::algo::is_isomorphic_matching;
     use states::Processed;
 

@@ -1,3 +1,5 @@
+
+#[cfg(test)]
 mod tests;
 pub mod r#type;
 use std::collections::HashMap;
@@ -26,13 +28,6 @@ macro_rules! unfold_token_value {
          ShExMLToken::$t(string) => string
         }
     };
-}
-
-fn token_string<T: AsRef<str> + Clone>(
-    tok: ShExMLToken,
-    target: T,
-) -> t!(String) {
-    just(tok).map(move |_| target.as_ref().to_string())
 }
 
 fn token_prefix_shex_pns() -> t!(PrefixNameSpace) {

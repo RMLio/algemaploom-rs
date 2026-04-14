@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use operator::{Extend, Function};
-use sophia_api::term::{self, Term};
+use sophia_api::term::Term;
 
 use super::error::TranslationError;
 use super::store::SearchStore;
@@ -418,12 +418,6 @@ fn extend_func_from_func_expr_map(
         parameters,
         return_type,
     })
-}
-
-fn star_extend_function(_exp_map: &ExpressionMapEnum) -> Function {
-    todo!()
-    // TODO: Implement star extend function
-    //
 }
 
 // Helper to remove surrounding angle brackets from turtle-stringified IRIs

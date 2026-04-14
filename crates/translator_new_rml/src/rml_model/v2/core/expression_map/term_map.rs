@@ -3,9 +3,8 @@ use std::fmt::Debug;
 use std::hash::Hash;
 
 use log::debug;
-use sophia_api::prelude::Iri;
 use sophia_api::term::{
-    BnodeId, FromTerm, IriRef, LanguageTag, SimpleTerm, Term, TermKind,
+    BnodeId, FromTerm, IriRef, Term, TermKind,
 };
 use sophia_term::RcTerm;
 use vocab::ToString;

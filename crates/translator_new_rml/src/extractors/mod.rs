@@ -5,7 +5,7 @@ use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::{ArcTerm, RcTerm};
 use sophia_turtle::serializer::nt;
-use vocab::{ToString, PAIR};
+use vocab::PAIR;
 
 use self::error::ParseError;
 use crate::extractors::store::get_objects;

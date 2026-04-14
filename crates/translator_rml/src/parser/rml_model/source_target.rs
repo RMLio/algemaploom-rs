@@ -5,7 +5,7 @@ use std::hash::Hash;
 use operator::formats::DataFormat;
 use operator::{IOType, Target};
 use sophia_api::prelude::Iri;
-use sophia_api::term::{FromTerm, Term};
+use sophia_api::term::FromTerm;
 use sophia_term::RcTerm;
 use vocab::ToString;
 
@@ -197,20 +197,4 @@ impl From<Source> for HashMap<String, String> {
         map.insert("type".to_string(), format!("{}", val.source_type));
         map
     }
-}
-
-fn source_config_map(ls: &LogicalSource) -> HashMap<String, String> {
-    let mut map = HashMap::new();
-
-    map.insert("identifier".to_string(), ls.identifier.to_string());
-
-    if let Some(iter) = &ls.iterator {
-        map.insert("iterator".to_string(), iter.to_owned());
-    }
-
-    let source_map: HashMap<String, String> = ls.source.clone().into();
-
-    map.extend(source_map);
-
-    map
 }

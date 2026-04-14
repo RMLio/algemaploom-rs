@@ -3,13 +3,13 @@ use std::fmt::Debug;
 use log::debug;
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
-use sophia_api::term::{BnodeId, FromTerm, Term, TermKind};
+use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::store::get_objects_with_ps;
-use super::{expression_map, Extractor, ExtractorResult, FromVocab};
+use super::{Extractor, ExtractorResult, FromVocab};
 use crate::extractors::store::{get_object, get_object_with_ps};
 use crate::extractors::ParseError;
 use crate::rml_model::v2::core::expression_map::term_map::{
