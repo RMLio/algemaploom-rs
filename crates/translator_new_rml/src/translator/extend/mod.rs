@@ -420,7 +420,7 @@ fn extend_func_from_func_expr_map(
     })
 }
 
-fn star_extend_function(exp_map: &ExpressionMapEnum) -> Function {
+fn star_extend_function(_exp_map: &ExpressionMapEnum) -> Function {
     todo!()
     // TODO: Implement star extend function
     //
