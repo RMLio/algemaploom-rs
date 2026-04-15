@@ -215,19 +215,6 @@ pub struct RMLIterable {
     pub reference_formulation: Option<ReferenceFormulation>,
 }
 
-impl RMLIterable {
-    pub fn try_get_ref_formulation_enum(
-        &self,
-    ) -> ExtractorResult<RMLReferenceFormulationTypeKind> {
-        let ref_form = self.reference_formulation.clone().ok_or(
-            ParseError::GenericError(format!(
-                "iterator does not have a reference formulation: {:?}",
-                self
-            )),
-        )?;
-        ref_form.try_into()
-    }
-}
 
 #[derive(Debug, Clone, Unwrap, TryUnwrap)]
 #[unwrap(ref)]

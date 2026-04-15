@@ -83,7 +83,7 @@ impl TryFrom<&ReferenceFormulation>
                 }
             }
             ReferenceFormulationKind::CustomReferenceFormulation {
-                meta_data_graph: _,
+                meta_data_graph: meta_graph,
             } => {
                 Err(ParseError::GenericError(format!(
                     "Complex reference formulation unsupported: {:?}",
@@ -143,51 +143,6 @@ impl Debug for ReferenceFormulationKind {
                             .as_str(),
                     )
                     .finish()
-            }
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-pub enum RMLReferenceFormulationTypeKind {
-    JSONPath,
-    CSVRows,
-    XPath,
-    CSS3,
-    Parent,
-    XPathNamespace { prefix: String, uri: String },
-}
-
-impl TryFrom<ReferenceFormulation> for RMLReferenceFormulationTypeKind {
-    type Error = ParseError;
-
-    fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
-        value.iri.try_into()
-    }
-}
-
-impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
-    type Error = ParseError;
-
-    fn try_from(value: RcTerm) -> Result<Self, Self::Error> {
-        match value {
-            value if value == vocab::query::CLASS::CSV.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::CSVRows)
-            }
-            value if value == vocab::query::CLASS::JSONPATH.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::JSONPath)
-            }
-            value if value == vocab::query::CLASS::XPATH.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::XPath)
-            }
-            value if value == vocab::query::CLASS::HTML.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::CSS3)
-            }
-            _ => {
-                Err(ParseError::GenericError(format!(
-                    "reference formulation type is not supported: {:?}",
-                    value
-                )))
             }
         }
     }
