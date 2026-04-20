@@ -5,11 +5,9 @@ use error::FieldErrorEnum;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
-use crate::extractors::error::ParseError;
-use crate::extractors::logical_view::error::LogicalViewErrorEnum;
 use crate::extractors::store::{get_object, get_objects};
 use crate::extractors::{
-    stringify_term, Extractor, ExtractorResult, FromVocab,
+    stringify_term, Extractor, FromVocab,
 };
 use crate::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::rml_model::v2::core::RMLIterable;

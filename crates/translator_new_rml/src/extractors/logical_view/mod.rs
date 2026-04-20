@@ -22,7 +22,7 @@ use crate::extractors::store::get_object;
 use crate::extractors::{stringify_term, FromVocab};
 use crate::rml_model::v2::core::AbstractLogicalSourceEnum;
 use crate::rml_model::v2::lv::{
-    LogicalView, LogicalViewJoin, RMLField, StructuralAnnotation,
+    LogicalView, LogicalViewJoin, StructuralAnnotation,
 };
 
 impl Extractor<LogicalView> for LogicalView {

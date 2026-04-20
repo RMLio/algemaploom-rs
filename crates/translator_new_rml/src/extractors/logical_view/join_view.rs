@@ -6,6 +6,7 @@ use sophia_inmem::graph::FastGraph;
 use crate::extractors::error::ParseError;
 use crate::extractors::store::{get_object, get_objects};
 use crate::extractors::{Extractor, ExtractorResult, FromVocab};
+use crate::extractors::logical_view::field;
 use crate::rml_model::v2::core::JoinCondition;
 use crate::rml_model::v2::lv::RMLFieldKind::Iterable;
 use crate::rml_model::v2::lv::{

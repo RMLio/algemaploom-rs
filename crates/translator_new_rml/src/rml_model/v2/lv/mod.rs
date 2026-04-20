@@ -1,7 +1,5 @@
-use std::collections::HashSet;
 use std::rc::Rc;
 
-use chumsky::chain::Chain;
 use sophia_term::RcTerm;
 
 use super::core::expression_map::{BaseExpressionMapEnum, ExpressionMapEnum};
