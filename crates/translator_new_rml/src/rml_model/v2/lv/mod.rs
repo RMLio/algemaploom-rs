@@ -1,5 +1,7 @@
+use std::collections::HashSet;
 use std::rc::Rc;
 
+use chumsky::chain::Chain;
 use sophia_term::RcTerm;
 
 use super::core::expression_map::{BaseExpressionMapEnum, ExpressionMapEnum};
@@ -18,7 +20,7 @@ pub struct LogicalView {
 impl LogicalView {
     pub fn is_same_logical_view(&self, other: &LogicalView) -> bool {
         (self.identifier == other.identifier)
-            || self.view_on.is_same_source(&other.view_on) 
+            || self.view_on.is_same_source(&other.view_on)
     }
     pub fn get_iterable(&self) -> RMLIterable {
         match &*self.view_on {

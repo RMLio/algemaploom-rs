@@ -149,51 +149,6 @@ impl Debug for ReferenceFormulationKind {
 }
 
 #[derive(Debug, Clone)]
-pub enum RMLReferenceFormulationTypeKind {
-    JSONPath,
-    CSVRows,
-    XPath,
-    CSS3,
-    Parent,
-    XPathNamespace { prefix: String, uri: String },
-}
-
-impl TryFrom<ReferenceFormulation> for RMLReferenceFormulationTypeKind {
-    type Error = ParseError;
-
-    fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
-        value.iri.try_into()
-    }
-}
-
-impl TryFrom<RcTerm> for RMLReferenceFormulationTypeKind {
-    type Error = ParseError;
-
-    fn try_from(value: RcTerm) -> Result<Self, Self::Error> {
-        match value {
-            value if value == vocab::query::class::CSV.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::CSVRows)
-            }
-            value if value == vocab::query::class::JSONPATH.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::JSONPath)
-            }
-            value if value == vocab::query::class::XPATH.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::XPath)
-            }
-            value if value == vocab::query::class::HTML.to_rcterm() => {
-                Ok(RMLReferenceFormulationTypeKind::CSS3)
-            }
-            _ => {
-                Err(ParseError::GenericError(format!(
-                    "reference formulation type is not supported: {:?}",
-                    value
-                )))
-            }
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
 pub struct LogicalSource {
     pub iterable:   RMLIterable,
     pub identifier: RcTerm,

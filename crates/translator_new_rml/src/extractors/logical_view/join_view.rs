@@ -42,17 +42,17 @@ impl Extractor<LogicalViewJoin> for LogicalViewJoin {
         )
         .iter()
         .try_fold(Vec::new(), |mut acc, t| -> Result<Vec<RMLField>, ParseError> {
-            let res = RMLField::extract_self(t, graph_ref);
+            let res = field::extract_field(t, graph_ref, None);
             match res {
                 Ok(field) => {
                     if let Iterable(_) = field.kind{
-                        Err(ParseError::GenericError(format!("Logical view join's field cannot be an iterable {:?}", t)).into())
+                        Err(ParseError::GenericError(format!("Logical view join's field cannot be an iterable {:?}", t)))
                     }else{
                         acc.push(field);
                         Ok(acc)
                     }
                 }
-                Err(e) => Err(e),
+                Err(e) => Err(ParseError::GenericError(format!("something went from parsing fields for logical view joins: {}", e))),
             }
         })?;
 
