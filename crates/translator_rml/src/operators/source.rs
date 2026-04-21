@@ -1,11 +1,12 @@
+use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Iterator, Source};
+use translator_api::OperatorTranslator;
 
 use crate::parser::extractors::FromVocab;
 use crate::parser::rml_model::source_target::SourceType;
 use crate::parser::rml_model::TriplesMap;
 use crate::util::extract_references_in_tm;
-use translator_api::OperatorTranslator;
 #[derive(Debug, Clone)]
 pub struct SourceOpTranslator<'a> {
     pub tm:        &'a TriplesMap,
@@ -25,7 +26,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
                     ReferenceFormulation::JSONPath
                 }
                 iri if *iri == vocab::query::CLASS::XPATH.to_rcterm() => {
-                    ReferenceFormulation::XMLPath
+                    ReferenceFormulation::XMLPath(XPathConfig::default())
                 }
                 _ => ReferenceFormulation::CSVRows,
             };

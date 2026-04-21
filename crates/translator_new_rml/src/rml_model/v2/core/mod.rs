@@ -7,10 +7,7 @@ use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
 use expression_map::ExpressionMapEnum;
 use sophia_term::RcTerm;
 
-use super::io::source::{
-    LogicalSource, RMLReferenceFormulationTypeKind, ReferenceFormulation,
-    Source,
-};
+use super::io::source::{LogicalSource, ReferenceFormulation, Source};
 use super::lv::{LogicalView, RMLField};
 use super::RefAttributeGetter;
 use crate::extractors::error::ParseError;
@@ -214,7 +211,6 @@ pub struct RMLIterable {
     pub iterator:              Option<String>,
     pub reference_formulation: Option<ReferenceFormulation>,
 }
-
 
 #[derive(Debug, Clone, Unwrap, TryUnwrap)]
 #[unwrap(ref)]

@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
+use operator::formats::xml::XPathConfig;
 use operator::{formats, IOType};
 use sophia_api::serializer::*;
 use sophia_api::term::{BnodeId, FromTerm};
@@ -19,80 +20,6 @@ pub struct ReferenceFormulation {
     pub kind: ReferenceFormulationKind,
 }
 
-impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
-    type Error = ParseError;
-
-    fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
-        (&value).try_into()
-    }
-}
-
-impl TryFrom<&ReferenceFormulation>
-    for operator::formats::ReferenceFormulation
-{
-    type Error = ParseError;
-
-    fn try_from(value: &ReferenceFormulation) -> Result<Self, Self::Error> {
-        match value.kind {
-            ReferenceFormulationKind::Iri => {
-                match value.iri.clone() {
-                    value
-                        if value
-                            == vocab::d2rq::CLASS::DATABASE.to_rcterm()
-                            || value
-                                == vocab::rml_io::CLASS::SQL_QUERY
-                                    .to_rcterm()
-                            || value
-                                == vocab::rml_io::CLASS::SQL_TABLE
-                                    .to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::SQLQuery)
-                    }
-                    value
-                        if value == vocab::query::CLASS::CSV.to_rcterm()
-                            || value
-                                == vocab::rml_io::CLASS::CSV.to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::CSVRows)
-                    }
-                    value
-                        if value
-                            == vocab::query::CLASS::JSONPATH.to_rcterm()
-                            || value
-                                == vocab::rml_io::CLASS::JSONPATH
-                                    .to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::JSONPath)
-                    }
-                    value
-                        if value == vocab::query::CLASS::XPATH.to_rcterm()
-                            || value
-                                == vocab::rml_io::CLASS::XPATH.to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::XMLPath)
-                    }
-                    value if value == vocab::query::CLASS::HTML.to_rcterm() => {
-                        Ok(formats::ReferenceFormulation::CSS3)
-                    }
-                    value => {
-                        Err(ParseError::GenericError(format!(
-                            "Unsupported reference formulation: {}",
-                            stringify_term(value).unwrap()
-                        )))
-                    }
-                }
-            }
-            ReferenceFormulationKind::CustomReferenceFormulation {
-                meta_data_graph: meta_graph,
-            } => {
-                Err(ParseError::GenericError(format!(
-                    "Complex reference formulation unsupported: {:?}",
-                    value
-                )))
-            }
-        }
-    }
-}
 
 #[derive(Clone)]
 pub enum ReferenceFormulationKind {

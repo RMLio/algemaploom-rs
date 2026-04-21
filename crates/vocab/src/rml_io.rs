@@ -49,6 +49,7 @@ pub mod CLASS {
     pub const JSONPATH: PAIR = (IRI, "JSONPath");
     pub const CSV: PAIR = (IRI, "CSV");
     pub const XPATH: PAIR = (IRI, "XPath");
+    pub const XPATH_REF_FORM: PAIR = (IRI, "XPathReferenceFormulation");
     pub const CSVW: PAIR = (IRI, "CSVWReferenceFormulation"); 
     pub const SQL_QUERY: PAIR = (IRI, "SQLQuery"); 
     pub const SQL_TABLE: PAIR = (IRI, "SQLTable"); 

@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+use xml::XPathConfig;
+pub mod xml;
 
 #[derive(
     Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash, Default,
@@ -7,7 +9,7 @@ pub enum ReferenceFormulation {
     #[default]
     CSVRows,
     JSONPath,
-    XMLPath,
+    XMLPath(XPathConfig),
     XMLQuery,
     SQLQuery,
     SPARQL,

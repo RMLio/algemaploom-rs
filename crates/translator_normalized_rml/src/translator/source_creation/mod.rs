@@ -3,6 +3,7 @@ mod util;
 use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
+use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Source};
 use oxigraph::model::{Quad, Subject, SubjectRef, Term, TermRef};
@@ -111,7 +112,7 @@ fn get_reference_formulation_from_term(
             Ok(ReferenceFormulation::JSONPath)
         }
         val if val == vocab::query::CLASS::XPATH.to_named_node() => {
-            Ok(ReferenceFormulation::XMLPath)
+            Ok(ReferenceFormulation::XMLPath(XPathConfig::default()))
         }
         val => {
             Err(OxigraphErrorKind::GenericError(format!(
