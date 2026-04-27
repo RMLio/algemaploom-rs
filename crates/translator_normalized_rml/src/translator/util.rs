@@ -1,7 +1,5 @@
 use anyhow::Result;
-use oxigraph::model::{
-    LiteralRef, NamedNodeRef, Quad, Subject, SubjectRef, Term, TermRef,
-};
+use oxigraph::model::{LiteralRef, NamedNodeRef, NamedOrBlankNode, NamedOrBlankNodeRef, Quad, Term, TermRef};
 use oxigraph::store::Store;
 
 use crate::error::oxigraph::{OxigraphError, OxigraphErrorKind};
@@ -22,7 +20,7 @@ pub fn termref_to_literal(term_ref: TermRef) -> Result<LiteralRef> {
     }
 }
 
-pub fn termref_to_subjref(term_ref: TermRef) -> Result<SubjectRef> {
+pub fn termref_to_subjref(term_ref: TermRef) -> Result<NamedOrBlankNodeRef> {
     match term_ref {
         TermRef::NamedNode(named_node_ref) => Ok(named_node_ref.into()),
         TermRef::BlankNode(blank_node_ref) => Ok(blank_node_ref.into()),
@@ -39,7 +37,7 @@ pub fn termref_to_subjref(term_ref: TermRef) -> Result<SubjectRef> {
 }
 
 pub fn get_object(
-    subject: SubjectRef,
+    subject: NamedOrBlankNodeRef,
     predicate: NamedNodeRef,
     store: &Store,
 ) -> Result<Term> {
@@ -57,7 +55,7 @@ pub fn get_object(
 }
 
 pub fn get_quads(
-    subject: SubjectRef,
+    subject: NamedOrBlankNodeRef,
     predicate: NamedNodeRef,
     store: &Store,
 ) -> impl Iterator<Item = Quad> {
@@ -67,7 +65,7 @@ pub fn get_quads(
 }
 
 pub fn rooted_subgraph(
-    target_node: SubjectRef,
+    target_node: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<Vec<Quad>> {
     let mut result: Vec<_> = vec![];
@@ -86,7 +84,7 @@ pub fn rooted_subgraph(
         {
             match quad.object {
                 x if x.is_named_node() || x.is_blank_node() => {
-                    let target_subj: Subject = x.try_into()?;
+                    let target_subj: NamedOrBlankNode = x.try_into()?;
                     let new_quads = store
                         .quads_for_pattern(
                             Some(target_subj.as_ref()),

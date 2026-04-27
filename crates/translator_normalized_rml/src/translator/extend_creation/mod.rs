@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use anyhow::Result;
 use operator::{Function, TermType};
-use oxigraph::model::{SubjectRef, TermRef};
+use oxigraph::model::{NamedOrBlankNodeRef, TermRef};
 use oxigraph::store::Store;
 
 use super::data::QueryAttrMap;
@@ -12,7 +12,7 @@ use crate::translator::util::get_object;
 use crate::FromVocab;
 
 pub fn create_extend_function(
-    term_map_subj: SubjectRef,
+    term_map_subj: NamedOrBlankNodeRef,
     store: &Store,
     query_attr_map: &QueryAttrMap,
     is_object_map: bool,
@@ -163,7 +163,7 @@ pub fn create_extend_function(
     Ok(result)
 }
 
-fn is_term_type(term: SubjectRef, term_type_o: TermRef, store: &Store) -> bool {
+fn is_term_type(term: NamedOrBlankNodeRef, term_type_o: TermRef, store: &Store) -> bool {
     store
         .quads_for_pattern(
             Some(term),

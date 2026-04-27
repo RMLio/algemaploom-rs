@@ -6,7 +6,7 @@ use anyhow::Result;
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Source};
-use oxigraph::model::{Quad, Subject, SubjectRef, Term, TermRef};
+use oxigraph::model::{NamedOrBlankNode, NamedOrBlankNodeRef, Quad, Term, TermRef};
 use oxigraph::store::Store;
 use util::get_queries_from_template;
 
@@ -21,7 +21,7 @@ use crate::translator::util::{
 use crate::FromVocab;
 
 pub fn create_source_operator(
-    triples_map_iri: SubjectRef,
+    triples_map_iri: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<(Source, QueryAttrMap)> {
     let query_to_attr_map = extract_queries(triples_map_iri, store)?;
@@ -155,7 +155,7 @@ fn create_fields_from_map(
 /// This function will return an error if no queries can be extracted for the
 /// triples map.
 fn extract_queries(
-    triples_map_iri: SubjectRef,
+    triples_map_iri: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<QueryAttrMap> {
     let mut query_to_attr_map = HashMap::new();
@@ -213,9 +213,9 @@ fn extract_queries(
 /// # Panics
 ///
 /// Panics if .
-fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
+fn get_parent_quads(triples_map_iri: NamedOrBlankNodeRef, store: &Store) -> Vec<Quad> {
     // s' ∈ I ∪ B where (s', rr:parentTriplesMap, u_tm) ∈ G
-    let referencing_object_map_iris: HashSet<Subject> = store
+    let referencing_object_map_iris: HashSet<NamedOrBlankNode> = store
         .quads_for_pattern(
             None,
             Some(
@@ -256,7 +256,7 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
 
 // Only handles CSV/JSON files for now
 fn get_source_config(
-    logical_source_iri: SubjectRef,
+    logical_source_iri: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<HashMap<String, String>> {
     let mut result = HashMap::new();

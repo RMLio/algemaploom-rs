@@ -9,7 +9,7 @@ use anyhow::Result;
 use extend_creation::create_extend_function;
 use operator::formats::DataFormat;
 use operator::{Extend, Function, Operator, Projection, Serializer, Target, TermType};
-use oxigraph::model::SubjectRef;
+use oxigraph::model::NamedOrBlankNodeRef;
 use oxigraph::store::Store;
 use plan::states::join::join;
 use plan::states::{Init, Processed, Sunk};
@@ -186,7 +186,7 @@ fn process_object_map(
     store: &Store,
     main_plan: &mut Plan<Init>,
     mut processed_plan: Plan<Processed>,
-    predicate_object_map_subjref: SubjectRef,
+    predicate_object_map_subjref: NamedOrBlankNodeRef,
     child_query_attr_map: &HashMap<String, String>,
     base_iri: &Option<String>,
 ) -> Result<Plan<Processed>, anyhow::Error> {
@@ -263,7 +263,7 @@ fn get_join_condition_pairs<'a>(
     store: &'a Store,
     child_query_attr_map: &'a HashMap<String, String>,
     parent_query_attr_map: &'a HashMap<String, String>,
-    object_subjref: SubjectRef<'a>,
+    object_subjref: NamedOrBlankNodeRef<'a>,
 ) -> Result<Vec<(&'a str, &'a str)>, anyhow::Error> {
     let mut join_condition_pairs = vec![];
     for jc in get_quads(

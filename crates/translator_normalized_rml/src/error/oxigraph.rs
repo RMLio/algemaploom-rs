@@ -2,7 +2,7 @@ use std::error::Error;
 use std::fmt::Display;
 
 use oxigraph::model::IriParseError;
-use oxigraph::sparql::EvaluationError;
+use oxigraph::sparql::QueryEvaluationError;
 use oxigraph::store::StorageError;
 
 #[derive(Debug)]
@@ -16,8 +16,8 @@ impl OxigraphError {
     }
 }
 
-impl From<EvaluationError> for OxigraphError {
-    fn from(value: EvaluationError) -> Self {
+impl From<QueryEvaluationError> for OxigraphError {
+    fn from(value: QueryEvaluationError) -> Self {
         Self {
             kind: OxigraphErrorKind::EvaluationError(value),
         }
@@ -39,7 +39,7 @@ impl Error for OxigraphError {
 #[derive(Debug)]
 pub enum OxigraphErrorKind {
     GraphInitError,
-    EvaluationError(EvaluationError),
+    EvaluationError(QueryEvaluationError),
     IriParseError(IriParseError),
     StorageError(StorageError),
     // TODO: Check the usage of generic errors again and replace them with appropriate error type! <06-03-25, SMO> //

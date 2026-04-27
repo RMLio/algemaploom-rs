@@ -10,7 +10,7 @@ pub extern "system" fn Java_be_ugent_idlab_knows_mappingLoom_Translator_translat
 ) -> JString<'local> {
     let outcome = unowned_env.with_env(|env| -> Result<_, jni::errors::Error> {
         let input_str = input.to_string();
-        let translated_res = process_one_str(&input_str).unwrap();
+        let translated_res = process_one_str(&input_str);
         JString::from_str(env, translated_res.as_str())
     });
     outcome.resolve::<jni::errors::ThrowRuntimeExAndDefault>()
