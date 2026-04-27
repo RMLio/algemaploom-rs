@@ -284,7 +284,7 @@ fn refform_to_iri(ref_form: &ReferenceFormulation) -> String {
     match ref_form {
         ReferenceFormulation::CSVRows => "ql:CSV".to_string(),
         ReferenceFormulation::JSONPath => "ql:JSONPath".to_string(),
-        ReferenceFormulation::XMLPath | ReferenceFormulation::XMLQuery => "ql:XPath".to_string(),
+        ReferenceFormulation::XMLPath(_) | ReferenceFormulation::XMLQuery => "ql:XPath".to_string(),
         ReferenceFormulation::SQLQuery => "ql:SQL".to_string(),
         ReferenceFormulation::SPARQL => "ql:SPARQL".to_string(),
         ReferenceFormulation::CSS3 => "ql:CSS3".to_string(),

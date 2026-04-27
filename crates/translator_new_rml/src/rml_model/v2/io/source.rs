@@ -1,14 +1,13 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
-use operator::{formats, IOType};
+use operator::IOType;
 use sophia_api::serializer::*;
 use sophia_api::term::{BnodeId, FromTerm};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
 
-use crate::extractors::error::ParseError;
 use crate::extractors::{stringify_term, FromVocab};
 use crate::rml_model::v2::core::RMLIterable;
 use crate::translator::error::TranslationError;
@@ -19,80 +18,6 @@ pub struct ReferenceFormulation {
     pub kind: ReferenceFormulationKind,
 }
 
-impl TryFrom<ReferenceFormulation> for formats::ReferenceFormulation {
-    type Error = ParseError;
-
-    fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
-        (&value).try_into()
-    }
-}
-
-impl TryFrom<&ReferenceFormulation>
-    for formats::ReferenceFormulation
-{
-    type Error = ParseError;
-
-    fn try_from(value: &ReferenceFormulation) -> Result<Self, Self::Error> {
-        match value.kind {
-            ReferenceFormulationKind::Iri => {
-                match value.iri.clone() {
-                    value
-                        if value
-                            == vocab::d2rq::class::DATABASE.to_rcterm()
-                            || value
-                                == vocab::rml_io::class::SQL_QUERY
-                                    .to_rcterm()
-                            || value
-                                == vocab::rml_io::class::SQL_TABLE
-                                    .to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::SQLQuery)
-                    }
-                    value
-                        if value == vocab::query::class::CSV.to_rcterm()
-                            || value
-                                == vocab::rml_io::class::CSV.to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::CSVRows)
-                    }
-                    value
-                        if value
-                            == vocab::query::class::JSONPATH.to_rcterm()
-                            || value
-                                == vocab::rml_io::class::JSONPATH
-                                    .to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::JSONPath)
-                    }
-                    value
-                        if value == vocab::query::class::XPATH.to_rcterm()
-                            || value
-                                == vocab::rml_io::class::XPATH.to_rcterm() =>
-                    {
-                        Ok(formats::ReferenceFormulation::XMLPath)
-                    }
-                    value if value == vocab::query::class::HTML.to_rcterm() => {
-                        Ok(formats::ReferenceFormulation::CSS3)
-                    }
-                    value => {
-                        Err(ParseError::GenericError(format!(
-                            "Unsupported reference formulation: {}",
-                            stringify_term(value).unwrap()
-                        )))
-                    }
-                }
-            }
-            ReferenceFormulationKind::CustomReferenceFormulation {
-                meta_data_graph: _,
-            } => {
-                Err(ParseError::GenericError(format!(
-                    "Complex reference formulation unsupported: {:?}",
-                    value
-                )))
-            }
-        }
-    }
-}
 
 #[derive(Clone)]
 pub enum ReferenceFormulationKind {

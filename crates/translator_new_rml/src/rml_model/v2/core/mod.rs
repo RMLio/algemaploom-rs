@@ -6,10 +6,7 @@ use derive_more::{TryUnwrap, Unwrap};
 use expression_map::ExpressionMapEnum;
 use sophia_term::RcTerm;
 
-use super::io::source::{
-    LogicalSource, ReferenceFormulation,
-    Source,
-};
+use super::io::source::{LogicalSource, ReferenceFormulation, Source};
 use super::lv::{LogicalView, RMLField};
 use super::RefAttributeGetter;
 use crate::extractors::ExtractorResult;
@@ -212,7 +209,6 @@ pub struct RMLIterable {
     pub iterator:              Option<String>,
     pub reference_formulation: Option<ReferenceFormulation>,
 }
-
 
 #[derive(Debug, Clone, Unwrap, TryUnwrap)]
 #[unwrap(ref)]

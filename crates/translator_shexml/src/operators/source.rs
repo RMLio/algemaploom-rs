@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
 use log::{debug, trace};
+use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::{IOType, Source};
 use plan::error::PlanError;
@@ -165,7 +166,7 @@ fn translate_to_reference_formulation(
 ) -> ReferenceFormulation {
     match shex_iter_type {
         parcombi::IteratorType::JSONPath => ReferenceFormulation::JSONPath,
-        parcombi::IteratorType::XPath => ReferenceFormulation::XMLPath,
+        parcombi::IteratorType::XPath => ReferenceFormulation::XMLPath(XPathConfig::default()),
         parcombi::IteratorType::CSVRows => ReferenceFormulation::CSVRows,
         parcombi::IteratorType::SQL => ReferenceFormulation::SQLQuery,
         parcombi::IteratorType::SPARQL => ReferenceFormulation::SPARQL,
