@@ -6,7 +6,7 @@ edition.workspace = true
 
 [dependencies]
 
-chumsky = "0.9.3"
+chumsky = { version = "0.9.3",  default-features = false, features = ["std"]}
 
 vocab = { path = "../vocab/" }
 operator = { path = "../operator/" }

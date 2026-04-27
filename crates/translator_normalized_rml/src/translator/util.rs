@@ -26,7 +26,6 @@ pub fn termref_to_subjref(term_ref: TermRef) -> Result<SubjectRef> {
     match term_ref {
         TermRef::NamedNode(named_node_ref) => Ok(named_node_ref.into()),
         TermRef::BlankNode(blank_node_ref) => Ok(blank_node_ref.into()),
-        TermRef::Triple(triple) => Ok(triple.into()),
         _ => {
             Err(OxigraphError {
                 kind: OxigraphErrorKind::GenericError(format!(

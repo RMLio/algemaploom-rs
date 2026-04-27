@@ -7,7 +7,7 @@ edition.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-oxigraph = { version = "0.4.8", default-features = false }
+oxigraph = { version = "0.5.7", default-features = false }
 
 
 vocab = { path = "../vocab/" }

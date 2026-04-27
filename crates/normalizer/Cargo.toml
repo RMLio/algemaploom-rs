@@ -7,7 +7,7 @@ edition.workspace = true
 [dependencies]
 thiserror.workspace = true
 log.workspace = true
-oxigraph = { version = "0.5.2", default-features = false }
+oxigraph = { version = "0.5.7", default-features = false }
 common = {path = "../common/"}
 
 
