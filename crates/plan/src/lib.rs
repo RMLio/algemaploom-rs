@@ -16,7 +16,6 @@ use std::rc::Rc;
 
 use anyhow::Result;
 use data_type::RcRefCellPlan;
-use operator::{Fragmenter, Operator};
 use petgraph::dot::Dot;
 use petgraph::graph::{DiGraph, NodeIndex};
 
@@ -45,7 +44,7 @@ pub mod states;
 #[derive(Debug, Clone)]
 pub struct Plan<T> {
     _t:        PhantomData<T>,
-    /// Underlying graph data structure from [petgraph](petgraph::graph::DiGraph).
+    /// Underlying graph data structure from [petgraph](DiGraph).
     pub graph: RcRefCellDiGraph,
 
     /// Node indexes of the source operators in the graph.
@@ -163,14 +162,6 @@ impl<T> Plan<T> {
         Ok(plan)
     }
 
-    #[deprecated(note = "please use `to_json_string` method instead")]
-    pub fn to_string(&self) -> Result<String> {
-        let graph = &*self.graph.borrow();
-        let json_string = serde_json::to_string(&graph).unwrap();
-
-        Ok(json_string)
-    }
-
     /// Serializes the plan to a [String] in **JSON** format with [serde_json].
     ///
     /// # Error
@@ -196,7 +187,7 @@ fn write_string_to_file(
 mod tests {
     use std::collections::{HashMap, HashSet};
 
-    use operator::{Iterator, Projection, Rename, Source};
+    use operator::{Iterator, Operator, Projection, Rename, Source};
     use petgraph::algo::is_isomorphic_matching;
     use states::Processed;
 
@@ -247,13 +238,13 @@ mod tests {
         plan.source(source.clone());
         let graph = plan.graph.borrow();
 
-        assert!(graph.node_count() == 1);
-        assert!(graph.edge_count() == 0);
+        assert_eq!(graph.node_count(), 1);
+        assert_eq!(graph.edge_count(), 0);
         let retrieved_node = graph.node_weights().next();
 
         assert!(retrieved_node.is_some());
         let source_op = Operator::SourceOp { config: source };
-        assert!(retrieved_node.unwrap().operator == source_op);
+        assert_eq!(retrieved_node.unwrap().operator, source_op);
     }
 
     #[test]
@@ -261,16 +252,8 @@ mod tests {
         let plan = generate_dummy_processed_plan()?;
         let graph = plan.graph.borrow();
 
-        assert!(
-            graph.node_count() == 3,
-            "Number of nodes should be 3 but it is instead: {}",
-            graph.node_count()
-        );
-        assert!(
-            graph.edge_count() == 2,
-            "Number of edges should be 2 but it is instead: {}",
-            graph.edge_count()
-        );
+        assert_eq!(graph.node_count(), 3, "Number of nodes should be 3 but it is instead: {}", graph.node_count());
+        assert_eq!(graph.edge_count(), 2, "Number of edges should be 2 but it is instead: {}", graph.edge_count());
 
         Ok(())
     }

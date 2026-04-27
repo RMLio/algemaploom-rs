@@ -1,12 +1,10 @@
-use std::collections::HashSet;
 use std::rc::Rc;
 
-use chumsky::chain::Chain;
 use sophia_term::RcTerm;
 
 use super::core::expression_map::{BaseExpressionMapEnum, ExpressionMapEnum};
 use super::core::{AbstractLogicalSourceEnum, JoinCondition, RMLIterable};
-use super::io::source::{LogicalSource, Source};
+use super::io::source::Source;
 
 #[derive(Debug, Clone)]
 pub struct LogicalView {

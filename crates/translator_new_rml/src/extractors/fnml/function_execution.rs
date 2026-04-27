@@ -17,7 +17,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         let function = get_objects_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::FUNCTION.to_rcterm()],
+            &[&vocab::rml_fnml::property::FUNCTION.to_rcterm()],
         )
         .into_iter()
         .filter_map(|term| CommonTermMapInfo::from_constant_value(term).ok());
@@ -25,7 +25,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         let function_maps = get_objects_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::FUNCTION_MAP.to_rcterm()],
+            &[&vocab::rml_fnml::property::FUNCTION_MAP.to_rcterm()],
         )
         .into_iter()
         .filter_map(|term| {
@@ -40,7 +40,7 @@ impl Extractor<FunctionExecution> for FunctionExecution {
         let input: Vec<_> = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_fnml::PROPERTY::INPUT.to_rcterm(),
+            vocab::rml_fnml::property::INPUT.to_rcterm(),
         )
         .iter()
         .filter_map(|term| InputMap::extract_self(term, graph_ref).ok())

@@ -12,16 +12,11 @@ fn protocol_test() {
         .at_least(1)
         .parse_recovery(protocol_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![proc1, proc2]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
@@ -58,7 +53,7 @@ EXPRESSION films <films_xml_file.film_xml UNION films_json_file.film_json>
 
     println!("{:#?}", tokens_opt);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 }
 
 #[test]
@@ -144,14 +139,9 @@ fn function_if_shape_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -228,14 +218,9 @@ fn function_shape_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -309,14 +294,9 @@ fn matching_shape_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -385,14 +365,9 @@ fn graphed_shape_test() {
         ShExMLToken::SqBrackEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -442,14 +417,9 @@ fn simple_single_shape_matching() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -525,14 +495,9 @@ fn simple_two_shape_linking_test() {
     first_shape.extend(second_shape);
     let expected = Some(first_shape);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -578,14 +543,9 @@ fn simple_single_shape_linking() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -630,14 +590,9 @@ fn simple_single_shape_object_literal() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -686,14 +641,9 @@ fn simple_single_shape_datatype_static() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -764,14 +714,9 @@ fn simple_single_shape_datatype_dynamic() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -838,14 +783,9 @@ fn simple_single_shape_languagetag_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -883,14 +823,9 @@ fn simple_single_shape_subject_fixed_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -932,14 +867,9 @@ fn simple_single_shape_class_type_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -998,14 +928,9 @@ fn simple_single_shape_test() {
         ShExMLToken::CurlEnd,
     ]);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -1019,7 +944,7 @@ fn function_test() {
         .parse_recovery(function_str);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected = Some(vec![
         ShExMLToken::Function,
         ShExMLToken::Ident("helper".to_string()),
@@ -1029,12 +954,7 @@ fn function_test() {
         ShExMLToken::AngleEnd,
     ]);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -1049,7 +969,7 @@ fn auto_inc_only_start_test() {
         .parse_recovery(match_str);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected = Some(vec![
         ShExMLToken::AutoIncrement,
         ShExMLToken::Ident("myId".to_string()),
@@ -1058,12 +978,7 @@ fn auto_inc_only_start_test() {
         ShExMLToken::AngleEnd,
     ]);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt,
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -1078,7 +993,7 @@ fn auto_inc_end_test() {
         .parse_recovery(match_str);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected = Some(vec![
         ShExMLToken::AutoIncrement,
         ShExMLToken::Ident("myId".to_string()),
@@ -1089,12 +1004,7 @@ fn auto_inc_end_test() {
         ShExMLToken::AngleEnd,
     ]);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt,
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -1109,7 +1019,7 @@ fn auto_inc_start_test() {
         .parse_recovery(match_str);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected = Some(vec![
         ShExMLToken::AutoIncrement,
         ShExMLToken::Ident("myId".to_string()),
@@ -1119,12 +1029,7 @@ fn auto_inc_start_test() {
         ShExMLToken::AngleEnd,
     ]);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt,
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -1139,7 +1044,7 @@ fn auto_inc_complete_test() {
         .parse_recovery(match_str);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected = Some(vec![
         ShExMLToken::AutoIncrement,
         ShExMLToken::Ident("myId".to_string()),
@@ -1152,12 +1057,7 @@ fn auto_inc_complete_test() {
         ShExMLToken::AngleEnd,
     ]);
 
-    assert!(
-        tokens_opt == expected,
-        "Expected output is: {:#?}\nGenerated output was: {:#?}",
-        expected,
-        tokens_opt,
-    )
+    assert_eq!(tokens_opt, expected, "Expected output is: {:#?}\nGenerated output was: {:#?}", expected, tokens_opt)
 }
 
 #[test]
@@ -1173,7 +1073,7 @@ fn multiple_matching_matcher_test() {
         .parse_recovery(match_str);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 }
 
 #[test]
@@ -1204,14 +1104,9 @@ fn single_matcher_test() {
     ]);
 
     println!("{:?}", tokens_opt);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
 
-    assert!(
-        expected_tokens == tokens_opt,
-        "Expected tokens: {:#?}\nGenerated output: {:#?}",
-        expected_tokens,
-        tokens_opt
-    );
+    assert_eq!(expected_tokens, tokens_opt, "Expected tokens: {:#?}\nGenerated output: {:#?}", expected_tokens, tokens_opt);
 }
 
 // TODO: Lex string concatenation + union operation properly <12-03-24, yourname> //
@@ -1224,7 +1119,7 @@ fn string_op_union_expression_test() {
         .then_ignore(end())
         .parse_recovery_verbose(exp_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     println!("{:?}", tokens_opt);
 
     let file_ident = ShExMLToken::Ident("file".to_string());
@@ -1251,12 +1146,7 @@ fn string_op_union_expression_test() {
         ShExMLToken::Ident("union".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "Expected tokens: {:#?}, Generated Output: {:#?}",
-        expected_tokens,
-        tokens_opt
-    );
+    assert_eq!(tokens_opt, expected_tokens, "Expected tokens: {:#?}, Generated Output: {:#?}", expected_tokens, tokens_opt);
 }
 
 #[test]
@@ -1270,7 +1160,7 @@ fn string_op_expression_test() {
         .then_ignore(end())
         .parse_recovery(exp_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     println!("{:?}", tokens_opt);
 
     let file_ident = ShExMLToken::Ident("file".to_string());
@@ -1291,12 +1181,7 @@ fn string_op_expression_test() {
         ShExMLToken::Ident("name".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "Expected tokens: {:#?}, Generated Output: {:#?}",
-        expected_tokens,
-        tokens_opt
-    );
+    assert_eq!(tokens_opt, expected_tokens, "Expected tokens: {:#?}, Generated Output: {:#?}", expected_tokens, tokens_opt);
 }
 
 #[test]
@@ -1311,7 +1196,7 @@ fn iterator_expression_test() {
         .parse_recovery(exp_str);
     let file_ident = ShExMLToken::Ident("file".to_string());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Expression,
         ShExMLToken::Ident("exp".to_string()),
@@ -1325,12 +1210,7 @@ fn iterator_expression_test() {
     ]);
     println!("{:?}", tokens_opt);
 
-    assert!(
-        tokens_opt == expected_tokens,
-        "Expected tokens: {:#?}, Generated Output: {:#?}",
-        expected_tokens,
-        tokens_opt
-    );
+    assert_eq!(tokens_opt, expected_tokens, "Expected tokens: {:#?}, Generated Output: {:#?}", expected_tokens, tokens_opt);
 }
 
 #[test]
@@ -1345,7 +1225,7 @@ fn join_union_expression_test() {
         .parse_recovery(exp_str);
     let file_ident = ShExMLToken::Ident("file".to_string());
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Expression,
         ShExMLToken::Ident("exp".to_string()),
@@ -1371,12 +1251,7 @@ fn join_union_expression_test() {
     ]);
     println!("{:?}", tokens_opt);
 
-    assert!(
-        tokens_opt == expected_tokens,
-        "Expected tokens: {:#?}, Generated Output: {:#?}",
-        expected_tokens,
-        tokens_opt
-    );
+    assert_eq!(tokens_opt, expected_tokens, "Expected tokens: {:#?}, Generated Output: {:#?}", expected_tokens, tokens_opt);
 }
 
 #[test]
@@ -1390,7 +1265,7 @@ ITERATOR example <xpath: /path/to/entity> {
 
     let (tokens_opt, errors) = iterators().then(end()).parse_recovery(iter_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     println!("{:?}", tokens_opt);
 }
 
@@ -1411,7 +1286,7 @@ fn iterator_nest_test() {
 
     let (tokens_opt, errors) = iterators().then(end()).parse_recovery(iter_str);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     println!("{:?}", tokens_opt);
 }
 
@@ -1422,7 +1297,7 @@ fn iterator_header_test() {
         .padded()
         .then_ignore(end())
         .parse_recovery(iter_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Iterator,
         ShExMLToken::Ident("example".to_string()),
@@ -1431,14 +1306,9 @@ fn iterator_header_test() {
         ShExMLToken::IteratorQuery("/path/to/entity".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
@@ -1448,7 +1318,7 @@ fn iterator_csvperrow_test() {
         .padded()
         .then_ignore(end())
         .parse_recovery(iter_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Iterator,
         ShExMLToken::Ident("example".to_string()),
@@ -1456,14 +1326,9 @@ fn iterator_csvperrow_test() {
         ShExMLToken::IteratorType("csvperrow".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
@@ -1471,7 +1336,7 @@ fn source_jdbc_test() {
     let source_str =
         "SOURCE sparql_endpoint <jdbc:sparql://localhost:6000/sparql/>";
     let (tokens_opt, errors) = sources().parse_recovery(source_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Source,
         ShExMLToken::Ident("sparql_endpoint".to_string()),
@@ -1480,21 +1345,16 @@ fn source_jdbc_test() {
         ShExMLToken::URI("jdbc:sparql://localhost:6000/sparql/".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
 fn source_local_path_test() {
     let source_str = "SOURCE json_file <file.json>";
     let (tokens_opt, errors) = sources().parse_recovery(source_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Source,
         ShExMLToken::Ident("json_file".to_string()),
@@ -1503,21 +1363,16 @@ fn source_local_path_test() {
         ShExMLToken::URI("file.json".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
 fn source_test() {
     let source_str = "SOURCE xml_file <https://example.com/file.xml>";
     let (tokens_opt, errors) = sources().parse_recovery(source_str);
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Source,
         ShExMLToken::Ident("xml_file".to_string()),
@@ -1526,14 +1381,9 @@ fn source_test() {
         ShExMLToken::URI("https://example.com/file.xml".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
@@ -1542,7 +1392,7 @@ fn empty_prefix_name_test() {
 
     let (tokens_opt, errors) = prefixes().parse_recovery(base_prefix);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Prefix,
         ShExMLToken::BasePrefix,
@@ -1551,14 +1401,9 @@ fn empty_prefix_name_test() {
         ShExMLToken::URI("https://base.com/".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }
 
 #[test]
@@ -1567,7 +1412,7 @@ fn prefix_test() {
 
     let (tokens_opt, errors) = prefixes().parse_recovery(prefix_1);
 
-    assert!(errors.len() == 0, "{:?}", errors);
+    assert_eq!(errors.len(), 0, "{:?}", errors);
     let expected_tokens = Some(vec![
         ShExMLToken::Prefix,
         ShExMLToken::PrefixNS("ex".to_string()),
@@ -1576,12 +1421,7 @@ fn prefix_test() {
         ShExMLToken::URI("https://example.com/".to_string()),
         ShExMLToken::AngleEnd,
     ]);
-    assert!(
-        tokens_opt == expected_tokens,
-        "{:?} is the parsed tokens
+    assert_eq!(tokens_opt, expected_tokens, "{:?} is the parsed tokens
             {:?} is the expected tokens
-            ",
-        tokens_opt,
-        expected_tokens
-    );
+            ", tokens_opt, expected_tokens);
 }

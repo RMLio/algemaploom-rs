@@ -10,6 +10,6 @@ edition.workspace = true
 operator = {path="../operator/"}
 anyhow.workspace = true
 serde_json.workspace = true
-serde = {version="1.0.164", features= ["derive", "rc"]}
+serde = {version="1.0.228", features= ["derive", "rc"]}
 thiserror.workspace = true
 petgraph.workspace = true

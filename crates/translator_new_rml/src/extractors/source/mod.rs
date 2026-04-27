@@ -27,17 +27,17 @@ impl Extractor<Source> for Source {
                     .to_string()).into());
         }
 
-        let encoding_pred = vocab::rml_io::PROPERTY::ENCODING.to_rcterm();
+        let encoding_pred = vocab::rml_io::property::ENCODING.to_rcterm();
         let encoding =
             get_object(graph_ref, subject_ref.borrow_term(), &encoding_pred)
                 .ok();
 
-        let compression_pred = vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm();
+        let compression_pred = vocab::rml_io::property::COMPRESSION.to_rcterm();
         let compression =
             get_object(graph_ref, subject_ref.borrow_term(), &compression_pred)
                 .ok();
 
-        let nullable_pred = vocab::rml_io::PROPERTY::NULL.to_rcterm();
+        let nullable_pred = vocab::rml_io::property::NULL.to_rcterm();
         let nullable_vec =
             get_objects(graph_ref, subject_ref.borrow_term(), &nullable_pred)
                 .into_iter()
@@ -62,8 +62,8 @@ fn extract_typed_source<TS>(
 where
     TS: Term,
 {
-    let type_pred = vocab::rdf::PROPERTY::TYPE.to_rcterm();
-    let source_pred = vocab::rml_io::CLASS::SOURCE.to_rcterm();
+    let type_pred = vocab::rdf::property::TYPE.to_rcterm();
+    let source_pred = vocab::rml_io::class::SOURCE.to_rcterm();
     // FIXME: There can be multiple classes defined for a single source
     let source_type = get_objects(graph, subject.borrow_term(), &type_pred)
         .into_iter()
@@ -85,17 +85,17 @@ where
     // Remove the properties that have been saved previously in Source struct
     let _ = metadata.remove_matching(
         [subject.borrow_term()],
-        [vocab::rml_io::PROPERTY::ENCODING.to_rcterm()],
+        [vocab::rml_io::property::ENCODING.to_rcterm()],
         Any,
     );
     let _ = metadata.remove_matching(
         [subject.borrow_term()],
-        [vocab::rml_io::PROPERTY::COMPRESSION.to_rcterm()],
+        [vocab::rml_io::property::COMPRESSION.to_rcterm()],
         Any,
     );
     let _ = metadata.remove_matching(
         [subject.borrow_term()],
-        [vocab::rml_io::PROPERTY::NULL.to_rcterm()],
+        [vocab::rml_io::property::NULL.to_rcterm()],
         Any,
     );
 

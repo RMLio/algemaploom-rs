@@ -251,7 +251,7 @@ fn add_rename_extend_op_from_quads(
                     }
                 };
 
-            for (obj, graph_shape_ident) in obj_graph_pairs.iter() {
+            for (obj, _graph_shape_ident) in obj_graph_pairs.iter() {
                 let subj_variable =
                     variablized_terms.subject_variable_index.get(subj).unwrap();
 

@@ -57,13 +57,13 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
     fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {
         if get_subject(
             graph_ref,
-            &vocab::rml_core::PROPERTY::OBJECT.to_rcterm(),
+            &vocab::rml_core::property::OBJECT.to_rcterm(),
             &subj_ref,
         )
         .is_ok()
@@ -75,22 +75,22 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
                 subj_ref.borrow_term(),
                 graph_ref,
                 &[
-                    &vocab::r2rml::PROPERTY::DATATYPE.to_rcterm(),
-                    &vocab::rml_core::PROPERTY::DATATYPE.to_rcterm(),
+                    &vocab::r2rml::property::DATATYPE.to_rcterm(),
+                    &vocab::rml_core::property::DATATYPE.to_rcterm(),
                 ],
-                &[&vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm()],
+                &[&vocab::rml_core::property::DATATYPE_MAP.to_rcterm()],
             );
 
             let language_map = extract_sub_expr_maps(
                 subj_ref.borrow_term(),
                 graph_ref,
                 &[
-                    &vocab::r2rml::PROPERTY::LANGUAGE.to_rcterm(),
-                    &vocab::rml_core::PROPERTY::LANGUAGE.to_rcterm(),
+                    &vocab::r2rml::property::LANGUAGE.to_rcterm(),
+                    &vocab::rml_core::property::LANGUAGE.to_rcterm(),
                 ],
                 &[
-                    &vocab::rml_core::PROPERTY::LANGUAGE_MAP.to_rcterm(),
-                    &vocab::rml::PROPERTY::LANGUAGE_MAP.to_rcterm(),
+                    &vocab::rml_core::property::LANGUAGE_MAP.to_rcterm(),
+                    &vocab::rml::property::LANGUAGE_MAP.to_rcterm(),
                 ],
             );
 
@@ -112,15 +112,15 @@ impl TermMapExtractor<TermMapEnum> for ObjectMap {
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::OBJECT.to_rcterm(),
-            vocab::rml_core::PROPERTY::OBJECT.to_rcterm(),
+            vocab::r2rml::property::OBJECT.to_rcterm(),
+            vocab::rml_core::property::OBJECT.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm(),
-            vocab::rml_core::PROPERTY::OBJECT_MAP.to_rcterm(),
+            vocab::r2rml::property::OBJECTMAP.to_rcterm(),
+            vocab::rml_core::property::OBJECT_MAP.to_rcterm(),
         ]
     }
 }

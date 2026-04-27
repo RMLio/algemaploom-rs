@@ -96,7 +96,7 @@ pub fn shapes() -> t!(Vec<ShExMLToken>) {
                 .at_most(2),
         );
 
-    (with_graph.or(single_shape))
+    with_graph.or(single_shape)
         .padded()
         .repeated()
         .at_least(1)
@@ -212,7 +212,7 @@ pub fn function() -> t!(Vec<ShExMLToken>) {
         .chain(protocol.chain(uri))
         .chain(token(">", ShExMLToken::AngleEnd).padded());
 
-    (function_tag.chain(function_ident).chain(function_exp))
+    function_tag.chain(function_ident).chain(function_exp)
         .padded()
         .labelled("lexer:function")
 }
@@ -257,7 +257,7 @@ pub fn autoincrement() -> t!(Vec<ShExMLToken>) {
         .chain::<ShExMLToken, Vec<_>, _>(aut_inc_exp)
         .chain(token(">", ShExMLToken::AngleEnd));
 
-    (aut_inc_tag.chain(ident).chain(auto_inc_exp_delim))
+    aut_inc_tag.chain(ident).chain(auto_inc_exp_delim)
         .padded()
         .labelled("lexer:autoincrement")
 }
@@ -295,7 +295,7 @@ pub fn matcher() -> t!(Vec<ShExMLToken>) {
             result
         });
 
-    (mat_tag.chain(mat_ident).chain(
+    mat_tag.chain(mat_ident).chain(
         token("<", ShExMLToken::AngleStart)
             .chain(
                 mats_value
@@ -316,7 +316,7 @@ pub fn matcher() -> t!(Vec<ShExMLToken>) {
                     .flatten(),
             )
             .chain(token(">", ShExMLToken::AngleEnd)),
-    ))
+    )
     .padded()
     .labelled("lexer:matcher")
 }
@@ -394,7 +394,7 @@ pub fn expression_stmt() -> t!(Vec<ShExMLToken>) {
                 .flatten(),
         )
         .chain(token(">", ShExMLToken::AngleEnd));
-    (expressiont_tag.chain(exp_ident).chain(exp_inner))
+    expressiont_tag.chain(exp_ident).chain(exp_inner)
         .padded()
         .labelled("lexer:expression_stmt")
 }
@@ -402,7 +402,7 @@ pub fn expression_stmt() -> t!(Vec<ShExMLToken>) {
 pub fn iterators() -> t!(Vec<ShExMLToken>) {
     let header = iterator_header().padded();
 
-    (recursive(|recur| {
+    recursive(|recur| {
         header
             .chain(token("{", ShExMLToken::BrackStart))
             .chain::<ShExMLToken, _, _>(
@@ -419,7 +419,7 @@ pub fn iterators() -> t!(Vec<ShExMLToken>) {
                     .or_not(),
             )
             .padded()
-    }))
+    })
     .padded()
     .repeated()
     .at_least(1)

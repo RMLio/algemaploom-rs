@@ -1,11 +1,10 @@
 mod cli;
-mod logger;
 
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use anyhow::Result;
 use cli::Cli;
-use logger::init_logger;
+use common::logger::init_logger;
 
 pub fn main() -> Result<()> {
     let cli = Cli::new();

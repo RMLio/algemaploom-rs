@@ -14,12 +14,12 @@ impl Extractor<LdesInformation> for LdesInformation {
         subject: &RcTerm,
         graph: &FastGraph,
     ) -> ExtractorResult<LdesInformation> {
-        let ldes_baseiri_pred = vocab::rmlt::PROPERTY::LDESBASE.to_rcterm();
-        let ldes_timestamp_path = vocab::ldes::PROPERTY::TIMESTAMPPATH.to_rcterm();
-        let ldes_version_of_path = vocab::ldes::PROPERTY::VERSIONOFPATH.to_rcterm();
-        let ldes_tree_shape = vocab::tree::PROPERTY::SHAPE.to_rcterm();
-        let ldes_eventstream_pred = vocab::rmlt::PROPERTY::LDES.to_rcterm();
-        let ldes_generate_immutable_pred = vocab::rmlt::PROPERTY::LDESIMMUTABLE.to_rcterm();
+        let ldes_baseiri_pred = vocab::rmlt::property::LDESBASE.to_rcterm();
+        let ldes_timestamp_path = vocab::ldes::property::TIMESTAMPPATH.to_rcterm();
+        let ldes_version_of_path = vocab::ldes::property::VERSIONOFPATH.to_rcterm();
+        let ldes_tree_shape = vocab::tree::property::SHAPE.to_rcterm();
+        let ldes_eventstream_pred = vocab::rmlt::property::LDES.to_rcterm();
+        let ldes_generate_immutable_pred = vocab::rmlt::property::LDESIMMUTABLE.to_rcterm();
         
         // Extract the base ldes properties
         let ldes_base_iri_term = get_object(graph, subject, &ldes_baseiri_pred)?;

@@ -21,7 +21,7 @@ impl Extractor<FunctionExpressionMap> for FunctionExpressionMap {
         let execution_iri = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::FUNCTION_EXECUTION.to_rcterm()],
+            &[&vocab::rml_fnml::property::FUNCTION_EXECUTION.to_rcterm()],
         )?;
         
         let func_execution = FunctionExecution::extract_self(&execution_iri, graph_ref)?;
@@ -30,7 +30,7 @@ impl Extractor<FunctionExpressionMap> for FunctionExpressionMap {
         let return_map = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
-            &[&vocab::rml_fnml::PROPERTY::RETURN.to_rcterm()],
+            &[&vocab::rml_fnml::property::RETURN.to_rcterm()],
         )
         .ok()
         .and_then(|return_iri| CommonTermMapInfo::from_constant_value(return_iri).ok())

@@ -3,9 +3,7 @@ use sophia_inmem::graph::FastGraph;
 
 use super::store::{get_object_with_ps, get_objects_with_ps};
 use super::{stringify_term, Extractor, ExtractorResult, FromVocab};
-use crate::rml_model::v2::core::expression_map::{
-    BaseExpressionMapEnum, ExpressionMapEnum,
-};
+use crate::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::rml_model::v2::core::{JoinCondition, RefObjectMap};
 
 fn parent_child_extract<TS, TP>(
@@ -31,7 +29,7 @@ impl Extractor<JoinCondition> for JoinCondition {
     fn extract_self<TS>(
         subject_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<JoinCondition>
+    ) -> ExtractorResult<JoinCondition>
     where
         TS: Term,
     {
@@ -39,9 +37,9 @@ impl Extractor<JoinCondition> for JoinCondition {
             subject_ref.borrow_term(),
             graph_ref,
             &[
-                vocab::r2rml::PROPERTY::PARENT.to_rcterm(),
-                vocab::rml_core::PROPERTY::PARENT.to_rcterm(),
-                vocab::rml_core::PROPERTY::PARENT_MAP.to_rcterm(),
+                vocab::r2rml::property::PARENT.to_rcterm(),
+                vocab::rml_core::property::PARENT.to_rcterm(),
+                vocab::rml_core::property::PARENT_MAP.to_rcterm(),
             ],
         )?;
 
@@ -49,9 +47,9 @@ impl Extractor<JoinCondition> for JoinCondition {
             subject_ref,
             graph_ref,
             &[
-                vocab::r2rml::PROPERTY::CHILD.to_rcterm(),
-                vocab::rml_core::PROPERTY::CHILD.to_rcterm(),
-                vocab::rml_core::PROPERTY::CHILD_MAP.to_rcterm(),
+                vocab::r2rml::property::CHILD.to_rcterm(),
+                vocab::rml_core::property::CHILD.to_rcterm(),
+                vocab::rml_core::property::CHILD_MAP.to_rcterm(),
             ],
         )?;
 
@@ -63,7 +61,7 @@ impl Extractor<RefObjectMap> for RefObjectMap {
     fn extract_self<TS>(
         subject_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<RefObjectMap>
+    ) -> ExtractorResult<RefObjectMap>
     where
         TS: Term,
     {
@@ -71,8 +69,8 @@ impl Extractor<RefObjectMap> for RefObjectMap {
             graph_ref,
             subject_ref.borrow_term(),
             &[
-                &vocab::r2rml::PROPERTY::PARENTTRIPLESMAP.to_rcterm(),
-                &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP.to_rcterm(),
+                &vocab::r2rml::property::PARENTTRIPLESMAP.to_rcterm(),
+                &vocab::rml_core::property::PARENT_TRIPLES_MAP.to_rcterm(),
             ],
         )?;
 
@@ -80,8 +78,8 @@ impl Extractor<RefObjectMap> for RefObjectMap {
             graph_ref,
             subject_ref,
             &[
-                &vocab::r2rml::PROPERTY::JOINCONDITION.to_rcterm(),
-                &vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
+                &vocab::r2rml::property::JOINCONDITION.to_rcterm(),
+                &vocab::rml_core::property::JOIN_CONDITION.to_rcterm(),
             ],
         );
 

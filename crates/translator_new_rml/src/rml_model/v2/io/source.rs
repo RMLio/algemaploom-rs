@@ -1,15 +1,13 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
-use operator::formats::xml::XPathConfig;
-use operator::{formats, IOType};
+use operator::IOType;
 use sophia_api::serializer::*;
 use sophia_api::term::{BnodeId, FromTerm};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
 
-use crate::extractors::error::ParseError;
 use crate::extractors::{stringify_term, FromVocab};
 use crate::rml_model::v2::core::RMLIterable;
 use crate::translator::error::TranslationError;
@@ -121,24 +119,24 @@ impl TryFrom<SourceKind> for IOType {
 impl TryFrom<&SourceKind> for IOType {
     type Error = TranslationError;
     fn try_from(value: &SourceKind) -> Result<Self, Self::Error> {
-        if value.type_iri == vocab::rml_io::CLASS::FILE_PATH.to_rcterm()
-            || value.type_iri == vocab::rml_io::CLASS::RELATIVE_PATH.to_rcterm()
+        if value.type_iri == vocab::rml_io::class::FILE_PATH.to_rcterm()
+            || value.type_iri == vocab::rml_io::class::RELATIVE_PATH.to_rcterm()
             || value.type_iri
-                == vocab::rml_io::CLASS::RELATIVE_PATH_SOURCE.to_rcterm()
-            || value.type_iri == vocab::rml_io::CLASS::MAPPING_DIR.to_rcterm()
+                == vocab::rml_io::class::RELATIVE_PATH_SOURCE.to_rcterm()
+            || value.type_iri == vocab::rml_io::class::MAPPING_DIR.to_rcterm()
         {
             Ok(IOType::File)
-        } else if value.type_iri == vocab::d2rq::CLASS::DATABASE.to_rcterm()
-            || value.type_iri == vocab::rml_io::CLASS::SQL_TABLE.to_rcterm()
+        } else if value.type_iri == vocab::d2rq::class::DATABASE.to_rcterm()
+            || value.type_iri == vocab::rml_io::class::SQL_TABLE.to_rcterm()
         {
             Ok(IOType::RDB)
-        } else if value.type_iri == vocab::td::CLASS::THING.to_rcterm() {
+        } else if value.type_iri == vocab::td::class::THING.to_rcterm() {
             Ok(IOType::Websocket)
         } else if value.type_iri
-            == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm()
+            == vocab::rmls::class::TCPSOCKETSTREAM.to_rcterm()
         {
             Ok(IOType::Websocket)
-        } else if value.type_iri == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm()
+        } else if value.type_iri == vocab::rmls::class::KAFKASTREAM.to_rcterm()
         {
             Ok(IOType::Kafka)
         } else {
@@ -172,7 +170,7 @@ impl Default for SourceKind {
             subj_iri: RcTerm::from_term(BnodeId::new_unchecked_const(
                 "default_bnode",
             )),
-            type_iri: vocab::rml_io::CLASS::FILE_PATH.to_rcterm(),
+            type_iri: vocab::rml_io::class::FILE_PATH.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }

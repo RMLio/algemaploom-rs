@@ -1,6 +1,6 @@
 pub const IRI: &str = "http://semweb.mmlab.be/ns/rmls#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
     pub const KAFKASTREAM: PAIR = (IRI, "KafkaStream");
@@ -8,7 +8,7 @@ pub mod CLASS {
     pub const HTML: PAIR = (IRI, "HTML");
 }
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 

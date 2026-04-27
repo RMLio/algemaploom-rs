@@ -5,6 +5,7 @@ use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 
 use super::store::{get_object, get_object_with_ps, get_subjects};
+use super::util::rcterm_to_string;
 use super::{Extractor, ExtractorResult, RcTerm};
 use crate::extractors::store::get_objects;
 use crate::extractors::{FromVocab, TermMapExtractor};
@@ -14,7 +15,6 @@ use crate::rml_model::v2::core::{
     PredicateObjectMap, TriplesMap,
 };
 use crate::rml_model::v2::RefAttributeGetter;
-use super::util::rcterm_to_string;
 
 impl Extractor<TriplesMap> for TriplesMap {
     fn extract_self<TTerm>(
@@ -28,7 +28,7 @@ impl Extractor<TriplesMap> for TriplesMap {
             SubjectMap::extract_from_container(graph, subject.borrow_term())?;
 
         let ls_new_pred =
-            &vocab::rml_core::PROPERTY::LOGICAL_SOURCE.to_rcterm();
+            &vocab::rml_core::property::LOGICAL_SOURCE.to_rcterm();
         let logical_source_subj =
             get_object_with_ps(graph, subject.borrow_term(), &[ls_new_pred])?;
         let abs_logical_source = AbstractLogicalSourceEnum::extract_self(
@@ -36,7 +36,7 @@ impl Extractor<TriplesMap> for TriplesMap {
             graph,
         )?;
 
-        let pom = vocab::rml_core::PROPERTY::PREDICATE_OBJECT_MAP.to_rcterm();
+        let pom = vocab::rml_core::property::PREDICATE_OBJECT_MAP.to_rcterm();
         let po_maps_res: ExtractorResult<Vec<_>> =
             get_objects(graph, subject.borrow_term(), &pom)
                 .into_iter()
@@ -50,7 +50,7 @@ impl Extractor<TriplesMap> for TriplesMap {
         // referencing object maps in the child triples map (tm')
         let child_ref_obj_maps = get_subjects(
             graph,
-            &vocab::rml_core::PROPERTY::PARENT_TRIPLES_MAP.to_rcterm(),
+            &vocab::rml_core::property::PARENT_TRIPLES_MAP.to_rcterm(),
             &subject,
         );
 
@@ -59,7 +59,7 @@ impl Extractor<TriplesMap> for TriplesMap {
                 get_objects(
                     graph,
                     ref_obj,
-                    vocab::rml_core::PROPERTY::JOIN_CONDITION.to_rcterm(),
+                    vocab::rml_core::property::JOIN_CONDITION.to_rcterm(),
                 )
             });
 
@@ -71,7 +71,7 @@ impl Extractor<TriplesMap> for TriplesMap {
         let base_iri = get_object(
             graph,
             subject.borrow_term(),
-            vocab::rml_core::PROPERTY::BASE_IRI.to_rcterm(),
+            vocab::rml_core::property::BASE_IRI.to_rcterm(),
         )
         .ok()
         .map(|base_iri_rcterm| rcterm_to_string(&base_iri_rcterm))
@@ -100,8 +100,8 @@ pub fn extract_triples_maps(
     // Case 1: Regular RML:TRIPLES_MAP
     let rml_core_tm_iter = graph.triples_matching(
         Any,
-        [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
-        [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
+        [vocab::rdf::property::TYPE.to_rcterm()],
+        [vocab::rml_core::class::TRIPLES_MAP.to_rcterm()],
     );
 
     let explicit_tms: ExtractorResult<Vec<TriplesMap>> = rml_core_tm_iter
@@ -118,16 +118,16 @@ pub fn extract_triples_maps(
     let explicit_tm_subjects: std::collections::HashSet<_> = graph
         .triples_matching(
             Any,
-            [vocab::rdf::PROPERTY::TYPE.to_rcterm()],
-            [vocab::rml_core::CLASS::TRIPLES_MAP.to_rcterm()],
+            [vocab::rdf::property::TYPE.to_rcterm()],
+            [vocab::rml_core::class::TRIPLES_MAP.to_rcterm()],
         )
         .filter_map(|triple| triple.ok())
         .map(|triple| RcTerm::from_term(triple.s()))
         .collect();
 
     let logical_source_pred =
-        vocab::rml_core::PROPERTY::LOGICAL_SOURCE.to_rcterm();
-    let subject_map_pred = vocab::rml_core::PROPERTY::SUBJECT_MAP.to_rcterm();
+        vocab::rml_core::property::LOGICAL_SOURCE.to_rcterm();
+    let subject_map_pred = vocab::rml_core::property::SUBJECT_MAP.to_rcterm();
     let mut implicit_tm_subjects = std::collections::HashSet::new();
 
     graph

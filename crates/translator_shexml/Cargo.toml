@@ -6,7 +6,7 @@ edition.workspace = true
 
 [dependencies]
 
-chumsky = "0.9.3"
+chumsky = { version = "0.9.3",  default-features = false, features = ["std"]}
 
 vocab = { path = "../vocab/" }
 operator = { path = "../operator/" }
@@ -14,12 +14,5 @@ plan = { path = "../plan/" }
 translator_api = { path = "../translator_api/" }
 
 either.workspace = true
-anyhow.workspace = true
-uuid.workspace = true
-regex.workspace = true
-lazy_static.workspace = true
-serde_json.workspace = true
 serde.workspace = true
-clap.workspace = true
 log.workspace = true
-derive_more.workspace = true

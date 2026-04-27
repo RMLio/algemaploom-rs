@@ -1,7 +1,5 @@
 use std::fmt::Display;
 
-use operator::{Function, Operator, RcExtendFunction};
-
 use crate::checker::error::CheckerError;
 
 pub type PlanBuildResult<T> = Result<T, PlanBuildError>;
@@ -31,7 +29,7 @@ impl Display for PlanBuildError {
                         "incorrect inner function found {} with msg {}",
                         function, msg
                     ),
-            PlanBuildError::CheckerError(checker_error) => write!(f, "something happened while utilizing checker module's function"),
+            PlanBuildError::CheckerError(_checker_error) => write!(f, "something happened while utilizing checker module's function"),
         }
     }
 }

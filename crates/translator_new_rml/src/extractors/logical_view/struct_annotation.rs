@@ -16,24 +16,24 @@ impl Extractor<StructuralAnnotation> for StructuralAnnotation {
         let on_fields = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_lv::PROPERTY::ON_FIELDS.to_rcterm(),
+            vocab::rml_lv::property::ON_FIELDS.to_rcterm(),
         );
 
         let target_fields = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_lv::PROPERTY::TARGET_FIELDS.to_rcterm(),
+            vocab::rml_lv::property::TARGET_FIELDS.to_rcterm(),
         );
         let target_views = get_objects(
             graph_ref,
             subject_ref.borrow_term(),
-            vocab::rml_lv::PROPERTY::TARGET_VIEW.to_rcterm(),
+            vocab::rml_lv::property::TARGET_VIEW.to_rcterm(),
         );
 
         let kind = get_object(
             graph_ref,
             subject_ref,
-            vocab::rdf::PROPERTY::TYPE.to_rcterm(),
+            vocab::rdf::property::TYPE.to_rcterm(),
         )?;
 
         Ok(StructuralAnnotation {

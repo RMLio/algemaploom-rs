@@ -1,12 +1,12 @@
 use std::{fs::File, io::Read, path::Path};
 
-use error::{SparqlExtractError, ExtractErrorKind, FromFileError, FromFileErrorKind};
+use error::{ExtractErrorKind, FromFileError, FromFileErrorKind, SparqlExtractError};
 use spargebra::{
-    SparqlParser,
     algebra::{self, AggregateExpression, GraphPattern, PropertyPathExpression},
     term::{NamedNode, TriplePattern},
+    SparqlParser,
 };
-pub mod error; 
+pub mod error;
 
 fn get_gp_from_query(query: spargebra::Query) -> GraphPattern {
     match query {
@@ -34,7 +34,7 @@ fn get_gp_from_query(query: spargebra::Query) -> GraphPattern {
     }
 }
 
-fn get_tps_from_gp(graph_pattern: algebra::GraphPattern) -> Vec<TriplePattern> {
+fn get_tps_from_gp(graph_pattern: GraphPattern) -> Vec<TriplePattern> {
     match graph_pattern {
         GraphPattern::Bgp { patterns } => patterns,
         GraphPattern::LeftJoin {

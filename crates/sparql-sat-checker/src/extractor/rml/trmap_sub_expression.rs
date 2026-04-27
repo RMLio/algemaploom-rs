@@ -2,18 +2,15 @@ use std::{
     collections::HashMap,
     fs::File,
     io::{BufWriter, Write},
-    path::Path,
-    ptr::write_unaligned,
 };
 
-use operator::{Extend, Operator, display::PrettyDisplay};
+use operator::{display::PrettyDisplay, Operator};
 use petgraph::{
     graph::NodeIndex,
     visit::{Dfs, Reversed},
 };
 use plan::data_type::DiGraphOperators;
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
-use vocab::query;
 
 use super::error::{RMLExtractorError, RMLResult};
 
@@ -129,14 +126,13 @@ fn log_trmap_sub_expr_to_file(
                 Operator::SourceOp { config } => {
                     format!("Source Op with config: {}", config.pretty_string().unwrap())
                 }
-                Operator::JoinOp { config } => "JoinOp".to_string(),
+                Operator::JoinOp { config: _config } => "JoinOp".to_string(),
                 Operator::UnionOp => "Union".to_string(),
-                Operator::ProjectOp { config } => "Projection".to_string(),
+                Operator::ProjectOp { config: _ } => "Projection".to_string(),
                 Operator::ExtendOp { config } => format!("ExtendOperator with config {:?}", config),
-                Operator::RenameOp { config } => "RenameOperator".to_string(),
-                Operator::SerializerOp { config } => "SerializeOperator".to_string(),
-                Operator::TargetOp { config } => "TargetOperator".to_string(),
-                Operator::FragmentOp { config } => "Fragmenter".to_string(),
+                Operator::RenameOp { config: _config } => "RenameOperator".to_string(),
+                Operator::SerializerOp { config: _ } => "SerializeOperator".to_string(),
+                Operator::TargetOp { config: _ } => "TargetOperator".to_string(),
             })
             .collect();
         writeln!(writer, "[{}]", operators.join(","))?;

@@ -71,9 +71,7 @@ pub trait TermMapExtractor<T: Debug> {
     /// Returns an error if the given RDF term is a blank node. 
     fn extract_constant_term_map(map_const: &RcTerm) -> ExtractorResult<T> {
         if let RcTerm::BlankNode(_) = map_const {
-            return Err(ParseError::GenericError(format!(
-                "Constant-valued term map cannot be a BlankNode"
-            ))
+            return Err(ParseError::GenericError("Constant-valued term map cannot be a BlankNode".to_string())
             .into());
         };
 

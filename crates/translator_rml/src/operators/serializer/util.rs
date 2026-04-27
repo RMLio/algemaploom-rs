@@ -19,7 +19,7 @@ pub fn get_triples_strings(
         format!(
             "{} <{}> <{}>",
             sm_var,
-            vocab::rdf::PROPERTY::TYPE.to_string(),
+            vocab::rdf::property::TYPE.to_string(),
             rcterm_to_string(cls)
         )
     });

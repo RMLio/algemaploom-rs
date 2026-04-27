@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "rr";
 pub const IRI: &str = "http://www.w3.org/ns/r2rml#";
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 
@@ -31,7 +31,7 @@ pub mod PROPERTY {
     pub const SQLVERSION: PAIR = (IRI, "sqlVersion");
 }
 
-pub mod CLASS {
+pub mod class {
     use super::IRI as SUPER_IRI;
     use crate::PAIR;
     pub const PREDICATEOBJECTMAP: PAIR = (SUPER_IRI, "PredicateObjectMap");

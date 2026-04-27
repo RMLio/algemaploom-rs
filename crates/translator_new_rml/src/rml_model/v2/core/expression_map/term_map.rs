@@ -3,9 +3,8 @@ use std::fmt::Debug;
 use std::hash::Hash;
 
 use log::debug;
-use sophia_api::prelude::Iri;
 use sophia_api::term::{
-    BnodeId, FromTerm, IriRef, LanguageTag, SimpleTerm, Term, TermKind,
+    BnodeId, FromTerm, IriRef, Term, TermKind,
 };
 use sophia_term::RcTerm;
 use vocab::ToString;
@@ -99,21 +98,21 @@ impl CommonTermMapInfo {
     }
 
     pub fn is_iri_term_type(&self) -> bool {
-        self.term_type == vocab::rml_core::CLASS::IRI.to_rcterm()
-            || self.term_type == vocab::r2rml::CLASS::IRI.to_rcterm()
-            || self.term_type == vocab::rml_core::CLASS::UNSAFE_IRI.to_rcterm()
-            || self.term_type == vocab::rml_core::CLASS::UNSAFE_URI.to_rcterm()
-            || self.term_type == vocab::rml_core::CLASS::URI.to_rcterm()
+        self.term_type == vocab::rml_core::class::IRI.to_rcterm()
+            || self.term_type == vocab::r2rml::class::IRI.to_rcterm()
+            || self.term_type == vocab::rml_core::class::UNSAFE_IRI.to_rcterm()
+            || self.term_type == vocab::rml_core::class::UNSAFE_URI.to_rcterm()
+            || self.term_type == vocab::rml_core::class::URI.to_rcterm()
     }
 
     pub fn is_bnode_term_type(&self) -> bool {
-        self.term_type == vocab::rml_core::CLASS::BLANKNODE.to_rcterm()
-            || self.term_type == vocab::r2rml::CLASS::BLANKNODE.to_rcterm()
+        self.term_type == vocab::rml_core::class::BLANKNODE.to_rcterm()
+            || self.term_type == vocab::r2rml::class::BLANKNODE.to_rcterm()
     }
 
     pub fn is_literal_term_type(&self) -> bool {
-        self.term_type == vocab::rml_core::CLASS::LITERAL.to_rcterm()
-            || self.term_type == vocab::r2rml::CLASS::LITERAL.to_rcterm()
+        self.term_type == vocab::rml_core::class::LITERAL.to_rcterm()
+            || self.term_type == vocab::r2rml::class::LITERAL.to_rcterm()
     }
 
     pub fn get_term_type_enum(&self) -> RMLTermTypeKind {
@@ -124,16 +123,16 @@ impl CommonTermMapInfo {
         } else if self.is_iri_term_type() {
             match self.term_type.clone() {
                 val if val
-                    == vocab::rml_core::CLASS::UNSAFE_URI.to_rcterm() =>
+                    == vocab::rml_core::class::UNSAFE_URI.to_rcterm() =>
                 {
                     RMLTermTypeKind::UnsafeURI
                 }
                 val if val
-                    == vocab::rml_core::CLASS::UNSAFE_IRI.to_rcterm() =>
+                    == vocab::rml_core::class::UNSAFE_IRI.to_rcterm() =>
                 {
                     RMLTermTypeKind::UnsafeIRI
                 }
-                val if val == vocab::rml_core::CLASS::URI.to_rcterm() => {
+                val if val == vocab::rml_core::class::URI.to_rcterm() => {
                     RMLTermTypeKind::URI
                 }
                 _ => RMLTermTypeKind::IRI,
@@ -159,10 +158,10 @@ pub enum RMLTermTypeKind {
 
 pub fn termkind_to_rml_rcterm(kind: TermKind) -> Result<RcTerm, ParseError> {
     match kind {
-        TermKind::Iri => Ok(vocab::rml_core::CLASS::IRI.to_rcterm()),
-        TermKind::Literal => Ok(vocab::rml_core::CLASS::LITERAL.to_rcterm()),
+        TermKind::Iri => Ok(vocab::rml_core::class::IRI.to_rcterm()),
+        TermKind::Literal => Ok(vocab::rml_core::class::LITERAL.to_rcterm()),
         TermKind::BlankNode => {
-            Ok(vocab::rml_core::CLASS::BLANKNODE.to_rcterm())
+            Ok(vocab::rml_core::class::BLANKNODE.to_rcterm())
         }
         TermKind::Variable => Err(ParseError::GenericError(
             "Sophia's variable term kind do not have a corresponding RML iri"
@@ -235,7 +234,7 @@ impl GraphMap {
             value
                 == format!(
                     "<{}>",
-                    vocab::rml_core::CLASS::DEFAULT_GRAPH.to_string()
+                    vocab::rml_core::class::DEFAULT_GRAPH.to_string()
                 )
         } else {
             false
@@ -250,9 +249,9 @@ impl Default for GraphMap {
                 identifier:            RcTerm::from_term(
                     BnodeId::new_unchecked(uuid::Uuid::new_v4().to_string()),
                 ),
-                term_type:             vocab::rml_core::CLASS::IRI.to_rcterm(),
+                term_type:             vocab::rml_core::class::IRI.to_rcterm(),
                 expression:            ExpressionMapEnum::try_new_unknown(
-                    vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+                    vocab::rml_core::property::CONSTANT.to_rcterm(),
                     RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
                 )
                 .unwrap(),

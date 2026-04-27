@@ -1,8 +1,7 @@
 pub const PREFIX: &str = "rml";
 pub const IRI: &str = "http://semweb.mmlab.be/ns/rml#";
 
-pub mod PROPERTY {
-
+pub mod property {
     use super::IRI;
     use crate::PAIR;
 

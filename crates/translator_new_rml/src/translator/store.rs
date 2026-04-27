@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 use plan::data_type::RcRefCellPlan;
 use plan::states::{Init, Processed};
@@ -9,11 +9,8 @@ use uuid::Uuid;
 use super::source::AbstractLogicalSourceTranslator;
 use super::OperatorTranslator;
 use crate::error::NewRMLTranslationResult;
-use crate::rml_model::v2::core::expression_map::term_map::{
-    GraphMap, ObjectMap, PredicateMap, SubjectMap,
-};
 use crate::rml_model::v2::core::{
-     AbstractLogicalSourceEnum, TriplesMap,
+    AbstractLogicalSourceEnum, TriplesMap,
 };
 use crate::rml_model::v2::TermMapEnum;
 use crate::rml_model::Document;

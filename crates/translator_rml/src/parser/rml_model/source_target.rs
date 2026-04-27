@@ -5,7 +5,7 @@ use std::hash::Hash;
 use operator::formats::DataFormat;
 use operator::{IOType, Target};
 use sophia_api::prelude::Iri;
-use sophia_api::term::{FromTerm, Term};
+use sophia_api::term::FromTerm;
 use sophia_term::RcTerm;
 use vocab::ToString;
 
@@ -69,7 +69,7 @@ impl Default for LogicalTarget {
             identifier:    String::from("default"),
             compression:   Default::default(),
             serialization: RcTerm::from_term(Iri::new_unchecked(
-                vocab::formats::CLASS::NQUADS.to_string(),
+                vocab::formats::class::NQUADS.to_string(),
             )),
             output_type:   Default::default(),
             ldes:          None,
@@ -87,23 +87,23 @@ impl Hash for LogicalTarget {
 fn serialization_to_dataformat(serialization: &RcTerm) -> DataFormat {
     match serialization.to_owned() {
         ser_iri_string
-            if ser_iri_string == vocab::formats::CLASS::TURTLE.to_rcterm() =>
+            if ser_iri_string == vocab::formats::class::TURTLE.to_rcterm() =>
         {
             DataFormat::TTL
         }
         ser_iri_string
             if ser_iri_string
-                == vocab::formats::CLASS::NTRIPLES.to_rcterm() =>
+                == vocab::formats::class::NTRIPLES.to_rcterm() =>
         {
             DataFormat::NTriples
         }
         ser_iri_string
-            if ser_iri_string == vocab::formats::CLASS::JSONLD.to_rcterm() =>
+            if ser_iri_string == vocab::formats::class::JSONLD.to_rcterm() =>
         {
             DataFormat::JSONLD
         }
         ser_iri_string
-            if ser_iri_string == vocab::formats::CLASS::NQUADS.to_rcterm() =>
+            if ser_iri_string == vocab::formats::class::NQUADS.to_rcterm() =>
         {
             DataFormat::NQuads
         }
@@ -112,7 +112,7 @@ fn serialization_to_dataformat(serialization: &RcTerm) -> DataFormat {
     }
 }
 
-impl From<&LogicalTarget> for operator::Target {
+impl From<&LogicalTarget> for Target {
     fn from(val: &LogicalTarget) -> Self {
         let mut configuration = HashMap::new();
 
@@ -154,7 +154,7 @@ impl From<&LogicalTarget> for operator::Target {
     }
 }
 
-impl From<LogicalTarget> for operator::Target {
+impl From<LogicalTarget> for Target {
     fn from(val: LogicalTarget) -> Self {
         (&val).into()
     }
@@ -197,20 +197,4 @@ impl From<Source> for HashMap<String, String> {
         map.insert("type".to_string(), format!("{}", val.source_type));
         map
     }
-}
-
-fn source_config_map(ls: &LogicalSource) -> HashMap<String, String> {
-    let mut map = HashMap::new();
-
-    map.insert("identifier".to_string(), ls.identifier.to_string());
-
-    if let Some(iter) = &ls.iterator {
-        map.insert("iterator".to_string(), iter.to_owned());
-    }
-
-    let source_map: HashMap<String, String> = ls.source.clone().into();
-
-    map.extend(source_map);
-
-    map
 }

@@ -2,7 +2,7 @@ use std::rc::Rc;
 
 use anyhow::Result;
 use operator::{Function, TermType};
-use oxigraph::model::{SubjectRef, TermRef};
+use oxigraph::model::{NamedOrBlankNodeRef, TermRef};
 use oxigraph::store::Store;
 
 use super::data::QueryAttrMap;
@@ -12,7 +12,7 @@ use crate::translator::util::get_object;
 use crate::FromVocab;
 
 pub fn create_extend_function(
-    term_map_subj: SubjectRef,
+    term_map_subj: NamedOrBlankNodeRef,
     store: &Store,
     query_attr_map: &QueryAttrMap,
     is_object_map: bool,
@@ -24,7 +24,7 @@ pub fn create_extend_function(
     // Handle rr:constant
     if let Ok(constant_o) = get_object(
         term_map_subj,
-        vocab::r2rml::PROPERTY::CONSTANT.to_named_node().as_ref(),
+        vocab::r2rml::property::CONSTANT.to_named_node().as_ref(),
         store,
     ) {
         let term_type = match constant_o.as_ref() {
@@ -50,7 +50,7 @@ pub fn create_extend_function(
     // Handle rml:reference
     if let Ok(reference_o) = get_object(
         term_map_subj,
-        vocab::rml::PROPERTY::REFERENCE.to_named_node().as_ref(),
+        vocab::rml::property::REFERENCE.to_named_node().as_ref(),
         store,
     ) {
         let query = termref_to_literal(reference_o.as_ref())?.value();
@@ -66,7 +66,7 @@ pub fn create_extend_function(
     // Handle rr:template
     } else if let Ok(template_o) = get_object(
         term_map_subj,
-        vocab::r2rml::PROPERTY::TEMPLATE.to_named_node().as_ref(),
+        vocab::r2rml::property::TEMPLATE.to_named_node().as_ref(),
         store,
     ) {
         let template_string = termref_to_literal(template_o.as_ref())?.value();
@@ -95,7 +95,7 @@ pub fn create_extend_function(
     // if blank node term type
     if is_term_type(
         term_map_subj,
-        vocab::r2rml::CLASS::BLANKNODE
+        vocab::r2rml::class::BLANKNODE
             .to_named_node()
             .as_ref()
             .into(),
@@ -107,7 +107,7 @@ pub fn create_extend_function(
     // if  iri term type
     } else if is_term_type(
         term_map_subj,
-        vocab::r2rml::CLASS::IRI.to_named_node().as_ref().into(),
+        vocab::r2rml::class::IRI.to_named_node().as_ref().into(),
         store,
     ) {
         result = Function::Iri {
@@ -117,7 +117,7 @@ pub fn create_extend_function(
     // if literal term type
     } else if is_term_type(
         term_map_subj,
-        vocab::r2rml::CLASS::LITERAL.to_named_node().as_ref().into(),
+        vocab::r2rml::class::LITERAL.to_named_node().as_ref().into(),
         store,
     ) {
         result = Function::Literal {
@@ -128,7 +128,7 @@ pub fn create_extend_function(
     // if datatype exists
     } else if let Ok(term_type) = get_object(
         term_map_subj,
-        vocab::r2rml::PROPERTY::DATATYPE.to_named_node().as_ref(),
+        vocab::r2rml::property::DATATYPE.to_named_node().as_ref(),
         store,
     ) {
         let dtype_function = Some(Rc::new(Function::Constant {
@@ -142,9 +142,9 @@ pub fn create_extend_function(
     // if object map and rr:reference exists
     } else if is_object_map
         && get_object(
-            term_map_subj,
-            vocab::rml::PROPERTY::REFERENCE.to_named_node().as_ref(),
-            store,
+        term_map_subj,
+        vocab::rml::property::REFERENCE.to_named_node().as_ref(),
+        store,
         )
         .is_ok()
     {
@@ -163,11 +163,11 @@ pub fn create_extend_function(
     Ok(result)
 }
 
-fn is_term_type(term: SubjectRef, term_type_o: TermRef, store: &Store) -> bool {
+fn is_term_type(term: NamedOrBlankNodeRef, term_type_o: TermRef, store: &Store) -> bool {
     store
         .quads_for_pattern(
             Some(term),
-            Some(vocab::r2rml::PROPERTY::TERMTYPE.to_named_node().as_ref()),
+            Some(vocab::r2rml::property::TERMTYPE.to_named_node().as_ref()),
             Some(term_type_o),
             None,
         )

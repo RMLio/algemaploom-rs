@@ -1,4 +1,4 @@
-use operator::{Fragmenter, Operator, Serializer};
+use operator::{Operator, Serializer};
 
 use super::Processed;
 use crate::data_type::{EdgeDirection, PlanEdge, PlanNode, RcRefCellPlan};

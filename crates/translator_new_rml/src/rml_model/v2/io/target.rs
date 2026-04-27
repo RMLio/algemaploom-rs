@@ -2,7 +2,6 @@ use std::fmt::Debug;
 use std::hash::Hash;
 use std::rc::Rc;
 
-use sophia_api::graph::Graph;
 use sophia_api::serializer::*;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
@@ -65,7 +64,7 @@ impl Debug for TargetKind {
 impl Default for TargetKind {
     fn default() -> Self {
         Self {
-            type_iri: vocab::rml_io::CLASS::STD_OUT.to_rcterm(),
+            type_iri: vocab::rml_io::class::STD_OUT.to_rcterm(),
             metadata: Rc::new(FastGraph::new()),
         }
     }

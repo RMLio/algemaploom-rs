@@ -21,7 +21,7 @@ impl TermMapExtractor<TermMapEnum> for GraphMap {
     fn extract_self_term_map<TTerm>(
         subj_ref: TTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TTerm: Term + Clone,
     {
@@ -36,15 +36,15 @@ impl TermMapExtractor<TermMapEnum> for GraphMap {
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
-            vocab::rml_core::PROPERTY::GRAPH.to_rcterm(),
-            vocab::r2rml::PROPERTY::GRAPH.to_rcterm(),
+            vocab::rml_core::property::GRAPH.to_rcterm(),
+            vocab::r2rml::property::GRAPH.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
-            vocab::rml_core::PROPERTY::GRAPH_MAP.to_rcterm(),
-            vocab::r2rml::PROPERTY::GRAPHMAP.to_rcterm(),
+            vocab::rml_core::property::GRAPH_MAP.to_rcterm(),
+            vocab::r2rml::property::GRAPHMAP.to_rcterm(),
         ]
     }
 }

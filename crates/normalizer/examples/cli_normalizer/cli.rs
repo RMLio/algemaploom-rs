@@ -11,7 +11,7 @@ impl Cli {
         let cmd = Command::new("RML Normalizer")
             .version(VERSION)
             .author("Sitt Min Oo")
-            .about(format!("Normalizes an RML document"))
+            .about("Normalizes an RML document")
             .propagate_version(true)
             .arg_required_else_help(true)
             .arg(arg!(<INPUT_RML> ... "Input RML document to be normalized"))

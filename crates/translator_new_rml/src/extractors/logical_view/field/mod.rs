@@ -5,11 +5,9 @@ use error::FieldErrorEnum;
 use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
-use crate::extractors::error::ParseError;
-use crate::extractors::logical_view::error::LogicalViewErrorEnum;
 use crate::extractors::store::{get_object, get_objects};
 use crate::extractors::{
-    stringify_term, Extractor, ExtractorResult, FromVocab,
+    stringify_term, Extractor, FromVocab,
 };
 use crate::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::rml_model::v2::core::RMLIterable;
@@ -26,7 +24,7 @@ where
     let name = stringify_term(get_object(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rml_lv::PROPERTY::FIELD_NAME.to_rcterm(),
+        vocab::rml_lv::property::FIELD_NAME.to_rcterm(),
     )?)
     .unwrap();
     log::debug!("RML field name: {}", name);
@@ -34,14 +32,14 @@ where
     let reference_opt = get_object(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+        vocab::rml_core::property::REFERENCE.to_rcterm(),
     )
     .ok();
 
     let constant_opt = get_object(
         graph_ref,
         subject_ref.borrow_term(),
-        vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+        vocab::rml_core::property::CONSTANT.to_rcterm(),
     )
     .ok();
 
@@ -71,7 +69,7 @@ where
     let fields = get_objects(
         graph_ref,
         subject_ref,
-        vocab::rml_lv::PROPERTY::FIELD.to_rcterm(),
+        vocab::rml_lv::property::FIELD.to_rcterm(),
     )
     .iter()
     .map(|term| extract_field(term, graph_ref, Some(&absolute_name)))

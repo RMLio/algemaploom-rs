@@ -10,12 +10,12 @@ use crate::translator::source::extract_parse_config;
 lazy_static! {
     static ref PARSE_CONFIGS_PREDICATES: Vec<(String, ArcTerm)> = vec![
         (
-            vocab::rml_io::PROPERTY::ROOT.1.to_string(),
-            vocab::rml_io::PROPERTY::ROOT.to_arcterm()
+            vocab::rml_io::property::ROOT.1.to_string(),
+            vocab::rml_io::property::ROOT.to_arcterm()
         ),
         (
-            vocab::rml_io::PROPERTY::PATH.1.to_string(),
-            vocab::rml_io::PROPERTY::PATH.to_arcterm()
+            vocab::rml_io::property::PATH.1.to_string(),
+            vocab::rml_io::property::PATH.to_arcterm()
         ),
     ];
 }

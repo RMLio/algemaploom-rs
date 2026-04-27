@@ -24,10 +24,10 @@ pub fn rcterm_to_string(rcterm: &RcTerm) -> String {
 
 lazy_static! {
     static ref NUMBER_IRIS: HashSet<String> = HashSet::from([
-        vocab::xsd::TYPE::XSD_POSITIVE_INTEGER.to_string(),
-        vocab::xsd::TYPE::XSD_INT.to_string(),
-        vocab::xsd::TYPE::XSD_INTEGER.to_string(),
-        vocab::xsd::TYPE::XSD_LONG.to_string(),
-        vocab::xsd::TYPE::XSD_DOUBLE.to_string(),
+        vocab::xsd::r#type::XSD_POSITIVE_INTEGER.to_string(),
+        vocab::xsd::r#type::XSD_INT.to_string(),
+        vocab::xsd::r#type::XSD_INTEGER.to_string(),
+        vocab::xsd::r#type::XSD_LONG.to_string(),
+        vocab::xsd::r#type::XSD_DOUBLE.to_string(),
     ]);
 }

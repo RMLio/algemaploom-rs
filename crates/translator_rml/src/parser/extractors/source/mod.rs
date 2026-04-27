@@ -53,7 +53,7 @@ fn extract_typed_source(
     subject: &RcTerm,
     graph: &FastGraph,
 ) -> ExtractorResult<Source> {
-    let type_pred = vocab::rdf::PROPERTY::TYPE.to_rcterm();
+    let type_pred = vocab::rdf::property::TYPE.to_rcterm();
     let source_type = get_object(graph, subject, &type_pred)?;
 
     let match_result = match source_type {
@@ -66,22 +66,22 @@ fn extract_typed_source(
     }?;
 
     match match_result {
-        iri_string if iri_string == vocab::csvw::CLASS::TABLE.to_rcterm() => {
+        iri_string if iri_string == vocab::csvw::class::TABLE.to_rcterm() => {
             extract_csvw_source(subject, graph)
         }
 
-        iri_string if iri_string == vocab::d2rq::CLASS::DATABASE.to_rcterm() => {
+        iri_string if iri_string == vocab::d2rq::class::DATABASE.to_rcterm() => {
             rdb_source::extract_rdb_source(subject, graph)
         }
-        iri_string if iri_string == vocab::rmls::CLASS::KAFKASTREAM.to_rcterm() => {
+        iri_string if iri_string == vocab::rmls::class::KAFKASTREAM.to_rcterm() => {
             kafka_source::extract_kafka_source(subject, graph)
         }
 
-        iri_string if iri_string == vocab::rmls::CLASS::TCPSOCKETSTREAM.to_rcterm() => {
+        iri_string if iri_string == vocab::rmls::class::TCPSOCKETSTREAM.to_rcterm() => {
             tcp_source::extract_tcp_source(subject, graph)
         }
 
-        iri_string if iri_string == vocab::rmls::CLASS::HTML.to_rcterm() => {
+        iri_string if iri_string == vocab::rmls::class::HTML.to_rcterm() => {
             html_source::extract_html_source(subject, graph)
         }
 

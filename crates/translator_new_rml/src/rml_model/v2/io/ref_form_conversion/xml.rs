@@ -17,13 +17,13 @@ impl ComplexRefFormulationParser for XPathRefFormParser {
         let namespace_bnodes = get_objects(
             &meta_data_graph,
             subj_ref,
-            vocab::rml_io::PROPERTY::NAMESPACE.to_rcterm(),
+            vocab::rml_io::property::NAMESPACE.to_rcterm(),
         );
 
         let namespace_prefix_iri =
-            vocab::rml_io::PROPERTY::NAMESPACE_PREFIX.to_rcterm();
+            vocab::rml_io::property::NAMESPACE_PREFIX.to_rcterm();
         let namespace_url_iri =
-            vocab::rml_io::PROPERTY::NAMESPACE_URL.to_rcterm();
+            vocab::rml_io::property::NAMESPACE_URL.to_rcterm();
         let namespaces = namespace_bnodes
             .into_iter()
             .map(|bnode| {

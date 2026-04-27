@@ -1,24 +1,17 @@
-use jni::JNIEnv;
-use jni::objects::{JClass, JString};
 use crate::api::process_one_str;
-use catch_panic::catch_panic;
+use jni::objects::{JClass, JString};
+use jni::EnvUnowned;
 
-#[no_mangle]
-#[catch_panic]
+#[unsafe(no_mangle)]
 pub extern "system" fn Java_be_ugent_idlab_knows_mappingLoom_Translator_translate<'local>(
-    mut env: JNIEnv<'local>,
+    mut unowned_env: EnvUnowned<'local>,
     _class: JClass<'local>,
     input: JString<'local>,
 ) -> JString<'local> {
-    let mapping: String = env
-        .get_string(&input)
-        .expect("Failed to retrieve mapping as string from Java")
-        .into();
-
-    let translated = process_one_str(mapping.clone().as_str());
-
-    let output = env
-        .new_string(translated)
-        .expect("Couldn't create translated mapping as Java string!");
-    output
+    let outcome = unowned_env.with_env(|env| -> Result<_, jni::errors::Error> {
+        let input_str = input.to_string();
+        let translated_res = process_one_str(&input_str);
+        JString::from_str(env, translated_res.as_str())
+    });
+    outcome.resolve::<jni::errors::ThrowRuntimeExAndDefault>()
 }

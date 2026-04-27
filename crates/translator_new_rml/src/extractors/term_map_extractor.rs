@@ -3,13 +3,13 @@ use std::fmt::Debug;
 use log::debug;
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
-use sophia_api::term::{BnodeId, FromTerm, Term, TermKind};
+use sophia_api::term::{FromTerm, Term, TermKind};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 
 use super::store::get_objects_with_ps;
-use super::{expression_map, Extractor, ExtractorResult, FromVocab};
+use super::{Extractor, ExtractorResult, FromVocab};
 use crate::extractors::store::{get_object, get_object_with_ps};
 use crate::extractors::ParseError;
 use crate::rml_model::v2::core::expression_map::term_map::{
@@ -23,14 +23,14 @@ use crate::rml_model::v2::io::target::LogicalTarget;
 impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
     fn extract_self<TTerm>(
         subject_ref: TTerm,
-        graph_ref: &sophia_inmem::graph::FastGraph,
-    ) -> super::ExtractorResult<CommonTermMapInfo>
+        graph_ref: &FastGraph,
+    ) -> ExtractorResult<CommonTermMapInfo>
     where
         TTerm: Term + Clone,
     {
-        let ltarget_old_pred = &vocab::rml::PROPERTY::LOGICALTARGET.to_rcterm();
+        let ltarget_old_pred = &vocab::rml::property::LOGICALTARGET.to_rcterm();
         let ltarget_new_pred =
-            &vocab::rml_core::PROPERTY::LOGICAL_TARGET.to_rcterm();
+            &vocab::rml_core::property::LOGICAL_TARGET.to_rcterm();
         let ltarget_terms = get_objects_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
@@ -52,8 +52,8 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
             graph_ref,
         )?;
 
-        let ttype_old_pred = &vocab::r2rml::PROPERTY::TERMTYPE.to_rcterm();
-        let ttype_pred = &vocab::rml_core::PROPERTY::TERMTYPE.to_rcterm();
+        let ttype_old_pred = &vocab::r2rml::property::TERMTYPE.to_rcterm();
+        let ttype_pred = &vocab::rml_core::property::TERMTYPE.to_rcterm();
         let ttype_iri_opt = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
@@ -116,11 +116,11 @@ where
                 .triples_matching(
                     [subject_ref.borrow_term()],
                     [
-                        vocab::rml_core::PROPERTY::LANGUAGE.to_rcterm(),
-                        vocab::rml_core::PROPERTY::LANGUAGE_MAP.to_rcterm(),
-                        vocab::rml_core::PROPERTY::DATATYPE.to_rcterm(),
-                        vocab::rml_core::PROPERTY::DATATYPE_MAP.to_rcterm(),
-                        vocab::rml_core::PROPERTY::REFERENCE.to_rcterm(),
+                        vocab::rml_core::property::LANGUAGE.to_rcterm(),
+                        vocab::rml_core::property::LANGUAGE_MAP.to_rcterm(),
+                        vocab::rml_core::property::DATATYPE.to_rcterm(),
+                        vocab::rml_core::property::DATATYPE_MAP.to_rcterm(),
+                        vocab::rml_core::property::REFERENCE.to_rcterm(),
                     ],
                     Any,
                 )
@@ -130,19 +130,19 @@ where
             let constant_value_opt = get_object(
                 graph_ref,
                 subject_ref.borrow_term(),
-                vocab::rml_core::PROPERTY::CONSTANT.to_rcterm(),
+                vocab::rml_core::property::CONSTANT.to_rcterm(),
             )
             .ok();
 
             if datatype_lang_opt.is_some() || exp_map.is_function_map() {
-                Ok(vocab::rml_core::CLASS::LITERAL.to_rcterm())
+                Ok(vocab::rml_core::class::LITERAL.to_rcterm())
             } else if let Some(term) = constant_value_opt {
                 termkind_to_rml_rcterm(term.kind())
             } else {
-                Ok(vocab::rml_core::CLASS::IRI.to_rcterm())
+                Ok(vocab::rml_core::class::IRI.to_rcterm())
             }
         }
-        _ => Ok(vocab::rml_core::CLASS::IRI.to_rcterm()),
+        _ => Ok(vocab::rml_core::class::IRI.to_rcterm()),
     }
 }
 
@@ -170,45 +170,45 @@ impl<'a> TryInto<RMLTermMapType> for &'a RcTerm {
     fn try_into(self) -> Result<RMLTermMapType, Self::Error> {
         match self {
             value
-                if value == &vocab::r2rml::PROPERTY::SUBJECTMAP.to_rcterm()
+                if value == &vocab::r2rml::property::SUBJECTMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::SUBJECT_MAP
+                        == &vocab::rml_core::property::SUBJECT_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::SubjectMap)
             }
             value
                 if value
-                    == &vocab::r2rml::PROPERTY::PREDICATEMAP.to_rcterm()
+                    == &vocab::r2rml::property::PREDICATEMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::PREDICATE_MAP
+                        == &vocab::rml_core::property::PREDICATE_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::PredicateMap)
             }
             value
-                if value == &vocab::r2rml::PROPERTY::OBJECTMAP.to_rcterm()
+                if value == &vocab::r2rml::property::OBJECTMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::OBJECT_MAP
+                        == &vocab::rml_core::property::OBJECT_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::ObjectMap)
             }
             value
-                if value == &vocab::r2rml::PROPERTY::GRAPHMAP.to_rcterm()
+                if value == &vocab::r2rml::property::GRAPHMAP.to_rcterm()
                     || value
-                        == &vocab::rml_core::PROPERTY::GRAPH_MAP
+                        == &vocab::rml_core::property::GRAPH_MAP
                             .to_rcterm() =>
             {
                 Ok(RMLTermMapType::GraphMap)
             }
             value
-                if value == &vocab::rml_fnml::PROPERTY::INPUT_VALUE_MAP.to_rcterm() =>
+                if value == &vocab::rml_fnml::property::INPUT_VALUE_MAP.to_rcterm() =>
             {
                 Ok(RMLTermMapType::InputValueMap)
             }
             value
-                if value == &vocab::rml_fnml::PROPERTY::PARAMETER_MAP.to_rcterm() =>
+                if value == &vocab::rml_fnml::property::PARAMETER_MAP.to_rcterm() =>
             {
                 Ok(RMLTermMapType::ParameterMap)
             }

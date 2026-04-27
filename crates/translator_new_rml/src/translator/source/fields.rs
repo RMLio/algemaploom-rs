@@ -2,9 +2,8 @@ use std::collections::HashMap;
 
 use operator::formats::ReferenceFormulation;
 use operator::Field as OperatorField;
-use sophia_turtle::serializer::nt;
 
-use crate::error::{NewRMLTranslationError, NewRMLTranslationResult};
+use crate::error::NewRMLTranslationResult;
 use crate::extractors::turtle_stringify_term;
 use crate::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 use crate::rml_model::v2::lv::{RMLField, RMLFieldKind};

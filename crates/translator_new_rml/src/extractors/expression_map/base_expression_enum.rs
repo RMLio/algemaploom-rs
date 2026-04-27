@@ -23,7 +23,7 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
         if let Some((_, obj)) = get_expr_value_enum(
             subject_ref.borrow_term(),
             graph_ref,
-            &[&vocab::rml_core::PROPERTY::TEMPLATE.to_rcterm()],
+            &[&vocab::rml_core::property::TEMPLATE.to_rcterm()],
         ) {
             Ok(BaseExpressionMapEnum::Template(
                 stringify_term(obj).unwrap(),
@@ -31,7 +31,7 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
         } else if let Some((_, obj)) = get_expr_value_enum(
             subject_ref.borrow_term(),
             graph_ref,
-            &[&vocab::rml_core::PROPERTY::REFERENCE.to_rcterm()],
+            &[&vocab::rml_core::property::REFERENCE.to_rcterm()],
         ) {
             Ok(BaseExpressionMapEnum::Reference(
                 stringify_term(obj).unwrap(),
@@ -39,7 +39,7 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
         } else if let Some((_, obj)) = get_expr_value_enum(
             subject_ref.borrow_term(),
             graph_ref,
-            &[&vocab::rml_core::PROPERTY::CONSTANT.to_rcterm()],
+            &[&vocab::rml_core::property::CONSTANT.to_rcterm()],
         ) {
             Ok(BaseExpressionMapEnum::Constant(obj))
         } else {

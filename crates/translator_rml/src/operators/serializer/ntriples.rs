@@ -14,7 +14,7 @@ impl SerializeTranslator for NTriplesSerializer {
     fn generate_template(
         quads: &HashSet<Quad>,
         variable_map: &HashMap<String, String>,
-        subject_maps: &[&SubjectMap],
+        _subject_maps: &[&SubjectMap],
     ) -> HashSet<String> {
         let mut triples_strings: HashSet<String> = HashSet::new();
         for quad in quads {

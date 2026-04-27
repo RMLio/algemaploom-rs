@@ -6,7 +6,7 @@ use anyhow::Result;
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::{Field, Source};
-use oxigraph::model::{Quad, Subject, SubjectRef, Term, TermRef};
+use oxigraph::model::{NamedOrBlankNode, NamedOrBlankNodeRef, Quad, Term, TermRef};
 use oxigraph::store::Store;
 use util::get_queries_from_template;
 
@@ -21,20 +21,20 @@ use crate::translator::util::{
 use crate::FromVocab;
 
 pub fn create_source_operator(
-    triples_map_iri: SubjectRef,
+    triples_map_iri: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<(Source, QueryAttrMap)> {
     let query_to_attr_map = extract_queries(triples_map_iri, store)?;
 
     let ls_object = get_object(
         triples_map_iri,
-        vocab::rml::PROPERTY::LOGICALSOURCE.to_named_node().as_ref(),
+        vocab::rml::property::LOGICALSOURCE.to_named_node().as_ref(),
         store,
     )?;
     let logical_source_iri = termref_to_subjref(ls_object.as_ref())?;
     let source = get_object(
         logical_source_iri,
-        vocab::rml::PROPERTY::SOURCE.to_named_node().as_ref(),
+        vocab::rml::property::SOURCE.to_named_node().as_ref(),
         store,
     )
     .iter()
@@ -46,7 +46,7 @@ pub fn create_source_operator(
         Some(_) => {
             let ref_form_node = get_object(
                 logical_source_iri,
-                vocab::rml::PROPERTY::REFERENCEFORMULATION
+                vocab::rml::property::REFERENCEFORMULATION
                     .to_named_node()
                     .as_ref(),
                 store,
@@ -60,7 +60,7 @@ pub fn create_source_operator(
     if reference_formulation != ReferenceFormulation::CSVRows {
         reference = get_object(
             logical_source_iri,
-            vocab::rml::PROPERTY::ITERATOR.to_named_node().as_ref(),
+            vocab::rml::property::ITERATOR.to_named_node().as_ref(),
             store,
         )
         .ok()
@@ -105,13 +105,13 @@ fn get_reference_formulation_from_term(
     }?;
 
     match ref_form_iri {
-        val if val == vocab::query::CLASS::CSV.to_named_node() => {
+        val if val == vocab::query::class::CSV.to_named_node() => {
             Ok(ReferenceFormulation::CSVRows)
         }
-        val if val == vocab::query::CLASS::JSONPATH.to_named_node() => {
+        val if val == vocab::query::class::JSONPATH.to_named_node() => {
             Ok(ReferenceFormulation::JSONPath)
         }
-        val if val == vocab::query::CLASS::XPATH.to_named_node() => {
+        val if val == vocab::query::class::XPATH.to_named_node() => {
             Ok(ReferenceFormulation::XMLPath(XPathConfig::default()))
         }
         val => {
@@ -155,7 +155,7 @@ fn create_fields_from_map(
 /// This function will return an error if no queries can be extracted for the
 /// triples map.
 fn extract_queries(
-    triples_map_iri: SubjectRef,
+    triples_map_iri: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<QueryAttrMap> {
     let mut query_to_attr_map = HashMap::new();
@@ -163,7 +163,7 @@ fn extract_queries(
     let tm_subgraph = rooted_subgraph(triples_map_iri, store)?;
 
     for reference_quad in tm_subgraph.iter().filter(|trip| {
-        trip.predicate == vocab::rml::PROPERTY::REFERENCE.to_named_node()
+        trip.predicate == vocab::rml::property::REFERENCE.to_named_node()
     }) {
         let query = termref_to_literal(reference_quad.object.as_ref())?
             .value()
@@ -172,7 +172,7 @@ fn extract_queries(
     }
 
     for template_quad in tm_subgraph.iter().filter(|trip| {
-        trip.predicate == vocab::r2rml::PROPERTY::TEMPLATE.to_named_node()
+        trip.predicate == vocab::r2rml::property::TEMPLATE.to_named_node()
     }) {
         let template_str =
             termref_to_literal(template_quad.object.as_ref())?.value();
@@ -182,7 +182,7 @@ fn extract_queries(
     }
 
     let child_quads = tm_subgraph.into_iter().filter(|trip| {
-        trip.predicate == vocab::r2rml::PROPERTY::CHILD.to_named_node()
+        trip.predicate == vocab::r2rml::property::CHILD.to_named_node()
     });
     let mut parent_quads = get_parent_quads(triples_map_iri, store);
 
@@ -213,13 +213,13 @@ fn extract_queries(
 /// # Panics
 ///
 /// Panics if .
-fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
+fn get_parent_quads(triples_map_iri: NamedOrBlankNodeRef, store: &Store) -> Vec<Quad> {
     // s' ∈ I ∪ B where (s', rr:parentTriplesMap, u_tm) ∈ G
-    let referencing_object_map_iris: HashSet<Subject> = store
+    let referencing_object_map_iris: HashSet<NamedOrBlankNode> = store
         .quads_for_pattern(
             None,
             Some(
-                vocab::r2rml::PROPERTY::PARENTTRIPLESMAP
+                vocab::r2rml::property::PARENTTRIPLESMAP
                     .to_named_node()
                     .as_ref(),
             ),
@@ -236,7 +236,7 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
             // s' ∈ I ∪ B where (s', rr:joinCondition, s) ∈ G
             get_quads(
                 subject.as_ref(),
-                vocab::r2rml::PROPERTY::JOINCONDITION
+                vocab::r2rml::property::JOINCONDITION
                     .to_named_node()
                     .as_ref(),
                 store,
@@ -247,7 +247,7 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
             // (s, rr:parent, o) ∈ G
             get_quads(
                 termref_to_subjref(o.as_ref()).unwrap(),
-                vocab::r2rml::PROPERTY::PARENT.to_named_node().as_ref(),
+                vocab::r2rml::property::PARENT.to_named_node().as_ref(),
                 store,
             )
         })
@@ -256,13 +256,13 @@ fn get_parent_quads(triples_map_iri: SubjectRef, store: &Store) -> Vec<Quad> {
 
 // Only handles CSV/JSON files for now
 fn get_source_config(
-    logical_source_iri: SubjectRef,
+    logical_source_iri: NamedOrBlankNodeRef,
     store: &Store,
 ) -> Result<HashMap<String, String>> {
     let mut result = HashMap::new();
     let source_node = get_object(
         logical_source_iri,
-        vocab::rml::PROPERTY::SOURCE.to_named_node().as_ref(),
+        vocab::rml::property::SOURCE.to_named_node().as_ref(),
         store,
     )?;
 

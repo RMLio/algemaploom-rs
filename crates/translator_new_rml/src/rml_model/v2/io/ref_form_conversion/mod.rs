@@ -8,12 +8,12 @@ use xml::XPathRefFormParser;
 
 use super::source::{ReferenceFormulation, ReferenceFormulationKind};
 use crate::extractors::error::ParseError;
-use crate::extractors::store::{get_object, get_object_with_ps};
+use crate::extractors::store::get_object;
 use crate::extractors::{stringify_term, FromVocab};
 
 pub mod xml;
 
-impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
+impl TryFrom<ReferenceFormulation> for formats::ReferenceFormulation {
     type Error = ParseError;
 
     fn try_from(value: ReferenceFormulation) -> Result<Self, Self::Error> {
@@ -22,7 +22,7 @@ impl TryFrom<ReferenceFormulation> for operator::formats::ReferenceFormulation {
 }
 
 impl TryFrom<&ReferenceFormulation>
-    for operator::formats::ReferenceFormulation
+    for formats::ReferenceFormulation
 {
     type Error = ParseError;
 
@@ -32,42 +32,42 @@ impl TryFrom<&ReferenceFormulation>
                 match value.iri.clone() {
                     value
                         if value
-                            == vocab::d2rq::CLASS::DATABASE.to_rcterm()
+                            == vocab::d2rq::class::DATABASE.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::SQL_QUERY
+                                == vocab::rml_io::class::SQL_QUERY
                                     .to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::SQL_TABLE
+                                == vocab::rml_io::class::SQL_TABLE
                                     .to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::SQLQuery)
                     }
                     value
-                        if value == vocab::query::CLASS::CSV.to_rcterm()
+                        if value == vocab::query::class::CSV.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::CSV.to_rcterm() =>
+                                == vocab::rml_io::class::CSV.to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::CSVRows)
                     }
                     value
                         if value
-                            == vocab::query::CLASS::JSONPATH.to_rcterm()
+                            == vocab::query::class::JSONPATH.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::JSONPATH
+                                == vocab::rml_io::class::JSONPATH
                                     .to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::JSONPath)
                     }
                     value
-                        if value == vocab::query::CLASS::XPATH.to_rcterm()
+                        if value == vocab::query::class::XPATH.to_rcterm()
                             || value
-                                == vocab::rml_io::CLASS::XPATH.to_rcterm() =>
+                                == vocab::rml_io::class::XPATH.to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::XMLPath(
                             XPathConfig::default(),
                         ))
                     }
-                    value if value == vocab::query::CLASS::HTML.to_rcterm() => {
+                    value if value == vocab::query::class::HTML.to_rcterm() => {
                         Ok(formats::ReferenceFormulation::CSS3)
                     }
                     value => {
@@ -100,11 +100,11 @@ pub fn try_from_custom_ref_form(
     let reference_form_type = get_object(
         &meta_data_graph,
         subj_ref,
-        vocab::rdf::PROPERTY::TYPE.to_rcterm(),
+        vocab::rdf::property::TYPE.to_rcterm(),
     )?;
 
     match reference_form_type {
-        value if value == vocab::rml_io::CLASS::XPATH_REF_FORM.to_rcterm() => {
+        value if value == vocab::rml_io::class::XPATH_REF_FORM.to_rcterm() => {
             XPathRefFormParser::parse_complex_ref_form(
                 subj_ref,
                 meta_data_graph,

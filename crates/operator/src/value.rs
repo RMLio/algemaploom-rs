@@ -1,6 +1,6 @@
-use std::collections::HashMap;
-
 use serde::Serialize;
+use std::collections::HashMap;
+use std::fmt::Display;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum Value {
@@ -30,9 +30,9 @@ pub enum Number {
     Float(f32),
 }
 
-impl ToString for Number {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for Number {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
             Number::PosInfinity => "+∞".to_string(),
             Number::NegInfinity => "-∞".to_string(),
             Number::Double(db) => db.to_string(),
@@ -42,7 +42,8 @@ impl ToString for Number {
             Number::Int(int) => int.to_string(),
             Number::UInt(uint) => uint.to_string(),
             Number::Float(float) => float.to_string(),
-        }
+        };
+        write!(f, "{}", str)
     }
 }
 
@@ -79,9 +80,9 @@ impl From<&Value> for String {
     }
 }
 
-impl ToString for Value {
-    fn to_string(&self) -> String {
-        self.into()
+impl Display for Value {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", <&Value as Into<String>>::into(self.into()))
     }
 }
 
@@ -167,7 +168,7 @@ mod tests {
         let num_string: Value = String::from("Foobar").into();
         let val = Value::String("Foobar".into());
 
-        assert!(num_string == val);
+        assert_eq!(num_string, val);
     }
 
     #[test]
@@ -176,7 +177,7 @@ mod tests {
         let intoed_val: Value = arr.into();
 
         let val_arr = Value::Array(vec!["A".into(), "B".into(), "C".into()]);
-        assert!(intoed_val == val_arr);
+        assert_eq!(intoed_val, val_arr);
     }
 
     #[test]
@@ -188,7 +189,7 @@ mod tests {
             ("age".to_string(), 23_u8.into()),
         ]));
 
-        assert!(map_val == intoed_map, "{:?} == {:?}", map_val, intoed_map);
+        assert_eq!(map_val, intoed_map, "{:?} == {:?}", map_val, intoed_map);
     }
 
     #[test]
@@ -196,6 +197,6 @@ mod tests {
         let num_str: Value = "23.0".into();
         let f64_val: Value = 23_f64.into();
 
-        assert!(num_str != f64_val, "{:?} != {:?}", num_str, f64_val);
+        assert_ne!(num_str, f64_val, "{:?} != {:?}", num_str, f64_val);
     }
 }

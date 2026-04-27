@@ -13,7 +13,7 @@ mod error;
 mod queries;
 
 pub fn normalize_rml_str(rml_str: &str) -> NormalizerResult<String> {
-    let store = Store::new().unwrap();
+    let store = Store::new()?;
     let mut loader = store.bulk_loader();
     let parser = RdfParser::from_format(RdfFormat::Turtle);
     let mut reader = parser.for_reader(rml_str.as_bytes());

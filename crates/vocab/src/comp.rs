@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "comp";
 pub const IRI: &str = "http://semweb.mmlab.be/ns/rml-compression#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
 

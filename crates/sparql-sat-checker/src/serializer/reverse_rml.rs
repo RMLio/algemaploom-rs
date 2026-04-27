@@ -1,16 +1,14 @@
-use std::rc::Rc;
-
 use super::error::{PlanBuildError, PlanBuildResult};
 use crate::{
     checker::util::{extract_extend_expr_from_operator, spo_from_trmap_sub_expression},
-    extractor::rml::trmap_sub_expression::TrMapSubExpression,
-    maybe_satisfiable_trmaps_sub_expressions,
+    extractor::rml::trmap_sub_expression::TrMapSubExpression
+    ,
 };
 use operator::{
-    Field, Function, Iterator, Operator, RcExtendFunction, formats::ReferenceFormulation,
+    formats::ReferenceFormulation, Field, Function, Operator,
 };
 use plan::data_type::DiGraphOperators;
-use translator_normalized_rml::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
+use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 use uuid::Uuid;
 fn add_prefixes(buffer: &mut Vec<String>) {
     buffer.push("@base  <http://example.com/ns#>.".to_string());
@@ -94,7 +92,7 @@ fn extend_func_to_rml(
                 let dtype_value = extend_func_to_rml(dtype, fields, true)?;
                 result = format!("{}\n rr:datatype {}", result, dtype_value);
             }
-            if let Some(lang_type) = langtype_function.as_ref() {
+            if let Some(_lang_type) = langtype_function.as_ref() {
                 unimplemented!("Language types not supported yet for now");
             }
 

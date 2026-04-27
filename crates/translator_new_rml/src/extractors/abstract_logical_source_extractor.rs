@@ -16,15 +16,15 @@ where
     let type_term_opt = get_object(
         graph,
         term.borrow_term(),
-        vocab::rdf::PROPERTY::TYPE.to_rcterm(),
+        vocab::rdf::property::TYPE.to_rcterm(),
     )
     .ok();
 
     debug!("Source {:?} has type {:?}", term, type_term_opt);
     if let Some(type_term) = type_term_opt {
-        type_term == vocab::rml_lv::CLASS::LOGICAL_VIEW.to_rcterm()
+        type_term == vocab::rml_lv::class::LOGICAL_VIEW.to_rcterm()
     } else {
-        get_object(graph, term, vocab::rml_lv::PROPERTY::VIEW_ON.to_rcterm())
+        get_object(graph, term, vocab::rml_lv::property::VIEW_ON.to_rcterm())
             .is_ok()
     }
 }

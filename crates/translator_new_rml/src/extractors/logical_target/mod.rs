@@ -15,8 +15,8 @@ impl Extractor<LogicalTarget> for LogicalTarget {
     where
         TTerm: Term,
     {
-        let target_old_pred = &vocab::rmlt::PROPERTY::TARGET.to_rcterm();
-        let target_new_pred = &vocab::rml_io::PROPERTY::TARGET.to_rcterm();
+        let target_old_pred = &vocab::rmlt::property::TARGET.to_rcterm();
+        let target_new_pred = &vocab::rml_io::property::TARGET.to_rcterm();
         let target_subj_term = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
@@ -28,7 +28,7 @@ impl Extractor<LogicalTarget> for LogicalTarget {
         let ser_format = get_object(
             graph_ref,
             subject_ref,
-            &vocab::rml_io::PROPERTY::SERIALIZATION.to_rcterm(),
+            &vocab::rml_io::property::SERIALIZATION.to_rcterm(),
         )
         .ok();
 

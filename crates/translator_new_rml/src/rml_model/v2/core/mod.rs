@@ -3,14 +3,12 @@ use std::fmt::Display;
 use std::hash::Hash;
 
 use derive_more::{TryUnwrap, Unwrap};
-use expression_map::term_map::{GraphMap, ObjectMap, PredicateMap, SubjectMap};
 use expression_map::ExpressionMapEnum;
 use sophia_term::RcTerm;
 
 use super::io::source::{LogicalSource, ReferenceFormulation, Source};
 use super::lv::{LogicalView, RMLField};
 use super::RefAttributeGetter;
-use crate::extractors::error::ParseError;
 use crate::extractors::ExtractorResult;
 use crate::rml_model::v2::TermMapEnum;
 

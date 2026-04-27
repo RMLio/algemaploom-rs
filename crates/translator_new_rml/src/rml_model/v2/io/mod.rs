@@ -30,16 +30,16 @@ impl Display for PathRootKind {
                 write!(
                     f,
                     "{}{}",
-                    vocab::rml_io::CLASS::CURRENT_WORKING_DIR.0,
-                    vocab::rml_io::CLASS::CURRENT_WORKING_DIR.1
+                    vocab::rml_io::class::CURRENT_WORKING_DIR.0,
+                    vocab::rml_io::class::CURRENT_WORKING_DIR.1
                 )
             }
             PathRootKind::MappingDirectory => {
                 write!(
                     f,
                     "{}{}",
-                    vocab::rml_io::CLASS::MAPPING_DIR.0,
-                    vocab::rml_io::CLASS::MAPPING_DIR.1
+                    vocab::rml_io::class::MAPPING_DIR.0,
+                    vocab::rml_io::class::MAPPING_DIR.1
                 )
             }
             PathRootKind::RootString(path) => write!(f, "{}", path),

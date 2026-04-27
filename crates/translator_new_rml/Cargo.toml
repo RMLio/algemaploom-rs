@@ -11,9 +11,6 @@ sophia_api = "0.9.0"
 sophia_inmem = "0.9.0"
 sophia_turtle = "0.9.0"
 sophia_term = "0.9.0"
-oxigraph = { version = "0.4.8", default-features = false }
-
-chumsky = "0.9.3"
 
 vocab = { path = "../vocab/" }
 operator = { path = "../operator/" }
@@ -21,15 +18,9 @@ plan = { path = "../plan/" }
 translator_api = { path = "../translator_api/" }
 
 
-either.workspace = true
-anyhow.workspace = true
 uuid.workspace = true
-regex.workspace = true
 lazy_static.workspace = true
 serde_json.workspace = true
-serde.workspace = true
-clap.workspace = true
 log.workspace = true
 derive_more.workspace = true
-walkdir = "2.4.0"
 sophia_isomorphism = "0.9.0"

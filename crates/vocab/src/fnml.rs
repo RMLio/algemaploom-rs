@@ -1,7 +1,7 @@
 pub const PREFIX: &str = "fnml";
 pub const IRI: &str = "http://semweb.mmlab.be/ns/fnml#";
 
-pub mod PROPERTY {
+pub mod property {
     use super::*;
     use crate::PAIR;
 

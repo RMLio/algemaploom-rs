@@ -13,8 +13,8 @@ impl Extractor<RMLIterable> for RMLIterable {
     where
         TTerm: Term + Clone,
     {
-        let iter_old_pred = &vocab::rml::PROPERTY::ITERATOR.to_rcterm();
-        let iter_new_pred = &vocab::rml_core::PROPERTY::ITERATOR.to_rcterm();
+        let iter_old_pred = &vocab::rml::property::ITERATOR.to_rcterm();
+        let iter_new_pred = &vocab::rml_core::property::ITERATOR.to_rcterm();
         let iterator = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),
@@ -24,9 +24,9 @@ impl Extractor<RMLIterable> for RMLIterable {
         .and_then(|lit| lit.lexical_form().map(|l| l.to_string()));
 
         let refform_old_pred =
-            &vocab::rml::PROPERTY::REFERENCEFORMULATION.to_rcterm();
+            &vocab::rml::property::REFERENCEFORMULATION.to_rcterm();
         let refform_new_pred =
-            &vocab::rml_core::PROPERTY::REFERENCE_FORMULATION.to_rcterm();
+            &vocab::rml_core::property::REFERENCE_FORMULATION.to_rcterm();
         let reference_formulation_subj_term_opt = get_object_with_ps(
             graph_ref,
             subject_ref.borrow_term(),

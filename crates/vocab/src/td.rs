@@ -4,10 +4,10 @@
 pub const PREFIX: &str = "td";
 pub const IRI: &str = "https://www.w3.org/2019/wot/td#";
 
-pub mod CLASS {
+pub mod class {
     use super::IRI;
     use crate::PAIR;
-    
+
     pub const THING: PAIR = (IRI, "Thing");
     pub const PROPERTY_AFFORDANCE: PAIR = (IRI, "PropertyAffordance");
     pub const ACTION_AFFORDANCE: PAIR = (IRI, "ActionAffordance");
@@ -15,10 +15,10 @@ pub mod CLASS {
     pub const INTERACTION_AFFORDANCE: PAIR = (IRI, "InteractionAffordance");
 }
 
-pub mod PROPERTY {
+pub mod property {
     use super::IRI;
     use crate::PAIR;
-    
+
     pub const HAS_PROPERTY_AFFORDANCE: PAIR = (IRI, "hasPropertyAffordance");
     pub const HAS_ACTION_AFFORDANCE: PAIR = (IRI, "hasActionAffordance");
     pub const HAS_EVENT_AFFORDANCE: PAIR = (IRI, "hasEventAffordance");

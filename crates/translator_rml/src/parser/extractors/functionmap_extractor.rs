@@ -1,4 +1,3 @@
-
 use super::store::get_objects;
 use super::{rcterm_to_string, Extractor, FromVocab};
 use crate::parser::rml_model::term_map::FunctionMap;
@@ -9,7 +8,7 @@ impl Extractor<FunctionMap> for FunctionMap {
         subject_ref: &sophia_term::RcTerm,
         graph_ref: &sophia_inmem::graph::FastGraph,
     ) -> super::ExtractorResult<FunctionMap> {
-        let pom_pred = vocab::r2rml::PROPERTY::PREDICATEOBJECTMAP.to_rcterm();
+        let pom_pred = vocab::r2rml::property::PREDICATEOBJECTMAP.to_rcterm();
 
         let po_maps = get_objects(graph_ref, subject_ref, &pom_pred)
             .into_iter()
@@ -17,7 +16,7 @@ impl Extractor<FunctionMap> for FunctionMap {
                 PredicateObjectMap::extract_self(&pom_subj, graph_ref).ok()
             });
 
-        let executes_pred_iri = vocab::fno::PROPERTY::EXECUTES.to_rcterm();
+        let executes_pred_iri = vocab::fno::property::EXECUTES.to_rcterm();
         let (execute_poms, params_poms): (Vec<_>, Vec<_>) =
             po_maps.partition(|pom| {
                 pom.predicate_maps
@@ -63,7 +62,7 @@ mod tests {
 
     use sophia_api::graph::Graph;
     use sophia_api::prelude::Any;
-    use sophia_api::term::{FromTerm, IriRef, Term};
+    use sophia_api::term::{FromTerm, IriRef};
     use sophia_api::triple::Triple;
     use sophia_inmem::graph::FastGraph;
     use sophia_term::{GenericLiteral, RcTerm};
@@ -81,7 +80,7 @@ mod tests {
 
         // Function map IRI extraction
         let predicate_object_map_pred =
-            vocab::fnml::PROPERTY::FUNCTION_VALUE.to_rcterm();
+            vocab::fnml::property::FUNCTION_VALUE.to_rcterm();
         let predicate_object_map_triple = graph
             .triples_matching(Any, [predicate_object_map_pred], Any)
             .next()
@@ -101,7 +100,7 @@ mod tests {
         let term_value = RcTerm::Literal(GenericLiteral::Typed(
             "Name".into(),
             IriRef::new_unchecked(
-                vocab::xsd::TYPE::XSD_STRING.to_string().into(),
+                vocab::xsd::r#type::XSD_STRING.to_string().into(),
             ),
         ));
 

@@ -2,7 +2,6 @@ use std::collections::{HashMap, HashSet};
 use std::vec;
 
 use operator::Target;
-use sophia_api::term::Term;
 
 use super::parser::extractors::rcterm_to_string;
 use super::types::{Quad, RefPOM, Triple};
@@ -11,38 +10,6 @@ use crate::parser::rml_model::term_map::{
     GraphMap, SubjectMap, TermMapInfo,
 };
 use crate::parser::rml_model::{Document, PredicateObjectMap, TriplesMap};
-
-pub fn extract_ptm_join_conditions_attributes<'a>(
-    tms: Vec<&'a TriplesMap>,
-    target_ptm: &'a str,
-) -> HashSet<String> {
-    let mut result = HashSet::new();
-    for tm in tms {
-        let poms = &tm.po_maps;
-        for pom in poms {
-            for om in &pom.object_maps {
-                if let Some(ptm_iri) = &om.parent_tm {
-                    let ptm_iri_string = rcterm_to_string(ptm_iri);
-                    if ptm_iri_string == target_ptm {
-                        let value = om
-                            .join_condition
-                            .as_ref()
-                            .map(|jc| {
-                                HashSet::from_iter(
-                                    jc.parent_attributes.clone().into_iter(),
-                                )
-                            })
-                            .unwrap_or(HashSet::new());
-
-                        result.extend(value);
-                    }
-                }
-            }
-        }
-    }
-
-    result
-}
 
 /// Extracts the attributes/references in the given term map infos.
 pub fn extract_attributes_in_tm_infos(

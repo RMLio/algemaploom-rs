@@ -143,20 +143,20 @@ fn extract_function(
     .into();
 
     match tm_info.term_type.unwrap() {
-        sophia_api::term::TermKind::Iri => {
+        TermKind::Iri => {
             Function::Iri {
                 base_iri:       base_iri.clone(),
                 inner_function: value_function,
             }
         }
-        sophia_api::term::TermKind::Literal => {
+        TermKind::Literal => {
             Function::Literal {
                 inner_function:    value_function,
                 langtype_function: None,
                 dtype_function:    None,
             }
         }
-        sophia_api::term::TermKind::BlankNode => {
+        TermKind::BlankNode => {
             Function::BlankNode {
                 inner_function: value_function,
             }

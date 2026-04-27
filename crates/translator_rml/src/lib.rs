@@ -28,7 +28,7 @@ use translator_api::{LanguageTranslator, OperatorTranslator};
 use util::extract_tm_infos_from_sm_poms;
 
 use self::operators::extend::*;
-use self::operators::serializer::{self, translate_serializer_op};
+use self::operators::serializer::translate_serializer_op;
 use self::util::generate_lt_quads_from_spo;
 use crate::parser::extractors::io::parse_file;
 use crate::types::SearchMap;
@@ -96,7 +96,7 @@ impl LanguageTranslator<Document, RMLTranslationError>
             tm_rccellplan_map,
             variable_map,
             target_map,
-            lt_id_quad_map,
+            _lt_id_quad_map: lt_id_quad_map,
         };
         // Finish search dictionaries instantiations
 
@@ -238,7 +238,7 @@ fn add_non_join_related_ops(
         let serialize_format = &target.data_format;
         let quads = lt_quads_map.get(&lt_id).unwrap();
 
-        let serializer_op = serializer::translate_serializer_op(
+        let serializer_op = translate_serializer_op(
             quads,
             serialize_format,
             variable_map,
@@ -472,7 +472,7 @@ mod tests {
     #[ignore]
     #[test]
     fn test_projection_operator() -> ExtractorResult<()> {
-        let graph = load_graph!("rml/sample_mapping.ttl").unwrap();
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let mut triples_map_vec = extract_triples_maps(&graph)?;
         assert_eq!(triples_map_vec.len(), 1);
 
@@ -511,7 +511,7 @@ mod tests {
     #[ignore]
     #[test]
     fn test_extend_operator() -> ExtractorResult<()> {
-        let graph = load_graph!("rml/sample_mapping.ttl").unwrap();
+        let graph = load_graph!("rml/sample_mapping.ttl")?;
         let mut triples_map_vec = extract_triples_maps(&graph)?;
         assert_eq!(triples_map_vec.len(), 1);
         let triples_map = triples_map_vec.pop().unwrap();
@@ -541,7 +541,7 @@ mod tests {
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
-        let _output = File::create("op_trans_output.json").unwrap();
+        let _output = File::create("op_trans_output.json")?;
         println!("{:#?}", operators);
         Ok(())
     }
@@ -553,7 +553,7 @@ mod tests {
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
-        let _output = File::create("op_trans_complex_output.json").unwrap();
+        let _output = File::create("op_trans_complex_output.json")?;
         println!("{:#?}", operators);
         Ok(())
     }

@@ -1,27 +1,25 @@
-
-
 use lazy_static::lazy_static;
 
 use sophia_inmem::graph::FastGraph;
 use sophia_term::ArcTerm;
 
-use crate::parser::extractors::{ExtractorResult, FromVocab, RcTerm};
 use crate::parser::extractors::config_extractor::extract_parse_config;
+use crate::parser::extractors::{ExtractorResult, FromVocab, RcTerm};
 use crate::parser::rml_model::source_target::{Source, SourceType};
 
 lazy_static! {
     static ref PARSE_CONFIGS_PREDICATES: Vec<(String, ArcTerm)> = vec![
         (
-            vocab::rmls::PROPERTY::HOSTNAME.1.to_string(),
-            vocab::rmls::PROPERTY::HOSTNAME.to_arcterm()
+            vocab::rmls::property::HOSTNAME.1.to_string(),
+            vocab::rmls::property::HOSTNAME.to_arcterm()
         ),
         (
-            vocab::rmls::PROPERTY::PORT.1.to_string(),
-            vocab::rmls::PROPERTY::PORT.to_arcterm()
+            vocab::rmls::property::PORT.1.to_string(),
+            vocab::rmls::property::PORT.to_arcterm()
         ),
         (
-            vocab::rmls::PROPERTY::TOPIC.1.to_string(),
-            vocab::rmls::PROPERTY::TOPIC.to_arcterm()
+            vocab::rmls::property::TOPIC.1.to_string(),
+            vocab::rmls::property::TOPIC.to_arcterm()
         )
     ];
 

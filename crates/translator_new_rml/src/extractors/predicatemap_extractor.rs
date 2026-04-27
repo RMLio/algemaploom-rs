@@ -26,7 +26,7 @@ impl TermMapExtractor<TermMapEnum> for PredicateMap {
     fn extract_self_term_map<TS>(
         subj_ref: TS,
         graph_ref: &FastGraph,
-    ) -> super::ExtractorResult<TermMapEnum>
+    ) -> ExtractorResult<TermMapEnum>
     where
         TS: Term + Clone,
     {
@@ -37,15 +37,15 @@ impl TermMapExtractor<TermMapEnum> for PredicateMap {
 
     fn get_shortcut_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::PREDICATE.to_rcterm(),
-            vocab::rml_core::PROPERTY::PREDICATE.to_rcterm(),
+            vocab::r2rml::property::PREDICATE.to_rcterm(),
+            vocab::rml_core::property::PREDICATE.to_rcterm(),
         ]
     }
 
     fn get_map_preds() -> Vec<RcTerm> {
         vec![
-            vocab::r2rml::PROPERTY::PREDICATEMAP.to_rcterm(),
-            vocab::rml_core::PROPERTY::PREDICATE_MAP.to_rcterm(),
+            vocab::r2rml::property::PREDICATEMAP.to_rcterm(),
+            vocab::rml_core::property::PREDICATE_MAP.to_rcterm(),
         ]
     }
 }

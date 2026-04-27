@@ -5,10 +5,10 @@ use std::io;
 use std::io::BufRead;
 use std::path::PathBuf;
 
+use common::logger::init_logger;
 use log::debug;
-use translator::api::{process_one_file, process_one_str};
-use translator::logger::init_logger;
 use plan::error::PlanError;
+use translator::api::{process_one_file, process_one_str};
 use walkdir::WalkDir;
 
 pub fn main() -> Result<(), PlanError> {

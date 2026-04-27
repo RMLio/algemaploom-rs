@@ -7,7 +7,7 @@ use sophia_term::RcTerm;
 use super::{rcterm_to_string, Extractor, ExtractorResult};
 use crate::parser::extractors::store::get_object;
 use crate::parser::extractors::FromVocab;
-use crate::parser::rml_model::source_target::{LogicalTarget, LdesInformation};
+use crate::parser::rml_model::source_target::{LdesInformation, LogicalTarget};
 
 fn extract_output_target(
     target_subject: &RcTerm,
@@ -16,7 +16,7 @@ fn extract_output_target(
     if let Ok(output_path_iri) = get_object(
         graph,
         target_subject,
-        &vocab::void::PROPERTY::DATA_DUMP.to_rcterm(),
+        &vocab::void::property::DATA_DUMP.to_rcterm(),
     ) {
         let path = rcterm_to_string(&output_path_iri);
 
@@ -26,7 +26,7 @@ fn extract_output_target(
     if let Ok(sparql_endpoint_iri) = get_object(
         graph,
         target_subject,
-        &vocab::void::PROPERTY::SPARQL_ENDPOINT.to_rcterm(),
+        &vocab::void::property::SPARQL_ENDPOINT.to_rcterm(),
     ) {
         let sparql_path = rcterm_to_string(&sparql_endpoint_iri);
 
@@ -47,21 +47,21 @@ impl Extractor<LogicalTarget> for LogicalTarget {
         subject: &RcTerm,
         graph: &FastGraph,
     ) -> ExtractorResult<LogicalTarget> {
-        let target_pred = vocab::rmlt::PROPERTY::TARGET.to_rcterm();
+        let target_pred = vocab::rmlt::property::TARGET.to_rcterm();
         let serialization_pred =
-            vocab::rmlt::PROPERTY::SERIALIZATION.to_rcterm();
-        let compression_pred = vocab::rmlt::PROPERTY::COMPRESSION.to_rcterm();
+            vocab::rmlt::property::SERIALIZATION.to_rcterm();
+        let compression_pred = vocab::rmlt::property::COMPRESSION.to_rcterm();
 
         let compression = get_object(graph, subject, &compression_pred).ok();
         let serialization = get_object(graph, subject, &serialization_pred)
-            .unwrap_or(vocab::formats::CLASS::NTRIPLES.to_rcterm());
+            .unwrap_or(vocab::formats::class::NTRIPLES.to_rcterm());
 
         let target = get_object(graph, subject, &target_pred)?;
         let (output_type, config) =
             extract_output_target(&target, graph)?;
 
         // Extract LDES information if this is an LDES target
-        let ldes = if let Ok(_) = get_object(graph, subject, &vocab::rmlt::PROPERTY::LDES.to_rcterm()) {
+        let ldes = if let Ok(_) = get_object(graph, subject, &vocab::rmlt::property::LDES.to_rcterm()) {
             Some(LdesInformation::extract_self(subject, graph)?)
         } else {
             None
@@ -86,17 +86,11 @@ mod tests {
     use std::io::BufReader;
     use std::path::PathBuf;
 
-    use sophia_api::graph::Graph;
-    use sophia_api::prelude::Any;
     use sophia_api::term::FromTerm;
-    use sophia_api::triple::Triple;
     use sophia_term::RcTerm;
 
     use crate::parser::extractors::io::load_graph_bread;
-    use crate::parser::extractors::{
-        ExtractorResult, FromVocab, TermMapExtractor,
-    };
-    use crate::parser::rml_model::term_map::{SubjectMap, TermMapType};
+    use crate::parser::extractors::ExtractorResult;
     use crate::{load_graph, test_case};
 
     #[test]
