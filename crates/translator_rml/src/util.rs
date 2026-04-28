@@ -97,7 +97,7 @@ pub fn extract_tm_infos_from_poms(
 
 pub fn generate_lt_quads_from_doc(
     doc: &Document,
-) -> HashMap<String, HashSet<Quad>> {
+) -> HashMap<String, HashSet<Quad<'_>>> {
     let mut result = HashMap::new();
     for tm in &doc.triples_maps {
         result.extend(generate_lt_quads_from_spo(&tm.subject_map, &tm.po_maps));
