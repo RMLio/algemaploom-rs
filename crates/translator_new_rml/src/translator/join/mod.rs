@@ -1,12 +1,5 @@
 use std::collections::{HashMap, HashSet};
 
-use operator::{Extend, Operator, Rename, Serializer, Target};
-use plan::data_type::RcRefCellPlan;
-use plan::states::join::join;
-use plan::states::Processed;
-use plan::Plan;
-use sophia_term::RcTerm;
-
 use super::extend::insert_non_constant_func;
 use super::store::SearchStore;
 use super::OperatorTranslator;
@@ -19,6 +12,13 @@ use crate::rml_model::v2::{
 use crate::translator::error::TranslationError;
 use crate::translator::extend::extend_from_term_map;
 use crate::translator::serializer::get_var_or_constant;
+use operator::rename::Rename;
+use operator::{Extend, Operator, Serializer, Target};
+use plan::data_type::RcRefCellPlan;
+use plan::states::join::join;
+use plan::states::Processed;
+use plan::Plan;
+use sophia_term::RcTerm;
 
 #[derive(Debug, Clone)]
 pub struct JoinTranslator {}

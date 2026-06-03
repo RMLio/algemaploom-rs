@@ -13,7 +13,8 @@ use std::path::Path;
 use std::rc::Rc;
 
 use error::RMLTranslationError;
-use operator::{Extend, Operator, Rename};
+use operator::rename::Rename;
+use operator::{Extend, Operator};
 use operators::projection::ProjectionTranslator;
 use operators::source::SourceOpTranslator;
 use parser::extractors::{rcterm_to_string, TermMapExtractor};

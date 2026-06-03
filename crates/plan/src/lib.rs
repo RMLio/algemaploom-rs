@@ -188,8 +188,9 @@ mod tests {
     use std::collections::{HashMap, HashSet};
 
     use operator::projection::Projection;
+    use operator::rename::Rename;
     use operator::source::iterator::Iterator;
-    use operator::{Operator, Rename, Source};
+    use operator::{Operator, Source};
     use petgraph::algo::is_isomorphic_matching;
     use states::Processed;
 
