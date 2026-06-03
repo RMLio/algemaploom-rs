@@ -9,6 +9,7 @@ pub mod projection;
 pub mod rename;
 pub mod extend;
 pub mod serializer;
+pub mod target;
 
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
@@ -20,9 +21,9 @@ use crate::projection::Projection;
 use crate::rename::Rename;
 pub use crate::serializer::Serializer;
 pub use crate::source::Source;
+pub use crate::target::Target;
 use anyhow::Result;
 use display::{JsonDisplay, PrettyDisplay};
-use formats::DataFormat;
 use serde::{Deserialize, Serialize};
 
 pub type RcOperator = Rc<Operator>;
@@ -111,8 +112,6 @@ where
     }
 }
 
-// Post-mapping operators
-
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum IOType {
     StdIn,
@@ -127,44 +126,5 @@ pub enum IOType {
 impl Default for IOType {
     fn default() -> Self {
         Self::StdOut
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Target {
-    #[serde(flatten)]
-    pub configuration: HashMap<String, String>,
-    pub target_type:   IOType,
-    pub data_format:   DataFormat,
-}
-
-impl Default for Target {
-    fn default() -> Self {
-        Self {
-            configuration: Default::default(),
-            target_type:   IOType::StdOut,
-            data_format:   DataFormat::NQuads,
-        }
-    }
-}
-
-impl PrettyDisplay for Target {
-    fn pretty_string(&self) -> Result<String> {
-        let result = format!(
-            "type: {:?} \ndata format: {:?} \nconfig: {}
-             ",
-            self.target_type,
-            self.data_format,
-            serde_json::to_string_pretty(&self.configuration)?
-        );
-        Ok(result)
-    }
-}
-
-impl Hash for Target {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        hash_hashmap(&self.configuration, state);
-        self.target_type.hash(state);
-        self.data_format.hash(state);
     }
 }
