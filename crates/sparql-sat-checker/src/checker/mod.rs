@@ -1,7 +1,8 @@
 use crate::extractor::rml::trmap_sub_expression::TrMapSubExpression;
 
 use error::{CheckerError, CheckerErrorKind, CheckerResult};
-use operator::{Function, TermType};
+use operator::extend::function::Function;
+use operator::extend::term_type::TermType;
 use plan::data_type::DiGraphOperators;
 use spargebra::term::{Literal, NamedNode, NamedNodePattern, TermPattern, TriplePattern};
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};

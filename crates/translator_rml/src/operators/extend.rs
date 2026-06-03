@@ -1,16 +1,16 @@
 use std::collections::HashMap;
 
-use lazy_static::lazy_static;
-use operator::{Extend, Function, Operator, RcExtendFunction};
-use regex::Regex;
-use sophia_api::term::TermKind;
-
 use crate::parser::extractors::rcterm_to_string;
 use crate::parser::rml_model::term_map::{
     SubjectMap, TermMapInfo, TermMapType,
 };
 use crate::parser::rml_model::PredicateObjectMap;
 use crate::util::extract_tm_infos_from_sm_poms;
+use lazy_static::lazy_static;
+use operator::extend::function::{Function, RcExtendFunction};
+use operator::{Extend, Operator};
+use regex::Regex;
+use sophia_api::term::TermKind;
 use translator_api::OperatorTranslator;
 
 #[derive(Debug, Clone)]

@@ -1,4 +1,5 @@
-use operator::{Function, Operator};
+use operator::extend::function::Function;
+use operator::Operator;
 use plan::data_type::{DiGraphOperators, PlanNode};
 
 use crate::{

@@ -7,9 +7,11 @@ use std::collections::{HashMap, HashSet};
 
 use anyhow::Result;
 use extend_creation::create_extend_function;
+use operator::extend::function::Function;
+use operator::extend::term_type::TermType;
 use operator::formats::DataFormat;
 use operator::projection::Projection;
-use operator::{Extend, Function, Operator, Serializer, Target, TermType};
+use operator::{Extend, Operator, Serializer, Target};
 use oxigraph::model::NamedOrBlankNodeRef;
 use oxigraph::store::Store;
 use plan::states::join::join;

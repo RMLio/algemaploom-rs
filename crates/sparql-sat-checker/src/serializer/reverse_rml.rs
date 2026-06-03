@@ -4,12 +4,15 @@ use crate::{
     extractor::rml::trmap_sub_expression::TrMapSubExpression
     ,
 };
+use operator::extend::function::Function;
+use operator::extend::term_type::TermType;
 use operator::{
-    formats::ReferenceFormulation, source::field::Field, Function, Operator,
+    formats::ReferenceFormulation, source::field::Field, Operator,
 };
 use plan::data_type::DiGraphOperators;
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
 use uuid::Uuid;
+
 fn add_prefixes(buffer: &mut Vec<String>) {
     buffer.push("@base  <http://example.com/ns#>.".to_string());
     buffer.push(format!(
@@ -56,14 +59,14 @@ fn extend_func_to_rml(
             }
         }
         Function::TypedConstant { value, term_type } => match term_type {
-            operator::TermType::Literal => {
+            TermType::Literal => {
                 if no_rr_constant {
                     Ok(value.to_string())
                 } else {
                     Ok(format!("rr:constant \"{}\" ;", value))
                 }
             }
-            operator::TermType::IRI => {
+            TermType::IRI => {
                 if no_rr_constant {
                     Ok(format!("<{}>", value))
                 } else {

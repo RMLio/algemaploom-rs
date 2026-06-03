@@ -4,8 +4,9 @@ use std::rc::Rc;
 
 use error::ShExMLTranslationError;
 use log::{debug, trace};
+use operator::extend::function::Function;
 use operator::rename::Rename;
-use operator::{Extend, Function, Serializer, Target};
+use operator::{Extend, Serializer, Target};
 use parcombi::{
     IndexedShExMLDocument, Object, PrefixNameSpace, ShExMLDocument,
     ShapeExpression, ShapeIdent, Subject,

@@ -1,13 +1,12 @@
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-use either::Either;
-use log::trace;
-use operator::Function;
-
 use crate::parcombi::{
     ExpressionReferenceIdent, ExpressionStmtEnum, Iterator
 };
+use either::Either;
+use log::trace;
+use operator::extend::function::Function;
 
 pub mod term;
 

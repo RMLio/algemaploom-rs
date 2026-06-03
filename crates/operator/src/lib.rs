@@ -7,11 +7,13 @@ pub mod source;
 pub mod join;
 pub mod projection;
 pub mod rename;
+pub mod extend;
 
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
+pub use crate::extend::Extend;
 pub use crate::join::Join;
 use crate::projection::Projection;
 use crate::rename::Rename;
@@ -105,115 +107,6 @@ where
         key.hash(state);
         value.hash(state);
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Extend {
-    #[serde(flatten)]
-    pub extend_pairs: HashMap<String, Function>,
-}
-
-impl Extend {
-    pub fn extend_with(self, other: Self) -> Self {
-        let mut this_pairs = self.extend_pairs;
-        let other_pairs = other.extend_pairs;
-
-        this_pairs.extend(other_pairs);
-
-        Extend {
-            extend_pairs: this_pairs,
-        }
-    }
-}
-
-impl PrettyDisplay for Extend {
-    fn pretty_string(&self) -> Result<String> {
-        let vec_pairs: Vec<_> = self
-            .extend_pairs
-            .iter()
-            .map(|pair| format!("{} -> {:?}", pair.0, pair.1))
-            .collect();
-
-        Ok(format!("Extended pairs: \n {}", vec_pairs.join("\n")))
-    }
-}
-
-pub type RcExtendFunction = Rc<Function>;
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub enum TermType {
-    Literal,
-    IRI,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum Function {
-    Nop,
-    SimpleConcat {
-        inner_function: Option<RcExtendFunction>,
-    },
-    Concatenate {
-        left_value:  RcExtendFunction,
-        separator:   String,
-        right_value: RcExtendFunction,
-    },
-    Reference {
-        value: String,
-    },
-    TypedConstant {
-        value:     String,
-        term_type: TermType,
-    },
-
-    Constant {
-        value: String,
-    },
-    TemplateString {
-        value: String,
-    },
-
-    Replace {
-        replace_map:    HashMap<String, HashSet<String>>,
-        inner_function: RcExtendFunction,
-    },
-
-    TemplateFunctionValue {
-        template:                String,
-        variable_function_pairs: Vec<(String, RcExtendFunction)>,
-    },
-    IriEncode {
-        inner_function: RcExtendFunction,
-    },
-    UriEncode {
-        inner_function: RcExtendFunction,
-    },
-    Iri {
-        base_iri:       Option<String>,
-        inner_function: RcExtendFunction,
-    },
-    Literal {
-        inner_function:    RcExtendFunction,
-        dtype_function:    Option<RcExtendFunction>,
-        langtype_function: Option<RcExtendFunction>,
-    },
-    BlankNode {
-        inner_function: RcExtendFunction,
-    },
-    Upper {
-        inner_function: RcExtendFunction,
-    },
-    Lower {
-        inner_function: RcExtendFunction,
-    },
-    FnO {
-        fno_identifier: String,
-        parameters:     HashMap<String, RcExtendFunction>,
-        return_type:    Option<String>,
-    },
-    Star {
-        // TODO: Implement star function
-    },
 }
 
 // Post-mapping operators

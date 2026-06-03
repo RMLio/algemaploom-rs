@@ -1,9 +1,6 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use operator::{Extend, Function};
-use sophia_api::term::Term;
-
 use super::error::TranslationError;
 use super::store::SearchStore;
 use super::OperatorTranslator;
@@ -17,6 +14,9 @@ use crate::rml_model::v2::core::expression_map::{
 };
 use crate::rml_model::v2::core::{TemplateSubString, TriplesMap};
 use crate::rml_model::v2::fnml::FunctionExpressionMap;
+use operator::extend::function::Function;
+use operator::extend::Extend;
+use sophia_api::term::Term;
 
 pub fn func_is_not_constant(func: &Function) -> bool {
     match func {

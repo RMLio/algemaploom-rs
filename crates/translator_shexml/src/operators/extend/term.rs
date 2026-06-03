@@ -1,11 +1,10 @@
 use std::rc::Rc;
 
-use log::warn;
-use operator::Function;
-
 use crate::parcombi::{
     IndexedShExMLDocument, Object, PrefixNameSpace, ShapeExpression,
 };
+use log::warn;
+use operator::extend::function::Function;
 
 pub fn obj_lang_datatype_function(
     doc: &IndexedShExMLDocument,

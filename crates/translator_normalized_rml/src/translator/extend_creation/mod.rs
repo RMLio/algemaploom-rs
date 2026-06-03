@@ -1,15 +1,15 @@
 use std::rc::Rc;
 
-use anyhow::Result;
-use operator::{Function, TermType};
-use oxigraph::model::{NamedOrBlankNodeRef, TermRef};
-use oxigraph::store::Store;
-
 use super::data::QueryAttrMap;
 use super::util::termref_to_literal;
 use crate::error::oxigraph::OxigraphErrorKind;
 use crate::translator::util::get_object;
 use crate::FromVocab;
+use anyhow::Result;
+use operator::extend::function::Function;
+use operator::extend::term_type::TermType;
+use oxigraph::model::{NamedOrBlankNodeRef, TermRef};
+use oxigraph::store::Store;
 
 pub fn create_extend_function(
     term_map_subj: NamedOrBlankNodeRef,
