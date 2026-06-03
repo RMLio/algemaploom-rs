@@ -8,6 +8,7 @@ pub mod join;
 pub mod projection;
 pub mod rename;
 pub mod extend;
+pub mod serializer;
 
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
@@ -17,6 +18,7 @@ pub use crate::extend::Extend;
 pub use crate::join::Join;
 use crate::projection::Projection;
 use crate::rename::Rename;
+pub use crate::serializer::Serializer;
 pub use crate::source::Source;
 use anyhow::Result;
 use display::{JsonDisplay, PrettyDisplay};
@@ -110,32 +112,6 @@ where
 }
 
 // Post-mapping operators
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Serializer {
-    pub template: String,
-    #[serde(flatten)]
-    pub options:  Option<HashMap<String, String>>,
-    pub format:   DataFormat,
-}
-
-impl PrettyDisplay for Serializer {
-    fn pretty_string(&self) -> Result<String> {
-        let format_type = format!("Format type: {:?}", self.format);
-
-        Ok(format!("{}\nTemplate: {}", format_type, self.template))
-    }
-}
-
-impl Hash for Serializer {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.template.hash(state);
-        if let Some(option_map) = self.options.as_ref() {
-            hash_hashmap(option_map, state);
-        }
-        self.format.hash(state);
-    }
-}
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum IOType {

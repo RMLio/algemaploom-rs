@@ -1,10 +1,10 @@
-use operator::{Operator, Serializer};
-
 use super::Processed;
 use crate::data_type::{EdgeDirection, PlanEdge, PlanNode, RcRefCellPlan};
 use crate::error::PlanError;
 use crate::states::Serialized;
 use crate::Plan;
+use operator::serializer::Serializer;
+use operator::Operator;
 
 impl Plan<Processed> {
     /// .
