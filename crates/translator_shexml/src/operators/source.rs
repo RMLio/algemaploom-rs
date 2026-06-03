@@ -3,6 +3,8 @@ use std::collections::{HashMap, HashSet};
 use log::{debug, trace};
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
+use operator::source::field::Field;
+use operator::source::iterator;
 use operator::{IOType, Source};
 use plan::error::PlanError;
 
@@ -145,7 +147,7 @@ fn extract_source_iter_pairs(
 
 fn translate_to_operator_iterator(
     shexml_iter: &Iterator,
-) -> operator::Iterator {
+) -> iterator::Iterator {
     let reference_formulation = translate_to_reference_formulation(
         shexml_iter.iter_type.as_ref().unwrap(),
     );
@@ -153,7 +155,7 @@ fn translate_to_operator_iterator(
     let fields =
         translate_to_operator_fields(shexml_iter, &reference_formulation);
 
-    operator::Iterator {
+    iterator::Iterator {
         alias: Some(shexml_iter.ident.to_string()),
         reference: shexml_iter.query.clone(),
         reference_formulation,
@@ -176,20 +178,20 @@ fn translate_to_reference_formulation(
 fn translate_to_operator_fields(
     parent_shex_iter: &Iterator,
     ref_formulation: &ReferenceFormulation,
-) -> Vec<operator::Field> {
+) -> Vec<Field> {
     let mut result = Vec::new();
-    let flat_fields: Vec<operator::Field> = parent_shex_iter
+    let flat_fields: Vec<Field> = parent_shex_iter
         .fields
         .iter()
         .filter_map(|field| translate_to_flat_fields(field, ref_formulation))
         .collect();
     result.extend(flat_fields);
 
-    let nested_iterator_fields: Vec<operator::Field> = parent_shex_iter
+    let nested_iterator_fields: Vec<Field> = parent_shex_iter
         .nested_iterator
         .iter()
         .map(|nested_iter| {
-            operator::Field {
+            Field {
                 absolute_path:         Some(nested_iter.ident.clone()),
                 alias:                 nested_iter.ident.clone(),
                 reference:             nested_iter.query.clone(),
@@ -211,10 +213,10 @@ fn translate_to_operator_fields(
 fn translate_to_flat_fields(
     shex_field: &parcombi::Field,
     ref_formulation: &ReferenceFormulation,
-) -> Option<operator::Field> {
+) -> Option<Field> {
     match shex_field.field_type {
         parcombi::FieldType::Push | parcombi::FieldType::Normal => {
-            Some(operator::Field {
+            Some(Field {
                 alias:                 shex_field.ident.clone(),
                 absolute_path:         Some(shex_field.ident.clone()),
                 reference:             Some(shex_field.query.clone()),

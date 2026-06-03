@@ -5,7 +5,9 @@ use std::collections::{HashMap, HashSet};
 use anyhow::Result;
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
-use operator::{Field, Source};
+use operator::source::field::Field;
+use operator::source::iterator::Iterator;
+use operator::Source;
 use oxigraph::model::{NamedOrBlankNode, NamedOrBlankNodeRef, Quad, Term, TermRef};
 use oxigraph::store::Store;
 use util::get_queries_from_template;
@@ -80,7 +82,7 @@ pub fn create_source_operator(
             config:        get_source_config(logical_source_iri, store)?,
             access:        Default::default(),
             source_type:   operator::IOType::File,
-            root_iterator: operator::Iterator {
+            root_iterator: Iterator {
                 reference,
                 reference_formulation,
                 fields,

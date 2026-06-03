@@ -3,14 +3,16 @@ pub mod formats;
 mod test_util;
 pub mod tuples;
 pub mod value;
+pub mod source;
 
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
+pub use crate::source::Source;
 use anyhow::Result;
 use display::{JsonDisplay, PrettyDisplay};
-use formats::{DataFormat, ReferenceFormulation};
+use formats::DataFormat;
 use serde::{Deserialize, Serialize};
 
 pub type RcOperator = Rc<Operator>;
@@ -96,65 +98,6 @@ where
     for (key, value) in pairs {
         key.hash(state);
         value.hash(state);
-    }
-}
-
-// TODO: Turn Field and Iterator into an Enum since a field itself can be an iterator!
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Field {
-    pub alias:                 String,
-    pub absolute_path:         Option<String>,
-    pub reference:             Option<String>,
-    pub constant:              Option<String>,
-    pub iterator:              Option<String>,
-    pub reference_formulation: ReferenceFormulation,
-    pub inner_fields:          Vec<Field>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub struct Iterator {
-    pub reference:             Option<String>,
-    pub reference_formulation: ReferenceFormulation,
-    pub fields:                Vec<Field>,
-    pub alias:                 Option<String>,
-}
-
-impl Hash for Iterator {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.reference.hash(state);
-        self.reference_formulation.hash(state);
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Source {
-    #[serde(flatten)]
-    pub config:        HashMap<String, String>,
-    pub access:        HashMap<String, String>,
-    pub source_type:   IOType,
-    pub root_iterator: Iterator,
-}
-
-impl PrettyDisplay for Source {
-    fn pretty_string(&self) -> Result<String> {
-        let result = format!(
-            "type: {:?} \nreference iterator: {:#?} \nconfig: {}\naccess: {}
-            ",
-            self.source_type,
-            self.root_iterator,
-            serde_json::to_string_pretty(&self.config)?,
-            serde_json::to_string_pretty(&self.access)?
-        );
-        Ok(result)
-    }
-}
-
-impl Hash for Source {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        hash_hashmap(&self.config, state);
-        hash_hashmap(&self.access, state);
-        self.source_type.hash(state);
-        self.root_iterator.hash(state);
     }
 }
 

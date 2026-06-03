@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use operator::formats::ReferenceFormulation;
-use operator::Field as OperatorField;
+use operator::source::field::Field as OperatorField;
 
 use crate::error::NewRMLTranslationResult;
 use crate::extractors::turtle_stringify_term;

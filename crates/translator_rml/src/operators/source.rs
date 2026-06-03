@@ -1,6 +1,8 @@
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
-use operator::{Field, Iterator, Source};
+use operator::source::field::Field;
+use operator::source::iterator::Iterator;
+use operator::Source;
 use translator_api::OperatorTranslator;
 
 use crate::parser::extractors::FromVocab;

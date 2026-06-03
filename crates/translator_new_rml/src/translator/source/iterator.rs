@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
-use operator::{formats, Iterator};
+use operator::formats;
+use operator::source::iterator::Iterator;
 
 use super::fields::translate_rml_field_vec;
 use crate::error::NewRMLTranslationResult;

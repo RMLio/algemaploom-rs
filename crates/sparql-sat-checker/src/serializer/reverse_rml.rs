@@ -5,7 +5,7 @@ use crate::{
     ,
 };
 use operator::{
-    formats::ReferenceFormulation, Field, Function, Operator,
+    formats::ReferenceFormulation, source::field::Field, Function, Operator,
 };
 use plan::data_type::DiGraphOperators;
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
