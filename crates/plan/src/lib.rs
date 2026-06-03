@@ -187,8 +187,9 @@ fn write_string_to_file(
 mod tests {
     use std::collections::{HashMap, HashSet};
 
+    use operator::projection::Projection;
     use operator::source::iterator::Iterator;
-    use operator::{Operator, Projection, Rename, Source};
+    use operator::{Operator, Rename, Source};
     use petgraph::algo::is_isomorphic_matching;
     use states::Processed;
 

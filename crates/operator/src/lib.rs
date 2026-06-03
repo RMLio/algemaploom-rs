@@ -5,12 +5,14 @@ pub mod tuples;
 pub mod value;
 pub mod source;
 pub mod join;
+pub mod projection;
 
 use std::collections::{HashMap, HashSet};
 use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
 pub use crate::join::Join;
+use crate::projection::Projection;
 pub use crate::source::Source;
 use anyhow::Result;
 use display::{JsonDisplay, PrettyDisplay};
@@ -100,30 +102,6 @@ where
     for (key, value) in pairs {
         key.hash(state);
         value.hash(state);
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-pub struct Projection {
-    pub projection_attributes: HashSet<String>,
-}
-
-impl PrettyDisplay for Projection {
-    fn pretty_string(&self) -> Result<String> {
-        let attributes = self
-            .projection_attributes
-            .iter()
-            .fold(String::new(), |acc, val| acc + val + ", ");
-
-        Ok(format!("Projected attributes: {}", attributes))
-    }
-}
-
-impl Hash for Projection {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        for val in self.projection_attributes.iter() {
-            val.hash(state);
-        }
     }
 }
 

@@ -1,6 +1,7 @@
-use operator::{Operator, Projection};
 use crate::parser::rml_model::join::JoinCondition;
 use crate::parser::rml_model::term_map::TermMapInfo;
+use operator::projection::Projection;
+use operator::Operator;
 
 use crate::util::extract_attributes_in_tm_infos;
 use translator_api::OperatorTranslator;
