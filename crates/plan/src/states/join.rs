@@ -2,13 +2,13 @@ use std::borrow::Cow;
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use anyhow::Result;
-use operator::{Join, Operator};
-
 use crate::data_type::{EdgeDirection, PlanEdge, PlanNode, RcRefCellPlan};
 use crate::error::PlanError;
 use crate::states::Processed;
 use crate::Plan;
+use anyhow::Result;
+use operator::join::{JoinType, PredicateType};
+use operator::{Join, Operator};
 
 /// Joins the given two mutable plans and transitions to the state [NotAliasedJoinedPlan].
 ///
@@ -189,8 +189,8 @@ impl AliasedJoinedPlan<Processed> {
         let join_op = Operator::JoinOp {
             config: Join {
                 left_right_attr_pairs: vec![],
-                join_type:             operator::JoinType::CrossJoin,
-                predicate_type:        operator::PredicateType::Equal,
+                join_type:             JoinType::CrossJoin,
+                predicate_type:        PredicateType::Equal,
             },
         };
 
@@ -204,8 +204,8 @@ impl AliasedJoinedPlan<Processed> {
         let join_op = Operator::JoinOp {
             config: Join {
                 left_right_attr_pairs: vec![],
-                join_type:             operator::JoinType::NaturalJoin,
-                predicate_type:        operator::PredicateType::Equal,
+                join_type:             JoinType::NaturalJoin,
+                predicate_type:        PredicateType::Equal,
             },
         };
 
@@ -246,8 +246,8 @@ impl WhereByPlan<Processed> {
         let join_op = Operator::JoinOp {
             config: Join {
                 left_right_attr_pairs,
-                join_type: operator::JoinType::InnerJoin,
-                predicate_type: operator::PredicateType::Equal,
+                join_type: JoinType::InnerJoin,
+                predicate_type: PredicateType::Equal,
             },
         };
 
