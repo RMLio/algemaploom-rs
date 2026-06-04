@@ -43,7 +43,7 @@ pub mod states;
 /// the addition of mapping algebra operators.
 #[derive(Debug, Clone)]
 pub struct Plan<T> {
-    _t:        PhantomData<T>,
+    _t:        PhantomData<T>,  // This allows initializing the plan in the empty state without having to specify the type parameter <Init> explicitly.
     /// Underlying graph data structure from [petgraph](DiGraph).
     pub graph: RcRefCellDiGraph,
 
