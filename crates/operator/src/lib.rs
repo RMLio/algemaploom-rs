@@ -1,3 +1,9 @@
+//! This module defines the operators that can be used in a data transformation pipeline.
+//! Each operator is represented as a variant of the `Operator` enum, which contains the
+//! configuration for that operator. The operators include Source, Join, Union, Projection, Extend,
+//! Rename, Serializer, and Target. Each operator has its own configuration struct that defines
+//! the parameters for that operator.
+//! The module also includes traits for displaying the operators in JSON and pretty formats.
 pub mod display;
 pub mod formats;
 pub mod join;
@@ -6,9 +12,8 @@ pub mod rename;
 pub mod extend;
 pub mod serializer;
 pub mod io;
+pub mod utils;
 
-use std::collections::HashMap;
-use std::hash::{Hash, Hasher};
 use std::rc::Rc;
 
 pub use crate::extend::Extend;
@@ -91,19 +96,5 @@ impl PrettyDisplay for Operator {
         };
 
         Ok(format!("{}\n{}", title_string, content_string))
-    }
-}
-
-fn hash_hashmap<H, K, V>(hash_map: &HashMap<K, V>, state: &mut H)
-where
-    H: Hasher,
-    K: Hash + Ord,
-    V: Hash,
-{
-    let mut pairs: Vec<_> = hash_map.iter().collect();
-    pairs.sort_by(|pair1, pair2| pair1.0.cmp(pair2.0));
-    for (key, value) in pairs {
-        key.hash(state);
-        value.hash(state);
     }
 }
