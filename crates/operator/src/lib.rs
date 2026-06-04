@@ -1,6 +1,5 @@
 pub mod display;
 pub mod formats;
-pub mod value;
 pub mod join;
 pub mod projection;
 pub mod rename;
