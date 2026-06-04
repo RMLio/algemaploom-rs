@@ -1,3 +1,6 @@
+//! This module defines the data formats and reference formulations supported by operators
+//! Source, Target and Serializer.
+
 use serde::{Deserialize, Serialize};
 use xml::XPathConfig;
 pub mod xml;

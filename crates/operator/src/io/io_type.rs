@@ -1,5 +1,3 @@
-// TODO: put in separate module; used by source & target ("io"?)
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
