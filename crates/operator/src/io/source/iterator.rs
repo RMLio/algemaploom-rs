@@ -1,5 +1,5 @@
 use crate::formats::ReferenceFormulation;
-use crate::source::field::Field;
+use crate::io::source::field::Field;
 use serde::{Deserialize, Serialize};
 use std::hash::{Hash, Hasher};
 

@@ -3,9 +3,10 @@ use std::collections::{HashMap, HashSet};
 use log::{debug, trace};
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
-use operator::source::field::Field;
-use operator::source::iterator;
-use operator::{IOType, Source};
+use operator::io::io_type::IOType;
+use operator::io::source::field::Field;
+use operator::io::source::iterator;
+use operator::Source;
 use plan::error::PlanError;
 
 use crate::error::ShExMLTranslationError;

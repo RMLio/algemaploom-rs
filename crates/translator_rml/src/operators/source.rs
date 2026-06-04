@@ -1,7 +1,8 @@
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
-use operator::source::field::Field;
-use operator::source::iterator::Iterator;
+use operator::io::io_type::IOType;
+use operator::io::source::field::Field;
+use operator::io::source::iterator::Iterator;
 use operator::Source;
 use translator_api::OperatorTranslator;
 
@@ -60,12 +61,12 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
         // keep old RML behavior: do not use access, leave it empty
         let config = tm.logical_source.source.config.clone();
         let source_type = match tm.logical_source.source.source_type {
-            SourceType::CSVW => operator::IOType::File,
-            SourceType::FileInput => operator::IOType::File,
-            SourceType::RDB => operator::IOType::RDB,
-            SourceType::TCP => operator::IOType::Websocket,
-            SourceType::Kafka => operator::IOType::Kafka,
-            SourceType::HTML => operator::IOType::File,
+            SourceType::CSVW => IOType::File,
+            SourceType::FileInput => IOType::File,
+            SourceType::RDB => IOType::RDB,
+            SourceType::TCP => IOType::Websocket,
+            SourceType::Kafka => IOType::Kafka,
+            SourceType::HTML => IOType::File,
         };
 
         Source {

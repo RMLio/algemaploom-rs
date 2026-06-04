@@ -10,6 +10,7 @@ use extend_creation::create_extend_function;
 use operator::extend::function::Function;
 use operator::extend::term_type::TermType;
 use operator::formats::DataFormat;
+use operator::io::io_type::IOType;
 use operator::projection::Projection;
 use operator::{Extend, Operator, Serializer, Target};
 use oxigraph::model::NamedOrBlankNodeRef;
@@ -172,7 +173,7 @@ pub fn translate_normalized_rml(store: &Store, base_iri: Option<String>) -> Resu
 
     let sink = Target {
         configuration: HashMap::new(),
-        target_type: operator::IOType::StdOut,
+        target_type: IOType::StdOut,
         data_format: DataFormat::NQuads,
     };
 

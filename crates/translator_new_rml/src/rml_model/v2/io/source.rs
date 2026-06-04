@@ -1,16 +1,15 @@
 use std::fmt::Debug;
 use std::rc::Rc;
 
-use operator::IOType;
+use crate::extractors::{stringify_term, FromVocab};
+use crate::rml_model::v2::core::RMLIterable;
+use crate::translator::error::TranslationError;
+use operator::io::io_type::IOType;
 use sophia_api::serializer::*;
 use sophia_api::term::{BnodeId, FromTerm};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
-
-use crate::extractors::{stringify_term, FromVocab};
-use crate::rml_model::v2::core::RMLIterable;
-use crate::translator::error::TranslationError;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ReferenceFormulation {

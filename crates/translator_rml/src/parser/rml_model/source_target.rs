@@ -3,7 +3,8 @@ use std::fmt::Display;
 use std::hash::Hash;
 
 use operator::formats::DataFormat;
-use operator::{IOType, Target};
+use operator::io::io_type::IOType;
+use operator::Target;
 use sophia_api::prelude::Iri;
 use sophia_api::term::FromTerm;
 use sophia_term::RcTerm;

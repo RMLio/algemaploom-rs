@@ -6,8 +6,9 @@ use crate::{
 };
 use operator::extend::function::Function;
 use operator::extend::term_type::TermType;
+use operator::io::source::field::Field;
 use operator::{
-    formats::ReferenceFormulation, source::field::Field, Operator,
+    formats::ReferenceFormulation, Operator,
 };
 use plan::data_type::DiGraphOperators;
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};

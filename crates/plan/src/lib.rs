@@ -187,9 +187,10 @@ fn write_string_to_file(
 mod tests {
     use std::collections::{HashMap, HashSet};
 
+    use operator::io::io_type::IOType;
+    use operator::io::source::iterator::Iterator;
     use operator::projection::Projection;
     use operator::rename::Rename;
-    use operator::source::iterator::Iterator;
     use operator::{Operator, Source};
     use petgraph::algo::is_isomorphic_matching;
     use states::Processed;
@@ -202,7 +203,7 @@ mod tests {
         let source = Source {
             config:        HashMap::new(),
             access:        Default::default(),
-            source_type:   operator::IOType::File,
+            source_type:   IOType::File,
             root_iterator: Iterator::default(),
         };
 
@@ -235,7 +236,7 @@ mod tests {
         let source = Source {
             config:        HashMap::new(),
             access:        Default::default(),
-            source_type:   operator::IOType::File,
+            source_type:   IOType::File,
             root_iterator: Iterator::default(),
         };
         plan.source(source.clone());

@@ -3,13 +3,12 @@ pub mod formats;
 mod test_util;
 pub mod tuples;
 pub mod value;
-pub mod source;
 pub mod join;
 pub mod projection;
 pub mod rename;
 pub mod extend;
 pub mod serializer;
-pub mod target;
+pub mod io;
 
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
@@ -20,10 +19,10 @@ pub use crate::join::Join;
 use crate::projection::Projection;
 use crate::rename::Rename;
 pub use crate::serializer::Serializer;
-pub use crate::source::Source;
-pub use crate::target::Target;
 use anyhow::Result;
 use display::{JsonDisplay, PrettyDisplay};
+pub use io::source::Source;
+pub use io::target::Target;
 use serde::{Deserialize, Serialize};
 
 pub type RcOperator = Rc<Operator>;
@@ -109,22 +108,5 @@ where
     for (key, value) in pairs {
         key.hash(state);
         value.hash(state);
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Hash)]
-pub enum IOType {
-    StdIn,
-    StdOut,
-    File,
-    Kafka,
-    Websocket,
-    RDB,
-    SPARQLEndpoint,
-}
-
-impl Default for IOType {
-    fn default() -> Self {
-        Self::StdOut
     }
 }

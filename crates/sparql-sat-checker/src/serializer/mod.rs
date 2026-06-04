@@ -1,6 +1,7 @@
 use std::collections::{HashMap, HashSet};
 
-use operator::{Serializer, Target, formats::DataFormat};
+use operator::io::io_type::IOType;
+use operator::{formats::DataFormat, Serializer, Target};
 use petgraph::visit::IntoNodeReferences;
 use plan::data_type::{DiGraphOperators, PlanEdge, PlanNode};
 use translator_normalized_rml::{GRAPH_ATTR, OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
@@ -66,7 +67,7 @@ pub fn prune_graph_using_trmap_subexprs(
 
         let sink = Target {
             configuration: HashMap::new(),
-            target_type: operator::IOType::StdOut,
+            target_type: IOType::StdOut,
             data_format: DataFormat::NQuads,
         };
         let sink_idx = graph.add_node(PlanNode {

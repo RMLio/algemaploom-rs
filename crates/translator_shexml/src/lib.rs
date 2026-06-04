@@ -5,6 +5,7 @@ use std::rc::Rc;
 use error::ShExMLTranslationError;
 use log::{debug, trace};
 use operator::extend::function::Function;
+use operator::io::io_type::IOType;
 use operator::rename::Rename;
 use operator::{Extend, Serializer, Target};
 use parcombi::{
@@ -124,7 +125,7 @@ fn add_non_join_related_op(
 
     Ok(serialized_plan.sink(&Target {
         configuration: HashMap::new(),
-        target_type:   operator::IOType::StdOut,
+        target_type:   IOType::StdOut,
         data_format:   operator::formats::DataFormat::NQuads,
     })?)
 }

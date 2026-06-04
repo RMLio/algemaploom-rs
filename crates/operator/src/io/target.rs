@@ -1,6 +1,7 @@
 use crate::display::PrettyDisplay;
 use crate::formats::DataFormat;
-use crate::{hash_hashmap, IOType};
+use crate::hash_hashmap;
+use crate::io::io_type::IOType;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};

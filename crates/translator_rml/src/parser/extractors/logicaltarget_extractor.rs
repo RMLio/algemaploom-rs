@@ -1,13 +1,12 @@
 use std::collections::HashMap;
 
-use operator::IOType;
-use sophia_inmem::graph::FastGraph;
-use sophia_term::RcTerm;
-
 use super::{rcterm_to_string, Extractor, ExtractorResult};
 use crate::parser::extractors::store::get_object;
 use crate::parser::extractors::FromVocab;
 use crate::parser::rml_model::source_target::{LdesInformation, LogicalTarget};
+use operator::io::io_type::IOType;
+use sophia_inmem::graph::FastGraph;
+use sophia_term::RcTerm;
 
 fn extract_output_target(
     target_subject: &RcTerm,
