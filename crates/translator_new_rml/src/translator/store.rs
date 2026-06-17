@@ -25,9 +25,9 @@ pub struct SearchStore<'a> {
     /// key: Abstract logical source URI 
     ///
     /// value: [AbstractLogicalSourceEnum]
-    pub abs_ls_search_map:      HashMap<RcTerm, &'a AbstractLogicalSourceEnum>,
+    pub abs_ls_search_map:      HashMap<u64, AbstractLogicalSourceEnum>,
 
-    pub ls_id_sourced_plan_map: HashMap<RcTerm, RcRefCellPlan<Processed>>,
+    pub ls_id_sourced_plan_map: HashMap<u64, RcRefCellPlan<Processed>>,
     /// SubjectMap search map
     pub sm_search_map:          HashMap<RcTerm, &'a TermMapEnum>,
     /// PredicateMap search map
@@ -47,15 +47,15 @@ impl SearchStore<'_> {
     /// and the right value is a vector of the associated
     /// [`TriplesMap`]'s identifiers.
     ///
-    pub fn partition_lsid_tmid(&self) -> Vec<(RcTerm, Vec<RcTerm>)> {
-        let mut result: HashMap<RcTerm, Vec<RcTerm>> = HashMap::new();
+    pub fn partition_lsid_tmid(&self) -> Vec<(u64, Vec<RcTerm>)> {
+        let mut result: HashMap<u64, Vec<RcTerm>> = HashMap::new();
 
         for tm in self.tm_search_map.values() {
-            let abs_ls_id = tm.abs_logical_source.get_identifier();
+            let abs_ls_hash = tm.abs_logical_source.effective_equality_hash();
             let value = &tm.identifier;
 
             result
-                .entry(abs_ls_id)
+                .entry(abs_ls_hash)
                 .and_modify(|tms| tms.push(value.clone()))
                 // RcTerm's cloning (low cost ref counter addition)
                 .or_insert(vec![value.clone()]);
@@ -74,7 +74,7 @@ impl SearchStore<'_> {
         document: &Document,
     ) -> NewRMLTranslationResult<SearchStore<'_>> {
         let mut tm_search_map = HashMap::new();
-        let mut abs_ls_search_map = HashMap::new();
+        let mut abs_ls_search_map: HashMap<u64, AbstractLogicalSourceEnum> = HashMap::new();
         let mut sm_search_map = HashMap::new();
         let mut pm_search_map = HashMap::new();
         let mut om_search_map = HashMap::new();
@@ -82,10 +82,18 @@ impl SearchStore<'_> {
         let mut termm_id_quad_var_map = HashMap::new();
 
         for (tm_count, tm) in document.triples_maps.iter().enumerate(){
-            abs_ls_search_map.insert(
-                tm.abs_logical_source.get_identifier(),
-                &tm.abs_logical_source,
-            );
+            // We use the effective equality hash of the logical source as the key in the abs_ls_search_map to
+            // ensure that logically equivalent sources are treated as the same source, even if they have different identifiers.
+            // If a source with the same effective equality hash already exists in the map,
+            // we merge their fields to ensure that all relevant information is retained.
+            let source_equality_hash = tm.abs_logical_source.effective_equality_hash();
+            abs_ls_search_map
+                .entry(source_equality_hash)
+                .and_modify(|existing_source|
+                    existing_source.merge_fields(&tm.abs_logical_source)
+                )
+                .or_insert(tm.abs_logical_source.clone());
+            
             let tm_id = &tm.identifier;
             tm_search_map.insert(tm_id.clone(), tm);
 
@@ -198,14 +206,14 @@ impl SearchStore<'_> {
 
 fn create_ls_id_sourced_plan_map(
     plan: &mut Plan<Init>,
-    abs_ls_search_map: &HashMap<RcTerm, &AbstractLogicalSourceEnum>,
-) -> NewRMLTranslationResult<HashMap<RcTerm, RcRefCellPlan<Processed>>> {
+    abs_ls_search_map: &HashMap<u64, AbstractLogicalSourceEnum>,
+) -> NewRMLTranslationResult<HashMap<u64, RcRefCellPlan<Processed>>> {
     let mut abs_ls_id_sourced_plan_map = HashMap::new();
-    for abs_ls in abs_ls_search_map.values().copied() {
+    for abs_ls in abs_ls_search_map.values() {
         let source = AbstractLogicalSourceTranslator::translate(abs_ls)?;
         let sourced_plan: RcRefCellPlan<Processed> = plan.source(source).into();
 
-        abs_ls_id_sourced_plan_map.insert(abs_ls.get_identifier(), sourced_plan);
+        abs_ls_id_sourced_plan_map.insert(abs_ls.effective_equality_hash(), sourced_plan);
     }
     Ok(abs_ls_id_sourced_plan_map)
 }

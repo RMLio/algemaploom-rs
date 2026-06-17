@@ -1,17 +1,18 @@
-use std::fmt::Debug;
-use std::rc::Rc;
-
 use crate::extractors::{stringify_term, FromVocab};
 use crate::rml_model::v2::core::RMLIterable;
 use crate::translator::error::TranslationError;
 use operator::io::io_type::IOType;
+use sophia_api::prelude::Graph;
 use sophia_api::serializer::*;
 use sophia_api::term::{BnodeId, FromTerm};
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
 use sophia_turtle::serializer::nt::NtSerializer;
+use std::fmt::Debug;
+use std::hash::{DefaultHasher, Hash, Hasher};
+use std::rc::Rc;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct ReferenceFormulation {
     pub iri:  RcTerm,
     pub kind: ReferenceFormulationKind,
@@ -50,6 +51,22 @@ impl PartialEq for ReferenceFormulationKind {
     }
 }
 
+impl Hash for ReferenceFormulationKind {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        match self {
+            Self::Iri => {
+                state.write_u8(0);
+            }
+            Self::CustomReferenceFormulation { meta_data_graph } => {
+                state.write_u8(1);
+                let mut serializer = NtSerializer::new_stringifier();
+                let serialized_graph = serializer.serialize_graph(meta_data_graph.as_ref()).unwrap();
+                state.write(serialized_graph.as_str().as_bytes());
+            }
+        }
+    }
+}
+
 impl Debug for ReferenceFormulationKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut serde = NtSerializer::new_stringifier();
@@ -79,6 +96,18 @@ pub struct LogicalSource {
     pub source:     Source,
 }
 
+impl LogicalSource {
+    /// Calculates the "effective equality" hash of a LogicalSource.
+    /// This takes the iterable and the source into account, but not the identifier,
+    /// because two LogicalSources can be effectively equal even if they have different identifiers.
+    pub fn effective_equality_hash(&self) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        self.iterable.hash(&mut hasher);
+        hasher.write_u64(self.source.effective_equality_hash());
+        hasher.finish()
+    }
+}
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Source {
     pub encoding:     Option<RcTerm>,
@@ -87,11 +116,38 @@ pub struct Source {
     pub kind:         SourceKind,
 }
 
+impl Source {
+    /// Calculates the "effective equality" hash of a Source.
+    /// This only takes the kind into account, as the other fields are not relevant for determining
+    /// if two Sources are effectively equal.
+    pub fn effective_equality_hash(&self) -> u64 {
+        self.kind.effective_equality_hash()
+    }
+}
+
 #[derive(Clone)]
 pub struct SourceKind {
     pub subj_iri: RcTerm,
     pub type_iri: RcTerm,
     pub metadata: Rc<FastGraph>,
+}
+
+impl SourceKind {
+
+    /// Calculates the "effective equality" hash of a SourceKind
+    /// It takes the type_iri and the metadata into account.
+    /// For the metadata only the predicate and objects count, because the subject can be different (e.g., if it's a blank node)
+    pub fn effective_equality_hash(&self) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        self.type_iri.hash(&mut hasher);
+        self.metadata.as_ref().predicates().for_each(|predicate| {
+            predicate.unwrap().hash(&mut hasher);
+        });
+        self.metadata.as_ref().objects().for_each(|object| {
+            object.unwrap().hash(&mut hasher);
+        });
+        hasher.finish()
+    }
 }
 
 impl Eq for SourceKind {}

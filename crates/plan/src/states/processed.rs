@@ -4,7 +4,8 @@ use crate::error::PlanError;
 use crate::states::Serialized;
 use crate::Plan;
 use operator::serializer::Serializer;
-use operator::Operator;
+use operator::{Operator, Source};
+use petgraph::data::DataMapMut;
 
 impl Plan<Processed> {
     /// .
@@ -62,28 +63,61 @@ impl Plan<Processed> {
         self.current_cursor_idx
             .ok_or(PlanError::DanglingApplyOperator(operator.clone()))?;
 
+        let mut stop = false;
         //blacklist check for illegal operator argument
         match operator {
             Operator::SourceOp { .. }
             | Operator::TargetOp { .. }
             | Operator::SerializerOp { .. } => {
                 return Err(PlanError::WrongApplyOperator(operator.clone()))
-            }
+            },
+            Operator::ExtendOp { config } => {
+                // Check if the previous node is also an extend op. If so, merge!
+                let mut graph = self.graph.borrow_mut();
+                let _ = graph.node_weight_mut(self.current_cursor_idx.unwrap()).map(|node| {
+                    if let Operator::ExtendOp { config: prev_config } = &mut node.operator {
+                        // Add the new extend pairs to the previous extend operator's config
+                        prev_config.extend_pairs.extend(config.extend_pairs.clone());
+                        stop = true;
+                    }
+                });
+                ()
+            },
             _ => (),
+        }
+
+        if !stop {
+            let id_num = self.node_count();
+            let plan_node = PlanNode {
+                id: format!("{}_{}", node_id_prefix, id_num),
+                operator: operator.clone(),
+            };
+            let plan_edge = PlanEdge::default();
+            let new_node_idx = self.add_node_with_edge(plan_node, plan_edge);
+            Ok(self.next_idx(Some(new_node_idx)))
+        } else {
+            Ok(self.next_idx(self.current_cursor_idx))
+        }
+    }
+
+    pub fn merge_source(&mut self, other_source: &Source) -> Result<(), PlanError> {
+        // Get the (only) source
+        let sources = &mut *self.sources.borrow_mut();
+        if sources.len() != 1 {
+            return Err(PlanError::GenericError("More than one source operator exists in the plan.\
+            Merge source operator can only be applied if there is exactly one source operator in the plan.".to_string()));
+        }
+        let source_index = sources[0];
+        let mut graph = self.graph.borrow_mut();
+        let source_op_node = graph.node_weight_mut(source_index).unwrap();
+        let mut config = match &source_op_node.operator {
+            Operator::SourceOp { config } => config.clone(),
+            _ => unreachable!(),
         };
+        config.merge(other_source);
+        source_op_node.operator = Operator::SourceOp { config };
 
-        let id_num = self.node_count();
-
-        let plan_node = PlanNode {
-            id:       format!("{}_{}", node_id_prefix, id_num),
-            operator: operator.clone(),
-        };
-
-        let plan_edge = PlanEdge::default();
-
-        let new_node_idx = self.add_node_with_edge(plan_node, plan_edge);
-
-        Ok(self.next_idx(Some(new_node_idx)))
+        Ok(())
     }
 
 

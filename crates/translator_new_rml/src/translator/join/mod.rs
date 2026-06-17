@@ -18,7 +18,6 @@ use plan::data_type::RcRefCellPlan;
 use plan::states::join::join;
 use plan::states::Processed;
 use plan::Plan;
-use sophia_term::RcTerm;
 
 #[derive(Debug, Clone)]
 pub struct JoinTranslator {}
@@ -36,17 +35,15 @@ impl OperatorTranslator for JoinTranslator {
     ) -> NewRMLTranslationResult<Self::Output> {
         let parent_tms_refoms =
             child_trip_map.get_parent_tms_pred_refom_pairs();
-        let child_logical_source_id =
-            child_trip_map.abs_logical_source.get_identifier();
+        let child_logical_source_equality_hash =
+            child_trip_map.abs_logical_source.effective_equality_hash();
 
-        let child_plan = store
+        let child_plan_ref = store
             .ls_id_sourced_plan_map
-            .get(&child_logical_source_id)
+            .get(&child_logical_source_equality_hash)
             .ok_or(TranslationError::JoinError(format!(
-                "Search store cannot find the associated plan for the logical source id: {:?}",
-                child_logical_source_id
+                "Search store cannot find the associated plan for the logical source equality hash {child_logical_source_equality_hash}",
             )))?;
-        let child_abs_source = &child_trip_map.abs_logical_source;
 
         for (parent_tm_id, (pred_vec, ref_om, graph_vec)) in parent_tms_refoms {
             let parent_tm = store.tm_search_map.get(&parent_tm_id).ok_or(
@@ -58,47 +55,44 @@ impl OperatorTranslator for JoinTranslator {
 
             let parent_abs_source = &parent_tm.abs_logical_source;
             let mut extended_plan;
-            if ref_om.join_condition.is_empty()
-                && child_abs_source.is_same_source(parent_abs_source)
-            {
-                let plan_to_extend = child_plan.clone();
-                // Self-join situation
-                if child_abs_source.get_identifier()
-                    != parent_abs_source.get_identifier()
-                {
-                    log::warn!("Falling back to apply normal join operator since iterator/field
-                        merging is NOT implemented YET for self-joins with semantically same
-                        logical source but different URI"); 
-                    extended_plan = join_related_plan_processing(
-                        store,
-                        child_trip_map,
-                        &child_logical_source_id,
-                        child_plan,
-                        &pred_vec,
-                        &ref_om,
-                        &graph_vec,
-                        parent_tm,
-                    )?;
-                } else {
-                    let extend_op = extend_op_from_join(
-                        &child_trip_map.subject_map,
-                        &ref_om,
-                        &pred_vec,
-                        &child_trip_map.base_iri,
-                        &graph_vec,
-                        None,
-                        store,
-                    )?;
-                    extended_plan = plan_to_extend
-                        .borrow_mut()
-                        .apply(&extend_op, "Extend")?;
+
+            if ref_om.join_condition.is_empty() {
+                // This means the logical sources should be effectively equal and thus a self-join.
+                // If not, the mapping is wrong.
+                let parent_logical_source_hash = parent_abs_source.effective_equality_hash();
+                let parent_plan_ref = store
+                    .ls_id_sourced_plan_map
+                    .get(&parent_logical_source_hash)
+                    .ok_or(TranslationError::JoinError(format!(
+                        "Search store cannot find the associated plan for the logical source id: {:?}",
+                        parent_logical_source_hash
+                    )))?;
+
+                let extend_op = extend_op_from_join(
+                    &child_trip_map.subject_map,
+                    &ref_om,
+                    &pred_vec,
+                    &child_trip_map.base_iri,
+                    &graph_vec,
+                    None,
+                    store,
+                )?;
+
+                let mut child_plan = child_plan_ref.borrow_mut();
+
+                if let Ok(parent_plan) = parent_plan_ref.try_borrow() {
+                    // TODO: this code probably never gets executed. Test!
+                    // This means parent and child plans are different.
+                    // If they are the same, try_borrow causes an error.
+                    child_plan.merge_source(&parent_plan.get_first_source().unwrap())?;
                 }
+                extended_plan = child_plan.apply(&extend_op, "Extend")?;
             } else {
                 extended_plan = join_related_plan_processing(
                     store,
                     child_trip_map,
-                    &child_logical_source_id,
-                    child_plan,
+                    child_logical_source_equality_hash,
+                    child_plan_ref,
                     &pred_vec,
                     &ref_om,
                     &graph_vec,
@@ -128,21 +122,21 @@ impl OperatorTranslator for JoinTranslator {
 fn join_related_plan_processing(
     store: &SearchStore<'_>,
     child_trip_map: &TriplesMap,
-    child_logical_source_id: &RcTerm,
+    child_logical_source_hash: u64,
     child_plan: &RcRefCellPlan<Processed>,
     pred_vec: &[TermMapEnum],
     ref_om: &RefObjectMap,
     graph_vec: &[TermMapEnum],
     parent_tm: &&TriplesMap,
 ) -> Result<Plan<Processed>, crate::error::NewRMLTranslationError> {
-    let parent_logical_source_id =
-        parent_tm.abs_logical_source.get_identifier();
+    let parent_logical_source_hash =
+        parent_tm.abs_logical_source.effective_equality_hash();
     let parent_plan = store
         .ls_id_sourced_plan_map
-        .get(&parent_logical_source_id)
+        .get(&parent_logical_source_hash)
         .ok_or(TranslationError::JoinError(format!(
-            "Search store cannot found the associated plan for the logical source id: {:?}",
-            child_logical_source_id
+            "Search store cannot found the associated plan for the logical source with hash: {:?}",
+            parent_logical_source_hash
         )))?;
     let alias = "join_alias";
     let mut aliased_plan =
@@ -160,7 +154,7 @@ fn join_related_plan_processing(
         .collect();
     let extend_op;
     if (!child_attributes.is_empty() && !parent_attributes.is_empty())
-        || *child_logical_source_id != parent_logical_source_id
+        || child_logical_source_hash != parent_logical_source_hash
     {
         let ptm_rename_op = Rename {
             alias:        Some(alias.to_string()),

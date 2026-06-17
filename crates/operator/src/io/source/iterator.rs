@@ -12,7 +12,12 @@ pub struct Iterator {
     pub alias:                 Option<String>,
 }
 
-// TODO: not correct; this is to check if iterators are "effectively equal"
+impl Iterator {
+    pub fn merge(&mut self, other: &Iterator) {
+        self.fields.extend(other.fields.iter().cloned());
+    }
+}
+
 impl Hash for Iterator {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.reference.hash(state);

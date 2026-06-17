@@ -1,3 +1,4 @@
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::rc::Rc;
 
 use sophia_term::RcTerm;
@@ -38,6 +39,19 @@ impl LogicalView {
             AbstractLogicalSourceEnum::LogicalView(logical_view) => {
                 logical_view.get_source()
             }
+        }
+    }
+
+    /// Calculates the "effective equality" hash of a logical view.
+    /// If the view_on is a logical source, it uses the effective equality hash of the logical source.
+    /// Otherwise, it uses the hash of the identifier of the logical view.
+    pub fn effective_equality_hash(&self) -> u64 {
+        if let AbstractLogicalSourceEnum::LogicalSource(logical_source) = &*self.view_on {
+            logical_source.effective_equality_hash()
+        } else {
+            let mut hasher = DefaultHasher::new();
+            self.identifier.hash(&mut hasher);
+            hasher.finish()
         }
     }
 }

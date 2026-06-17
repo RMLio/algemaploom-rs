@@ -14,17 +14,18 @@ use std::marker::PhantomData;
 use std::path::PathBuf;
 use std::rc::Rc;
 
-use anyhow::Result;
-use data_type::RcRefCellPlan;
-use petgraph::dot::Dot;
-use petgraph::graph::{DiGraph, NodeIndex};
-
 use crate::data_type::{
     DiGraphOperators, PlanEdge, PlanNode, RcRefCellDiGraph,
     RcRefCellVSourceIdxs,
 };
 use crate::error::PlanError;
 use crate::states::Init;
+use anyhow::Result;
+use data_type::RcRefCellPlan;
+use operator::Operator::SourceOp;
+use operator::Source;
+use petgraph::dot::Dot;
+use petgraph::graph::{DiGraph, NodeIndex};
 pub mod data_type;
 pub mod error;
 pub mod states;
@@ -170,6 +171,20 @@ impl<T> Plan<T> {
         let graph = &*self.graph.borrow();
         let json_str = serde_json::to_string(&graph)?;
         Ok(json_str)
+    }
+
+    pub fn get_first_source(&self) -> Option<Source>{
+        let sources = self.sources.borrow();
+        if sources.is_empty() {
+            return None;
+        }
+        let source_idx = sources[0];
+        let graph = self.graph.borrow();
+        let source_node = &graph[source_idx];
+        match &source_node.operator {
+            SourceOp { config } => Some(config.clone()),
+            _ => None,
+        }
     }
 }
 

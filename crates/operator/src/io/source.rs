@@ -17,6 +17,16 @@ pub struct Source {
     pub root_iterator: iterator::Iterator,
 }
 
+impl Source {
+
+    /// "Merges" effective equally source `other` into this source.
+    /// Note that checking for effectively equalness is completely the responsibility of the caller!
+    /// At this moment, this only merges fields in the root iterator.
+    pub fn merge(&mut self, other: &Source) {
+        self.root_iterator.merge(&other.root_iterator);
+    }
+}
+
 impl PrettyDisplay for Source {
     fn pretty_string(&self) -> anyhow::Result<String> {
         let result = format!(

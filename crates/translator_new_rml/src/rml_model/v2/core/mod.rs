@@ -204,7 +204,7 @@ pub struct JoinCondition {
     pub child:  ExpressionMapEnum,
 }
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct RMLIterable {
     pub iterator:              Option<String>,
     pub reference_formulation: Option<ReferenceFormulation>,
@@ -267,6 +267,25 @@ impl AbstractLogicalSourceEnum {
             AbstractLogicalSourceEnum::LogicalView(logical_view) => {
                 logical_view.identifier.clone()
             }
+        }
+    }
+    
+    /// Calculates the "effective equality" hash of a logical source or view.
+    pub fn effective_equality_hash(&self) -> u64 {
+        match self {
+            AbstractLogicalSourceEnum::LogicalSource(logical_source) => logical_source.effective_equality_hash(),
+            AbstractLogicalSourceEnum::LogicalView(logical_view) => logical_view.effective_equality_hash(),
+        }
+    }
+
+    pub fn merge_fields(&mut self, other: &AbstractLogicalSourceEnum) {
+        match self {
+            AbstractLogicalSourceEnum::LogicalView(logical_view) => {
+                if let AbstractLogicalSourceEnum::LogicalView(other_logical_view) = other {
+                    logical_view.fields.extend_from_slice(&other_logical_view.fields);
+                }
+            },
+            _ => todo!("Only logical views can be merged. Found: {:?}", self)
         }
     }
 }
