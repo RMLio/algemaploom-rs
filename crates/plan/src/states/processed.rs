@@ -5,7 +5,6 @@ use crate::states::Serialized;
 use crate::Plan;
 use operator::serializer::Serializer;
 use operator::{Operator, Source};
-use petgraph::data::DataMapMut;
 
 impl Plan<Processed> {
     /// .
