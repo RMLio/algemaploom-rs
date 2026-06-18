@@ -1,12 +1,12 @@
 
 #[cfg(test)]    
 mod rml_core_tests {
-    use crate::extractors::tests::framework::test_core::*; 
+    use crate::extractors::tests::framework::test_core::*;
     use crate::extractors::tests::framework::test_expectations::*;
     #[test]
     fn test_rmltc0000_json_mapping() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0000-JSON.ttl",
+            "rml-core-tests/RMLTC0000-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -25,7 +25,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0002a_json_mapping() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0002a-JSON.ttl",
+            "rml-core-tests/RMLTC0002a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     // Add expectations here when needed
@@ -37,7 +37,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0001a_subject_map_reference() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0001a-JSON.ttl",
+            "rml-core-tests/RMLTC0001a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -56,7 +56,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0001b_blank_node_term_type() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0001b-JSON.ttl",
+            "rml-core-tests/RMLTC0001b-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -76,7 +76,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0002b_blank_node_with_template() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0002b-JSON.ttl",
+            "rml-core-tests/RMLTC0002b-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -96,7 +96,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0002e() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0002e-JSON.ttl",
+            "rml-core-tests/RMLTC0002e-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -105,7 +105,7 @@ mod rml_core_tests {
                     expect_source_root("http://w3id.org/rml/MappingDirectory"),
                     expect_source_path("student2.json"),
                     expect_predicate_from_pom(0, "http://example.com/id"),
-                    expect_object_reference_from_pom(0, "$.IDs"),
+                    expect_object_reference_from_pom(0, "$.ID"),
                     expect_subject_map_template("http://example.com/{$.ID}/{$.Name}"),
                 ])
             ]
@@ -115,16 +115,16 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0002g() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0002g-JSON.ttl",
+            "rml-core-tests/RMLTC0002g-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]]"),
                     expect_logical_source_reference_formulation("http://w3id.org/rml/JSONPath"),
                     expect_source_type("http://w3id.org/rml/RelativePathSource"),
                     expect_source_root("http://w3id.org/rml/MappingDirectory"),
-                    expect_source_path("student2.json"),
+                    expect_source_path("student.json"),
                     expect_predicate_from_pom(0, "http://example.com/id"),
-                    expect_object_reference_from_pom(0, "$.IDs"),
+                    expect_object_reference_from_pom(0, "$.ID"),
                     expect_subject_map_template("http://example.com/{$.ID}/{$.Name}"),
                 ])
             ]
@@ -134,7 +134,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0003c_object_template_literal() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0003c-JSON.ttl",
+            "rml-core-tests/RMLTC0003c-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -154,7 +154,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0004a_multiple_triplesmaps() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0004a-JSON.ttl",
+            "rml-core-tests/RMLTC0004a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://xmlns.com/foaf/0.1/name"),
@@ -184,13 +184,13 @@ mod rml_core_tests {
 
     #[test]
     fn test_rmltc0004b_subject_literal_term_type() {
-        expect_parse_fail("rml-core-tests/RMLTC0004b-JSON.ttl");
+        expect_parse_fail("rml-core-tests/RMLTC0004b-JSON/mapping.ttl");
     }
 
     #[test]
     fn test_rmltc0005a_subject_class() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0005a-JSON.ttl",
+            "rml-core-tests/RMLTC0005a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://example.com/owes"),
@@ -211,7 +211,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0006a() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0006a-JSON.ttl",
+            "rml-core-tests/RMLTC0006a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -230,7 +230,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0007b() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0007b-JSON.ttl",
+            "rml-core-tests/RMLTC0007b-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -254,7 +254,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0007a_constant_object() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0007a-JSON.ttl",
+            "rml-core-tests/RMLTC0007a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
@@ -272,7 +272,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0007c() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0007c-JSON.ttl",
+            "rml-core-tests/RMLTC0007c-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -296,7 +296,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0007d() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0007d-JSON.ttl",
+            "rml-core-tests/RMLTC0007d-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -322,7 +322,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0008a_multiple_predicate_object_maps() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0008a-JSON.ttl",
+            "rml-core-tests/RMLTC0008a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(4), 
@@ -348,7 +348,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0008b() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0008b-JSON.ttl",
+            "rml-core-tests/RMLTC0008b-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -385,7 +385,7 @@ mod rml_core_tests {
         #[test]
     fn test_rmltc0008c() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0008c-JSON.ttl",
+            "rml-core-tests/RMLTC0008c-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -404,7 +404,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0009a_join_condition() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0009a-JSON.ttl",
+            "rml-core-tests/RMLTC0009a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(2), 
@@ -439,7 +439,7 @@ mod rml_core_tests {
         #[test]
     fn test_rmltc0009b() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0009b-JSON.ttl",
+            "rml-core-tests/RMLTC0009b-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.students[*]"),
@@ -474,7 +474,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0010a_bracket_reference() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0010a-JSON.ttl",
+            "rml-core-tests/RMLTC0010a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://example.com/name"),
@@ -484,7 +484,7 @@ mod rml_core_tests {
                     expect_source_type("http://w3id.org/rml/RelativePathSource"),
                     expect_source_root("http://w3id.org/rml/MappingDirectory"),
                     expect_source_path("country_info.json"),
-                    expect_subject_map_template("http://example.com/{$.['Country Code']}"),
+                    expect_subject_map_template("http://example.com/{$['Country Code']}"),
                 ])
             ]
         );
@@ -493,7 +493,7 @@ mod rml_core_tests {
         #[test]
     fn test_rmltc0010b() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0010b-JSON.ttl",
+            "rml-core-tests/RMLTC0010b-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_logical_source_iterator("$.countries[*]"),
@@ -503,7 +503,7 @@ mod rml_core_tests {
                     expect_source_path("country_info.json"),
                     expect_predicate_from_pom(0, "http://example.com/name"),
                     expect_object_reference_from_pom(0, "$.Name"),
-                    expect_subject_map_template("http://example.com/{$.['Country Code']}/{$.Name}"),
+                    expect_subject_map_template("http://example.com/{$['Country Code']}/{$.Name}"),
                 ])
             ]
         );
@@ -512,7 +512,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0012a_multiple_templates() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0012a-JSON.ttl",
+            "rml-core-tests/RMLTC0012a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_object_maps_count(2),
@@ -534,7 +534,7 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0015a_language_tags() {
         test_triplesmaps(
-            "rml-core-tests/RMLTC0015a-JSON.ttl",
+            "rml-core-tests/RMLTC0015a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_predicate_from_pom(0, "http://www.w3.org/2000/01/rdf-schema#label"),
@@ -565,18 +565,17 @@ mod rml_core_tests {
     #[test]
     fn test_rmltc0027a_base_iri(){
         test_triplesmaps(
-            "rml-core-tests/RMLTC0027a-JSON.ttl",
+            "rml-core-tests/RMLTC0027a-JSON/mapping.ttl",
             vec![
                 ("http://example.com/base/TriplesMap1", vec![
-                    expect_predicate_from_pom(0, "http://example.com/amount"),
-                    expect_object_reference_from_pom(0, "$.amount"),
-                    expect_logical_source_iterator("$.persons[*]"),
+                    expect_predicate_from_pom(0, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                    expect_object_constant_from_pom(0, "http://xmlns.com/foaf/0.1/Person"),
+                    expect_logical_source_iterator("$.students[*]"),
                     expect_logical_source_reference_formulation("http://w3id.org/rml/JSONPath"),
                     expect_source_type("http://w3id.org/rml/RelativePathSource"),
                     expect_source_root("http://w3id.org/rml/MappingDirectory"),
-                    expect_source_path("persons.json"),
-                    expect_subject_map_template("{$.fname}"),
-                    expect_triples_map_base_iri("http://example.com/"), 
+                    expect_source_path("student.json"),
+                    expect_subject_map_template("http://example.com/Person/{$.Name}"),
                 ]),
             ]
         );
