@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+- RML: Self-joins are detected and removed when logical sources are "effectively equal".
+
+### Changed
+- Refactored crate `operator` to be more modular and easier to maintain.
+
 ## [0.6.6] - 2026-03-18
 
 ### Fixed
