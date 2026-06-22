@@ -31,11 +31,13 @@ fn rmltc0002b_json() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
+// Data error, so mapping should succeed.
 fn rmltc0002e_json() -> Result<(), Box<dyn Error>> {
     execute("RMLTC0002e-JSON", true)
 }
 
 #[test]
+// Data error, so mapping should succeed.
 fn rmltc0002g_json() -> Result<(), Box<dyn Error>> {
     execute("RMLTC0002g-JSON", true)
 }
@@ -45,6 +47,95 @@ fn rmltc0003c_json() -> Result<(), Box<dyn Error>> {
     execute("RMLTC0003c-JSON", true)
 }
 
+#[test]
+fn rmltc0004a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0004a-JSON", true)
+}
+
+#[test]
+fn rmltc0004b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0004b-JSON", false)
+}
+
+#[test]
+fn rmltc0005a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0005a-JSON", true)
+}
+
+#[test]
+fn rmltc0006a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0006a-JSON", true)
+}
+
+#[test]
+fn rmltc0007a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007a-JSON", true)
+}
+
+#[test]
+fn rmltc0007b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007b-JSON", true)
+}
+
+#[test]
+fn rmltc0007c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007c-JSON", true)
+}
+
+#[test]
+fn rmltc0007d_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007d-JSON", true)
+}
+
+#[test]
+fn rmltc0007e_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007e-JSON", true)
+}
+
+#[test]
+fn rmltc0007f_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007f-JSON", true)
+}
+
+#[test]
+fn rmltc0007g_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007g-JSON", true)
+}
+
+#[test]
+fn rmltc0007h_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0007h-JSON", false)
+}
+
+#[test]
+fn rmltc0008a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0008a-JSON", true)
+}
+
+#[test]
+fn rmltc0008b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0008b-JSON", true)
+}
+
+#[test]
+fn rmltc0008c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0008c-JSON", true)
+}
+
+#[test]
+fn rmltc0009a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0009a-JSON", true)
+}
+
+#[test]
+fn rmltc0009b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0009b-JSON", true)
+}
+
+#[test]
+fn rmltc0010a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0010a-JSON", true)
+}
 
 fn execute(test_name: &str, must_succeed: bool) -> Result<(), Box<dyn Error>> {
     let test_path = test_path(test_name);
