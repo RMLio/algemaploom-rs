@@ -248,17 +248,13 @@ fn rmltc0022e_json() -> Result<(), Box<dyn Error>> {
 
 fn execute(test_name: &str, must_succeed: bool) -> Result<(), Box<dyn Error>> {
     let test_path = test_path(test_name);
-    println!("***** test path: {}", test_path.to_str().unwrap());
     let mapping_path = test_path.join("mapping.ttl");
-    println!("      mapping path: {}", mapping_path.to_str().unwrap());
     let plan_result = NewRMLDocumentTranslator::translate_to_plan(mapping_path.as_path());
-    println!("      plan read");
     if let Ok(plan) = plan_result {
         if !must_succeed {
             panic!("A plan was generated but the test was expected to fail");
         }
         let actual_json_plan = plan.to_json_string()?;
-        println!("      actal json path: {}", actual_json_plan);
         let actual_plan_hash = json_hash(&actual_json_plan);
 
         let expected_json_path = test_path.join("mapping.json");
