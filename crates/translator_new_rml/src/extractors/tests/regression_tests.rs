@@ -137,8 +137,117 @@ fn rmltc0010a_json() -> Result<(), Box<dyn Error>> {
     execute("RMLTC0010a-JSON", true)
 }
 
+#[test]
+fn rmltc0010b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0010b-JSON", true)
+}
+
+#[test]
+fn rmltc0010c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0010c-JSON", true)
+}
+
+#[test]
+fn rmltc0011b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0011b-JSON", true)
+}
+
+#[test]
+fn rmltc0012a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0012a-JSON", true)
+}
+
+#[test]
+fn rmltc0012b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0012b-JSON", true)
+}
+
+#[test]
+fn rmltc0012c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0012c-JSON", false)
+}
+
+#[test]
+fn rmltc0012d_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0012d-JSON", false)
+}
+
+#[test]
+fn rmltc0012e_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0012e-JSON", true)
+}
+
+#[test]
+fn rmltc0013a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0013a-JSON", true)
+}
+
+#[test]
+fn rmltc0015a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0015a-JSON", true)
+}
+
+#[test]
+// Data error, so mapping should succeed.
+fn rmltc0015b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0015b-JSON", true)
+}
+
+#[test]
+fn rmltc0019a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0019a-JSON", true)
+}
+
+#[test]
+// Data error, so mapping should succeed.
+fn rmltc0019b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0019b-JSON", true)
+}
+
+#[test]
+fn rmltc0020a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0020a-JSON", true)
+}
+
+#[test]
+fn rmltc0021a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0021a-JSON", true)
+}
+
+#[test]
+fn rmltc0022a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0022a-JSON", true)
+}
+
+#[test]
+fn rmltc0022b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0022b-JSON", true)
+}
+
+#[test]
+fn rmltc0022c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0022c-JSON", true)
+}
+
+#[test]
+fn rmltc0022d_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0022d-JSON", true)
+}
+
+#[test]
+fn rmltc0022e_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0022e-JSON", true)
+}
+
+// #[test]
+// fn rmltc0023a_json() -> Result<(), Box<dyn Error>> {
+//     execute("RMLTC0023a-JSON", true)
+// }
+
+
 fn execute(test_name: &str, must_succeed: bool) -> Result<(), Box<dyn Error>> {
     let test_path = test_path(test_name);
+    println!("***** test path: {} *****", test_path.to_str().unwrap());
     let mapping_path = test_path.join("mapping.ttl");
     let plan_result = NewRMLDocumentTranslator::translate_to_plan(mapping_path.as_path());
     if let Ok(plan) = plan_result {
