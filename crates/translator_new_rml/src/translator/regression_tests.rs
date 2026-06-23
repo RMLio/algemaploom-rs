@@ -245,13 +245,159 @@ fn rmltc0022e_json() -> Result<(), Box<dyn Error>> {
      execute("RMLTC0023a-JSON", false)
  }
 
+#[test]
+fn rmltc0023b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0023b-JSON", false)
+}
 
-fn execute(test_name: &str, must_succeed: bool) -> Result<(), Box<dyn Error>> {
+#[test]
+fn rmltc0023c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0023c-JSON", false)
+}
+
+#[test]
+fn rmltc0023d_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0023d-JSON", false)
+}
+
+#[test]
+fn rmltc0023e_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0023e-JSON", false)
+}
+
+#[test]
+fn rmltc0023f_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0023f-JSON", true)
+}
+
+#[test]
+fn rmltc0024a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0024a-JSON", false)
+}
+
+#[test]
+fn rmltc0025a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0025a-JSON", true)
+}
+
+#[test]
+// Data error, so mapping should succeed.
+fn rmltc0025b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0025b-JSON", true)
+}
+
+#[test]
+fn rmltc0025c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0025c-JSON", true)
+}
+
+#[test]
+fn rmltc0026a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0026a-JSON", true)
+}
+
+#[test]
+fn rmltc0026b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0026b-JSON", true)
+}
+
+#[test]
+fn rmltc0026c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0026c-JSON", true)
+}
+
+#[test]
+fn rmltc0026d_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0026d-JSON", true)
+}
+
+#[test]
+fn rmltc0027a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0027a-JSON", true)
+}
+
+#[test]
+fn rmltc0027b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0027b-JSON", true)
+}
+
+#[test]
+fn rmltc0027c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0027c-JSON", true)
+}
+
+#[test]
+fn rmltc0028a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0028a-JSON", true)
+}
+
+#[test]
+fn rmltc0028b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0028b-JSON", true)
+}
+
+#[test]
+fn rmltc0028c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0028c-JSON", true)
+}
+
+#[test]
+fn rmltc0029a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0029a-JSON", true)
+}
+
+#[test]
+fn rmltc0030a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0030a-JSON", true)
+}
+
+#[test]
+fn rmltc0030b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0030b-JSON", true)
+}
+
+#[test]
+fn rmltc0030c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0030c-JSON", true)
+}
+
+#[test]
+fn rmltc0030d_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0030d-JSON", true)
+}
+
+#[test]
+fn rmltc0030e_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0030e-JSON", true)
+}
+
+#[test]
+fn rmltc0030f_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0030f-JSON", true)
+}
+
+#[test]
+fn rmltc0031a_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0031a-JSON", true)
+}
+
+#[test]
+fn rmltc0031b_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0031b-JSON", true)
+}
+
+#[test]
+fn rmltc0031c_json() -> Result<(), Box<dyn Error>> {
+    execute("RMLTC0031c-JSON", true)
+}
+
+
+fn execute(test_name: &str, positive: bool) -> Result<(), Box<dyn Error>> {
     let test_path = test_path(test_name);
     let mapping_path = test_path.join("mapping.ttl");
     let plan_result = NewRMLDocumentTranslator::translate_to_plan(mapping_path.as_path());
     if let Ok(plan) = plan_result {
-        if !must_succeed {
+        if !positive {
             panic!("A plan was generated but the test was expected to fail");
         }
         let actual_json_plan = plan.to_json_string()?;
@@ -262,7 +408,7 @@ fn execute(test_name: &str, must_succeed: bool) -> Result<(), Box<dyn Error>> {
         let expected_plan_hash = json_hash(&expected_json_str);
         assert_eq!(actual_plan_hash, expected_plan_hash, "Generated plan did not match expected plan.\nActual:\n{}\nExpected:\n{}", actual_json_plan, expected_json_str);
     } else {
-        if must_succeed {
+        if positive {
             panic!("No plan was generated but the test was expected to pass");
         }
     }
