@@ -4,6 +4,8 @@ mod join;
 mod serializer;
 mod source;
 mod store;
+#[cfg(test)]
+pub mod regression_tests;
 
 use std::cell::RefMut;
 use std::path::Path;
