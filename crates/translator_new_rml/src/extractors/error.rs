@@ -1,9 +1,9 @@
+use super::logical_view::error::LogicalViewErrorEnum;
+use crate::rml_model::v2::core::expression_map::error::ExpressionMapError;
 use std::convert::Infallible;
 use std::error::Error;
 use std::fmt::Display;
 use std::io;
-
-use super::logical_view::error::LogicalViewErrorEnum;
 
 #[derive(Debug, Clone)]
 pub enum SophiaStoreError {
@@ -64,6 +64,7 @@ pub enum ParseError {
     NoTermMapFoundError(String),
     LogicalViewError(LogicalViewErrorEnum), 
     ExtensionError(String),
+    ExpressionMapError(ExpressionMapError),
     Infallible,
 }
 
@@ -97,6 +98,12 @@ impl From<io::Error> for ParseError {
     }
 }
 
+impl From<ExpressionMapError> for ParseError {
+    fn from(value: ExpressionMapError) -> Self {
+        ParseError::ExpressionMapError(value)
+    }
+}
+
 impl Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -121,6 +128,9 @@ impl Display for ParseError {
             ParseError::SophiaStoreError(_sophia_store_error) => write!(f, "error occurred while using sophia_rs's graph store"),
             ParseError::LogicalViewError(_) => write!(f, "error while extracting logical views"),
             ParseError::Infallible => panic!("Reached infallible error state, something went really wrong"),
+            ParseError::ExpressionMapError(expression_map_error) => {
+                write!(f, "error while extracting expression map: {}", expression_map_error)
+            },
         }
     }
 }
@@ -131,7 +141,8 @@ impl Error for ParseError {
             ParseError::IOError(error) => Some(error),
             ParseError::SerdeError(error) => Some(error),
             ParseError::SophiaStoreError(error) => Some(error),  
-            ParseError::LogicalViewError(error) => Some(error), 
+            ParseError::LogicalViewError(error) => Some(error),
+            ParseError::ExpressionMapError(error) => Some(error),
             _ => None,
         }
     }

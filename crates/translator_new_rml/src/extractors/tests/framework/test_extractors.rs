@@ -31,8 +31,8 @@ fn get_value_from_base_expression_map(
     base_expression_map: &BaseExpressionMapEnum,
 ) -> Result<String, String> {
     match base_expression_map {
-        BaseExpressionMapEnum::Template(v)
-        | BaseExpressionMapEnum::Reference(v) => Ok(v.to_string()),
+        BaseExpressionMapEnum::Template(v) => Ok(v.to_string()),
+        BaseExpressionMapEnum::Reference(v) => Ok(v.to_string()),
         BaseExpressionMapEnum::Constant(v) => {
             stringify_rcterm(v).map_err(|_err| {
                 format!(

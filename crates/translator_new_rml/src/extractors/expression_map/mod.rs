@@ -1,11 +1,11 @@
-use std::fmt::Debug;
-
+use log::warn;
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
 use sophia_api::term::{FromTerm, Term};
 use sophia_api::triple::Triple;
 use sophia_inmem::graph::FastGraph;
 use sophia_term::RcTerm;
+use std::fmt::Debug;
 
 use super::error::ParseError;
 use super::Extractor;
@@ -25,17 +25,26 @@ impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
         TTerm: Term + Clone,
     {
         // Try base expression map first
-        if let Ok(base_expr_enum) =
-            BaseExpressionMapEnum::extract_self(subject_ref.clone(), graph_ref)
-        {
-            return Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum));
+        match BaseExpressionMapEnum::extract_self(subject_ref.clone(), graph_ref) {
+            Ok(base_expr_enum) => {
+                return Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum));
+            }
+            Err(err) => {
+                warn!(
+                    "Failed to extract base expression map for subject {:?}: {}\n Trying function expression map.",
+                    subject_ref, err
+                );
+            }
         }
         
         // Try function expression map
-        if let Ok(func_expr_map) =
-            FunctionExpressionMap::extract_self(subject_ref, graph_ref)
-        {
-            return Ok(ExpressionMapEnum::FunctionExpressionMap(func_expr_map));
+        match FunctionExpressionMap::extract_self(subject_ref.clone(), graph_ref) {
+            Ok(function_expr_map) => {
+                return Ok(ExpressionMapEnum::FunctionExpressionMap(function_expr_map));
+            }
+            Err(err) => {
+                warn!("Failed to extract function map for subject {:?}: {}", subject_ref, err);
+            }
         }
         
         Err(ParseError::GenericError("Unable to extract expression map (neither base nor function expression map)".to_string()).into())

@@ -240,10 +240,10 @@ fn rmltc0022e_json() -> Result<(), Box<dyn Error>> {
     execute("RMLTC0022e-JSON", true)
 }
 
-// #[test]
-//  fn rmltc0023a_json() -> Result<(), Box<dyn Error>> {
-//      execute("RMLTC0023a-JSON", false)
-//  }
+#[test]
+ fn rmltc0023a_json() -> Result<(), Box<dyn Error>> {
+     execute("RMLTC0023a-JSON", false)
+ }
 
 
 fn execute(test_name: &str, must_succeed: bool) -> Result<(), Box<dyn Error>> {

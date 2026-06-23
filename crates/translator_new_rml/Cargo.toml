@@ -12,10 +12,10 @@ sophia_inmem = "0.9.0"
 sophia_turtle = "0.9.0"
 sophia_term = "0.9.0"
 
-vocab = { path = "../vocab/" }
-operator = { path = "../operator/" }
-plan = { path = "../plan/" }
-translator_api = { path = "../translator_api/" }
+vocab = { path = "../vocab" }
+operator = { path = "../operator" }
+plan = { path = "../plan" }
+translator_api = { path = "../translator_api" }
 
 
 uuid.workspace = true
@@ -24,3 +24,4 @@ serde_json.workspace = true
 log.workspace = true
 derive_more.workspace = true
 sophia_isomorphism = "0.9.0"
+thiserror.workspace = true

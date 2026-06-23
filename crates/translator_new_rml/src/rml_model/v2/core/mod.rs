@@ -14,7 +14,7 @@ use crate::rml_model::v2::TermMapEnum;
 
 pub mod expression_map;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub enum TemplateSubString {
     Attribute(String),
     NormalString(String),

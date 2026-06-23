@@ -1707,6 +1707,7 @@ dependencies = [
  "sophia_isomorphism",
  "sophia_term",
  "sophia_turtle",
+ "thiserror",
  "translator_api",
  "uuid",
  "vocab",

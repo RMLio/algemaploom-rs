@@ -1,3 +1,4 @@
+use crate::rml_model::v2::core::expression_map::base_expr::Template;
 use std::collections::HashSet;
 
 use derive_more::{TryUnwrap, Unwrap};
@@ -11,16 +12,20 @@ use crate::rml_model::v2::core::TemplateSubString;
 use crate::rml_model::v2::fnml::FunctionExpressionMap;
 use crate::rml_model::v2::{AttributeAliaser, RefAttributeGetter};
 
-mod base_expr;
+pub(crate) mod base_expr;
+use crate::rml_model::v2::core::expression_map::error::ExpressionMapError;
 pub use base_expr::BaseExpressionMapEnum;
-pub mod term_map;
 
-fn split_template_string(template: &str) -> Vec<TemplateSubString> {
+pub mod term_map;
+pub mod error;
+
+fn split_template_string(template: &str) -> Result<Vec<TemplateSubString>, ExpressionMapError> {
     let mut chars = template.chars();
 
     let mut is_escape;
     let mut current_buf = String::new();
     let mut result = Vec::new();
+    let mut inside_brackets = false;
     while let Some(c) = chars.next() {
         is_escape = c == '\\';
         if is_escape {
@@ -28,27 +33,43 @@ fn split_template_string(template: &str) -> Vec<TemplateSubString> {
                 current_buf.push(c);
             }
         } else if c == '{' {
+            if inside_brackets {
+                return Err(ExpressionMapError::InvalidTemplate(template.to_string(), "Unescaped bracket `{` not allowed inside brackets".to_string()));
+            }
             result.push(TemplateSubString::NormalString(current_buf.clone()));
             current_buf.clear();
+            inside_brackets = true;
         } else if c == '}' {
+            if !inside_brackets {
+                return Err(ExpressionMapError::InvalidTemplate(template.to_string(), "Template error: unescaped bracket `}` not allowed inside brackets".to_string()));
+            }
             result.push(TemplateSubString::Attribute(current_buf.clone()));
             current_buf.clear();
+            inside_brackets = false;
         } else {
             current_buf.push(c);
         }
     }
 
+    // At this point, if we are still inside brackets, it means we have an unclosed bracket
+    if inside_brackets {
+        return Err(ExpressionMapError::InvalidTemplate(template.to_string(), "Template error: unclosed bracket `{`".to_string()));
+    }
+
     if !current_buf.is_empty() {
         result.push(TemplateSubString::NormalString(current_buf));
     }
-    result
+    Ok(result)
 }
 
-impl From<Vec<TemplateSubString>> for BaseExpressionMapEnum {
-    fn from(value: Vec<TemplateSubString>) -> Self {
+impl TryFrom<Vec<TemplateSubString>> for BaseExpressionMapEnum {
+
+    type Error = ExpressionMapError;
+
+    fn try_from(value: Vec<TemplateSubString>) -> Result<Self, Self::Error> {
         let template_string: String =
             value.into_iter().map(|val| val.to_string()).collect();
-        BaseExpressionMapEnum::Template(template_string)
+        Ok(BaseExpressionMapEnum::Template(Template::try_from(template_string)?))
     }
 }
 
@@ -83,7 +104,7 @@ impl ExpressionMapEnum {
         if let Ok(base_expr_enum) = self.try_unwrap_base_expression_map_ref() {
             match base_expr_enum {
                 BaseExpressionMapEnum::Template(template) => {
-                    split_template_string(template)
+                    template.get_parts().clone()
                 }
                 _ => vec![],
             }
@@ -92,13 +113,15 @@ impl ExpressionMapEnum {
         }
     }
 
-    pub fn new_template_term<T>(term: T) -> ExpressionMapEnum
+    pub fn new_template_term<T>(term: T) -> Result<ExpressionMapEnum, ExpressionMapError>
     where
         T: Term,
     {
-        ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Template(
-            stringify_term(term).unwrap(),
-        ))
+        let term_str = stringify_term(term).unwrap();
+        let template = Template::try_from(term_str)?;
+        Ok(ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Template(
+            template,
+        )))
     }
 
     pub fn new_reference_term<T>(term: T) -> ExpressionMapEnum
@@ -117,12 +140,6 @@ impl ExpressionMapEnum {
         ExpressionMapEnum::BaseExpressionMap(BaseExpressionMapEnum::Constant(
             RcTerm::from_term(term),
         ))
-    }
-
-    pub fn new_template_str(template: &str) -> ExpressionMapEnum {
-        let template_expr =
-            BaseExpressionMapEnum::Template(template.to_string());
-        Self::BaseExpressionMap(template_expr)
     }
 
     pub fn new_const_str(const_str: &str) -> ExpressionMapEnum {
@@ -208,8 +225,20 @@ mod tests {
             TemplateSubString::NormalString(" }}}".to_string()),
         ];
 
-        let actual = split_template_string(test_str);
+        let actual = split_template_string(test_str).unwrap();
 
         assert_eq!(expected, actual);
+    }
+
+    #[test]
+    #[should_panic(expected = "Unescaped bracket `{` not allowed inside brackets")]
+    fn test_unescaped_bracket() {
+        let _parts = split_template_string("{Hello{}}").unwrap();
+    }
+
+    #[test]
+    #[should_panic(expected = "Template error: unclosed bracket `{`")]
+    fn test_open_bracket() {
+        let _parts = split_template_string("{Hello").unwrap();
     }
 }

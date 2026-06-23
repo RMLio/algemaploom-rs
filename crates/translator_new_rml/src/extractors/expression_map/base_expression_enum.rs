@@ -10,6 +10,7 @@ use crate::extractors::store::get_subgraph_subject;
 use crate::extractors::{
     stringify_term, Extractor, ExtractorResult, FromVocab,
 };
+use crate::rml_model::v2::core::expression_map;
 use crate::rml_model::v2::core::expression_map::BaseExpressionMapEnum;
 
 impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
@@ -25,9 +26,9 @@ impl Extractor<BaseExpressionMapEnum> for BaseExpressionMapEnum {
             graph_ref,
             &[&vocab::rml_core::property::TEMPLATE.to_rcterm()],
         ) {
-            Ok(BaseExpressionMapEnum::Template(
-                stringify_term(obj).unwrap(),
-            ))
+            let term_str = stringify_term(obj).unwrap();
+            let template = expression_map::base_expr::Template::try_from(term_str)?;
+            Ok(BaseExpressionMapEnum::Template(template))
         } else if let Some((_, obj)) = get_expr_value_enum(
             subject_ref.borrow_term(),
             graph_ref,
