@@ -24,16 +24,17 @@ use crate::rml_model::v2::{
 pub struct CommonTermMapInfo {
     pub identifier:            RcTerm,
     pub term_type:             RcTerm,
-    pub expression:            ExpressionMapEnum,
+    pub expression:            Option<ExpressionMapEnum>,
     pub logical_targets:       Vec<LogicalTarget>,
 }
 
 impl AttributeAliaser for CommonTermMapInfo {
     fn alias_attribute(&self, alias: &str) -> Self {
+        let expression = self.expression.as_ref().map_or(None, |expr| Some(expr.alias_attribute(alias)));
         Self {
             identifier:            self.identifier.clone(),
             term_type:             self.term_type.clone(),
-            expression:            self.expression.alias_attribute(alias),
+            expression,
             logical_targets:       self.logical_targets.clone(),
         }
     }
@@ -70,13 +71,16 @@ impl CommonTermMapInfo {
         Ok(Self {
             identifier,
             term_type: termkind_to_rml_rcterm(term.kind())?,
-            expression: ExpressionMapEnum::new_constant_term(term),
+            expression: Some(ExpressionMapEnum::new_constant_term(term)),
             logical_targets: Vec::new(),
         })
     }
     pub fn get_constant_value(&self) -> Option<String> {
+        if self.expression.is_none() {
+            return None;
+        }
         if let Ok(base_expr_enum) =
-            self.expression.try_unwrap_base_expression_map_ref()
+            self.expression.as_ref().unwrap().try_unwrap_base_expression_map_ref()
         {
             match base_expr_enum {
                 BaseExpressionMapEnum::Constant(val) => {
@@ -90,11 +94,20 @@ impl CommonTermMapInfo {
     }
 
     pub fn get_template_string_split(&self) -> Vec<TemplateSubString> {
-        self.expression.get_template_string_split()
+        if let Some(expression) = &self.expression {
+            expression.get_template_string_split()
+        } else {
+            vec![]
+        }
+
     }
 
     pub fn get_ref_attributes(&self) -> HashSet<String> {
-        self.expression.get_ref_attributes()
+        if let Some(expression) = &self.expression {
+            expression.get_ref_attributes()
+        } else {
+            HashSet::new()
+        }
     }
 
     pub fn is_iri_term_type(&self) -> bool {
@@ -250,11 +263,10 @@ impl Default for GraphMap {
                     BnodeId::new_unchecked(uuid::Uuid::new_v4().to_string()),
                 ),
                 term_type:             vocab::rml_core::class::IRI.to_rcterm(),
-                expression:            ExpressionMapEnum::try_new_unknown(
+                expression:            Some(ExpressionMapEnum::try_new_unknown(
                     vocab::rml_core::property::CONSTANT.to_rcterm(),
                     RcTerm::Iri(IriRef::new_unchecked("<defaultGraph>".into())),
-                )
-                .unwrap(),
+                ).unwrap()),
                 logical_targets:       Vec::new(),
             },
         }

@@ -47,10 +47,10 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
             logical_targets.push(LogicalTarget::default());
         }
 
-        let expression = ExpressionMapEnum::extract_self(
+        let expression_result = ExpressionMapEnum::extract_self(
             subject_ref.borrow_term(),
             graph_ref,
-        )?;
+        );
 
         let ttype_old_pred = &vocab::r2rml::property::TERMTYPE.to_rcterm();
         let ttype_pred = &vocab::rml_core::property::TERMTYPE.to_rcterm();
@@ -68,18 +68,41 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
                     subject_ref, ttype_iri
                 )));
             }
-            if let Ok(BaseExpressionMapEnum::Constant(val)) =
-                expression.try_unwrap_base_expression_map_ref()
-            {
-                return Err(ParseError::GenericError(
-                        format!("Term type is explicity defined for node {:?} even though it is a constant term map with value {:?}", 
-                            subject_ref, val)));
+            if let Ok(expression) = &expression_result {
+                if let Ok(BaseExpressionMapEnum::Constant(val)) =
+                    expression.try_unwrap_base_expression_map_ref()
+                {
+                    return Err(ParseError::GenericError(
+                        format!("Term type is explicity defined for node {:?} even though it is a constant term map with value {:?}",
+                                subject_ref, val)));
+                }
             }
             Ok::<RcTerm, ParseError>(ttype_iri)
         } else {
-            Ok::<RcTerm, ParseError>(infer_term_type(subject_ref.borrow_term(), graph_ref, &expression)?)
+            let expression_is_function = match &expression_result {
+                Ok(expression) => {
+                    expression.is_function_map()
+                }
+                Err(_) => false,
+            };
+            Ok::<RcTerm, ParseError>(infer_term_type(subject_ref.borrow_term(), graph_ref, expression_is_function)?)
         }?;
+        
+        // An empty expression is only allowed if the term type is a blank node, otherwise it is an error
+        if expression_result.is_err() && term_type != vocab::rml_core::class::BLANKNODE.to_rcterm() {
+            let err = expression_result.unwrap_err();
+            return Err(ParseError::GenericError(format!(
+                "Term map {:?} has no expression map and term type is not a blank node, but {:?}. Error: {}",
+                subject_ref, term_type, err
+            )));
+        }
 
+        // After all checks pass, the expression_result can be mapped to an option
+        let expression = match expression_result {
+            Ok(expr) => Some(expr),
+            Err(_) => None,
+        };
+        
         Ok(CommonTermMapInfo {
             identifier: RcTerm::from_term(subject_ref),
             term_type,
@@ -92,7 +115,7 @@ impl Extractor<CommonTermMapInfo> for CommonTermMapInfo {
 fn infer_term_type<TTerm>(
     subject_ref: TTerm,
     graph_ref: &FastGraph,
-    exp_map: &ExpressionMapEnum, 
+    expression_is_function: bool,
 ) -> Result<RcTerm, ParseError>
 where
     TTerm: Term + Debug,
@@ -134,7 +157,7 @@ where
             )
             .ok();
 
-            if datatype_lang_opt.is_some() || exp_map.is_function_map() {
+            if datatype_lang_opt.is_some() || expression_is_function {
                 Ok(vocab::rml_core::class::LITERAL.to_rcterm())
             } else if let Some(term) = constant_value_opt {
                 termkind_to_rml_rcterm(term.kind())

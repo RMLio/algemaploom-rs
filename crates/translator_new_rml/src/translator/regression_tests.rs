@@ -173,7 +173,6 @@ fn rmltc0012d_json() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[ignore = "Blank node term type in Subject Map not supported yet"]
 fn rmltc0012e_json() -> Result<(), Box<dyn Error>> {
     execute("RMLTC0012e-JSON", true)
 }

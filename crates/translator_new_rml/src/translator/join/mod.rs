@@ -293,13 +293,16 @@ pub fn serializer_template_from_join(
 
     let mut ptm_sm_var = get_var_or_constant(store, ptm_sm.as_ref());
     // Only prefix the variable of the subject map of parent triples map's
-    // if it is not a constant-valued term map.
-    match ptm_tm_info.try_unwrap_base_expression_map_ref() {
-        Ok(BaseExpressionMapEnum::Constant(_)) => {}
-        _ => {
-            ptm_sm_var = format!("{}{}", ptm_sm_var, PTM_SUBJ_SUFFIX);
+    // if it is not a constant-valued term map of a blank node term type without expression map.
+    if let Some(ptm_tm_info) = ptm_tm_info {
+        match ptm_tm_info.try_unwrap_base_expression_map_ref() {
+            Ok(BaseExpressionMapEnum::Constant(_)) => {}
+            _ => {
+                ptm_sm_var = format!("{}{}", ptm_sm_var, PTM_SUBJ_SUFFIX);
+            }
         }
     }
+
 
     let mut statement_patterns: HashSet<_> = pred_patterns
         .map(|pred| format!("{} {} {}", subj_pattern, pred, ptm_sm_var))

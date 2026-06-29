@@ -128,20 +128,20 @@ fn extend_lang_dtype_function_for_om(
             dtype_function: _,
             langtype_function: _,
         } => {
-            if let Some(lang_map) = &om.language_map {
+            if om.language_map.is_some() {
                 let langtype_function = Some(Rc::new(
-                    extension_func_from_exp_map(store, lang_map, term_type)?,
+                    extension_func_from_exp_map(store, &om.language_map, term_type)?,
                 ));
                 Function::Literal {
                     inner_function: inner_function.clone(),
                     dtype_function: None,
                     langtype_function,
                 }
-            } else if let Some(dtype_map) = &om.datatype_map {
+            } else if om.datatype_map.is_some() {
                 let dtype_function = Some(Rc::new(Function::Iri {
                     base_iri:       Some(base_iri.to_string()),
                     inner_function: extension_func_from_exp_map(
-                        store, dtype_map, term_type,
+                        store, &om.datatype_map, term_type,
                     )?
                     .into(),
                 }));
@@ -199,7 +199,7 @@ pub fn extend_from_term_map(
             let mut dtype_function = None;
             let mut langtype_function = None;
             if let Ok(BaseExpressionMapEnum::Constant(term)) = term_map_info
-                .expression
+                .expression.as_ref().unwrap()
                 .try_unwrap_base_expression_map_ref()
             {
                 if let Some(lt) = term.language_tag() {
@@ -250,20 +250,25 @@ pub fn extend_from_term_map(
 
 pub fn extension_func_from_exp_map(
     store: &SearchStore,
-    exp_map: &ExpressionMapEnum,
+    exp_map_opt: &Option<ExpressionMapEnum>,
     term_type: &RMLTermTypeKind,
 ) -> NewRMLTranslationResult<Function> {
-    match exp_map {
-        ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
-            extend_func_from_base_expr_map(base_expression_map_enum, term_type)
+    if let Some(exp_map) = exp_map_opt {
+        match exp_map {
+            ExpressionMapEnum::BaseExpressionMap(base_expression_map_enum) => {
+                extend_func_from_base_expr_map(base_expression_map_enum, term_type)
+            }
+            ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
+                extend_func_from_func_expr_map(
+                    store,
+                    function_expression_map,
+                    term_type,
+                )
+            }
         }
-        ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
-            extend_func_from_func_expr_map(
-                store,
-                function_expression_map,
-                term_type,
-            )
-        }
+    } else {
+        // Term type is Blank node => return function that tells to generate blank nodes
+        Ok(Function::GenerateBlankNode)
     }
 }
 fn extend_func_from_base_expr_map(
@@ -382,7 +387,7 @@ fn extend_func_from_func_expr_map(
         // wrap it with a UriEncode; return a Reference function directly.
         let input_func = if let Ok(base_expr) = input
             .input_value_map
-            .expression
+            .expression.as_ref().unwrap()
             .try_unwrap_base_expression_map_ref()
         {
             match base_expr {

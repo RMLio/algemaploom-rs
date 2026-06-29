@@ -66,7 +66,7 @@ fn get_expression_value(
 fn get_expression_value_from_term_map(
     term_map: &TermMapEnum,
 ) -> Result<String, String> {
-    get_expression_value(&term_map.as_ref().expression)
+    get_expression_value(&term_map.as_ref().expression.as_ref().unwrap())
 }
 
 fn get_logical_source(tm: &TriplesMap) -> Result<&LogicalSource, String> {
@@ -206,7 +206,7 @@ pub fn extract_subject_map_constant(
     triplesmap: &TriplesMap,
 ) -> Result<String, String> {
     let subject_map = get_subject_map(triplesmap)?;
-    get_expression_value(&subject_map.term_map_info.expression)
+    get_expression_value(&subject_map.term_map_info.expression.as_ref().unwrap())
 }
 
 pub fn extract_source_path(triplesmap: &TriplesMap) -> Result<String, String> {
@@ -330,7 +330,7 @@ pub fn extract_objectmap_return_type(
     let pom = get_pom(triplesmap, pom_index)?;
     let om = pom.object_map_vec.first().ok_or("No object maps")?;
     
-    match &om.as_ref().expression {
+    match &om.as_ref().expression.as_ref().unwrap(){
         ExpressionMapEnum::FunctionExpressionMap(fem) => {
             if let Some(return_map) = &fem.return_map {
                 return_map.get_constant_value()
@@ -350,7 +350,7 @@ pub fn extract_function_execution_function(
     let pom = get_pom(triplesmap, pom_index)?;
     let om = pom.object_map_vec.first().ok_or("No object maps")?;
     
-    match &om.as_ref().expression {
+    match &om.as_ref().expression.as_ref().unwrap() {
         ExpressionMapEnum::FunctionExpressionMap(fem) => {
             fem.func_execution.function_map.term_map_info.get_constant_value()
                 .ok_or("No constant value found in function map".to_string())
@@ -366,7 +366,7 @@ pub fn extract_function_execution_parameter(
     let pom = get_pom(triplesmap, pom_index)?;
     let om = pom.object_map_vec.first().ok_or("No object maps")?;
     
-    match &om.as_ref().expression {
+    match &om.as_ref().expression.as_ref().unwrap() {
         ExpressionMapEnum::FunctionExpressionMap(fem) => {
             let input = fem.func_execution.input.first()
                 .ok_or("No input maps in function execution".to_string())?;
@@ -384,11 +384,11 @@ pub fn extract_function_execution_input_value_map_reference(
     let pom = get_pom(triplesmap, pom_index)?;
     let om = pom.object_map_vec.first().ok_or("No object maps")?;
     
-    match &om.as_ref().expression {
+    match &om.as_ref().expression.as_ref().unwrap() {
         ExpressionMapEnum::FunctionExpressionMap(fem) => {
             let input = fem.func_execution.input.first()
                 .ok_or("No input maps in function execution".to_string())?;
-            get_expression_value(&input.input_value_map.expression)
+            get_expression_value(&input.input_value_map.expression.as_ref().unwrap())
         }
         _ => Err("Object map is not a function expression map".to_string())
     }

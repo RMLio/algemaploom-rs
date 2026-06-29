@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - RML: Self-joins are detected and removed when logical sources are "effectively equal".
 - RML template parsing.
+- RML: Don't require an expression map if the term type is `rml:BlankNode`.
 
 ### Changed
 - Refactored crate `operator` to be more modular and easier to maintain.

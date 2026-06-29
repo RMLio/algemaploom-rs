@@ -1,4 +1,3 @@
-use log::warn;
 use sophia_api::graph::Graph;
 use sophia_api::prelude::Any;
 use sophia_api::term::{FromTerm, Term};
@@ -24,16 +23,14 @@ impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
     where
         TTerm: Term + Clone,
     {
+        let mut err_str = format!("{:?}: Unable to extract expression map:\n", subject_ref);
         // Try base expression map first
         match BaseExpressionMapEnum::extract_self(subject_ref.clone(), graph_ref) {
             Ok(base_expr_enum) => {
                 return Ok(ExpressionMapEnum::BaseExpressionMap(base_expr_enum));
             }
             Err(err) => {
-                warn!(
-                    "Failed to extract base expression map for subject {:?}: {}\n Trying function expression map.",
-                    subject_ref, err
-                );
+                err_str.push_str(&format!("Failed to extract base expression map: {}\n", err));
             }
         }
         
@@ -43,11 +40,12 @@ impl Extractor<ExpressionMapEnum> for ExpressionMapEnum {
                 return Ok(ExpressionMapEnum::FunctionExpressionMap(function_expr_map));
             }
             Err(err) => {
-                warn!("Failed to extract function map for subject {:?}: {}", subject_ref, err);
+                err_str.push_str(&format!("Failed to extract function expression map: {}\n", err));
             }
         }
-        
-        Err(ParseError::GenericError("Unable to extract expression map (neither base nor function expression map)".to_string()).into())
+
+        // Nothing could be extracted => error
+        Err(ParseError::GenericError(err_str).into())
     }
 }
 

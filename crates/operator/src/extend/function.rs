@@ -72,4 +72,8 @@ pub enum Function {
     Star {
         // TODO: Implement star function
     },
+
+    // This instructs the plan implementation to generate a blank node identifier per iteration.
+    // How this is done is completely up to the implementation.
+    GenerateBlankNode
 }
