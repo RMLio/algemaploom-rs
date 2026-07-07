@@ -29,7 +29,7 @@ echo 'Updating Cargo.toml...'
 sed -i -e "s|^version = \".*\"|version = \"$VERSION\"|" Cargo.toml
 
 echo 'Updating pom.xml...'
-cd src/java/algemaploom/
+cd crates/translator/src/java/algemaploom/
 mvn versions:set -DnewVersion=$VERSION
 cd $SCRIPTDIR
 
@@ -49,7 +49,7 @@ fi
 
 if [ ! "$(yes_or_no Do you also want to commit the changes, create a git tag $tagname and push it?)" ]
 then
-	git add Cargo.toml package.json src/java/algemaploom/pom.xml CHANGELOG.md
+	git add Cargo.toml package.json crates/translator/src/java/algemaploom/pom.xml CHANGELOG.md
 	git commit -m "Update version to $VERSION"
 	git push origin
 	git tag $tagname
