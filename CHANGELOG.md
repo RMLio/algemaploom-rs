@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Fixed
+- `bump-version.sh` script to include `Cargo.lock`
+
 ## [0.6.7] - 2026-07-07
 
 ### Fixed

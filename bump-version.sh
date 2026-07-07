@@ -49,7 +49,7 @@ fi
 
 if [ ! "$(yes_or_no Do you also want to commit the changes, create a git tag $tagname and push it?)" ]
 then
-	git add Cargo.toml package.json crates/translator/src/java/algemaploom/pom.xml CHANGELOG.md
+	git add Cargo.toml Cargo.lock package.json crates/translator/src/java/algemaploom/pom.xml CHANGELOG.md
 	git commit -m "Update version to $VERSION"
 	git push origin
 	git tag $tagname
