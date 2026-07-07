@@ -239,7 +239,7 @@ dependencies = [
 
 [[package]]
 name = "common"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "anyhow",
  "log",
@@ -776,7 +776,7 @@ dependencies = [
 
 [[package]]
 name = "normalizer"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "anyhow",
  "clap",
@@ -809,7 +809,7 @@ checksum = "384b8ab6d37215f3c5301a95a4accb5d64aa607f1fcb26a11b5303878451b4fe"
 
 [[package]]
 name = "operator"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "anyhow",
  "serde",
@@ -1048,7 +1048,7 @@ dependencies = [
 
 [[package]]
 name = "plan"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "anyhow",
  "operator",
@@ -1668,7 +1668,7 @@ dependencies = [
 
 [[package]]
 name = "translator"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "clap",
  "colored",
@@ -1687,14 +1687,14 @@ dependencies = [
 
 [[package]]
 name = "translator_api"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "plan",
 ]
 
 [[package]]
 name = "translator_new_rml"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "derive_more",
  "lazy_static",
@@ -1715,7 +1715,7 @@ dependencies = [
 
 [[package]]
 name = "translator_normalized_rml"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "anyhow",
  "lazy_static",
@@ -1729,7 +1729,7 @@ dependencies = [
 
 [[package]]
 name = "translator_rml"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "lazy_static",
  "log",
@@ -1748,7 +1748,7 @@ dependencies = [
 
 [[package]]
 name = "translator_shexml"
-version = "0.6.6"
+version = "0.6.8"
 dependencies = [
  "chumsky",
  "either",
@@ -1839,7 +1839,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vocab"
-version = "0.6.6"
+version = "0.6.8"
 
 [[package]]
 name = "walkdir"
@@ -1956,7 +1956,7 @@ dependencies = [
 
 [[package]]
 name = "weaver"
-version = "0.6.6"
+version = "0.6.8"
 
 [[package]]
 name = "winapi"
