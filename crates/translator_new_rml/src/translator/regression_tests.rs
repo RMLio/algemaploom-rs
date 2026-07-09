@@ -1,4 +1,5 @@
-pub mod core;
+mod core;
+mod logical_view;
 
 use crate::translator::NewRMLDocumentTranslator;
 use std::error::Error;
