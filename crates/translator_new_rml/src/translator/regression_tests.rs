@@ -1,4 +1,5 @@
 mod core;
+mod io;
 mod logical_view;
 
 use crate::translator::NewRMLDocumentTranslator;
