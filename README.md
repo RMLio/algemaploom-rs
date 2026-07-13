@@ -74,12 +74,19 @@ python version >= 3.10 and the following packages:
 
 
 ### RML 
-Currently, the translator generates valid mapping plans for the official
-[RML test cases](https://github.com/kg-construct/rml-test-casesk) with mapping plans
-for CSV data sources (all test cases ending in **CSV**).
+The translator is tested against the official RML conformance
+[test cases](https://github.com/kg-construct/rml-test-cases) with regression tests
+that compare the generated mapping plan for each case against a stored plan.
+The following specifications are covered: RML-Core, RML-LV (logical views),
+RML-IO, RML-CC (collections & containers), RML-FNML (functions) and
+RML-STAR (RDF-star).
 
-The generated mapping plans for the test cases are inside the
-[/resources/csv-testcases](/resources/csv-testcases).
+The test cases and their generated mapping plans live under
+[crates/translator_new_rml/resources/test](/crates/translator_new_rml/resources/test),
+one directory per spec module (`rml-core-tests`, `rml-lv-tests`, `rml-io-tests`,
+`rml-cc-tests`, `rml-fnml-tests`, `rml-star-tests`). The regression tests
+themselves are in
+[crates/translator_new_rml/src/translator/regression_tests](/crates/translator_new_rml/src/translator/regression_tests).
 
 ### ShExML
 The translator can *partially* translate ShExML documents. 
