@@ -3,6 +3,7 @@ mod core;
 mod fnml;
 mod io;
 mod logical_view;
+mod star;
 
 use crate::translator::NewRMLDocumentTranslator;
 use std::error::Error;
