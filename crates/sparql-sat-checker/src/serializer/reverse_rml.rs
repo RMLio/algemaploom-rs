@@ -112,11 +112,12 @@ fn extend_func_to_rml(
 
 fn retrieve_references_from_attributes(fields: &[Field], value: &str) -> String {
     let field = fields.iter().find(|iter| iter.alias == value).unwrap();
-    if let Function::Reference { value } = &*field.expression {
-        value.clone()
-    } else {
-        panic!("Expected a reference function");
+    if let Some(expression) = &field.expression {
+        if let Function::Reference { value} = expression.as_ref() {
+            return value.to_string();
+        }
     }
+    panic!("Expected a reference function");
 }
 
 fn value_term_string(

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct Field {
     pub alias:                 String,
     pub absolute_path:         Option<String>,
-    pub expression:            RcExtendFunction,
+    pub expression:            Option<RcExtendFunction>,
     pub iterator:              Option<String>,
     pub reference_formulation: ReferenceFormulation,
     pub inner_fields:          Vec<Field>,

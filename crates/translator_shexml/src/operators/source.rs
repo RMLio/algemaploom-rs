@@ -196,7 +196,10 @@ fn translate_to_operator_fields(
             Field {
                 absolute_path:         Some(nested_iter.ident.clone()),
                 alias:                 nested_iter.ident.clone(),
-                expression:            Rc::new(Reference{value: nested_iter.query.clone().map_or(String::new(), |value| value)}),
+                expression:            nested_iter.query.clone().map_or(
+                    None,
+                    |query| Some(Rc::new(Reference{value: query})),
+                ),
                 iterator:              None,
                 reference_formulation: ref_formulation.clone(),
                 inner_fields:          translate_to_operator_fields(
@@ -220,7 +223,7 @@ fn translate_to_flat_fields(
             Some(Field {
                 alias:                 shex_field.ident.clone(),
                 absolute_path:         Some(shex_field.ident.clone()),
-                expression:            Rc::new(Reference{value: shex_field.query.clone()}),
+                expression:            Some(Rc::new(Reference{value: shex_field.query.clone()})),
                 iterator:              None,
                 reference_formulation: ref_formulation.clone(),
                 inner_fields:          vec![],

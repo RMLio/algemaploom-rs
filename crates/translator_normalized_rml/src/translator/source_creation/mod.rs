@@ -138,7 +138,7 @@ fn create_fields_from_map(
             Field {
                 absolute_path:         Some(attr.to_string()),
                 alias:                 attr.to_string(),
-                expression:            Rc::new(Reference {value: query.to_string()}),
+                expression:            Some(Rc::new(Reference {value: query.to_string()})),
                 iterator:              None,
                 reference_formulation: reference_formulation.clone(),
                 inner_fields:          vec![],

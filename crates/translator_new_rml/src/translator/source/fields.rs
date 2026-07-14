@@ -1,4 +1,4 @@
-use operator::extend::function::Function::{Constant, Nop, Reference};
+use operator::extend::function::Function::{Constant, Reference};
 use operator::formats::ReferenceFormulation;
 use operator::io::source::field::Field as OperatorField;
 use std::collections::HashMap;
@@ -35,7 +35,7 @@ fn translate_rml_field_mut(
                 alias,
                 absolute_path,
                 iterator: value.clone(),
-                expression: Rc::new(Nop),
+                expression: None,
                 reference_formulation: ref_form,
                 inner_fields,
             })
@@ -50,7 +50,7 @@ fn translate_rml_field_mut(
                         Ok(OperatorField {
                             alias,
                             absolute_path, 
-                            expression:            Rc::new(Reference{value: reference.clone()}),
+                            expression:            Some(Rc::new(Reference{value: reference.clone()})),
                             iterator:              None,
                             reference_formulation: ref_form,
                             inner_fields:          vec![],
@@ -60,7 +60,7 @@ fn translate_rml_field_mut(
                         Ok(OperatorField {
                             alias,
                             absolute_path, 
-                            expression:            Rc::new(Constant {value: turtle_stringify_term(constant.clone()).map_or(String::new(), |value| value)}),
+                            expression:            turtle_stringify_term(constant).map_or(None, |value| Some(Rc::new(Constant {value}))),
                             iterator:              None,
                             reference_formulation: ref_form,
                             inner_fields:          vec![],

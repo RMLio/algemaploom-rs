@@ -1,4 +1,4 @@
-use operator::extend::function::Function::{Nop, Reference};
+use operator::extend::function::Function::Reference;
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::io::io_type::IOType;
@@ -44,7 +44,7 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             Field {
                 absolute_path:         Some(reference.clone()),
                 alias:                 reference.clone(),
-                expression:            Rc::new(Reference{value: reference.to_string()}),
+                expression:            Some(Rc::new(Reference{value: reference.to_string()})),
                 iterator:              None,
                 reference_formulation: reference_formulation.clone(),
                 inner_fields:          vec![],
