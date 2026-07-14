@@ -64,7 +64,6 @@ fn rmlfnmltc0041_csv() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[ignore = "translator panics on nested function: invalid blank node id (sophia InvalidBnodeId)"]
 fn rmlfnmltc0051_csv() -> Result<(), Box<dyn Error>> {
     TestExecutor::new(TEST_DIR).execute("RMLFNMLTC0051-CSV", true)
 }
