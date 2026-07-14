@@ -13,6 +13,7 @@ use crate::rml_model::Document;
 
 fn extract_base_iri(input: &str) -> Option<String> {
     input
+        .trim()
         .strip_prefix("@base")
         .map(|e| e[0..e.len() - 1].replace(['<', '>'], "").trim().to_string())
 }
