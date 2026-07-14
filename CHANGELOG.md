@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+
+### Added
+- Regression tests for the RML-IO, RML-CC, RML-FNML and RML-STAR specifications.
+
+### Fixed
+- Base IRI extraction from an `@base` statement: the line is now trimmed before parsing, so the base IRI is extracted correctly on CRLF line endings (previously a trailing `" ."` could leak into it).
+
 ## [0.6.8] - 2026-07-07
 
 ### Fixed
