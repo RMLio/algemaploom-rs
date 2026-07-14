@@ -1,7 +1,8 @@
-use std::collections::HashMap;
-
+use operator::extend::function::Function::{Constant, Nop, Reference};
 use operator::formats::ReferenceFormulation;
 use operator::io::source::field::Field as OperatorField;
+use std::collections::HashMap;
+use std::rc::Rc;
 
 use crate::error::NewRMLTranslationResult;
 use crate::extractors::turtle_stringify_term;
@@ -32,10 +33,9 @@ fn translate_rml_field_mut(
                 translate_rml_field_vec(&field.fields, ref_form.clone(), alias_query_map)?;
             Ok(OperatorField {
                 alias,
-                absolute_path, 
-                constant: None,
+                absolute_path,
                 iterator: value.clone(),
-                reference: None,
+                expression: Rc::new(Nop),
                 reference_formulation: ref_form,
                 inner_fields,
             })
@@ -50,8 +50,7 @@ fn translate_rml_field_mut(
                         Ok(OperatorField {
                             alias,
                             absolute_path, 
-                            reference:             Some(reference.clone()),
-                            constant:              None,
+                            expression:            Rc::new(Reference{value: reference.clone()}),
                             iterator:              None,
                             reference_formulation: ref_form,
                             inner_fields:          vec![],
@@ -61,8 +60,7 @@ fn translate_rml_field_mut(
                         Ok(OperatorField {
                             alias,
                             absolute_path, 
-                            reference:             None,
-                            constant:              turtle_stringify_term(constant), 
+                            expression:            Rc::new(Constant {value: turtle_stringify_term(constant.clone()).map_or(String::new(), |value| value)}),
                             iterator:              None,
                             reference_formulation: ref_form,
                             inner_fields:          vec![],

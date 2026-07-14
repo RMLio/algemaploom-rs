@@ -1,3 +1,4 @@
+use crate::extend::function::RcExtendFunction;
 use crate::formats::ReferenceFormulation;
 use serde::{Deserialize, Serialize};
 
@@ -6,8 +7,7 @@ use serde::{Deserialize, Serialize};
 pub struct Field {
     pub alias:                 String,
     pub absolute_path:         Option<String>,
-    pub reference:             Option<String>,
-    pub constant:              Option<String>,
+    pub expression:            RcExtendFunction,
     pub iterator:              Option<String>,
     pub reference_formulation: ReferenceFormulation,
     pub inner_fields:          Vec<Field>,

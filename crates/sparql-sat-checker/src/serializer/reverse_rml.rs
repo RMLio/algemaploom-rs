@@ -7,8 +7,8 @@ use crate::{
 use operator::extend::function::Function;
 use operator::extend::term_type::TermType;
 use operator::io::source::field::Field;
-use operator::{
-    formats::ReferenceFormulation, Operator,
+use operator::{Operator,
+               formats::ReferenceFormulation,
 };
 use plan::data_type::DiGraphOperators;
 use translator_normalized_rml::{OBJECT_ATTR, PREDICATE_ATTR, SUBJECT_ATTR};
@@ -111,8 +111,12 @@ fn extend_func_to_rml(
 }
 
 fn retrieve_references_from_attributes(fields: &[Field], value: &str) -> String {
-    let iter = fields.iter().find(|iter| iter.alias == value);
-    iter.unwrap().reference.clone().expect("Reference attribute in the given field is empty")
+    let field = fields.iter().find(|iter| iter.alias == value).unwrap();
+    if let Function::Reference { value } = &*field.expression {
+        value.clone()
+    } else {
+        panic!("Expected a reference function");
+    }
 }
 
 fn value_term_string(

@@ -1,8 +1,7 @@
 mod util;
 
-use std::collections::{HashMap, HashSet};
-
 use anyhow::Result;
+use operator::extend::function::Function::Reference;
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::io::io_type::IOType;
@@ -11,6 +10,8 @@ use operator::io::source::iterator::Iterator;
 use operator::Source;
 use oxigraph::model::{NamedOrBlankNode, NamedOrBlankNodeRef, Quad, Term, TermRef};
 use oxigraph::store::Store;
+use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 use util::get_queries_from_template;
 
 use super::data::QueryAttrMap;
@@ -137,9 +138,8 @@ fn create_fields_from_map(
             Field {
                 absolute_path:         Some(attr.to_string()),
                 alias:                 attr.to_string(),
-                constant:              None,
+                expression:            Rc::new(Reference {value: query.to_string()}),
                 iterator:              None,
-                reference:             Some(query.to_string()),
                 reference_formulation: reference_formulation.clone(),
                 inner_fields:          vec![],
             }

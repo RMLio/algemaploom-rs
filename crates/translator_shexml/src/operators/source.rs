@@ -1,6 +1,5 @@
-use std::collections::{HashMap, HashSet};
-
 use log::{debug, trace};
+use operator::extend::function::Function::Reference;
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::io::io_type::IOType;
@@ -8,6 +7,8 @@ use operator::io::source::field::Field;
 use operator::io::source::iterator;
 use operator::Source;
 use plan::error::PlanError;
+use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 
 use crate::error::ShExMLTranslationError;
 use crate::parcombi::{
@@ -195,8 +196,7 @@ fn translate_to_operator_fields(
             Field {
                 absolute_path:         Some(nested_iter.ident.clone()),
                 alias:                 nested_iter.ident.clone(),
-                reference:             nested_iter.query.clone(),
-                constant:              None,
+                expression:            Rc::new(Reference{value: nested_iter.query.clone().map_or(String::new(), |value| value)}),
                 iterator:              None,
                 reference_formulation: ref_formulation.clone(),
                 inner_fields:          translate_to_operator_fields(
@@ -220,8 +220,7 @@ fn translate_to_flat_fields(
             Some(Field {
                 alias:                 shex_field.ident.clone(),
                 absolute_path:         Some(shex_field.ident.clone()),
-                reference:             Some(shex_field.query.clone()),
-                constant:              None,
+                expression:            Rc::new(Reference{value: shex_field.query.clone()}),
                 iterator:              None,
                 reference_formulation: ref_formulation.clone(),
                 inner_fields:          vec![],

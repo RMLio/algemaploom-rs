@@ -1,9 +1,11 @@
+use operator::extend::function::Function::{Nop, Reference};
 use operator::formats::xml::XPathConfig;
 use operator::formats::ReferenceFormulation;
 use operator::io::io_type::IOType;
 use operator::io::source::field::Field;
 use operator::io::source::iterator::Iterator;
 use operator::Source;
+use std::rc::Rc;
 use translator_api::OperatorTranslator;
 
 use crate::parser::extractors::FromVocab;
@@ -42,9 +44,8 @@ impl<'a> OperatorTranslator<Source> for SourceOpTranslator<'a> {
             Field {
                 absolute_path:         Some(reference.clone()),
                 alias:                 reference.clone(),
-                constant:              None,
+                expression:            Rc::new(Reference{value: reference.to_string()}),
                 iterator:              None,
-                reference:             Some(reference.clone()),
                 reference_formulation: reference_formulation.clone(),
                 inner_fields:          vec![],
             }
