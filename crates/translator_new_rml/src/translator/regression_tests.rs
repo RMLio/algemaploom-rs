@@ -1,5 +1,6 @@
 mod core;
 mod logical_view;
+mod rml_lv_fnml;
 
 use crate::translator::NewRMLDocumentTranslator;
 use std::error::Error;
