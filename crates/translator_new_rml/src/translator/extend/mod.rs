@@ -91,7 +91,7 @@ impl OperatorTranslator for ExtendOperatorTranslator {
 
                 if let Ok(om) = om_enum.try_unwrap_object_map_ref() {
                     func = extend_lang_dtype_function_for_om(
-                        store, base_iri, om, func,
+                        base_iri, om, func,
                     )?;
                 }
                 insert_non_constant_func(&mut extend_pairs, var, func);
@@ -112,7 +112,6 @@ pub fn insert_non_constant_func(
 }
 
 fn extend_lang_dtype_function_for_om(
-    store: &SearchStore<'_>,
     base_iri: &str,
     om: &ObjectMap,
     func: Function,
@@ -130,7 +129,7 @@ fn extend_lang_dtype_function_for_om(
         } => {
             if om.language_map.is_some() {
                 let langtype_function = Some(Rc::new(
-                    extension_func_from_exp_map(store, &om.language_map, term_type)?,
+                    extension_func_from_exp_map(&om.language_map, term_type)?,
                 ));
                 Function::Literal {
                     inner_function: inner_function.clone(),
@@ -141,7 +140,7 @@ fn extend_lang_dtype_function_for_om(
                 let dtype_function = Some(Rc::new(Function::Iri {
                     base_iri:       Some(base_iri.to_string()),
                     inner_function: extension_func_from_exp_map(
-                        store, &om.datatype_map, term_type,
+                        &om.datatype_map, term_type,
                     )?
                     .into(),
                 }));
@@ -164,7 +163,6 @@ pub fn extend_from_term_map(
     term_map_info: &CommonTermMapInfo,
 ) -> NewRMLTranslationResult<(String, Function)> {
     let inner_func = extension_func_from_exp_map(
-        store,
         &term_map_info.expression,
         &term_map_info.get_term_type_enum(),
     )?;
@@ -249,7 +247,6 @@ pub fn extend_from_term_map(
 }
 
 pub fn extension_func_from_exp_map(
-    store: &SearchStore,
     exp_map_opt: &Option<ExpressionMapEnum>,
     term_type: &RMLTermTypeKind,
 ) -> NewRMLTranslationResult<Function> {
@@ -260,7 +257,6 @@ pub fn extension_func_from_exp_map(
             }
             ExpressionMapEnum::FunctionExpressionMap(function_expression_map) => {
                 extend_func_from_func_expr_map(
-                    store,
                     function_expression_map,
                     term_type,
                 )
@@ -353,7 +349,6 @@ fn extend_func_from_ref_attr(attr: &str) -> Function {
 }
 
 fn extend_func_from_func_expr_map(
-    store: &SearchStore,
     func_exp_map: &FunctionExpressionMap,
     term_type: &RMLTermTypeKind,
 ) -> NewRMLTranslationResult<Function> {
@@ -395,14 +390,12 @@ fn extend_func_from_func_expr_map(
                     Function::Reference { value: ref_attr.to_string() }
                 }
                 _ => extension_func_from_exp_map(
-                    store,
                     &input.input_value_map.expression,
                     term_type,
                 )?,
             }
         } else {
             extension_func_from_exp_map(
-                store,
                 &input.input_value_map.expression,
                 term_type,
             )?
