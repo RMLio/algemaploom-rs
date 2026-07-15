@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.6.9] - 2026-07-15
+
 
 ### Added
 - Regression tests for the RML-IO, RML-CC, RML-FNML and RML-STAR specifications.
@@ -35,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SerializerOperatorTranslator`: don't apply graph mapping in case of a join because that's already handled by the `JoinTranslator`. Fixes <https://gitlab.ilabt.imec.be/rml/proc/algemaploom-rs/-/issues/47>
 - Use official rust Docker image in GitLab CI
 
+[0.6.9]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.8...v0.6.9
 [0.6.8]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.7...v0.6.8
 [0.6.7]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.6...v0.6.7
 [0.6.6]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.6...v0.6.5
