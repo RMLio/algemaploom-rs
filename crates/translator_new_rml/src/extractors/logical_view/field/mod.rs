@@ -6,9 +6,7 @@ use sophia_api::term::Term;
 use sophia_inmem::graph::FastGraph;
 
 use crate::extractors::store::{get_object, get_objects};
-use crate::extractors::{
-    stringify_term, Extractor, FromVocab,
-};
+use crate::extractors::{stringify_term, Extractor, FromVocab};
 use crate::rml_model::v2::core::expression_map::ExpressionMapEnum;
 use crate::rml_model::v2::core::RMLIterable;
 use crate::rml_model::v2::lv::{RMLField, RMLFieldKind};
@@ -29,36 +27,28 @@ where
     .unwrap();
     log::debug!("RML field name: {}", name);
 
-    let reference_opt = get_object(
-        graph_ref,
-        subject_ref.borrow_term(),
-        vocab::rml_core::property::REFERENCE.to_rcterm(),
-    )
-    .ok();
-
-    let constant_opt = get_object(
-        graph_ref,
-        subject_ref.borrow_term(),
-        vocab::rml_core::property::CONSTANT.to_rcterm(),
-    )
-    .ok();
-
-    let kind = if let Some(reference) = reference_opt {
-        log::debug!("Reference RML field");
-        RMLFieldKind::Expression(ExpressionMapEnum::new_reference_term(
-            reference,
-        ))
-    } else if let Some(constant) = constant_opt {
-        log::debug!("Constant RML field");
-        RMLFieldKind::Expression(ExpressionMapEnum::new_constant_term(constant))
-    } else {
-        log::debug!("Extracting RMLIterable");
-        let iterable =
-            RMLIterable::extract_self(subject_ref.borrow_term(), graph_ref)
-                .map_err(|err| {
-                    FieldErrorEnum::IterableError(err.to_string())
-                })?;
-        RMLFieldKind::Iterable(iterable)
+    // Try to extract an expression field
+    let expression_result = ExpressionMapEnum::extract_self(subject_ref.borrow_term(), graph_ref);
+    let kind = match expression_result {
+        Ok(expression_map) => {
+            log::debug!("Found RML field expression map:");
+            RMLFieldKind::Expression(expression_map)
+        },
+        Err(expr_err) => {
+            // Try to extract an iterable field
+            let iter_result = RMLIterable::extract_self(subject_ref.borrow_term(), graph_ref);
+            match iter_result {
+                Ok(iterable) => {
+                    log::debug!("Found RML iterable");
+                    RMLFieldKind::Iterable(iterable)
+                },
+                Err(iter_err) => {
+                    log::error!("RML Field extraction: failed to parse as an expression field and an iterable field.");
+                    let err_msg = format!("Expression field parsing error: {}\nIterable field error: {}", expr_err.to_string(), iter_err.to_string());
+                    return Err(FieldErrorEnum::ParseError(err_msg));
+                }
+            }
+        },
     };
 
     log::debug!("RML Field kind is: {:#?}", kind);

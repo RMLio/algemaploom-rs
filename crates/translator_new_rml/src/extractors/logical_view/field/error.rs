@@ -7,7 +7,7 @@ use crate::extractors::error::SophiaStoreError;
 pub enum FieldErrorEnum {
     ConflictingNamesError(Vec<String>),
     SophiaStoreError(SophiaStoreError),
-    IterableError(String),
+    ParseError(String),
 }
 
 impl From<SophiaStoreError> for FieldErrorEnum {
@@ -25,11 +25,11 @@ impl Display for FieldErrorEnum {
                     "field contains following conflicting/overlapping names: {:?}",
                     items
                 )
-            }
+            },
             FieldErrorEnum::SophiaStoreError(_sophia_store_error) => {
                 write!(f, "error caused while querying store with sophia_rs")
-            }
-            FieldErrorEnum::IterableError(msg) => {
+            },
+            FieldErrorEnum::ParseError(msg) => {
                 write!(
                     f,
                     "error occurred while parsing rml iterables with msg: {}",
@@ -47,7 +47,7 @@ impl Error for FieldErrorEnum {
             FieldErrorEnum::SophiaStoreError(sophia_store_error) => {
                 Some(sophia_store_error)
             }
-            FieldErrorEnum::IterableError(_) => None,
+            FieldErrorEnum::ParseError(_) => None,
         }
     }
 }
