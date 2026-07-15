@@ -587,11 +587,11 @@ mod rml_core_tests {
     #[test]
     fn test_fnmltc0001_function_execution() {
         test_triplesmaps(
-            "rmlfnml/rmlfnmltc0001-CSV.ttl" ,
+            "rml-fnml-tests/RMLFNMLTC0001-CSV/mapping.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_objectmap_return_type(0,"<https://w3id.org/imec/idlab/function#_stringOut>"),
-                    expect_function_execution_function(0,"<https://w3id.org/imec/idlab/function#random>"),
+                    expect_function_execution_function(0,"<https://w3id.org/imec/idlab/function#alwaysReturnsABC>"),
                 ]),
             ]
         );
@@ -600,7 +600,7 @@ mod rml_core_tests {
     #[test]
     fn test_fnmltc0002_function_execution() {
         test_triplesmaps(
-            "rmlfnml/rmlfnmltc0002-CSV.ttl" ,
+            "rml-fnml-tests/RMLFNMLTC0002-CSV/mapping.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_function_execution_function(0, "<http://users.ugent.be/~bjdmeest/function/grel.ttl#toUpperCase>"),
@@ -615,7 +615,7 @@ mod rml_core_tests {
     #[test]
     fn test_fnmltc0003_function_execution() {
         test_triplesmaps(
-            "rmlfnml/rmlfnmltc0003-CSV.ttl" ,
+            "rml-fnml-tests/RMLFNMLTC0003-CSV/mapping.ttl" ,
              vec![
                 ("http://example.com/base/TriplesMap1", vec![
                     expect_function_execution_function(0, "<https://w3id.org/imec/idlab/function#toUpperCaseURL>"),
