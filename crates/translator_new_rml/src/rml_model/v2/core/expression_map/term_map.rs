@@ -47,10 +47,13 @@ impl CommonTermMapInfo {
     {
         let identifier: RcTerm = match term.kind() {
             TermKind::Literal => {
+                // A literal cannot be a node identifier, so mint a fresh blank node.
+                // Use only the UUID: embedding the literal's lexical form here produced
+                // invalid blank node labels for values containing e.g. spaces or dashes
+                // (see RMLFNMLTC0051-CSV, where a constant " " yielded the label " -<uuid>").
                 RcTerm::from_term(BnodeId::new_unchecked(format!(
-                    "{}-{}",
-                    term.lexical_form().unwrap(),
-                    uuid::Uuid::new_v4()
+                    "b{}",
+                    uuid::Uuid::new_v4().simple()
                 )))
             }
             TermKind::Triple => {

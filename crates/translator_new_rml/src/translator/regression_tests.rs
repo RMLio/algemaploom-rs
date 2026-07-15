@@ -1,5 +1,9 @@
+mod cc;
 mod core;
+mod fnml;
+mod io;
 mod logical_view;
+mod star;
 mod rml_lv_fnml;
 
 use crate::translator::NewRMLDocumentTranslator;
