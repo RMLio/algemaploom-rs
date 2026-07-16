@@ -7,7 +7,7 @@ resolver = "3"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace.package]
-version = "0.7.0"
+version = "0.7.1"
 authors = ["Sitt Min Oo"]
 edition = "2021"
 
