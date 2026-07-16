@@ -1,3 +1,15 @@
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+include:
+  # Make sure the CHANGELOG is always updated
+  - project: 'rml/util/ci-templates'
+    ref: main
+    file: 'CHANGELOG.gitlab-ci.yml'
+
 # Unittests
 test-rust:
   image: rust:latest

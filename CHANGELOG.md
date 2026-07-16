@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The `reference` and `constant` properties in a source's Field is replaced by a single `expression` property, whose value is a function similar to the function in the Extend operator.
 - Removed unused crate `weaver`
 
+### Added
+- CI: check if CHANGELOG.md is updated when committing to a new branch.
+
 ## [0.6.9] - 2026-07-15
 
 ### Added
