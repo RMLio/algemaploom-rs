@@ -15,7 +15,8 @@ fn translate_rml_field_mut(
     log::debug!("Translating field: {:?}", field);
 
     let alias = field.name.clone();
-    let absolute_path  = Some(field.absolute_name.clone()); 
+    let absolute_path  = Some(field.absolute_name.clone());
+    let inner_fields = translate_rml_field_vec(&field.fields, ref_form.clone(), alias_query_map)?;
 
     match &field.kind {
         RMLFieldKind::Iterable(rmliterable) => {
@@ -26,8 +27,6 @@ fn translate_rml_field_mut(
                 .and_then(|rmliter_ref_form| rmliter_ref_form.try_into().ok())
                 .unwrap_or_else(|| ref_form.clone());
 
-            let inner_fields =
-                translate_rml_field_vec(&field.fields, ref_form.clone(), alias_query_map)?;
             Ok(OperatorField {
                 alias,
                 absolute_path,
@@ -45,7 +44,7 @@ fn translate_rml_field_mut(
                 expression: Some(Rc::new(extension_function)),
                 iterator: None,
                 reference_formulation: ref_form,
-                inner_fields: vec![],
+                inner_fields,
             })
         }
     }
