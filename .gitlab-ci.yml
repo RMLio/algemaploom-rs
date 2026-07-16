@@ -1,7 +1,7 @@
 stages:
   - lint
-  - test
   - build
+  - test
   - deploy
 
 include:
