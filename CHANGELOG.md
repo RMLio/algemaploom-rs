@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Source operator: inner fields of an expression field are also added now.
+- bump-version: run `cargo check` after updating `Cargo.toml` to ensure `Cargo.lock` is also updated.
 
 ## [0.7.0] - 2026-07-16
 

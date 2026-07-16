@@ -27,6 +27,7 @@ echo "Changing version to $VERSION"
 
 echo 'Updating Cargo.toml...'
 sed -i -e "s|^version = \".*\"|version = \"$VERSION\"|" Cargo.toml
+cargo check
 
 echo 'Updating pom.xml...'
 cd crates/translator/src/java/algemaploom/
