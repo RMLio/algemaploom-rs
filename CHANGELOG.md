@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.7.0] - 2026-07-16
+
 ### Changed
 - The `reference` and `constant` properties in a source's Field is replaced by a single `expression` property, whose value is a function similar to the function in the Extend operator.
 - Removed unused crate `weaver`
@@ -43,6 +45,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SerializerOperatorTranslator`: don't apply graph mapping in case of a join because that's already handled by the `JoinTranslator`. Fixes <https://gitlab.ilabt.imec.be/rml/proc/algemaploom-rs/-/issues/47>
 - Use official rust Docker image in GitLab CI
 
+[0.7.0]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.8...v0.6.9
 [0.6.8]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.7...v0.6.8
 [0.6.7]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.6...v0.6.7
