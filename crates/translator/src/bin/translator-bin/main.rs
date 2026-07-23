@@ -16,7 +16,8 @@ pub fn main() -> Result<(), PlanError> {
 
     let matches = cli.cmd.get_matches();
     let debug_flag_count = *matches.get_one::<u8>("debug").unwrap();
-    let json_only = (*matches.get_one::<u8>("json").unwrap()) >= 1;
+    let json_only = (*matches.get_one::<u8>("json").unwrap()) > 0;
+    let pretty_print = (*matches.get_one::<u8>("pretty").unwrap()) > 0;
     init_logger(debug_flag_count >= 1)
         .map_err(|err| PlanError::GenericError(err.to_string()))?;
 
@@ -31,7 +32,7 @@ pub fn main() -> Result<(), PlanError> {
             let derived_string = derived_prefix.to_string_lossy();
             let _ = output_prefix.insert(derived_string.to_string());
         }
-        process_one_file(file_path, output_prefix, json_only);
+        process_one_file(file_path, output_prefix, json_only, pretty_print);
     } else if let Some(folder_matches) = matches.subcommand_matches("folder") {
         let folder_path_string: &String =
             folder_matches.get_one("FOLDER").unwrap();
@@ -56,7 +57,7 @@ pub fn main() -> Result<(), PlanError> {
                 + "/"
                 + &input_path.file_stem().unwrap().to_string_lossy();
 
-            process_one_file(input_path.to_path_buf(), Some(output_prefix), json_only);
+            process_one_file(input_path.to_path_buf(), Some(output_prefix), json_only, pretty_print);
         }
     } else if let Some(_stdin_matches) = matches.subcommand_matches("stdin") {
         let mut mapping = String::new();
@@ -66,8 +67,10 @@ pub fn main() -> Result<(), PlanError> {
         }
 
         debug!("Attempting to translate from stdin");
-        let out = process_one_str(mapping.as_str());
-        println!("{}", out);
+        let out_option = process_one_str(mapping.as_str());
+        if let Some(out) = out_option {
+            println!("{}", out);
+        }
     }
 
     Ok(())

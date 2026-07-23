@@ -1,1 +1,325 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"path":"student.json","root":"http://w3id.org/rml/MappingDirectory"},"source_type":"File","root_iterator":{"reference":"$.students[*]","reference_formulation":"JSONPath","fields":[{"alias":"$.ID","absolute_path":"$.ID","expression":{"type":"Reference","value":"$.ID"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.Name","absolute_path":"$.Name","expression":{"type":"Reference","value":"$.Name"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.Sport","absolute_path":"$.Sport","expression":{"type":"Reference","value":"$.Sport"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]}],"alias":null}}}},{"id":"Extend_1","operator":{"type":"ExtendOp","config":{"sm_1_obj":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Sport"}}}},"sm_0":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/Student/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.ID"}}},"separator":"","right_value":{"type":"Constant","value":"/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Name"}}}}}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"?sm_0 <http://example.com/Sport> ?sm_1_obj .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}},{"id":"ExtendOperator_4","operator":{"type":"ExtendOp","config":{"sm_0":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/Student/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.ID"}}},"separator":"","right_value":{"type":"Constant","value":"/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Name"}}}},"pom_0_2_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.ID"},"dtype_function":null,"langtype_function":null},"pom_0_3_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.Name"},"dtype_function":null,"langtype_function":null},"sm_1":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Sport"}}}}}}},{"id":"Serialize_5","operator":{"type":"SerializerOp","config":{"template":"?sm_0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .\n?sm_0 <http://xmlns.com/foaf/0.1/name> ?pom_0_3_om_0 .\n?sm_0 <http://example.com/id> ?pom_0_2_om_0 .\n?sm_1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/activity/Sport> .","format":"NQuads"}}},{"id":"Sink_6","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}],[0,4,{"fragment":"default","direction":"Center"}],[4,5,{"fragment":"default","direction":"Center"}],[5,6,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "root": "http://w3id.org/rml/MappingDirectory",
+            "path": "student.json"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$.students[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [
+              {
+                "alias": "$.ID",
+                "absolute_path": "$.ID",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.ID"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.Name",
+                "absolute_path": "$.Name",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Name"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.Sport",
+                "absolute_path": "$.Sport",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Sport"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              }
+            ],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "Extend_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "sm_1_obj": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.com/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Sport"
+                }
+              }
+            }
+          },
+          "sm_0": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Concatenate",
+                  "left_value": {
+                    "type": "Concatenate",
+                    "left_value": {
+                      "type": "Nop"
+                    },
+                    "separator": "",
+                    "right_value": {
+                      "type": "Constant",
+                      "value": "http://example.com/Student/"
+                    }
+                  },
+                  "separator": "",
+                  "right_value": {
+                    "type": "UriEncode",
+                    "inner_function": {
+                      "type": "Reference",
+                      "value": "$.ID"
+                    }
+                  }
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "?sm_0 <http://example.com/Sport> ?sm_1_obj .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_4",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "sm_0": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Concatenate",
+                  "left_value": {
+                    "type": "Concatenate",
+                    "left_value": {
+                      "type": "Nop"
+                    },
+                    "separator": "",
+                    "right_value": {
+                      "type": "Constant",
+                      "value": "http://example.com/Student/"
+                    }
+                  },
+                  "separator": "",
+                  "right_value": {
+                    "type": "UriEncode",
+                    "inner_function": {
+                      "type": "Reference",
+                      "value": "$.ID"
+                    }
+                  }
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Name"
+                }
+              }
+            }
+          },
+          "pom_0_2_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.ID"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          },
+          "sm_1": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.com/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Sport"
+                }
+              }
+            }
+          },
+          "pom_0_3_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.Name"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_5",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "?sm_0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .\n?sm_0 <http://example.com/id> ?pom_0_2_om_0 .\n?sm_1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/activity/Sport> .\n?sm_0 <http://xmlns.com/foaf/0.1/name> ?pom_0_3_om_0 .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_6",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      0,
+      4,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      4,
+      5,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      5,
+      6,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

@@ -1,14 +1,14 @@
-use std::path::PathBuf;
-use std::collections::HashMap;
-
-use crate::parser::extractors::io::parse_file;
+use crate::parser::extractors::io::parse_str;
 use crate::parser::extractors::ExtractorResult;
 use crate::parser::rml_model::TriplesMap;
+use std::collections::HashMap;
+use std::fs;
+use std::path::PathBuf;
 
 pub fn extract_triplesmaps_from_test(filename: &str) -> ExtractorResult<Vec<TriplesMap>> {
     let test_path = format!("resources/{}", filename);
     let path = PathBuf::from(test_path);
-    let document = parse_file(path)?;
+    let document = parse_str(&fs::read_to_string(path)?)?;
     Ok(document.triples_maps)
 }
 
@@ -85,10 +85,10 @@ pub fn test_triplesmaps(filename: &str, triplemap_tests: Vec<(&str, Vec<Box<dyn 
 }
 
 pub fn expect_parse_fail(filename: &str) {
-    let test_path = format!("resources/test/{}", filename);
+    let test_path = format!("resources/{}", filename);
     let path = PathBuf::from(test_path);
-    
-    match parse_file(path) {
+
+    match parse_str(&fs::read_to_string(path).unwrap()) {
         Ok(_) => panic!("Expected parsing to fail for file '{}', but it succeeded", filename),
         Err(_) => {
             // This is expected - parsing should fail

@@ -9,9 +9,18 @@ mod test_macro;
 use std::borrow::Cow;
 use std::cell::RefCell;
 use std::collections::HashMap;
+use std::fs;
 use std::path::Path;
 use std::rc::Rc;
 
+use self::operators::extend::*;
+use self::operators::serializer::translate_serializer_op;
+use self::util::generate_lt_quads_from_spo;
+use crate::parser::extractors::io::parse_str;
+use crate::types::SearchMap;
+use crate::util::{
+    generate_logtarget_map, generate_lt_quads_from_doc, generate_variable_map,
+};
 use error::RMLTranslationError;
 use operator::rename::Rename;
 use operator::{Extend, Operator};
@@ -28,15 +37,6 @@ use plan::Plan;
 use translator_api::{LanguageTranslator, OperatorTranslator};
 use util::extract_tm_infos_from_sm_poms;
 
-use self::operators::extend::*;
-use self::operators::serializer::translate_serializer_op;
-use self::util::generate_lt_quads_from_spo;
-use crate::parser::extractors::io::parse_file;
-use crate::types::SearchMap;
-use crate::util::{
-    generate_logtarget_map, generate_lt_quads_from_doc, generate_variable_map,
-};
-
 pub struct OptimizedRMLDocumentTranslator;
 
 impl LanguageTranslator<&Path, RMLTranslationError>
@@ -45,7 +45,7 @@ impl LanguageTranslator<&Path, RMLTranslationError>
     fn translate_to_plan(
         path: &Path,
     ) -> translator_api::LanguageTranslateResult<RMLTranslationError> {
-        let doc = parse_file(path.to_path_buf())?;
+        let doc = parse_str(&fs::read_to_string(path)?)?;
         Self::translate_to_plan(doc)
     }
 }
@@ -429,7 +429,6 @@ mod tests {
     use std::borrow::Borrow;
     use std::collections::HashSet;
 
-    use parser::extractors::io::parse_file;
     use parser::extractors::triplesmap_extractor::extract_triples_maps;
     use parser::rml_model::term_map::{self, TermMapInfo};
     use sophia_api::term::{FromTerm, LanguageTag};
@@ -538,7 +537,7 @@ mod tests {
     #[ignore]
     #[test]
     fn test_operator_translation() -> ExtractorResult<()> {
-        let document = parse_file(test_case!("rml/sample_mapping.ttl").into())?;
+        let document = parse_str(&fs::read_to_string(test_case!("rml/sample_mapping.ttl"))?)?;
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 
@@ -550,7 +549,7 @@ mod tests {
     #[ignore]
     #[test]
     fn test_operator_translation_complex() -> ExtractorResult<()> {
-        let document = parse_file(test_case!("rml/multiple_tm.ttl").into())?;
+        let document = parse_str(&fs::read_to_string(test_case!("rml/multiple_tm.ttl"))?)?;
         let operators =
             OptimizedRMLDocumentTranslator::translate_to_plan(document);
 

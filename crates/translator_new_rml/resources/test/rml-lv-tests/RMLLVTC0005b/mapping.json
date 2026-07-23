@@ -1,1 +1,126 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"path":"people.json","root":"http://w3id.org/rml/MappingDirectory"},"source_type":"File","root_iterator":{"reference":"$.people[*]","reference_formulation":"JSONPath","fields":[{"alias":"name","absolute_path":"name","expression":{"type":"Reference","value":"$.name"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]}],"alias":null}}}},{"id":"ExtendOperator_1","operator":{"type":"ExtendOp","config":{"sm_0":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.org/person/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"name"}}}},"pom_0_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"<it>"},"dtype_function":null,"langtype_function":null}}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"?sm_0 <http://example.org/isDerivedFrom> ?pom_0_0_om_0 .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "root": "http://w3id.org/rml/MappingDirectory",
+            "path": "people.json"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$.people[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [
+              {
+                "alias": "name",
+                "absolute_path": "name",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.name"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              }
+            ],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "pom_0_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "<it>"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          },
+          "sm_0": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.org/person/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "name"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "?sm_0 <http://example.org/isDerivedFrom> ?pom_0_0_om_0 .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

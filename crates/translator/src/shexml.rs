@@ -1,36 +1,16 @@
+use crate::error::TranslationError;
 use plan::states::Init;
 use plan::Plan;
-use crate::error::TranslationError;
+use translator_api::LanguageTranslator;
 use translator_shexml::error::ShExMLTranslationError;
 use translator_shexml::{parcombi, ShExMLTranslator};
-use translator_api::LanguageTranslator;
 
-use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
-
-#[derive(Debug, Clone)]
-pub struct ShExMLFileHandler;
+use crate::handler::TranslatorHandler;
 
 #[derive(Debug, Clone)]
-pub struct ShExMLStringHandler;
+pub struct ShExMLHandler;
 
-impl FileTranslatorHandler for ShExMLFileHandler {
-    fn translate(
-        &self,
-        file_path: &dyn AsRef<str>,
-    ) -> Result<Plan<Init>, TranslationError> {
-        let shexml_document =
-            parcombi::parse_file(file_path.as_ref())
-                .map_err::<ShExMLTranslationError, _>(|err| err.into())?;
-
-        Ok(ShExMLTranslator::translate_to_plan(shexml_document)?)
-    }
-
-    fn supported_extension(&self) -> String {
-        "shexml".to_string()
-    }
-}
-
-impl StringTranslatorHandler for ShExMLStringHandler {
+impl TranslatorHandler for ShExMLHandler {
     fn translate(&self, mapping: &str) -> Result<Plan<Init>, TranslationError> {
         let shexml_document =
             parcombi::parse_string(mapping.to_string())

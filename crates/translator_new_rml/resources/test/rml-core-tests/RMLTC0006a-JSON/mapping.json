@@ -1,1 +1,78 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"path":"student.json","root":"http://w3id.org/rml/MappingDirectory"},"source_type":"File","root_iterator":{"reference":"$.students[*]","reference_formulation":"JSONPath","fields":[],"alias":null}}}},{"id":"ExtendOperator_1","operator":{"type":"ExtendOp","config":{}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"<http://example.com/BadStudent> <http://example.com/description> \"Bad Student\" <http://example.com/graph/student> .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "path": "student.json",
+            "root": "http://w3id.org/rml/MappingDirectory"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$.students[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {}
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "<http://example.com/BadStudent> <http://example.com/description> \"Bad Student\" <http://example.com/graph/student> .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

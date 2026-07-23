@@ -3,7 +3,7 @@ use crate::api::process_one_str;
 
 fn translate(mut cx: FunctionContext) -> JsResult<JsString> {
     let mapping = cx.argument::<JsString>(0)?.value(&mut cx);
-    let translated = process_one_str(mapping.as_str());
+    let translated = process_one_str(mapping.as_str()).unwrap();
 
     Ok(cx.string(translated))
 }

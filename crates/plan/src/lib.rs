@@ -113,7 +113,7 @@ impl<T> Plan<T> {
     /// Serializes the plan with the given [dot](Dot) formatter, `fmt`, to a file
     /// at the given `path`.
     pub fn write_fmt(
-        &mut self,
+        &self,
         path: PathBuf,
         fmt: &dyn Fn(Dot<&DiGraphOperators>) -> String,
     ) -> Result<()> {
@@ -125,22 +125,26 @@ impl<T> Plan<T> {
 
     /// Serializes the plan using the [Display](std::fmt::Display) trait which
     /// makes the serialized plan more readable and less verbose.
-    pub fn write_pretty(&mut self, path: PathBuf) -> Result<()> {
+    pub fn write_pretty(&self, path: PathBuf) -> Result<()> {
         self.write_fmt(path, &|dot| format!("{}", dot))?;
         Ok(())
     }
 
     /// Serializes the plan using the [Debug](std::fmt::Debug) trait which
     /// makes the serialized plan more verbose for debugging purpose.
-    pub fn write(&mut self, path: PathBuf) -> Result<()> {
+    pub fn write(&self, path: PathBuf) -> Result<()> {
         self.write_fmt(path, &|dot| format!("{:?}", dot))?;
         Ok(())
     }
 
     /// Serializes the plan in JSON format to a file at the given `path`.
     /// Delegates the actual serialization to [Plan::to_json_string()].  
-    pub fn write_json(&self, path: PathBuf) -> Result<()> {
-        write_string_to_file(path, self.to_json_string()?)
+    pub fn write_json(&self, path: PathBuf, pretty: bool) -> Result<()> {
+        if pretty {
+            write_string_to_file(path, self.to_pretty_json_string()?)
+        } else {
+            write_string_to_file(path, self.to_json_string()?)
+        }
     }
 
     /// Parses the mapping plan from a file at the given `path`.
@@ -170,6 +174,16 @@ impl<T> Plan<T> {
     pub fn to_json_string(&self) -> Result<String> {
         let graph = &*self.graph.borrow();
         let json_str = serde_json::to_string(&graph)?;
+        Ok(json_str)
+    }
+
+    /// Serializes the plan to a [String] in pretty **JSON** format with [serde_json].
+    ///
+    /// # Error
+    /// Returns an error if [serde_json] fails to serialize the plan.
+    pub fn to_pretty_json_string(&self) -> Result<String> {
+        let graph = &*self.graph.borrow();
+        let json_str = serde_json::to_string_pretty(&graph)?;
         Ok(json_str)
     }
 

@@ -1,73 +1,55 @@
 use std::error::Error;
+use std::fs;
 use std::path::PathBuf;
 
-use log::{debug, error};
-
-use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
-use crate::rml::{RMLFileHandler, RMLStringHandler};
-use crate::shexml::{ShExMLFileHandler, ShExMLStringHandler};
+use crate::handler::TranslatorHandler;
+use crate::rml::RMLHandler;
+use crate::shexml::ShExMLHandler;
 use crate::util::{pretty_print_err, serialize_and_log_msg};
+use log::error;
+use plan::states::Init;
+use plan::Plan;
 
 pub fn process_one_file(
     file_path: PathBuf,
     output_prefix: Option<String>,
     json_only_flag: bool,
+    pretty: bool,
 ) {
-    let handlers: Vec<Box<dyn FileTranslatorHandler>> =
-        vec![Box::new(RMLFileHandler), Box::new(ShExMLFileHandler)];
-
-    if !handlers
-        .iter()
-        .any(|handler| handler.can_handle(&file_path.to_string_lossy()))
-    {
-        debug!(
-            "Skipped processing file {} since it is not supported",
-            file_path.to_string_lossy()
-        );
-        return; 
+    let mapping_str_res = fs::read_to_string(&file_path);
+    match mapping_str_res {
+        Ok(mapping) => {
+            if let Some(plan) = process(&mapping) {
+                if let Err(err) = serialize_and_log_msg(
+                    output_prefix.clone().unwrap(),
+                    &plan,
+                    file_path.to_string_lossy(),
+                    json_only_flag,
+                    pretty,
+                ) {
+                    error!(
+                        "Errored while serializing mapping plan for: {}",
+                        file_path.to_string_lossy()
+                    );
+                    pretty_print_err(&err);
+                }
+            } 
+        },
+        Err(err) => {
+            error!("Errored while reading file: {}", file_path.to_string_lossy());
+            pretty_print_err(&err);
+        },
     }
-
-    let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
-        .iter()
-        .map(|handler| handler.handle_file(&file_path.to_string_lossy()))
-        .partition(|plan| plan.is_ok());
-    if generated_plans.is_empty() {
-        if !generated_errors_res.is_empty() {
-            error!(
-                "Errored while translating: {}",
-                file_path.to_string_lossy()
-            );
-        }
-        generated_errors_res
-            .into_iter()
-            .flat_map(|pe| pe.err())
-            .enumerate()
-            .for_each(|(id, err)| {
-                error!("Handler is: {:?} ", handlers[id]);
-                pretty_print_err(&err);
-            });
-    } else {
-        for mut plan in generated_plans.into_iter().flat_map(|p_res| p_res.ok())
-        {
-            if let Err(err) = serialize_and_log_msg(
-                output_prefix.clone().unwrap(),
-                &mut plan,
-                file_path.to_string_lossy(),
-                json_only_flag,
-            ) {
-                error!(
-                    "Errored while serializing mapping plan for: {}",
-                    file_path.to_string_lossy()
-                );
-                pretty_print_err(&err);
-            }
-        }
-    };
 }
 
-pub fn process_one_str(mapping: &str) -> String {
-    let handlers: Vec<Box<dyn StringTranslatorHandler>> =
-        vec![Box::new(RMLStringHandler), Box::new(ShExMLStringHandler)];
+pub fn process_one_str(mapping: &str) -> Option<String> {
+    process(mapping)
+        .map_or(None, |plan| Some(plan.to_json_string().unwrap()))
+}
+
+fn process(mapping: &str) -> Option<Plan<Init>> {
+    let handlers: Vec<Box<dyn TranslatorHandler>> =
+        vec![Box::new(RMLHandler), Box::new(ShExMLHandler)];
     let mut error_messages: Vec<String> = Vec::new();
 
     let (generated_plans, generated_errors_res): (Vec<_>, Vec<_>) = handlers
@@ -101,7 +83,7 @@ pub fn process_one_str(mapping: &str) -> String {
         .flat_map(|p_res| p_res.ok())
         .next()
     {
-        return plan.to_json_string().unwrap();
+        return Some(plan);
     };
 
     let rust_logs = if error_messages.is_empty() {
@@ -109,9 +91,6 @@ pub fn process_one_str(mapping: &str) -> String {
     } else {
         error_messages.join(" || ")
     };
-
-    panic!(
-        "Translation failed, Rust logs: {}",
-        rust_logs
-    )
+    error!("Error messages: {}", rust_logs);
+    None
 }

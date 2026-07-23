@@ -1,1 +1,126 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"path":"people.json","root":"http://w3id.org/rml/MappingDirectory"},"source_type":"File","root_iterator":{"reference":"$[*]","reference_formulation":"JSONPath","fields":[{"alias":"$.firstName","absolute_path":"$.firstName","expression":{"type":"Reference","value":"$.firstName"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.lastName","absolute_path":"$.lastName","expression":{"type":"Reference","value":"$.lastName"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]}],"alias":null}}}},{"id":"ExtendOperator_1","operator":{"type":"ExtendOp","config":{"pom_0_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.firstName"},"dtype_function":null,"langtype_function":null},"sm_0":{"type":"BlankNode","inner_function":{"type":"GenerateBlankNode"}},"pom_0_1_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.lastName"},"dtype_function":null,"langtype_function":null}}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"?sm_0 <http://example.org/firstName> ?pom_0_0_om_0 .\n?sm_0 <http://example.org/lastName> ?pom_0_1_om_0 .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "path": "people.json",
+            "root": "http://w3id.org/rml/MappingDirectory"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [
+              {
+                "alias": "$.firstName",
+                "absolute_path": "$.firstName",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.firstName"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.lastName",
+                "absolute_path": "$.lastName",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.lastName"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              }
+            ],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "sm_0": {
+            "type": "BlankNode",
+            "inner_function": {
+              "type": "GenerateBlankNode"
+            }
+          },
+          "pom_0_1_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.lastName"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          },
+          "pom_0_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.firstName"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "?sm_0 <http://example.org/firstName> ?pom_0_0_om_0 .\n?sm_0 <http://example.org/lastName> ?pom_0_1_om_0 .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

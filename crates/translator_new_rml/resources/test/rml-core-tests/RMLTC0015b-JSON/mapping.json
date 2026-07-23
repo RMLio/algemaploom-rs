@@ -1,1 +1,200 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"path":"country_en.json","root":"http://w3id.org/rml/MappingDirectory"},"source_type":"File","root_iterator":{"reference":"$.countries[*]","reference_formulation":"JSONPath","fields":[{"alias":"$.Code","absolute_path":"$.Code","expression":{"type":"Reference","value":"$.Code"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.Name","absolute_path":"$.Name","expression":{"type":"Reference","value":"$.Name"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.Code","absolute_path":"$.Code","expression":{"type":"Reference","value":"$.Code"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.Name","absolute_path":"$.Name","expression":{"type":"Reference","value":"$.Name"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]}],"alias":null}}}},{"id":"ExtendOperator_1","operator":{"type":"ExtendOp","config":{"sm_1":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Code"}}}},"pom_0_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.Name"},"dtype_function":null,"langtype_function":{"type":"Constant","value":"a-english"}},"sm_0":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Code"}}}},"pom_1_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.Name"},"dtype_function":null,"langtype_function":{"type":"Constant","value":"a-spanish"}}}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"?sm_0 <http://www.w3.org/2000/01/rdf-schema#label> ?pom_0_0_om_0 .\n?sm_1 <http://www.w3.org/2000/01/rdf-schema#label> ?pom_1_0_om_0 .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "root": "http://w3id.org/rml/MappingDirectory",
+            "path": "country_en.json"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$.countries[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [
+              {
+                "alias": "$.Name",
+                "absolute_path": "$.Name",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Name"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.Code",
+                "absolute_path": "$.Code",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Code"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.Code",
+                "absolute_path": "$.Code",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Code"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.Name",
+                "absolute_path": "$.Name",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Name"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              }
+            ],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "pom_1_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.Name"
+            },
+            "dtype_function": null,
+            "langtype_function": {
+              "type": "Constant",
+              "value": "a-spanish"
+            }
+          },
+          "sm_1": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.com/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Code"
+                }
+              }
+            }
+          },
+          "pom_0_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.Name"
+            },
+            "dtype_function": null,
+            "langtype_function": {
+              "type": "Constant",
+              "value": "a-english"
+            }
+          },
+          "sm_0": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.com/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Code"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "?sm_0 <http://www.w3.org/2000/01/rdf-schema#label> ?pom_0_0_om_0 .\n?sm_1 <http://www.w3.org/2000/01/rdf-schema#label> ?pom_1_0_om_0 .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

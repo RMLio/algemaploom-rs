@@ -1,24 +1,20 @@
-use log::{info, warn};
+use log::info;
 use plan::states::Init;
 use plan::Plan;
 use translator_api::LanguageTranslator;
 use translator_new_rml::error::NewRMLTranslationError;
 use translator_new_rml::translator::NewRMLDocumentTranslator;
-use translator_rml::parser::extractors::io::{
-    parse_file as old_parse_file, parse_str as old_parse_str,
-};
+use translator_rml::parser::extractors::io::parse_str as old_parse_str;
 use translator_rml::OptimizedRMLDocumentTranslator;
 
 use crate::error::TranslationError;
-use crate::handler::{FileTranslatorHandler, StringTranslatorHandler};
+use crate::handler::TranslatorHandler;
+
 
 #[derive(Debug)]
-pub struct RMLFileHandler;
+pub struct RMLHandler;
 
-#[derive(Debug)]
-pub struct RMLStringHandler;
-
-impl FileTranslatorHandler for RMLFileHandler {
+/*impl FileTranslatorHandler for RMLFileHandler {
     fn translate(
         &self,
         file_path: &dyn AsRef<str>,
@@ -41,9 +37,9 @@ impl FileTranslatorHandler for RMLFileHandler {
     fn supported_extension(&self) -> String {
         "ttl".to_string()
     }
-}
+}*/
 
-impl StringTranslatorHandler for RMLStringHandler {
+impl TranslatorHandler for RMLHandler {
     fn translate(&self, mapping: &str) -> Result<Plan<Init>, TranslationError> {
         // TODO: Needs a better way to detect old vs new RML mapping document <16-04-25, Min Oo> //
 

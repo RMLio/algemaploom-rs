@@ -1,1 +1,172 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"root":"http://w3id.org/rml/MappingDirectory","path":"student_sport.json"},"source_type":"File","root_iterator":{"reference":"$.students[*]","reference_formulation":"JSONPath","fields":[{"alias":"$.Student","absolute_path":"$.Student","expression":{"type":"Reference","value":"$.Student"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]},{"alias":"$.Sport","absolute_path":"$.Sport","expression":{"type":"Reference","value":"$.Sport"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]}],"alias":null}}}},{"id":"ExtendOperator_1","operator":{"type":"ExtendOp","config":{"sm_0":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Student"}}}},"pom_1_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.Sport"},"dtype_function":null,"langtype_function":null},"pom_0_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.Student"},"dtype_function":null,"langtype_function":null},"sm_1":{"type":"Iri","base_iri":"","inner_function":{"type":"Concatenate","left_value":{"type":"Concatenate","left_value":{"type":"Nop"},"separator":"","right_value":{"type":"Constant","value":"http://example.com/"}},"separator":"","right_value":{"type":"UriEncode","inner_function":{"type":"Reference","value":"$.Sport"}}}}}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"?sm_1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sport> .\n?sm_0 <http://xmlns.com/foaf/0.1/name> ?pom_0_0_om_0 .\n?sm_1 <http://xmlns.com/foaf/0.1/name> ?pom_1_0_om_0 .\n?sm_0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Student> .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "root": "http://w3id.org/rml/MappingDirectory",
+            "path": "student_sport.json"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$.students[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [
+              {
+                "alias": "$.Student",
+                "absolute_path": "$.Student",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Student"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              },
+              {
+                "alias": "$.Sport",
+                "absolute_path": "$.Sport",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.Sport"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              }
+            ],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "pom_0_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.Student"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          },
+          "sm_0": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.com/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Student"
+                }
+              }
+            }
+          },
+          "sm_1": {
+            "type": "Iri",
+            "base_iri": "",
+            "inner_function": {
+              "type": "Concatenate",
+              "left_value": {
+                "type": "Concatenate",
+                "left_value": {
+                  "type": "Nop"
+                },
+                "separator": "",
+                "right_value": {
+                  "type": "Constant",
+                  "value": "http://example.com/"
+                }
+              },
+              "separator": "",
+              "right_value": {
+                "type": "UriEncode",
+                "inner_function": {
+                  "type": "Reference",
+                  "value": "$.Sport"
+                }
+              }
+            }
+          },
+          "pom_1_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.Sport"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "?sm_0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Student> .\n?sm_0 <http://xmlns.com/foaf/0.1/name> ?pom_0_0_om_0 .\n?sm_1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.com/Sport> .\n?sm_1 <http://xmlns.com/foaf/0.1/name> ?pom_1_0_om_0 .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

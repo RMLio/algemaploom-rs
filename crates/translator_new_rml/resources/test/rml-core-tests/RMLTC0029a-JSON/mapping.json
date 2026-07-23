@@ -1,1 +1,100 @@
-{"nodes":[{"id":"Source_0","operator":{"type":"SourceOp","config":{"access":{"root":"http://w3id.org/rml/MappingDirectory","path":"data.json"},"source_type":"File","root_iterator":{"reference":"$[*]","reference_formulation":"JSONPath","fields":[{"alias":"$.FOO","absolute_path":"$.FOO","expression":{"type":"Reference","value":"$.FOO"},"iterator":null,"reference_formulation":"JSONPath","inner_fields":[]}],"alias":null}}}},{"id":"ExtendOperator_1","operator":{"type":"ExtendOp","config":{"pom_0_0_om_0":{"type":"Literal","inner_function":{"type":"Reference","value":"$.FOO"},"dtype_function":null,"langtype_function":null}}}},{"id":"Serialize_2","operator":{"type":"SerializerOp","config":{"template":"<http://example.com/example> <http://example.com/x> ?pom_0_0_om_0 .","format":"NQuads"}}},{"id":"Sink_3","operator":{"type":"TargetOp","config":{"target_type":"StdOut","data_format":"NQuads"}}}],"node_holes":[],"edge_property":"directed","edges":[[0,1,{"fragment":"default","direction":"Center"}],[1,2,{"fragment":"default","direction":"Center"}],[2,3,{"fragment":"default","direction":"Center"}]]}
+{
+  "nodes": [
+    {
+      "id": "Source_0",
+      "operator": {
+        "type": "SourceOp",
+        "config": {
+          "access": {
+            "path": "data.json",
+            "root": "http://w3id.org/rml/MappingDirectory"
+          },
+          "source_type": "File",
+          "root_iterator": {
+            "reference": "$[*]",
+            "reference_formulation": "JSONPath",
+            "fields": [
+              {
+                "alias": "$.FOO",
+                "absolute_path": "$.FOO",
+                "expression": {
+                  "type": "Reference",
+                  "value": "$.FOO"
+                },
+                "iterator": null,
+                "reference_formulation": "JSONPath",
+                "inner_fields": []
+              }
+            ],
+            "alias": null
+          }
+        }
+      }
+    },
+    {
+      "id": "ExtendOperator_1",
+      "operator": {
+        "type": "ExtendOp",
+        "config": {
+          "pom_0_0_om_0": {
+            "type": "Literal",
+            "inner_function": {
+              "type": "Reference",
+              "value": "$.FOO"
+            },
+            "dtype_function": null,
+            "langtype_function": null
+          }
+        }
+      }
+    },
+    {
+      "id": "Serialize_2",
+      "operator": {
+        "type": "SerializerOp",
+        "config": {
+          "template": "<http://example.com/example> <http://example.com/x> ?pom_0_0_om_0 .",
+          "format": "NQuads"
+        }
+      }
+    },
+    {
+      "id": "Sink_3",
+      "operator": {
+        "type": "TargetOp",
+        "config": {
+          "target_type": "StdOut",
+          "data_format": "NQuads"
+        }
+      }
+    }
+  ],
+  "node_holes": [],
+  "edge_property": "directed",
+  "edges": [
+    [
+      0,
+      1,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      1,
+      2,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ],
+    [
+      2,
+      3,
+      {
+        "fragment": "default",
+        "direction": "Center"
+      }
+    ]
+  ]
+}

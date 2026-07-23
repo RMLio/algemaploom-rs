@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Changed
+- Translator API: remove `FileTranslatorHandler` and `StringTranslatorHandler` traits, this is now one `TranslatorHandler` trait.
+- Added `-p` parameter to pretty-print the generated mapping plan in the CLI translator app.
+
+### Fixed
+- Base IRI was missing in [RMLTC0002a-CSV.ttl](crates/translator_rml/resources/csv-testcases/RMLTC0002a-CSV.ttl).
+
 ## [0.7.1] - 2026-07-16
 
 ### Fixed
