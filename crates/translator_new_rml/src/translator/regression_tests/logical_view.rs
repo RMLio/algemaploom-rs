@@ -204,7 +204,6 @@ fn rmllvtc0010c() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[ignore = "Template expression map in join not yet supported."]
 fn rmllvtc0010d() -> Result<(), Box<dyn Error>> {
     TestExecutor::new(TEST_DIR).execute("RMLLVTC0010d", true)
 }
