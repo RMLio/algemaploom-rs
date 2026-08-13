@@ -51,6 +51,9 @@ pub mod class {
     pub const XPATH: PAIR = (IRI, "XPath");
     pub const XPATH_REF_FORM: PAIR = (IRI, "XPathReferenceFormulation");
     pub const CSVW: PAIR = (IRI, "CSVWReferenceFormulation"); 
-    pub const SQL_QUERY: PAIR = (IRI, "SQLQuery"); 
-    pub const SQL_TABLE: PAIR = (IRI, "SQLTable"); 
+    pub const SQL_QUERY: PAIR = (IRI, "SQLQuery");
+    pub const SQL_TABLE: PAIR = (IRI, "SQLTable");
+    // the names RML-IO gives the two, which is what the test cases of the registry use
+    pub const SQL2008_QUERY: PAIR = (IRI, "SQL2008Query");
+    pub const SQL2008_TABLE: PAIR = (IRI, "SQL2008Table");
 }

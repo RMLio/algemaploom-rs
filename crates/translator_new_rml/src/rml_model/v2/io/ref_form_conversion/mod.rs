@@ -38,6 +38,12 @@ impl TryFrom<&ReferenceFormulation>
                                     .to_rcterm()
                             || value
                                 == vocab::rml_io::class::SQL_TABLE
+                                    .to_rcterm()
+                            || value
+                                == vocab::rml_io::class::SQL2008_QUERY
+                                    .to_rcterm()
+                            || value
+                                == vocab::rml_io::class::SQL2008_TABLE
                                     .to_rcterm() =>
                     {
                         Ok(formats::ReferenceFormulation::SQLQuery)

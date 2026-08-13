@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `-p` parameter to pretty-print the generated mapping plan in the CLI translator app.
 
 ### Fixed
+- `rml:SQL2008Table` and `rml:SQL2008Query` are recognised as reference formulations. RML-IO gives a relational source's reference formulation those names, but only the earlier `rml:SQLTable` and `rml:SQLQuery` were known, so a mapping reading from a database was rejected with "Unsupported reference formulation". Of the RML-IO registry test cases that MappingLoom could not translate, 77 translate now; test case RMLSTC0006a is no longer ignored.
 - Base IRI was missing in [RMLTC0002a-CSV.ttl](crates/translator_rml/resources/csv-testcases/RMLTC0002a-CSV.ttl).
 
 ## [0.7.1] - 2026-07-16

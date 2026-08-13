@@ -60,7 +60,6 @@ fn rmlstc0004c() -> Result<(), Box<dyn Error>> {
 }
 
 #[test]
-#[ignore = "D2RQ database source not supported"]
 fn rmlstc0006a() -> Result<(), Box<dyn Error>> {
     TestExecutor::new(TEST_DIR).execute("RMLSTC0006a", true)
 }
