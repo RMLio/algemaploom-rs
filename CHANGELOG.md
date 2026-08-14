@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+### Added
+- A CSV on the Web table (`csvw:Table`) is understood as a source. The table says where the data is (`csvw:url`) and which values stand for no value (`csvw:null`); the dialect it points at says how the rows are written, and the delimiter, quote character, encoding, header, trimming and the rest travel to the plan as the source's parse configuration. A table is read as a file, the way the RML v1 translator already reads one, so what is particular to it is the dialect and not where the data comes from. The nine CSVW test cases of the RML-IO registry are added as regression tests.
+- `csvw:quoteChar` and `csvw:null` in the vocabulary. It held `csvw:quoteChars`, which CSVW does not define, so a dialect naming a quote character was passed over.
+
 ### Changed
 - Translator API: remove `FileTranslatorHandler` and `StringTranslatorHandler` traits, this is now one `TranslatorHandler` trait.
 - Added `-p` parameter to pretty-print the generated mapping plan in the CLI translator app.

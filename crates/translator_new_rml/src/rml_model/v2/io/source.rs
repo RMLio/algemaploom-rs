@@ -179,6 +179,9 @@ impl TryFrom<&SourceKind> for IOType {
             || value.type_iri
                 == vocab::rml_io::class::RELATIVE_PATH_SOURCE.to_rcterm()
             || value.type_iri == vocab::rml_io::class::MAPPING_DIR.to_rcterm()
+            // a CSV on the Web table names a file too; what is particular to it is the
+            // dialect it is written in, which travels along as parse configuration
+            || value.type_iri == vocab::csvw::class::TABLE.to_rcterm()
         {
             Ok(IOType::File)
         } else if value.type_iri == vocab::d2rq::class::DATABASE.to_rcterm()

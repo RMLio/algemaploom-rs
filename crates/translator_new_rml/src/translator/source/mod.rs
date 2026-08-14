@@ -17,7 +17,7 @@ use crate::extractors::{
 use crate::rml_model::v2::core::AbstractLogicalSourceEnum;
 use crate::rml_model::v2::io::source::Source;
 use crate::translator::source::kind::{
-    kafka_source, rdb_source, tcp_source, websocket_source,
+    csvw_source, kafka_source, rdb_source, tcp_source, websocket_source,
 };
 
 mod iterator;
@@ -67,6 +67,12 @@ fn extract_source_specific_config(
         }
         value if value == vocab::d2rq::class::DATABASE.to_rcterm() => {
             Ok(rdb_source::extract_rdb_source(
+                &kind.subj_iri,
+                &kind.metadata,
+            )?)
+        }
+        value if value == vocab::csvw::class::TABLE.to_rcterm() => {
+            Ok(csvw_source::extract_csvw_source(
                 &kind.subj_iri,
                 &kind.metadata,
             )?)

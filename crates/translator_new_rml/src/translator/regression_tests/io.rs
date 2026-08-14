@@ -371,3 +371,51 @@ fn rmlttc0006e() -> Result<(), Box<dyn Error>> {
 fn rmlttc0007a() -> Result<(), Box<dyn Error>> {
     TestExecutor::new(TEST_DIR).execute("RMLTTC0007a", true)
 }
+
+// CSV on the Web: the table names the file and the values standing for no value, and the
+// dialect it points at says how the rows are written.
+
+#[test]
+fn rmlioregtc0012a() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012a", true)
+}
+
+#[test]
+fn rmlioregtc0012b() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012b", true)
+}
+
+#[test]
+fn rmlioregtc0012c() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012c", true)
+}
+
+#[test]
+fn rmlioregtc0012d() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012d", true)
+}
+
+#[test]
+fn rmlioregtc0012e() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012e", true)
+}
+
+#[test]
+fn rmlioregtc0012f() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012f", true)
+}
+
+#[test]
+fn rmlioregtc0012g() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012g", true)
+}
+
+#[test]
+fn rmlioregtc0012h() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012h", true)
+}
+
+#[test]
+fn rmlioregtc0012i() -> Result<(), Box<dyn Error>> {
+    TestExecutor::new(TEST_DIR).execute("RMLIOREGTC0012i", true)
+}

@@ -16,6 +16,7 @@ pub mod property {
 
     pub const DIALECT: PAIR = (IRI, "dialect");
     pub const URL: PAIR = (IRI, "url");
+    pub const NULL: PAIR = (IRI, "null");
 
     // Parse configs properties
     pub const TRIM: PAIR = (IRI, "trim");
@@ -27,6 +28,8 @@ pub mod property {
     pub const HEADER_ROW_COUNT: PAIR = (IRI, "headerRowCount");
     pub const LINE_TERMINATORS: PAIR = (IRI, "lineTerminators");
     pub const QUOTE_CHARS: PAIR = (IRI, "quoteChars");
+    // the name CSVW gives it; `QUOTE_CHARS` above is not a term of the vocabulary
+    pub const QUOTE_CHAR: PAIR = (IRI, "quoteChar");
     pub const SKIP_BLANK_ROWS: PAIR = (IRI, "skipBlankRows");
     pub const SKIP_COLUMNS: PAIR = (IRI, "skipColumns");
     pub const SKIP_ROWS: PAIR = (IRI, "skipRows");
