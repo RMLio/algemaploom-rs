@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [0.8.0] - 2026-08-19
+
 ### Added
 - A CSV on the Web table (`csvw:Table`) is understood as a source. The table says where the data is (`csvw:url`) and which values stand for no value (`csvw:null`); the dialect it points at says how the rows are written, and the delimiter, quote character, encoding, header, trimming and the rest travel to the plan as the source's parse configuration. A table is read as a file, the way the RML v1 translator already reads one, so what is particular to it is the dialect and not where the data comes from. The nine CSVW test cases of the RML-IO registry are added as regression tests.
 - `csvw:quoteChar` and `csvw:null` in the vocabulary. It held `csvw:quoteChars`, which CSVW does not define, so a dialect naming a quote character was passed over.
@@ -64,6 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `SerializerOperatorTranslator`: don't apply graph mapping in case of a join because that's already handled by the `JoinTranslator`. Fixes <https://gitlab.ilabt.imec.be/rml/proc/algemaploom-rs/-/issues/47>
 - Use official rust Docker image in GitLab CI
 
+[0.8.0]: https://github.com/RMLio/mappingloom-rs/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/RMLio/mappingloom-rs/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/RMLio/mappingloom-rs/compare/v0.6.8...v0.6.9
